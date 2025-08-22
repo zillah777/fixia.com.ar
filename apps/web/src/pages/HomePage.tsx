@@ -103,7 +103,7 @@ function Navigation() {
             <div className="absolute -inset-1 liquid-gradient rounded-xl blur opacity-20 animate-pulse-slow"></div>
           </motion.div>
           <div className="flex flex-col">
-            <span className="text-xl font-semibold tracking-tight">Fixia</span>
+            <span className="text-xl font-semibold tracking-tight text-foreground">Fixia</span>
             <span className="text-xs text-muted-foreground -mt-1">Conecta. Confía. Resuelve.</span>
           </div>
         </Link>
