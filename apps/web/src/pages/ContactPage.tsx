@@ -30,7 +30,7 @@ function Navigation() {
             <span className="text-white font-bold">F</span>
           </div>
           <div className="flex flex-col">
-            <span className="text-lg font-semibold">Fixia</span>
+            <span className="text-lg font-semibold text-foreground">Fixia</span>
             <span className="text-xs text-muted-foreground -mt-1">Conecta. Confía. Resuelve.</span>
           </div>
         </Link>
@@ -133,7 +133,7 @@ function ContactInfoSection() {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl font-bold mb-4">Información de Contacto</h2>
+          <h2 className="text-4xl font-bold mb-4 text-foreground">Información de Contacto</h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Múltiples formas de contactarnos para que elijas la que más te convenga
           </p>
@@ -157,7 +157,7 @@ function ContactInfoSection() {
                       <Icon className={`h-8 w-8 ${method.color}`} />
                     </div>
                     <h3 className={`text-xl font-semibold mb-3 ${method.color}`}>{method.title}</h3>
-                    <p className="font-medium mb-1">{method.primary}</p>
+                    <p className="font-medium mb-1 text-foreground">{method.primary}</p>
                     <p className="text-sm text-muted-foreground mb-4">{method.secondary}</p>
                     <p className="text-sm text-muted-foreground mb-6">{method.description}</p>
                     {method.action && (
@@ -251,7 +251,7 @@ function ContactFormSection() {
             <Card className="glass border-success/30 bg-success/5">
               <CardContent className="p-12 text-center">
                 <CheckCircle className="h-16 w-16 text-success mx-auto mb-6" />
-                <h3 className="text-2xl font-bold mb-4">¡Mensaje Enviado!</h3>
+                <h3 className="text-2xl font-bold mb-4 text-foreground">¡Mensaje Enviado!</h3>
                 <p className="text-muted-foreground mb-6">
                   Gracias por contactarnos. Hemos recibido tu mensaje y te responderemos 
                   dentro de las próximas 24 horas hábiles.
@@ -287,7 +287,7 @@ function ContactFormSection() {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl font-bold mb-4">Envíanos un Mensaje</h2>
+          <h2 className="text-4xl font-bold mb-4 text-foreground">Envíanos un Mensaje</h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Completa el formulario y nos pondremos en contacto contigo
           </p>
@@ -460,7 +460,7 @@ function FAQSection() {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl font-bold mb-4">Preguntas Frecuentes</h2>
+          <h2 className="text-4xl font-bold mb-4 text-foreground">Preguntas Frecuentes</h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Encuentra respuestas rápidas a las consultas más comunes
           </p>
@@ -480,7 +480,7 @@ function FAQSection() {
                   <div className="flex items-start space-x-4">
                     <HelpCircle className="h-5 w-5 text-primary mt-1" />
                     <div>
-                      <h4 className="font-semibold mb-2">{faq.question}</h4>
+                      <h4 className="font-semibold mb-2 text-foreground">{faq.question}</h4>
                       <p className="text-muted-foreground leading-relaxed">{faq.answer}</p>
                     </div>
                   </div>
@@ -524,7 +524,7 @@ function SupportHoursSection() {
             <CardContent className="p-12 text-center">
               <div className="max-w-3xl mx-auto">
                 <Clock className="h-16 w-16 text-primary mx-auto mb-6" />
-                <h2 className="text-3xl font-bold mb-6">Horarios de Atención</h2>
+                <h2 className="text-3xl font-bold mb-6 text-foreground">Horarios de Atención</h2>
                 
                 <div className="grid md:grid-cols-2 gap-8 mb-8">
                   <div>
