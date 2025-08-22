@@ -8,15 +8,18 @@
   ],
   "scripts": {
     "dev": "cd apps/web && npm run dev",
-    "build": "cd apps/web && npm run build",
+    "build": "cd apps/api && npm run build",
+    "start": "cd apps/api && npm run start:prod",
     "web:dev": "cd apps/web && npm run dev",
     "web:build": "cd apps/web && npm run build",
     "web:preview": "cd apps/web && npm run preview",
     "api:dev": "cd apps/api && npm run start:dev",
     "api:build": "cd apps/api && npm run build",
+    "api:start": "cd apps/api && npm run start:prod",
     "install:all": "npm install",
     "install:web": "cd apps/web && npm install",
     "install:api": "cd apps/api && npm install",
+    "postinstall": "cd apps/api && npm run postinstall",
     "clean": "rm -rf apps/web/node_modules apps/web/build apps/web/dist apps/api/node_modules apps/api/dist"
   },
   "engines": {
