@@ -283,7 +283,7 @@ function CategoriesSection() {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl font-bold mb-4">Servicios Más Solicitados</h2>
+          <h2 className="text-4xl font-bold mb-4 text-foreground">Servicios Más Solicitados</h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Descubre los profesionales más valorados en cada categoría de Chubut
           </p>
@@ -399,7 +399,7 @@ function FeaturedServicesSection() {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl font-bold mb-4">Profesionales Destacados</h2>
+          <h2 className="text-4xl font-bold mb-4 text-foreground">Profesionales Destacados</h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Conoce a algunos de los mejores profesionales verificados de Chubut
           </p>
@@ -549,7 +549,7 @@ function HowItWorksSection() {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl font-bold mb-4">Cómo Funciona Fixia</h2>
+          <h2 className="text-4xl font-bold mb-4 text-foreground">Cómo Funciona Fixia</h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Un proceso simple, seguro y sin comisiones para conectar con los mejores
           </p>
@@ -623,7 +623,7 @@ function CTASection() {
           <Card className="glass border-white/10 overflow-hidden">
             <CardContent className="p-12 text-center">
               <div className="max-w-3xl mx-auto">
-                <h2 className="text-4xl font-bold mb-6">
+                <h2 className="text-4xl font-bold mb-6 text-foreground">
                   ¿Listo para conectar con los mejores profesionales de Chubut?
                 </h2>
                 <p className="text-xl text-muted-foreground mb-8">
