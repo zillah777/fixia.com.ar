@@ -1,12 +1,17 @@
 {
-  "name": "fixia-api",
+  "name": "fixia-monorepo",
   "version": "1.0.0",
   "private": true,
   "scripts": {
     "build": "chmod +x railway-build.sh && ./railway-build.sh",
     "start": "chmod +x railway-start.sh && ./railway-start.sh",
     "dev": "cd apps/api && npm run start:dev",
-    "install:api": "cd apps/api && npm install"
+    "dev:web": "cd apps/web && npm run dev",
+    "build:api": "cd apps/api && npm run build",
+    "build:web": "cd apps/web && npm run build",
+    "install:api": "cd apps/api && npm install",
+    "install:web": "cd apps/web && npm install",
+    "install:all": "npm run install:api && npm run install:web"
   },
   "engines": {
     "node": ">=18.0.0"

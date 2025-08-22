@@ -8,7 +8,7 @@
     "allowSyntheticDefaultImports": true,
     "target": "ES2020",
     "sourceMap": true,
-    "outDir": "./dist",
+    "outDir": "../../dist/apps/api",
     "baseUrl": "./",
     "incremental": true,
     "skipLibCheck": true,
@@ -21,6 +21,6 @@
       "@fixia/types": ["../../packages/types"]
     }
   },
-  "include": ["src/**/*", "prisma/**/*"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "test", "**/*.spec.ts"]
 }

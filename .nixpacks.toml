@@ -6,10 +6,17 @@ PORT = "3001"
 nodejs = { version = "18" }
 
 [phases.install]
-cmds = ["echo 'Skipping root install - using custom scripts'"]
+cmds = [
+  "cd apps/api",
+  "npm ci --include=dev"
+]
 
 [phases.build]
-cmds = ["npm run build"]
+cmds = [
+  "cd apps/api",
+  "npx prisma generate",
+  "npx nest build"
+]
 
 [phases.start]
-cmd = "npm start"
+cmd = "cd apps/api && npx prisma migrate deploy && node dist/main.js"

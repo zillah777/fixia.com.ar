@@ -69,6 +69,10 @@ async function bootstrap() {
     });
   }
 
+  // Port configuration for Railway
+  const port = parseInt(process.env.PORT) || 3001;
+  const host = '0.0.0.0'; // Always bind to all interfaces for containerized deployment
+
   // Health check endpoint for Railway
   app.getHttpAdapter().get('/health', (req, res) => {
     res.json({
@@ -106,10 +110,6 @@ async function bootstrap() {
       }
     });
   });
-
-  // Port configuration for Railway
-  const port = parseInt(process.env.PORT) || 3001;
-  const host = '0.0.0.0'; // Always bind to all interfaces for containerized deployment
   
   await app.listen(port, host);
   
