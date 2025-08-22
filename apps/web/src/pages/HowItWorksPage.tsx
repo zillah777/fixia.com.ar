@@ -22,7 +22,7 @@ function Navigation() {
             <span className="text-white font-bold">F</span>
           </div>
           <div className="flex flex-col">
-            <span className="text-lg font-semibold">Fixia</span>
+            <span className="text-lg font-semibold text-foreground">Fixia</span>
             <span className="text-xs text-muted-foreground -mt-1">Conecta. Confía. Resuelve.</span>
           </div>
         </Link>
@@ -111,7 +111,7 @@ function ClientProcessSection() {
         >
           <div className="flex items-center justify-center space-x-3 mb-6">
             <UserPlus className="h-8 w-8 text-success" />
-            <h2 className="text-4xl font-bold">Para Clientes</h2>
+            <h2 className="text-4xl font-bold text-foreground">Para Clientes</h2>
           </div>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Encuentra y contrata profesionales verificados en 4 pasos simples
@@ -140,7 +140,7 @@ function ClientProcessSection() {
                         <Badge className="mb-3 bg-primary/20 text-primary border-primary/30">
                           {step.step}
                         </Badge>
-                        <h3 className="text-xl font-semibold mb-3">{step.title}</h3>
+                        <h3 className="text-xl font-semibold mb-3 text-foreground">{step.title}</h3>
                         <p className="text-muted-foreground leading-relaxed">{step.description}</p>
                       </div>
                     </div>
@@ -214,7 +214,7 @@ function ProfessionalProcessSection() {
         >
           <div className="flex items-center justify-center space-x-3 mb-6">
             <Crown className="h-8 w-8 text-primary" />
-            <h2 className="text-4xl font-bold">Para Profesionales</h2>
+            <h2 className="text-4xl font-bold text-foreground">Para Profesionales</h2>
           </div>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Únete como Profesional y haz crecer tu negocio
@@ -243,7 +243,7 @@ function ProfessionalProcessSection() {
                         <Badge className="mb-3 bg-primary/20 text-primary border-primary/30">
                           {step.step}
                         </Badge>
-                        <h3 className="text-xl font-semibold mb-3">{step.title}</h3>
+                        <h3 className="text-xl font-semibold mb-3 text-foreground">{step.title}</h3>
                         <p className="text-muted-foreground leading-relaxed">{step.description}</p>
                       </div>
                     </div>
@@ -305,7 +305,7 @@ function WhyChooseFixiaSection() {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl font-bold mb-4">¿Por qué elegir Fixia?</h2>
+          <h2 className="text-4xl font-bold mb-4 text-foreground">¿Por qué elegir Fixia?</h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             La plataforma más confiable para servicios profesionales en Chubut
           </p>
@@ -355,7 +355,7 @@ function CTASection() {
             <CardContent className="p-12 text-center">
               <div className="max-w-3xl mx-auto">
                 <Zap className="h-16 w-16 text-primary mx-auto mb-6" />
-                <h2 className="text-4xl font-bold mb-6">
+                <h2 className="text-4xl font-bold mb-6 text-foreground">
                   ¿Listo para comenzar?
                 </h2>
                 <p className="text-xl text-muted-foreground mb-8">
@@ -412,7 +412,7 @@ function ContactSection() {
           transition={{ duration: 0.8 }}
           className="max-w-2xl mx-auto text-center"
         >
-          <h3 className="text-2xl font-bold mb-6">¿Tienes preguntas?</h3>
+          <h3 className="text-2xl font-bold mb-6 text-foreground">¿Tienes preguntas?</h3>
           <p className="text-muted-foreground mb-8">
             Nuestro equipo está aquí para ayudarte en cada paso del proceso
           </p>
