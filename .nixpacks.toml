@@ -1,9 +1,3 @@
-[build]
-cmd = "chmod +x railway-build.sh && ./railway-build.sh"
-
-[start]
-cmd = "chmod +x railway-start.sh && ./railway-start.sh"
-
 [variables]
 NODE_ENV = "production"
 PORT = "3001"
@@ -11,13 +5,11 @@ PORT = "3001"
 [providers]
 nodejs = { version = "18" }
 
-[phases.setup]
-dependsOn = []
-
 [phases.install]
-dependsOn = ["setup"]
-cmds = ["echo 'Using custom build script'"]
+cmds = ["echo 'Skipping root install - using custom scripts'"]
 
 [phases.build]
-dependsOn = ["install"]
-cmds = ["chmod +x railway-build.sh", "./railway-build.sh"]
+cmds = ["npm run build"]
+
+[phases.start]
+cmd = "npm start"
