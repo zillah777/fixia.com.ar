@@ -21,7 +21,7 @@ import { Progress } from "../components/ui/progress";
 import { Alert, AlertDescription } from "../components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { useAuth } from "../context/AuthContext";
-import { toast } from "sonner@2.0.3";
+import { toast } from "sonner";
 
 const categories = [
   { value: "web-development", label: "Desarrollo Web", icon: Globe },

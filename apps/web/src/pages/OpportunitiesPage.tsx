@@ -23,7 +23,7 @@ import { Textarea } from "../components/ui/textarea";
 import { Label } from "../components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { useAuth } from "../context/AuthContext";
-import { toast } from "sonner@2.0.3";
+import { toast } from "sonner";
 
 // Mock data for opportunities
 const mockOpportunities = [

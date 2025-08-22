@@ -23,7 +23,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Progress } from "../components/ui/progress";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "../components/ui/dialog";
 import { useAuth } from "../context/AuthContext";
-import { toast } from "sonner@2.0.3";
+import { toast } from "sonner";
 
 // Mock data for portfolio items
 const portfolioItems = [
