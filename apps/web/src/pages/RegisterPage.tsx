@@ -12,6 +12,7 @@ import { Checkbox } from "../components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import { Alert, AlertDescription } from "../components/ui/alert";
 import { useAuth } from "../context/AuthContext";
+import { FixiaNavigation } from "../components/FixiaNavigation";
 
 interface FormData {
   // Common fields
@@ -66,34 +67,6 @@ const popularCategories = [
   "Cuidado de Adultos Mayores", "Psicología", "Nutrición"
 ];
 
-function Navigation() {
-  return (
-    <motion.header 
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      className="sticky top-0 z-50 w-full glass border-b border-white/10"
-    >
-      <div className="container mx-auto flex h-16 items-center justify-between px-6">
-        <Link to="/" className="flex items-center space-x-3">
-          <div className="h-8 w-8 liquid-gradient rounded-lg flex items-center justify-center shadow-lg">
-            <span className="text-white font-bold">F</span>
-          </div>
-          <div className="flex flex-col">
-            <span className="text-lg font-semibold">Fixia</span>
-            <span className="text-xs text-muted-foreground -mt-1">Conecta. Confía. Resuelve.</span>
-          </div>
-        </Link>
-        
-        <Link to="/">
-          <Button variant="ghost" className="hover:glass-medium">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Volver al Inicio
-          </Button>
-        </Link>
-      </div>
-    </motion.header>
-  );
-}
 
 function ClientRegistrationForm({
   formData,
@@ -120,7 +93,7 @@ function ClientRegistrationForm({
       <CardHeader className="text-center">
         <div className="flex items-center justify-center space-x-2 mb-4">
           <UserPlus className="h-8 w-8 text-success" />
-          <CardTitle className="text-2xl">Registro como Cliente</CardTitle>
+          <CardTitle className="text-2xl text-foreground">Registro como Cliente</CardTitle>
         </div>
         <CardDescription>
           Acceso gratuito para buscar y contactar profesionales verificados
@@ -510,7 +483,7 @@ function ProfessionalRegistrationForm({
       <CardHeader className="text-center">
         <div className="flex items-center justify-center space-x-2 mb-4">
           <Crown className="h-8 w-8 text-primary" />
-          <CardTitle className="text-2xl">Registro Profesional</CardTitle>
+          <CardTitle className="text-2xl text-foreground">Registro Profesional</CardTitle>
         </div>
         <CardDescription>
           Suscripción mensual $4500 ARS • Sin comisiones por servicios
@@ -882,7 +855,7 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation />
+      <FixiaNavigation />
       
       <div className="py-12 px-6">
         <div className="container mx-auto">
@@ -892,7 +865,7 @@ export default function RegisterPage() {
             transition={{ duration: 0.8 }}
             className="text-center mb-12"
           >
-            <h1 className="text-4xl font-bold mb-4">Únete a Fixia</h1>
+            <h1 className="text-4xl font-bold mb-4 text-foreground">Únete a Fixia</h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Elige tu tipo de cuenta y comienza a conectar con la mejor red 
               de profesionales de Chubut

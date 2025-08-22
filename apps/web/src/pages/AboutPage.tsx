@@ -10,35 +10,8 @@ import {
 import { Button } from "../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
+import { FixiaNavigation } from "../components/FixiaNavigation";
 
-function Navigation() {
-  return (
-    <motion.header 
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      className="sticky top-0 z-50 w-full glass border-b border-white/10"
-    >
-      <div className="container mx-auto flex h-16 items-center justify-between px-6">
-        <Link to="/" className="flex items-center space-x-3">
-          <div className="h-8 w-8 liquid-gradient rounded-lg flex items-center justify-center shadow-lg">
-            <span className="text-white font-bold">F</span>
-          </div>
-          <div className="flex flex-col">
-            <span className="text-lg font-semibold">Fixia</span>
-            <span className="text-xs text-muted-foreground -mt-1">Conecta. Confía. Resuelve.</span>
-          </div>
-        </Link>
-        
-        <Link to="/">
-          <Button variant="ghost" className="hover:glass-medium">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Volver al Inicio
-          </Button>
-        </Link>
-      </div>
-    </motion.header>
-  );
-}
 
 function HeroSection() {
   return (
@@ -101,7 +74,7 @@ function MissionSection() {
           className="max-w-4xl mx-auto"
         >
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">Nuestra Misión</h2>
+            <h2 className="text-4xl font-bold mb-4 text-foreground">Nuestra Misión</h2>
             <div className="w-24 h-1 liquid-gradient mx-auto mb-6"></div>
           </div>
 
@@ -167,7 +140,7 @@ function WhatIsFixiaSection() {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl font-bold mb-4">¿Qué es Fixia?</h2>
+          <h2 className="text-4xl font-bold mb-4 text-foreground">¿Qué es Fixia?</h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Somos mucho más que una simple plataforma de servicios
           </p>
@@ -241,7 +214,7 @@ function ApproachSection() {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl font-bold mb-4">Nuestro Enfoque</h2>
+          <h2 className="text-4xl font-bold mb-4 text-foreground">Nuestro Enfoque</h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Cuatro pilares fundamentales que guían todo lo que hacemos
           </p>
@@ -313,7 +286,7 @@ function HowItWorksSection() {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl font-bold mb-4">¿Cómo Funciona?</h2>
+          <h2 className="text-4xl font-bold mb-4 text-foreground">¿Cómo Funciona?</h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Un proceso simple y eficiente para cada tipo de usuario
           </p>
@@ -403,7 +376,7 @@ function WhyChooseFixiaSection() {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl font-bold mb-4">¿Por Qué Elegir Fixia?</h2>
+          <h2 className="text-4xl font-bold mb-4 text-foreground">¿Por Qué Elegir Fixia?</h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Beneficios únicos para profesionales y clientes
           </p>
@@ -501,7 +474,7 @@ function ValuesSection() {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl font-bold mb-4">Nuestros Valores</h2>
+          <h2 className="text-4xl font-bold mb-4 text-foreground">Nuestros Valores</h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Los principios que nos definen y nos impulsan cada día
           </p>
@@ -636,7 +609,7 @@ function CTASection() {
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-background">
-      <Navigation />
+      <FixiaNavigation />
       <HeroSection />
       <MissionSection />
       <WhatIsFixiaSection />

@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../co
 import { Checkbox } from "../components/ui/checkbox";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "sonner";
+import { FixiaNavigation } from "../components/FixiaNavigation";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -46,34 +47,17 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6">
-      {/* Background */}
-      <div className="absolute inset-0 bg-background">
-        <div className="absolute top-1/4 -left-32 w-64 h-64 liquid-gradient rounded-full blur-3xl opacity-20 animate-float"></div>
-        <div className="absolute bottom-1/4 -right-32 w-64 h-64 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full blur-3xl opacity-20 animate-float" style={{ animationDelay: '2s' }}></div>
-      </div>
+    <div className="min-h-screen bg-background">
+      <FixiaNavigation />
+      
+      <div className="flex items-center justify-center p-6 pt-24">
+        {/* Background */}
+        <div className="absolute inset-0 bg-background">
+          <div className="absolute top-1/4 -left-32 w-64 h-64 liquid-gradient rounded-full blur-3xl opacity-20 animate-float"></div>
+          <div className="absolute bottom-1/4 -right-32 w-64 h-64 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full blur-3xl opacity-20 animate-float" style={{ animationDelay: '2s' }}></div>
+        </div>
 
-      <div className="relative w-full max-w-md z-10">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-8"
-        >
-          <Link to="/" className="inline-flex items-center space-x-3 mb-6">
-            <div className="relative">
-              <div className="h-12 w-12 liquid-gradient rounded-2xl flex items-center justify-center shadow-lg">
-                <span className="text-white font-bold text-xl">F</span>
-              </div>
-              <div className="absolute -inset-1 liquid-gradient rounded-2xl blur opacity-30"></div>
-            </div>
-            <div className="text-left">
-              <div className="text-xl font-semibold">Fixia</div>
-              <div className="text-xs text-muted-foreground">Conecta. Confía. Resuelve.</div>
-            </div>
-          </Link>
-        </motion.div>
+        <div className="relative w-full max-w-md z-10">
 
         {/* Login Form */}
         <motion.div
@@ -83,7 +67,7 @@ export default function LoginPage() {
         >
           <Card className="glass border-white/10 shadow-2xl">
             <CardHeader className="text-center">
-              <CardTitle className="text-2xl">Iniciar Sesión</CardTitle>
+              <CardTitle className="text-2xl text-foreground">Iniciar Sesión</CardTitle>
               <CardDescription>
                 Bienvenido de vuelta. Ingresa tus credenciales para continuar.
               </CardDescription>
@@ -217,6 +201,7 @@ export default function LoginPage() {
             Volver al inicio
           </Link>
         </motion.div>
+        </div>
       </div>
     </div>
   );
