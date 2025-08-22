@@ -1,4 +1,5 @@
 import { Search, Plus, Bell, User, Briefcase, Heart, Shield, Menu } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
@@ -16,29 +17,22 @@ export function FixiaNavigation() {
       <div className="container mx-auto flex h-20 items-center justify-between px-6">
         {/* Logo and Navigation Links */}
         <div className="flex items-center space-x-8">
-          <motion.div 
-            className="flex items-center space-x-3"
-            whileHover={{ scale: 1.05 }}
-            transition={{ type: "spring", stiffness: 400, damping: 10 }}
-          >
-            <div className="relative">
+          <Link to="/" className="flex items-center space-x-3">
+            <motion.div 
+              className="relative"
+              whileHover={{ scale: 1.05 }}
+              transition={{ type: "spring", stiffness: 400, damping: 10 }}
+            >
               <div className="h-10 w-10 liquid-gradient rounded-xl flex items-center justify-center shadow-lg">
-                <motion.div
-                  className="text-white font-bold text-lg"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.2 }}
-                >
-                  F
-                </motion.div>
+                <span className="text-white font-bold text-lg">F</span>
               </div>
               <div className="absolute -inset-1 liquid-gradient rounded-xl blur opacity-20 animate-pulse-slow"></div>
-            </div>
+            </motion.div>
             <div className="flex flex-col">
               <span className="text-xl font-semibold tracking-tight text-foreground">Fixia</span>
               <span className="text-xs text-muted-foreground -mt-1">Conecta. Confía. Resuelve.</span>
             </div>
-          </motion.div>
+          </Link>
           
           <nav className="hidden lg:flex items-center space-x-1">
             <Button variant="ghost" className="glass-medium hover:glass-strong transition-all duration-300">
