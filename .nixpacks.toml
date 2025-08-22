@@ -1,15 +1,8 @@
 [build]
-cmd = [
-  "npm install",
-  "cd apps/api && npx prisma generate",
-  "cd apps/api && npm run build"
-]
+cmd = "chmod +x railway-build.sh && ./railway-build.sh"
 
 [start]
-cmd = [
-  "cd apps/api && npx prisma migrate deploy",
-  "cd apps/api && npm run start:prod"
-]
+cmd = "chmod +x railway-start.sh && ./railway-start.sh"
 
 [variables]
 NODE_ENV = "production"
@@ -17,3 +10,14 @@ PORT = "3001"
 
 [providers]
 nodejs = { version = "18" }
+
+[phases.setup]
+dependsOn = []
+
+[phases.install]
+dependsOn = ["setup"]
+cmds = ["echo 'Using custom build script'"]
+
+[phases.build]
+dependsOn = ["install"]
+cmds = ["chmod +x railway-build.sh", "./railway-build.sh"]
