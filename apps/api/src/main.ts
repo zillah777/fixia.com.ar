@@ -80,8 +80,8 @@ async function bootstrap() {
   });
 
   // Port configuration for Railway
-  const port = process.env.PORT || 4000;
-  const host = process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost';
+  const port = parseInt(process.env.PORT) || 3001;
+  const host = '0.0.0.0'; // Always bind to all interfaces for containerized deployment
   
   await app.listen(port, host);
   
