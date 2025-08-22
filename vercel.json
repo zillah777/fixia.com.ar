@@ -7,7 +7,11 @@
   "framework": "vite",
   "regions": ["iad1"],
   "env": {
-    "NODE_ENV": "production"
+    "NODE_ENV": "production",
+    "VITE_API_URL": "https://fixiacomar-production.up.railway.app",
+    "VITE_API_BASE_URL": "https://fixiacomar-production.up.railway.app",
+    "VITE_APP_NAME": "Fixia",
+    "VITE_APP_DESCRIPTION": "Marketplace de microservicios profesionales de Chubut"
   },
   "headers": [
     {
@@ -44,7 +48,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://api.fixia.com.ar https://api-staging.fixia.com.ar http://localhost:4000; media-src 'self'; object-src 'none'; frame-src 'none'; base-uri 'self'; form-action 'self'"
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://fixiacomar-production.up.railway.app https://api.fixia.com.ar https://api-staging.fixia.com.ar http://localhost:4000; media-src 'self'; object-src 'none'; frame-src 'none'; base-uri 'self'; form-action 'self'"
         },
         {
           "key": "Permissions-Policy",
