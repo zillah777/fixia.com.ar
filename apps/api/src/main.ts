@@ -75,7 +75,35 @@ async function bootstrap() {
       status: 'ok',
       timestamp: new Date().toISOString(),
       environment: process.env.NODE_ENV || 'development',
-      version: '1.0.0'
+      version: '1.0.0',
+      port: port,
+      host: host,
+      uptime: process.uptime(),
+      memory: process.memoryUsage(),
+      database: process.env.DATABASE_URL ? 'connected' : 'not configured'
+    });
+  });
+
+  // Debug endpoint
+  app.getHttpAdapter().get('/debug', (req, res) => {
+    res.json({
+      environment: {
+        NODE_ENV: process.env.NODE_ENV,
+        PORT: process.env.PORT,
+        DATABASE_URL: process.env.DATABASE_URL ? '[CONFIGURED]' : '[NOT SET]'
+      },
+      process: {
+        pid: process.pid,
+        uptime: process.uptime(),
+        version: process.version,
+        platform: process.platform,
+        arch: process.arch
+      },
+      application: {
+        port: port,
+        host: host,
+        timestamp: new Date().toISOString()
+      }
     });
   });
 
