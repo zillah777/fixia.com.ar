@@ -20,8 +20,27 @@ npx prisma generate
 echo "✅ Prisma client generated"
 
 echo "🔨 Building NestJS application..."
-npm run build
+echo "📦 Using nest CLI to build..."
+npx nest build
 echo "✅ NestJS build completed"
+
+echo "🔍 Verifying build output..."
+if [ -f "dist/main.js" ]; then
+  echo "✅ main.js found in dist"
+  echo "📄 main.js size: $(ls -lh dist/main.js | awk '{print $5}')"
+else
+  echo "❌ main.js not found! Trying alternative build method..."
+  echo "🔧 Using tsc directly..."
+  npx tsc
+  
+  if [ -f "dist/main.js" ]; then
+    echo "✅ main.js created with tsc"
+  else
+    echo "❌ Build failed - main.js still not found"
+    echo "📂 Contents of dist: $(ls -la dist 2>/dev/null || echo 'dist directory not found')"
+    exit 1
+  fi
+fi
 
 echo "📂 Checking build output..."
 if [ -d "dist" ]; then

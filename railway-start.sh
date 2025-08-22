@@ -47,4 +47,11 @@ export HOST="0.0.0.0"
 echo "🌐 Server will start on: $HOST:$PORT"
 echo "🚀 Executing: npm run start:prod"
 
-npm run start:prod
+echo "🔍 Final check - looking for main.js..."
+if [ -f "dist/main.js" ]; then
+  echo "✅ main.js found, starting server..."
+  node dist/main.js
+else
+  echo "❌ main.js not found, trying npm start:prod..."
+  npm run start:prod
+fi
