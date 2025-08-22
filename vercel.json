@@ -2,7 +2,7 @@
   "version": 2,
   "name": "fixia-web",
   "installCommand": "npm install",
-  "buildCommand": "npm run build",
+  "buildCommand": "./node_modules/.bin/vite build --outDir dist",
   "outputDirectory": "dist",
   "framework": "vite",
   "regions": ["iad1"],
