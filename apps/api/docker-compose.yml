@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: fixia_postgres_dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: fixia_dev
+      POSTGRES_USER: fixia_user
+      POSTGRES_PASSWORD: fixia_password_dev_2024
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres:/docker-entrypoint-initdb.d
+    networks:
+      - fixia_network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  fixia_network:
+    driver: bridge

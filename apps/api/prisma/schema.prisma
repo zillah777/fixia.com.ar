@@ -1,0 +1,342 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserType {
+  client
+  professional
+}
+
+enum ProfessionalLevel {
+  Nuevo
+  ProfesionalVerificado
+  TopRatedPlus
+  TecnicoCertificado
+}
+
+enum AvailabilityStatus {
+  available
+  busy
+  unavailable
+}
+
+enum ProjectStatus {
+  open
+  in_progress
+  completed
+  cancelled
+}
+
+enum ProposalStatus {
+  pending
+  accepted
+  rejected
+  withdrawn
+}
+
+enum ConversationStatus {
+  active
+  archived
+}
+
+enum NotificationType {
+  new_project
+  proposal_received
+  review_received
+  message
+  system
+}
+
+model User {
+  id               String    @id @default(cuid())
+  email            String    @unique
+  password_hash    String
+  name             String
+  avatar           String?
+  user_type        UserType
+  location         String?
+  verified         Boolean   @default(false)
+  email_verified   Boolean   @default(false)
+  phone            String?
+  whatsapp_number  String?
+  created_at       DateTime  @default(now())
+  updated_at       DateTime  @updatedAt
+  deleted_at       DateTime?
+
+  // Relations
+  professional_profile ProfessionalProfile?
+  services            Service[]
+  projects            Project[]
+  proposals           Proposal[]
+  reviews_given       Review[] @relation("ReviewerReviews")
+  reviews_received    Review[] @relation("ProfessionalReviews")
+  conversations_as_client Conversation[] @relation("ClientConversations")
+  conversations_as_professional Conversation[] @relation("ProfessionalConversations")
+  notifications       Notification[]
+  sessions           UserSession[]
+  service_views      ServiceView[]
+  user_activity      UserActivity[]
+  password_reset_tokens PasswordResetToken[]
+  email_verification_tokens EmailVerificationToken[]
+
+  @@index([email])
+  @@index([user_type])
+  @@index([location])
+  @@index([verified])
+  @@map("users")
+}
+
+model ProfessionalProfile {
+  id                    String             @id @default(cuid())
+  user_id               String             @unique
+  bio                   String?
+  specialties           String[]
+  years_experience      Int?
+  level                 ProfessionalLevel  @default(Nuevo)
+  rating                Float? @default(0.0)
+  review_count          Int                @default(0)
+  total_earnings        Float? @default(0.0)
+  availability_status   AvailabilityStatus @default(available)
+  response_time_hours   Int                @default(24)
+  created_at            DateTime           @default(now())
+  updated_at            DateTime           @updatedAt
+
+  // Relations
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([rating])
+  @@index([level])
+  @@map("professional_profiles")
+}
+
+model Category {
+  id            String    @id @default(cuid())
+  name          String    @unique
+  slug          String    @unique
+  description   String?
+  icon          String?
+  popular       Boolean   @default(false)
+  service_count Int       @default(0)
+  created_at    DateTime  @default(now())
+
+  // Relations
+  services Service[]
+  projects Project[]
+
+  @@map("categories")
+}
+
+model Service {
+  id                   String    @id @default(cuid())
+  professional_id      String
+  category_id          String?
+  title                String
+  description          String
+  price                Float
+  currency             String    @default("ARS")
+  main_image           String?
+  gallery              String[]
+  tags                 String[]
+  delivery_time_days   Int?
+  revisions_included   Int       @default(1)
+  active               Boolean   @default(true)
+  featured             Boolean   @default(false)
+  view_count           Int       @default(0)
+  created_at           DateTime  @default(now())
+  updated_at           DateTime  @updatedAt
+
+  // Relations
+  professional User      @relation(fields: [professional_id], references: [id], onDelete: Cascade)
+  category     Category? @relation(fields: [category_id], references: [id])
+  reviews      Review[]
+  service_views ServiceView[]
+
+  @@index([professional_id])
+  @@index([category_id])
+  @@index([price])
+  @@index([active])
+  @@index([featured])
+  @@map("services")
+}
+
+model Project {
+  id               String        @id @default(cuid())
+  client_id        String
+  category_id      String?
+  title            String
+  description      String
+  budget_min       Decimal?      @db.Decimal(12,2)
+  budget_max       Decimal?      @db.Decimal(12,2)
+  deadline         DateTime?
+  status           ProjectStatus @default(open)
+  location         String?
+  skills_required  String[]
+  proposals_count  Int           @default(0)
+  created_at       DateTime      @default(now())
+  updated_at       DateTime      @updatedAt
+
+  // Relations
+  client       User         @relation(fields: [client_id], references: [id], onDelete: Cascade)
+  category     Category?    @relation(fields: [category_id], references: [id])
+  proposals    Proposal[]
+  conversation Conversation?
+
+  @@index([client_id])
+  @@index([category_id])
+  @@index([status])
+  @@index([budget_min, budget_max])
+  @@map("projects")
+}
+
+model Proposal {
+  id                  String         @id @default(cuid())
+  project_id          String
+  professional_id     String
+  message             String
+  quoted_price        Decimal        @db.Decimal(12,2)
+  delivery_time_days  Int
+  status              ProposalStatus @default(pending)
+  created_at          DateTime       @default(now())
+  updated_at          DateTime       @updatedAt
+
+  // Relations
+  project      Project @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  professional User    @relation(fields: [professional_id], references: [id], onDelete: Cascade)
+
+  @@unique([project_id, professional_id])
+  @@map("proposals")
+}
+
+model Review {
+  id              String   @id @default(cuid())
+  service_id      String
+  reviewer_id     String
+  professional_id String
+  rating          Int
+  comment         String?
+  helpful_count   Int      @default(0)
+  created_at      DateTime @default(now())
+
+  // Relations
+  service      Service @relation(fields: [service_id], references: [id], onDelete: Cascade)
+  reviewer     User    @relation("ReviewerReviews", fields: [reviewer_id], references: [id], onDelete: Cascade)
+  professional User    @relation("ProfessionalReviews", fields: [professional_id], references: [id], onDelete: Cascade)
+
+  @@index([service_id])
+  @@index([professional_id])
+  @@index([rating])
+  @@map("reviews")
+}
+
+model Conversation {
+  id                 String             @id @default(cuid())
+  project_id         String             @unique
+  client_id          String
+  professional_id    String
+  whatsapp_chat_url  String?
+  status             ConversationStatus @default(active)
+  last_message_at    DateTime           @default(now())
+  created_at         DateTime           @default(now())
+
+  // Relations
+  project      Project @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  client       User    @relation("ClientConversations", fields: [client_id], references: [id], onDelete: Cascade)
+  professional User    @relation("ProfessionalConversations", fields: [professional_id], references: [id], onDelete: Cascade)
+
+  @@map("conversations")
+}
+
+model Notification {
+  id         String           @id @default(cuid())
+  user_id    String
+  type       NotificationType
+  title      String
+  message    String
+  read       Boolean          @default(false)
+  action_url String?
+  created_at DateTime         @default(now())
+
+  // Relations
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+model UserSession {
+  id            String   @id @default(cuid())
+  user_id       String
+  refresh_token String
+  expires_at    DateTime
+  ip_address    String?
+  user_agent    String?
+  created_at    DateTime @default(now())
+
+  // Relations
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("user_sessions")
+}
+
+model ServiceView {
+  id         String   @id @default(cuid())
+  service_id String
+  viewer_id  String?
+  ip_address String?
+  user_agent String?
+  viewed_at  DateTime @default(now())
+
+  // Relations
+  service Service @relation(fields: [service_id], references: [id])
+  viewer  User?   @relation(fields: [viewer_id], references: [id])
+
+  @@map("service_views")
+}
+
+model UserActivity {
+  id            String   @id @default(cuid())
+  user_id       String
+  action        String
+  resource_type String?
+  resource_id   String?
+  metadata      Json?
+  created_at    DateTime @default(now())
+
+  // Relations
+  user User @relation(fields: [user_id], references: [id])
+
+  @@map("user_activity")
+}
+
+model PasswordResetToken {
+  id         String   @id @default(cuid())
+  user_id    String
+  token      String   @unique
+  expires_at DateTime
+  used       Boolean  @default(false)
+  created_at DateTime @default(now())
+
+  // Relations
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("password_reset_tokens")
+}
+
+model EmailVerificationToken {
+  id         String   @id @default(cuid())
+  user_id    String
+  token      String   @unique
+  expires_at DateTime
+  used       Boolean  @default(false)
+  created_at DateTime @default(now())
+
+  // Relations
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("email_verification_tokens")
+}

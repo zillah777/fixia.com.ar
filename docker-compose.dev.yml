@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: fixia_db
+    environment:
+      POSTGRES_DB: fixia_db
+      POSTGRES_USER: fixia_user
+      POSTGRES_PASSWORD: fixia_password
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./apps/api/prisma/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    ports:
+      - "5432:5432"
+    networks:
+      - fixia_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fixia_user -d fixia_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Redis for caching
+  redis:
+    image: redis:7-alpine
+    container_name: fixia_redis
+    ports:
+      - "6379:6379"
+    networks:
+      - fixia_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # Fixia API (NestJS)
+  api:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile.dev
+    container_name: fixia_api
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://fixia_user:fixia_password@postgres:5432/fixia_db
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: development-jwt-secret-key
+      ALLOWED_ORIGINS: http://localhost:3000,http://localhost:5173
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./apps/api:/app
+      - /app/node_modules
+      - /app/dist
+    networks:
+      - fixia_network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/api/v1/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    develop:
+      watch:
+        - action: sync
+          path: ./apps/api/src
+          target: /app/src
+        - action: rebuild
+          path: ./apps/api/package.json
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  fixia_network:
+    driver: bridge

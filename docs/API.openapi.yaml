@@ -1,0 +1,623 @@
+openapi: 3.0.0
+info:
+  title: Fixia API
+  description: API del marketplace de microservicios de Chubut
+  version: 1.0.0
+  contact:
+    name: Equipo Fixia
+    email: dev@fixia.com.ar
+  license:
+    name: MIT
+
+servers:
+  - url: http://localhost:4000
+    description: Desarrollo local
+  - url: https://api-staging.fixia.com.ar
+    description: Staging
+  - url: https://api.fixia.com.ar
+    description: Producción
+
+paths:
+  # Autenticación
+  /auth/register:
+    post:
+      tags: [Autenticación]
+      summary: Registro de usuario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password, userType]
+              properties:
+                name:
+                  type: string
+                  minLength: 2
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  minLength: 8
+                userType:
+                  type: string
+                  enum: [client, professional]
+                location:
+                  type: string
+                  description: Ubicación en Chubut
+      responses:
+        '201':
+          description: Usuario registrado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: Datos inválidos
+        '409':
+          description: Email ya registrado
+
+  /auth/login:
+    post:
+      tags: [Autenticación]
+      summary: Inicio de sesión
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Login exitoso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Credenciales inválidas
+
+  /auth/forgot-password:
+    post:
+      tags: [Autenticación]
+      summary: Recuperar contraseña
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email:
+                  type: string
+                  format: email
+      responses:
+        '200':
+          description: Email de recuperación enviado
+
+  # Servicios
+  /services:
+    get:
+      tags: [Servicios]
+      summary: Listar servicios
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: location
+          in: query
+          schema:
+            type: string
+        - name: minPrice
+          in: query
+          schema:
+            type: number
+        - name: maxPrice
+          in: query
+          schema:
+            type: number
+        - name: verified
+          in: query
+          schema:
+            type: boolean
+        - name: page
+          in: query
+          schema:
+            type: number
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: number
+            default: 20
+      responses:
+        '200':
+          description: Lista de servicios
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  services:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Service'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+
+    post:
+      tags: [Servicios]
+      summary: Crear servicio (solo profesionales)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateServiceRequest'
+      responses:
+        '201':
+          description: Servicio creado
+        '403':
+          description: Solo profesionales pueden crear servicios
+
+  /services/{id}:
+    get:
+      tags: [Servicios]
+      summary: Obtener servicio por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Detalle del servicio
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceDetail'
+        '404':
+          description: Servicio no encontrado
+
+  # Usuario
+  /user/profile:
+    get:
+      tags: [Usuario]
+      summary: Obtener perfil del usuario
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Perfil del usuario
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+    put:
+      tags: [Usuario]
+      summary: Actualizar perfil
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProfileRequest'
+      responses:
+        '200':
+          description: Perfil actualizado
+
+  /user/dashboard:
+    get:
+      tags: [Usuario]
+      summary: Dashboard del usuario
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Datos del dashboard
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dashboard'
+
+  /users/{userId}:
+    get:
+      tags: [Usuario]
+      summary: Perfil público de usuario
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Perfil público
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicProfile'
+
+  # Proyectos
+  /projects:
+    get:
+      tags: [Proyectos]
+      summary: Listar proyectos del usuario
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de proyectos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Project'
+
+    post:
+      tags: [Proyectos]
+      summary: Crear nuevo proyecto
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProjectRequest'
+      responses:
+        '201':
+          description: Proyecto creado
+
+  # Oportunidades
+  /opportunities:
+    get:
+      tags: [Oportunidades]
+      summary: Listar oportunidades para profesionales
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de oportunidades
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Opportunity'
+
+  # Contacto
+  /contact:
+    post:
+      tags: [Contacto]
+      summary: Enviar mensaje de contacto
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, subject, message]
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                subject:
+                  type: string
+                message:
+                  type: string
+      responses:
+        '200':
+          description: Mensaje enviado
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    AuthResponse:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/User'
+        token:
+          type: string
+        refreshToken:
+          type: string
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        avatar:
+          type: string
+        userType:
+          type: string
+          enum: [client, professional]
+        location:
+          type: string
+        verified:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        professional:
+          $ref: '#/components/schemas/Professional'
+
+    Professional:
+      type: object
+      properties:
+        bio:
+          type: string
+        specialties:
+          type: array
+          items:
+            type: string
+        rating:
+          type: number
+        reviewCount:
+          type: number
+        level:
+          type: string
+        whatsappNumber:
+          type: string
+
+    Service:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+        price:
+          type: number
+        image:
+          type: string
+        professional:
+          $ref: '#/components/schemas/User'
+        rating:
+          type: number
+        reviewCount:
+          type: number
+        createdAt:
+          type: string
+          format: date-time
+
+    ServiceDetail:
+      allOf:
+        - $ref: '#/components/schemas/Service'
+        - type: object
+          properties:
+            gallery:
+              type: array
+              items:
+                type: string
+            reviews:
+              type: array
+              items:
+                $ref: '#/components/schemas/Review'
+
+    Review:
+      type: object
+      properties:
+        id:
+          type: string
+        user:
+          type: object
+          properties:
+            name:
+              type: string
+            avatar:
+              type: string
+        rating:
+          type: number
+        comment:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    Project:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+        budget:
+          type: number
+        deadline:
+          type: string
+          format: date
+        status:
+          type: string
+          enum: [open, in_progress, completed, cancelled]
+        createdAt:
+          type: string
+          format: date-time
+
+    Opportunity:
+      type: object
+      properties:
+        id:
+          type: string
+        project:
+          $ref: '#/components/schemas/Project'
+        client:
+          type: object
+          properties:
+            name:
+              type: string
+            location:
+              type: string
+        matchScore:
+          type: number
+
+    Dashboard:
+      type: object
+      properties:
+        stats:
+          type: object
+          properties:
+            totalProjects:
+              type: number
+            activeProjects:
+              type: number
+            completedProjects:
+              type: number
+            totalSpent:
+              type: number
+        recentProjects:
+          type: array
+          items:
+            $ref: '#/components/schemas/Project'
+        recentServices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Service'
+
+    PublicProfile:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        avatar:
+          type: string
+        location:
+          type: string
+        verified:
+          type: boolean
+        professional:
+          $ref: '#/components/schemas/Professional'
+        services:
+          type: array
+          items:
+            $ref: '#/components/schemas/Service'
+        reviews:
+          type: array
+          items:
+            $ref: '#/components/schemas/Review'
+
+    CreateServiceRequest:
+      type: object
+      required: [title, description, category, price]
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+        price:
+          type: number
+        image:
+          type: string
+
+    CreateProjectRequest:
+      type: object
+      required: [title, description, category, budget]
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+        budget:
+          type: number
+        deadline:
+          type: string
+          format: date
+
+    UpdateProfileRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        avatar:
+          type: string
+        location:
+          type: string
+        bio:
+          type: string
+        specialties:
+          type: array
+          items:
+            type: string
+        whatsappNumber:
+          type: string
+
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: number
+        limit:
+          type: number
+        total:
+          type: number
+        totalPages:
+          type: number
+
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+        code:
+          type: string
+        details:
+          type: object
+
+security: []
+
+tags:
+  - name: Autenticación
+    description: Endpoints de login, registro y recuperación
+  - name: Servicios  
+    description: Catálogo de servicios profesionales
+  - name: Usuario
+    description: Gestión de perfiles y datos personales
+  - name: Proyectos
+    description: Creación y gestión de proyectos
+  - name: Oportunidades
+    description: Matching de profesionales con proyectos
+  - name: Contacto
+    description: Formularios de contacto

@@ -1,0 +1,35 @@
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { ThrottlerModule } from '@nestjs/throttler';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
+import { ServicesModule } from './services/services.module';
+import { ProjectsModule } from './projects/projects.module';
+import { ContactModule } from './contact/contact.module';
+import { CommonModule } from './common/common.module';
+
+@Module({
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env',
+    }),
+    ThrottlerModule.forRoot({
+      throttlers: [
+        {
+          ttl: 60000, // 1 minuto
+          limit: 100, // 100 requests por minuto (general)
+        },
+      ],
+    }),
+    CommonModule,
+    AuthModule,
+    UsersModule,
+    ServicesModule,
+    ProjectsModule,
+    ContactModule,
+  ],
+  controllers: [],
+  providers: [],
+})
+export class AppModule {}

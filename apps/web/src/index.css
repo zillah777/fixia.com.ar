@@ -1,0 +1,16 @@
+@import "./styles/globals.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Keep any existing custom styles */
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0;
+    padding: 0;
+  }
+}
