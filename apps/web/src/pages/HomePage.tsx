@@ -11,7 +11,8 @@ import {
   Search, Zap, Award, TrendingUp, Globe, Smartphone,
   Palette, Code, PenTool, Camera, Briefcase, HeadphonesIcon,
   Play, ChevronRight, MessageSquare, Heart, Bell, MapPin,
-  Crown, Phone, Mail, Gift, CreditCard
+  Crown, Phone, Mail, Gift, CreditCard, Building, User,
+  GraduationCap
 } from "lucide-react";
 import { servicesService, Service } from "../lib/services";
 import { toast } from "sonner";
@@ -73,12 +74,12 @@ const featuredServices = [
 const categories = [
   { name: "Desarrollo Web", icon: Globe, count: "120+ servicios", popular: true },
   { name: "Diseño Gráfico", icon: Palette, count: "95+ servicios", popular: true },
-  { name: "Reparaciones", icon: Briefcase, count: "180+ servicios", popular: true },
+  { name: "Reparaciones", icon: Building, count: "180+ servicios", popular: true },
   { name: "Marketing Digital", icon: TrendingUp, count: "75+ servicios", popular: false },
   { name: "Consultoría", icon: HeadphonesIcon, count: "65+ servicios", popular: false },
-  { name: "Limpieza", icon: Users, count: "210+ servicios", popular: true },
+  { name: "Limpieza", icon: User, count: "210+ servicios", popular: true },
   { name: "Jardinería", icon: Camera, count: "85+ servicios", popular: false },
-  { name: "Educación", icon: PenTool, count: "45+ servicios", popular: false }
+  { name: "Educación", icon: GraduationCap, count: "45+ servicios", popular: false }
 ];
 
 function Navigation() {
@@ -158,7 +159,7 @@ function HeroSection() {
               <span className="bg-gradient-to-r from-white via-white to-white/70 bg-clip-text text-transparent">
                 Conecta.
               </span>{" "}
-              <span className="bg-gradient-to-r from-primary-solid to-purple-400 bg-clip-text text-transparent">
+              <span className="text-gradient-primary text-gradient-fallback">
                 Confía.
               </span>{" "}
               <span className="bg-gradient-to-r from-white via-white to-white/70 bg-clip-text text-transparent">
@@ -301,18 +302,18 @@ function CategoriesSection() {
                 whileHover={{ y: -4 }}
               >
                 <Link to={`/services?category=${encodeURIComponent(category.name)}`}>
-                  <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 cursor-pointer group h-full relative">
+                  <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 cursor-pointer group h-full relative bg-card/50 backdrop-blur-xl">
                     {category.popular && (
-                      <Badge className="absolute top-3 right-3 bg-primary/20 text-primary border-primary/30 text-xs">
+                      <Badge className="absolute top-3 right-3 bg-blue-500/20 text-blue-400 border-blue-400/30 text-xs px-2 py-1 font-medium">
                         Popular
                       </Badge>
                     )}
                     <CardContent className="p-6 text-center">
-                      <div className="h-16 w-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-primary/20 transition-colors">
-                        <Icon className="h-8 w-8 text-primary" />
+                      <div className="h-16 w-16 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:from-blue-500/30 group-hover:to-purple-500/30 transition-all duration-300 border border-blue-400/20">
+                        <Icon className="h-8 w-8 text-blue-400 group-hover:text-blue-300 transition-colors" />
                       </div>
-                      <h3 className="font-semibold mb-2">{category.name}</h3>
-                      <p className="text-sm text-muted-foreground">{category.count}</p>
+                      <h3 className="font-semibold mb-2 text-white">{category.name}</h3>
+                      <p className="text-sm text-gray-400">{category.count}</p>
                     </CardContent>
                   </Card>
                 </Link>
