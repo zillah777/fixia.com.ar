@@ -3,16 +3,17 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-# Copy only API package.json and install dependencies
-COPY apps/api/package*.json ./apps/api/
-RUN cd apps/api && npm ci --omit=dev
-
-# Install build dependencies
-RUN cd apps/api && npm install --save-dev @nestjs/cli prisma
-
-# Copy only API source code and build
+# Copy API directory with package files
 COPY apps/api ./apps/api
+
+# Install all dependencies (including dev for build)
+RUN cd apps/api && npm install
+
+# Generate Prisma client and build NestJS
 RUN cd apps/api && npx prisma generate && npx nest build
+
+# Remove dev dependencies to reduce image size
+RUN cd apps/api && npm prune --production
 
 # Expose port
 EXPOSE 3001
