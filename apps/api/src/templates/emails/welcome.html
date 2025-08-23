@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>¡Bienvenido a Fixia!</title>
+    <style>
+        /* Reset and base styles */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f8fafc; }
+        
+        /* Container */
+        .email-container { max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
+        
+        /* Header */
+        .email-header { background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%); padding: 40px 30px; text-align: center; color: white; }
+        .logo-container { margin-bottom: 20px; }
+        .logo { width: 48px; height: 48px; background: rgba(255, 255, 255, 0.2); border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; color: white; backdrop-filter: blur(10px); }
+        .brand-name { font-size: 28px; font-weight: bold; margin-top: 10px; }
+        .tagline { font-size: 14px; opacity: 0.9; margin-top: 5px; }
+        .welcome-message { font-size: 18px; margin-top: 20px; opacity: 0.95; }
+        
+        /* Content */
+        .email-content { padding: 40px 30px; }
+        .greeting { font-size: 24px; font-weight: 600; color: #1e293b; margin-bottom: 20px; text-align: center; }
+        .message { font-size: 16px; color: #475569; line-height: 1.7; margin-bottom: 30px; }
+        
+        /* Features section */
+        .features { margin: 30px 0; }
+        .feature-item { display: flex; align-items: flex-start; margin-bottom: 20px; padding: 20px; background: #f8fafc; border-radius: 8px; border-left: 4px solid #0ea5e9; }
+        .feature-icon { width: 40px; height: 40px; background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; margin-right: 15px; flex-shrink: 0; }
+        .feature-content h3 { font-size: 18px; font-weight: 600; color: #1e293b; margin-bottom: 5px; }
+        .feature-content p { font-size: 14px; color: #64748b; }
+        
+        /* Buttons */
+        .cta-container { text-align: center; margin: 40px 0; }
+        .cta-button { display: inline-block; background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%); color: white; text-decoration: none; padding: 16px 32px; border-radius: 8px; font-weight: 600; font-size: 16px; transition: all 0.3s ease; box-shadow: 0 4px 14px rgba(14, 165, 233, 0.3); margin: 0 10px 10px 0; }
+        .cta-button:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(14, 165, 233, 0.4); }
+        .cta-secondary { background: transparent; color: #0ea5e9; border: 2px solid #0ea5e9; box-shadow: none; }
+        
+        /* Stats */
+        .stats { display: flex; justify-content: space-around; margin: 30px 0; padding: 30px; background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%); border-radius: 12px; }
+        .stat-item { text-align: center; }
+        .stat-number { font-size: 24px; font-weight: bold; color: #0ea5e9; }
+        .stat-label { font-size: 12px; color: #64748b; margin-top: 5px; }
+        
+        /* Footer */
+        .email-footer { background: #1e293b; color: #94a3b8; padding: 30px; font-size: 14px; text-align: center; }
+        .footer-logo { opacity: 0.7; margin-bottom: 15px; }
+        .footer-text { line-height: 1.6; }
+        .social-links { margin: 20px 0; }
+        .social-links a { color: #0ea5e9; text-decoration: none; margin: 0 10px; }
+        .unsubscribe { margin-top: 20px; font-size: 12px; }
+        .unsubscribe a { color: #0ea5e9; text-decoration: none; }
+        
+        /* Responsive */
+        @media (max-width: 600px) {
+            .email-container { margin: 0; border-radius: 0; }
+            .email-header, .email-content { padding: 30px 20px; }
+            .stats { flex-direction: column; gap: 20px; }
+            .feature-item { flex-direction: column; text-align: center; }
+            .feature-icon { margin: 0 auto 15px; }
+            .cta-button { display: block; margin: 10px 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- Header -->
+        <div class="email-header">
+            <div class="logo-container">
+                <div class="logo">F</div>
+            </div>
+            <div class="brand-name">Fixia</div>
+            <div class="tagline">Conecta. Confía. Resuelve.</div>
+            <div class="welcome-message">¡Tu cuenta ha sido verificada exitosamente!</div>
+        </div>
+        
+        <!-- Content -->
+        <div class="email-content">
+            <div class="greeting">¡Bienvenido/a a Fixia, {{userName}}! 🎉</div>
+            
+            <div class="message">
+                Estamos emocionados de tenerte como parte de nuestra comunidad. Fixia es el marketplace líder de servicios profesionales en Chubut, donde conectamos {{userType}} con {{#if isProfessional}}clientes que necesitan tus servicios{{else}}los mejores profesionales de la región{{/if}}.
+            </div>
+            
+            <!-- Features -->
+            <div class="features">
+                {{#if isProfessional}}
+                <div class="feature-item">
+                    <div class="feature-icon">💼</div>
+                    <div class="feature-content">
+                        <h3>Crea tu perfil profesional</h3>
+                        <p>Destaca tus habilidades, experiencia y muestra tu portfolio para atraer más clientes.</p>
+                    </div>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">💰</div>
+                    <div class="feature-content">
+                        <h3>Recibe proyectos</h3>
+                        <p>Los clientes podrán encontrarte y contactarte directamente para solicitar tus servicios.</p>
+                    </div>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">⭐</div>
+                    <div class="feature-content">
+                        <h3>Construye tu reputación</h3>
+                        <p>Recibe reseñas y calificaciones que te ayudarán a conseguir más trabajo.</p>
+                    </div>
+                </div>
+                {{else}}
+                <div class="feature-item">
+                    <div class="feature-icon">🔍</div>
+                    <div class="feature-content">
+                        <h3>Encuentra profesionales</h3>
+                        <p>Explora cientos de servicios y encuentra el profesional perfecto para tu proyecto.</p>
+                    </div>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">✅</div>
+                    <div class="feature-content">
+                        <h3>Profesionales verificados</h3>
+                        <p>Todos nuestros profesionales pasan por un proceso de verificación para garantizar calidad.</p>
+                    </div>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">🛡️</div>
+                    <div class="feature-content">
+                        <h3>Pagos seguros</h3>
+                        <p>Sistema de pagos protegido y garantía de satisfacción en todos los servicios.</p>
+                    </div>
+                </div>
+                {{/if}}
+            </div>
+            
+            <!-- Stats -->
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-number">500+</div>
+                    <div class="stat-label">Profesionales</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">1,200+</div>
+                    <div class="stat-label">Servicios completados</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">4.9</div>
+                    <div class="stat-label">Calificación promedio</div>
+                </div>
+            </div>
+            
+            <div class="cta-container">
+                {{#if isProfessional}}
+                <a href="{{dashboardUrl}}" class="cta-button">Completar mi perfil</a>
+                <a href="{{servicesUrl}}" class="cta-button cta-secondary">Ver servicios</a>
+                {{else}}
+                <a href="{{dashboardUrl}}" class="cta-button">Explorar servicios</a>
+                <a href="{{profileUrl}}" class="cta-button cta-secondary">Mi perfil</a>
+                {{/if}}
+            </div>
+            
+            <div class="message">
+                <strong>¿Necesitas ayuda?</strong><br>
+                Nuestro equipo de soporte está disponible para ayudarte. Puedes contactarnos en cualquier momento a través de <a href="mailto:soporte@fixia.com.ar" style="color: #0ea5e9;">soporte@fixia.com.ar</a> o visitando nuestro <a href="{{helpUrl}}" style="color: #0ea5e9;">centro de ayuda</a>.
+                <br><br>
+                ¡Gracias por elegir Fixia y esperamos que tengas una excelente experiencia!
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="email-footer">
+            <div class="footer-logo">
+                <div class="logo" style="margin: 0 auto 15px; opacity: 0.7;">F</div>
+            </div>
+            
+            <div class="footer-text">
+                <strong>Fixia</strong> - Marketplace de servicios profesionales<br>
+                Chubut, Argentina<br>
+                <a href="https://fixia.com.ar" style="color: #0ea5e9;">fixia.com.ar</a>
+            </div>
+            
+            <div class="social-links">
+                <a href="{{facebookUrl}}">Facebook</a> |
+                <a href="{{instagramUrl}}">Instagram</a> |
+                <a href="{{linkedinUrl}}">LinkedIn</a>
+            </div>
+            
+            <div class="unsubscribe">
+                <a href="{{unsubscribeUrl}}">Darse de baja</a> | 
+                <a href="mailto:soporte@fixia.com.ar">Contactar soporte</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

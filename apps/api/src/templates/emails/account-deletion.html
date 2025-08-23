@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Confirmación de eliminación de cuenta - Fixia</title>
+    <style>
+        /* Reset and base styles */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f8fafc; }
+        
+        /* Container */
+        .email-container { max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
+        
+        /* Header */
+        .email-header { background: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%); padding: 30px; text-align: center; color: white; }
+        .logo-container { margin-bottom: 20px; }
+        .logo { width: 48px; height: 48px; background: rgba(255, 255, 255, 0.2); border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; color: white; backdrop-filter: blur(10px); }
+        .brand-name { font-size: 28px; font-weight: bold; margin-top: 10px; }
+        .tagline { font-size: 14px; opacity: 0.9; margin-top: 5px; }
+        .farewell-icon { font-size: 48px; margin-top: 20px; }
+        
+        /* Content */
+        .email-content { padding: 40px 30px; }
+        .greeting { font-size: 24px; font-weight: 600; color: #1e293b; margin-bottom: 20px; }
+        .message { font-size: 16px; color: #475569; line-height: 1.7; margin-bottom: 30px; }
+        
+        /* Deletion info */
+        .deletion-info { background: #fef3f2; border: 1px solid #fecaca; border-radius: 8px; padding: 25px; margin: 25px 0; text-align: center; }
+        .deletion-info .warning-icon { color: #dc2626; font-size: 32px; margin-bottom: 15px; }
+        .deletion-info h3 { color: #991b1b; font-size: 20px; margin-bottom: 10px; }
+        .deletion-info p { color: #7f1d1d; font-size: 14px; line-height: 1.6; }
+        
+        /* Data retention */
+        .data-retention { background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 8px; padding: 20px; margin: 20px 0; }
+        .data-retention h3 { color: #0c4a6e; font-size: 18px; margin-bottom: 10px; }
+        .retention-item { display: flex; align-items: flex-start; margin-bottom: 12px; }
+        .retention-icon { color: #0ea5e9; font-size: 16px; margin-right: 10px; margin-top: 2px; }
+        .retention-text { font-size: 14px; color: #075985; }
+        
+        /* Recovery option */
+        .recovery-option { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 20px; margin: 20px 0; text-align: center; }
+        .recovery-option .recovery-icon { color: #16a34a; font-size: 24px; margin-bottom: 10px; }
+        .recovery-option h3 { color: #15803d; font-size: 18px; margin-bottom: 10px; }
+        .recovery-option p { color: #166534; font-size: 14px; margin-bottom: 15px; }
+        .recovery-button { display: inline-block; background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%); color: white; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: 600; font-size: 14px; }
+        
+        /* Feedback section */
+        .feedback-section { background: #fefce8; border: 1px solid #fde047; border-radius: 8px; padding: 20px; margin: 20px 0; }
+        .feedback-section h3 { color: #a16207; font-size: 18px; margin-bottom: 10px; }
+        .feedback-section p { color: #92400e; font-size: 14px; margin-bottom: 15px; }
+        .feedback-button { display: inline-block; background: linear-gradient(135deg, #eab308 0%, #fbbf24 100%); color: white; text-decoration: none; padding: 10px 20px; border-radius: 6px; font-weight: 600; font-size: 14px; }
+        
+        /* Footer */
+        .email-footer { background: #1e293b; color: #94a3b8; padding: 30px; font-size: 14px; text-align: center; }
+        .footer-logo { opacity: 0.7; margin-bottom: 15px; }
+        .footer-text { line-height: 1.6; }
+        .unsubscribe { margin-top: 20px; font-size: 12px; }
+        .unsubscribe a { color: #0ea5e9; text-decoration: none; }
+        
+        /* Responsive */
+        @media (max-width: 600px) {
+            .email-container { margin: 0; border-radius: 0; }
+            .email-header, .email-content { padding: 30px 20px; }
+            .greeting { font-size: 22px; }
+            .message { font-size: 15px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- Header -->
+        <div class="email-header">
+            <div class="logo-container">
+                <div class="logo">F</div>
+            </div>
+            <div class="brand-name">Fixia</div>
+            <div class="tagline">Conecta. Confía. Resuelve.</div>
+            <div class="farewell-icon">👋</div>
+        </div>
+        
+        <!-- Content -->
+        <div class="email-content">
+            <div class="greeting">Tu cuenta ha sido eliminada</div>
+            
+            <div class="message">
+                Hola <strong>{{userName}}</strong>,
+                <br><br>
+                Lamentamos confirmar que tu cuenta de Fixia ha sido eliminada exitosamente según tu solicitud. Sentimos verte partir de nuestra comunidad.
+            </div>
+            
+            <div class="deletion-info">
+                <div class="warning-icon">⚠️</div>
+                <h3>Eliminación confirmada</h3>
+                <p>Tu cuenta y toda la información asociada han sido eliminadas permanentemente de nuestros sistemas activos el <strong>{{deletionDate}}</strong>.</p>
+            </div>
+            
+            <div class="data-retention">
+                <h3>¿Qué información conservamos?</h3>
+                
+                <div class="retention-item">
+                    <span class="retention-icon">📋</span>
+                    <span class="retention-text"><strong>Datos financieros y legales:</strong> Por requerimientos fiscales y legales, conservaremos registros de transacciones por 5 años.</span>
+                </div>
+                
+                <div class="retention-item">
+                    <span class="retention-icon">💬</span>
+                    <span class="retention-text"><strong>Reseñas públicas:</strong> Las reseñas que dejaste permanecerán visibles de forma anónima para mantener la integridad del sistema.</span>
+                </div>
+                
+                <div class="retention-item">
+                    <span class="retention-icon">📊</span>
+                    <span class="retention-text"><strong>Datos estadísticos:</strong> Información agregada y anonimizada para análisis y mejora del servicio.</span>
+                </div>
+                
+                <div class="retention-item">
+                    <span class="retention-icon">🗑️</span>
+                    <span class="retention-text"><strong>Todo lo demás:</strong> Perfil, mensajes privados, historial de navegación y datos personales han sido eliminados.</span>
+                </div>
+            </div>
+            
+            <div class="recovery-option">
+                <div class="recovery-icon">🔄</div>
+                <h3>¿Cambiaste de opinión?</h3>
+                <p>Tienes <strong>30 días</strong> para recuperar tu cuenta. Después de este período, la eliminación será definitiva e irreversible.</p>
+                <a href="{{recoveryUrl}}" class="recovery-button">Recuperar mi cuenta</a>
+            </div>
+            
+            <div class="feedback-section">
+                <h3>Ayúdanos a mejorar</h3>
+                <p>¿Te gustaría contarnos por qué decidiste eliminar tu cuenta? Tu opinión nos ayuda a mejorar Fixia para futuros usuarios.</p>
+                <a href="{{feedbackUrl}}" class="feedback-button">Enviar comentarios</a>
+            </div>
+            
+            <div class="message">
+                <strong>Gracias por haber sido parte de Fixia.</strong>
+                <br><br>
+                Durante tu tiempo con nosotros, ayudaste a construir una comunidad de profesionales y clientes en Chubut. Aunque lamentamos tu partida, respetamos tu decisión y te deseamos lo mejor en tus futuros proyectos.
+                <br><br>
+                Si en el futuro decides volver, siempre serás bienvenido/a para crear una nueva cuenta.
+                <br><br>
+                Con los mejores deseos,<br>
+                <strong>El equipo de Fixia</strong>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="email-footer">
+            <div class="footer-logo">
+                <div class="logo" style="margin: 0 auto 15px; opacity: 0.7;">F</div>
+            </div>
+            
+            <div class="footer-text">
+                <strong>Fixia</strong> - Marketplace de servicios profesionales<br>
+                Chubut, Argentina<br>
+                <a href="https://fixia.com.ar" style="color: #0ea5e9;">fixia.com.ar</a>
+            </div>
+            
+            <div class="unsubscribe">
+                <a href="mailto:soporte@fixia.com.ar">Contactar soporte</a> | 
+                <a href="{{privacyUrl}}">Política de privacidad</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

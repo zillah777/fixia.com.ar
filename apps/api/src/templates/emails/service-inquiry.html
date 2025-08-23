@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Nueva consulta de servicio - Fixia</title>
+    <style>
+        /* Reset and base styles */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f8fafc; }
+        
+        /* Container */
+        .email-container { max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
+        
+        /* Header */
+        .email-header { background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%); padding: 30px; text-align: center; color: white; }
+        .logo-container { margin-bottom: 20px; }
+        .logo { width: 48px; height: 48px; background: rgba(255, 255, 255, 0.2); border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; color: white; backdrop-filter: blur(10px); }
+        .brand-name { font-size: 28px; font-weight: bold; margin-top: 10px; }
+        .tagline { font-size: 14px; opacity: 0.9; margin-top: 5px; }
+        .notification-badge { background: rgba(255, 255, 255, 0.2); padding: 8px 16px; border-radius: 20px; display: inline-block; margin-top: 15px; font-size: 14px; font-weight: 600; }
+        
+        /* Content */
+        .email-content { padding: 40px 30px; }
+        .greeting { font-size: 24px; font-weight: 600; color: #1e293b; margin-bottom: 10px; }
+        .subtitle { font-size: 16px; color: #f59e0b; margin-bottom: 25px; font-weight: 500; }
+        .message { font-size: 16px; color: #475569; line-height: 1.7; margin-bottom: 30px; }
+        
+        /* Inquiry details card */
+        .inquiry-card { background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border: 1px solid #fde047; border-radius: 12px; padding: 25px; margin: 25px 0; }
+        .inquiry-header { text-align: center; margin-bottom: 25px; }
+        .inquiry-icon { font-size: 48px; margin-bottom: 10px; }
+        .inquiry-title { color: #92400e; font-size: 22px; font-weight: 600; margin-bottom: 5px; }
+        .inquiry-subtitle { color: #a16207; font-size: 14px; }
+        
+        .inquiry-content { background: white; padding: 25px; border-radius: 8px; border-left: 4px solid #f59e0b; margin-top: 20px; }
+        .inquiry-message { color: #374151; font-size: 15px; line-height: 1.7; font-style: italic; }
+        .inquiry-author { text-align: right; margin-top: 15px; color: #6b7280; font-size: 14px; }
+        
+        /* Service details */
+        .service-details { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 25px 0; }
+        .service-detail { background: #f8fafc; padding: 20px; border-radius: 8px; text-align: center; border: 1px solid #e2e8f0; }
+        .service-detail .icon { font-size: 28px; margin-bottom: 10px; }
+        .service-detail .label { font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: 600; margin-bottom: 5px; }
+        .service-detail .value { font-size: 16px; color: #1e293b; font-weight: 600; }
+        
+        /* Client info */
+        .client-info { background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 12px; padding: 20px; margin: 25px 0; }
+        .client-info h3 { color: #0c4a6e; font-size: 18px; margin-bottom: 15px; display: flex; align-items: center; }
+        .client-info .info-icon { margin-right: 8px; }
+        .client-detail { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #e0f2fe; }
+        .client-detail:last-child { border-bottom: none; }
+        .client-detail .label { color: #0369a1; font-weight: 500; }
+        .client-detail .value { color: #075985; }
+        
+        /* Recommended actions */
+        .recommendations { background: #ecfdf5; border: 1px solid #bbf7d0; border-radius: 12px; padding: 25px; margin: 25px 0; }
+        .recommendations h3 { color: #15803d; font-size: 18px; margin-bottom: 15px; display: flex; align-items: center; }
+        .recommendations .rec-icon { margin-right: 8px; }
+        .rec-list { list-style: none; }
+        .rec-item { display: flex; align-items: flex-start; margin-bottom: 12px; }
+        .rec-bullet { color: #16a34a; font-size: 16px; margin-right: 10px; margin-top: 2px; }
+        .rec-text { color: #166534; font-size: 14px; }
+        
+        /* Action buttons */
+        .action-buttons { display: flex; gap: 15px; justify-content: center; margin: 30px 0; }
+        .btn { display: inline-block; padding: 16px 32px; border-radius: 8px; font-weight: 600; font-size: 16px; text-decoration: none; transition: all 0.3s ease; text-align: center; }
+        .btn-primary { background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%); color: white; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.3); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4); }
+        .btn-secondary { background: white; color: #f59e0b; border: 2px solid #f59e0b; }
+        .btn-tertiary { background: #f3f4f6; color: #374151; border: 1px solid #d1d5db; }
+        
+        /* Priority indicator */
+        .priority-high { background: #fef2f2; border: 1px solid #fecaca; padding: 15px; border-radius: 8px; margin: 20px 0; text-align: center; }
+        .priority-high .icon { color: #dc2626; font-size: 24px; margin-bottom: 10px; }
+        .priority-high h4 { color: #991b1b; font-size: 16px; margin-bottom: 5px; }
+        .priority-high p { color: #7f1d1d; font-size: 14px; }
+        
+        /* Response stats */
+        .response-stats { background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%); padding: 25px; border-radius: 12px; margin: 25px 0; text-align: center; }
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .stat-item { }
+        .stat-number { font-size: 32px; font-weight: bold; color: #f59e0b; margin-bottom: 5px; }
+        .stat-label { font-size: 12px; color: #64748b; text-transform: uppercase; }
+        
+        /* Footer */
+        .email-footer { background: #1e293b; color: #94a3b8; padding: 30px; font-size: 14px; text-align: center; }
+        .footer-logo { opacity: 0.7; margin-bottom: 15px; }
+        .footer-text { line-height: 1.6; }
+        .unsubscribe { margin-top: 20px; font-size: 12px; }
+        .unsubscribe a { color: #0ea5e9; text-decoration: none; }
+        
+        /* Responsive */
+        @media (max-width: 600px) {
+            .email-container { margin: 0; border-radius: 0; }
+            .email-header, .email-content { padding: 30px 20px; }
+            .service-details, .stats-grid { grid-template-columns: 1fr; }
+            .action-buttons { flex-direction: column; }
+            .client-detail { flex-direction: column; align-items: flex-start; gap: 5px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- Header -->
+        <div class="email-header">
+            <div class="logo-container">
+                <div class="logo">F</div>
+            </div>
+            <div class="brand-name">Fixia</div>
+            <div class="tagline">Conecta. Confía. Resuelve.</div>
+            <div class="notification-badge">📨 Nueva consulta</div>
+        </div>
+        
+        <!-- Content -->
+        <div class="email-content">
+            <div class="greeting">¡Nueva consulta de servicio!</div>
+            <div class="subtitle">Un cliente está interesado en tu servicio</div>
+            
+            <div class="message">
+                Hola <strong>{{professionalName}}</strong>,
+                <br><br>
+                Un cliente potencial ha enviado una consulta específica sobre tu servicio <strong>"{{serviceName}}"</strong>. Esta es una excelente oportunidad para conseguir un nuevo proyecto.
+            </div>
+            
+            <!-- Inquiry Card -->
+            <div class="inquiry-card">
+                <div class="inquiry-header">
+                    <div class="inquiry-icon">💬</div>
+                    <div class="inquiry-title">Consulta del cliente</div>
+                    <div class="inquiry-subtitle">Enviada el {{inquiryDate}}</div>
+                </div>
+                
+                <div class="inquiry-content">
+                    <div class="inquiry-message">
+                        "{{clientMessage}}"
+                    </div>
+                    <div class="inquiry-author">
+                        — {{clientName}}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Service Details -->
+            <div class="service-details">
+                <div class="service-detail">
+                    <div class="icon">🛠️</div>
+                    <div class="label">Servicio consultado</div>
+                    <div class="value">{{serviceName}}</div>
+                </div>
+                
+                <div class="service-detail">
+                    <div class="icon">💰</div>
+                    <div class="label">Tu precio</div>
+                    <div class="value">${{servicePrice}}</div>
+                </div>
+                
+                <div class="service-detail">
+                    <div class="icon">⏱️</div>
+                    <div class="label">Tiempo estimado</div>
+                    <div class="value">{{estimatedTime}}</div>
+                </div>
+                
+                <div class="service-detail">
+                    <div class="icon">📍</div>
+                    <div class="label">Ubicación</div>
+                    <div class="value">{{serviceLocation}}</div>
+                </div>
+            </div>
+            
+            <!-- Client Information -->
+            <div class="client-info">
+                <h3><span class="info-icon">👤</span> Información del cliente</h3>
+                
+                <div class="client-detail">
+                    <span class="label">Nombre:</span>
+                    <span class="value">{{clientName}}</span>
+                </div>
+                
+                <div class="client-detail">
+                    <span class="label">Ubicación:</span>
+                    <span class="value">{{clientLocation}}</span>
+                </div>
+                
+                <div class="client-detail">
+                    <span class="label">Proyectos completados:</span>
+                    <span class="value">{{clientProjectsCompleted}} proyectos</span>
+                </div>
+                
+                {{#if clientRating}}
+                <div class="client-detail">
+                    <span class="label">Calificación promedio:</span>
+                    <span class="value">⭐ {{clientRating}}/5</span>
+                </div>
+                {{/if}}
+                
+                <div class="client-detail">
+                    <span class="label">Miembro desde:</span>
+                    <span class="value">{{clientMemberSince}}</span>
+                </div>
+            </div>
+            
+            {{#if isUrgentInquiry}}
+            <div class="priority-high">
+                <div class="icon">⚡</div>
+                <h4>Consulta urgente</h4>
+                <p>El cliente necesita una respuesta rápida. ¡Responde pronto para aumentar tus posibilidades!</p>
+            </div>
+            {{/if}}
+            
+            <!-- Response Statistics -->
+            <div class="response-stats">
+                <h3 style="color: #1e293b; margin-bottom: 20px;">Estadísticas de respuesta</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-number">24h</div>
+                        <div class="stat-label">Tiempo promedio de respuesta</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">85%</div>
+                        <div class="stat-label">Tasa de conversión</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">{{responseWindow}}h</div>
+                        <div class="stat-label">Tiempo restante</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="action-buttons">
+                <a href="{{respondUrl}}" class="btn btn-primary">Responder consulta</a>
+                <a href="{{viewServiceUrl}}" class="btn btn-secondary">Ver mi servicio</a>
+                <a href="{{clientProfileUrl}}" class="btn btn-tertiary">Perfil del cliente</a>
+            </div>
+            
+            <!-- Recommendations -->
+            <div class="recommendations">
+                <h3><span class="rec-icon">💡</span> Consejos para una buena respuesta</h3>
+                
+                <ul class="rec-list">
+                    <li class="rec-item">
+                        <span class="rec-bullet">✅</span>
+                        <span class="rec-text"><strong>Responde específicamente</strong> a las preguntas del cliente</span>
+                    </li>
+                    
+                    <li class="rec-item">
+                        <span class="rec-bullet">✅</span>
+                        <span class="rec-text"><strong>Personaliza tu respuesta</strong> mencionando detalles del proyecto</span>
+                    </li>
+                    
+                    <li class="rec-item">
+                        <span class="rec-bullet">✅</span>
+                        <span class="rec-text"><strong>Incluye ejemplos</strong> de trabajos similares que hayas realizado</span>
+                    </li>
+                    
+                    <li class="rec-item">
+                        <span class="rec-bullet">✅</span>
+                        <span class="rec-text"><strong>Propón un cronograma</strong> claro y realista</span>
+                    </li>
+                    
+                    <li class="rec-item">
+                        <span class="rec-bullet">✅</span>
+                        <span class="rec-text"><strong>Ofrece una consulta inicial</strong> gratuita si es apropiado</span>
+                    </li>
+                    
+                    <li class="rec-item">
+                        <span class="rec-bullet">✅</span>
+                        <span class="rec-text"><strong>Mantén un tono profesional</strong> pero amigable</span>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="message">
+                <strong>¿Por qué este cliente te consultó?</strong><br>
+                {{#if inquiryReason}}{{inquiryReason}}{{else}}El cliente encontró tu servicio a través de la búsqueda de Fixia y quedó interesado en tu propuesta de valor y experiencia.{{/if}}
+                <br><br>
+                Recuerda que una respuesta rápida y detallada aumenta significativamente tus posibilidades de conseguir el proyecto. ¡Los profesionales que responden dentro de las primeras 2 horas tienen 3 veces más probabilidades de ser contratados!
+                <br><br>
+                ¡Mucho éxito!<br>
+                <strong>El equipo de Fixia</strong>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="email-footer">
+            <div class="footer-logo">
+                <div class="logo" style="margin: 0 auto 15px; opacity: 0.7;">F</div>
+            </div>
+            
+            <div class="footer-text">
+                <strong>Fixia</strong> - Marketplace de servicios profesionales<br>
+                Chubut, Argentina<br>
+                <a href="https://fixia.com.ar" style="color: #0ea5e9;">fixia.com.ar</a>
+            </div>
+            
+            <div class="unsubscribe">
+                <a href="{{unsubscribeUrl}}">Darse de baja</a> | 
+                <a href="{{settingsUrl}}">Configurar notificaciones</a> |
+                <a href="mailto:soporte@fixia.com.ar">Contactar soporte</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

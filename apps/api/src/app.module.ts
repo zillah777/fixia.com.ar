@@ -7,6 +7,7 @@ import { ServicesModule } from './services/services.module';
 import { ProjectsModule } from './projects/projects.module';
 import { ContactModule } from './contact/contact.module';
 import { CommonModule } from './common/common.module';
+import { EmailModule } from './modules/email/email.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { CommonModule } from './common/common.module';
     ServicesModule,
     ProjectsModule,
     ContactModule,
+    EmailModule,
   ],
   controllers: [],
   providers: [],
