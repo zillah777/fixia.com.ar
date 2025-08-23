@@ -5,12 +5,9 @@
     "buildCommand": "cd apps/api && npm ci --include=dev && npx prisma generate && npx nest build"
   },
   "deploy": {
-    "startCommand": "cd apps/api && node dist/apps/api/src/main.js",
-    "healthcheckPath": "/health",
-    "healthcheckTimeout": 120,
-    "healthcheckRetries": 10,
+    "startCommand": "cd apps/api && node dist/main.js",
     "restartPolicyType": "on_failure",
-    "restartPolicyMaxRetries": 5
+    "restartPolicyMaxRetries": 3
   },
   "environments": {
     "production": {
