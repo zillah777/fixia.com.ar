@@ -3,6 +3,9 @@ FROM node:18-alpine
 
 WORKDIR /app
 
+# Copy packages/types (required by API)
+COPY packages ./packages
+
 # Copy API directory with package files
 COPY apps/api ./apps/api
 

@@ -1,4 +1,4 @@
-# Railway ignore - Docker build focused on apps/api only
+# Railway ignore - Docker build focused on apps/api + packages/types
 # Keep only essential files for backend deployment
 
 # Frontend (not needed for backend)
@@ -21,3 +21,6 @@ turbo.json
 **/*.spec.ts
 **/test/
 docs/
+
+# Keep packages/types (required by API)
+# packages/ is kept for @fixia/types dependency
