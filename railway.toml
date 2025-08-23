@@ -1,21 +1,5 @@
-# Railway configuration - FORCE Nixpacks usage
-# DO NOT auto-detect build system - use Nixpacks ONLY
-
 [build]
 builder = "nixpacks"
-buildCommand = ""
-nixpacksConfigPath = ".nixpacks.toml"
 
 [deploy]
 startCommand = "cd apps/api && npx prisma migrate deploy && node dist/main.js"
-restartPolicyType = "ON_FAILURE"
-restartPolicyMaxRetries = 10
-
-[env]
-NODE_ENV = "production"
-PORT = "3001"
-NIXPACKS_METADATA = "nixpacks"
-
-# Disable auto-detection
-[experimental]
-incrementalBuilds = false
