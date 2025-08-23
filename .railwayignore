@@ -1,0 +1,23 @@
+# Railway ignore file - Backend deployment
+# Ignore frontend files and turbo config for backend deploy
+
+# Frontend directories
+apps/web/
+apps/web/**
+
+# Turbo configuration (causes conflicts)
+turbo.json
+
+# Development files
+*.md
+.env.example
+.git/
+
+# Test files
+**/*.test.ts
+**/*.spec.ts
+**/test/
+
+# Documentation
+docs/
+README.md

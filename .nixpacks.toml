@@ -5,10 +5,14 @@ PORT = "3001"
 [providers]
 nodejs = { version = "18" }
 
+[phases.setup]
+nixPkgs = ["nodejs-18_x", "npm-9_x"]
+
 [phases.install]
 cmds = [
   "cd apps/api",
-  "npm ci --include=dev"
+  "npm ci --omit=dev",
+  "npm install --save-dev @nestjs/cli prisma"
 ]
 
 [phases.build]
