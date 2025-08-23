@@ -28,5 +28,5 @@ RUN cd apps/api && npm prune --production
 # Expose port
 EXPOSE 3001
 
-# Start command with improved error handling
-CMD ["sh", "-c", "cd apps/api && echo 'Starting from:' && pwd && echo 'Files in dist:' && ls -la dist/ && (npx prisma migrate deploy || echo 'Migration failed, continuing...') && node dist/main.js"]
+# Start command with correct path to main.js
+CMD ["sh", "-c", "cd apps/api && echo 'Starting from:' && pwd && echo 'Files in dist:' && ls -la dist/ && echo 'Looking for main.js in:' && find dist/ -name 'main.js' && (npx prisma migrate deploy || echo 'Migration failed, continuing...') && node dist/apps/api/src/main.js"]
