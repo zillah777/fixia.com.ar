@@ -1,0 +1,44 @@
+{
+  "variables": {
+    "NODE_ENV": "production",
+    "PORT": "3001",
+    "NIXPACKS_BUILD_CMD": "cd apps/api && npm ci && npx prisma generate && npx nest build",
+    "NIXPACKS_START_CMD": "cd apps/api && npx prisma migrate deploy && node dist/main.js"
+  },
+  "providers": {
+    "nodejs": {
+      "version": "18"
+    }
+  },
+  "phases": {
+    "setup": {
+      "nixPkgs": ["nodejs-18_x", "npm-9_x"],
+      "aptPkgs": ["curl"]
+    },
+    "install": {
+      "cmds": [
+        "echo 'Installing dependencies for apps/api...'",
+        "cd apps/api",
+        "npm ci --omit=dev",
+        "npm install --save-dev @nestjs/cli prisma",
+        "echo 'Dependencies installed successfully'"
+      ]
+    },
+    "build": {
+      "cmds": [
+        "echo 'Building NestJS application...'",
+        "cd apps/api",
+        "echo 'Current directory: $(pwd)'",
+        "echo 'Files in directory: $(ls -la)'",
+        "npx prisma generate",
+        "npx nest build",
+        "echo 'Verifying build output...'",
+        "ls -la dist/",
+        "echo 'Build completed successfully'"
+      ]
+    },
+    "start": {
+      "cmd": "cd apps/api && echo 'Starting application...' && npx prisma migrate deploy && node dist/main.js"
+    }
+  }
+}

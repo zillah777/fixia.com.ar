@@ -1,2 +1,10 @@
-# Disable turbo for Railway deployment
+# DISABLE TURBO COMPLETELY FOR RAILWAY DEPLOYMENT
+# Railway should use NIXPACKS, not Turbo
+
+# Ignore everything - disable turbo entirely
+**/*
 *
+.*
+
+# This file exists to prevent Railway from using Turborepo
+# Railway deployment should use Nixpacks configuration only

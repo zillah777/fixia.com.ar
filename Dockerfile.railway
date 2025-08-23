@@ -1,0 +1,28 @@
+# Railway Dockerfile - BACKEND ONLY (NestJS API)
+# Use this ONLY if Railway refuses to use Nixpacks
+# This builds ONLY the apps/api directory, ignoring monorepo structure
+
+FROM node:18-slim
+
+WORKDIR /app
+
+# Copy ONLY the API directory
+COPY apps/api/ ./
+
+# Install dependencies
+RUN npm ci --omit=dev --silent
+
+# Install build dependencies  
+RUN npm install --save-dev @nestjs/cli prisma --silent
+
+# Generate Prisma client
+RUN npx prisma generate
+
+# Build NestJS application
+RUN npx nest build
+
+# Expose port
+EXPOSE 3001
+
+# Start the application
+CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main.js"]

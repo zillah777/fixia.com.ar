@@ -1,30 +1,86 @@
-# Railway ignore file - Backend deployment
-# Only deploy backend API, ignore everything else
+# Railway ignore file - CRITICAL: Backend-only deployment
+# FORCE Railway to ignore monorepo structure and Turbo
+# Only deploy NestJS backend from apps/api/
 
-# Frontend and packages
-apps/web/
-packages/
-
-# Turbo monorepo files
+# ===== CRITICAL: MONOREPO INTERFERENCE PREVENTION =====
+# These files cause Railway to auto-detect Turbo/monorepo structure
 turbo.json
-package-lock.json
 package.json
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+lerna.json
+rush.json
+nx.json
+workspace.json
 
-# Only keep API files and configs
-# apps/api/ is kept
-# .nixpacks.toml is kept
-# railway.toml is kept
+# Frontend applications and packages
+apps/web/
+apps/frontend/
+apps/client/
+packages/
+libs/
 
-# Development files
-*.md
-.env*
+# ===== TURBOREPO DETECTION PREVENTION =====
+# Prevent any Turborepo-related files from being detected
+.turbo/
+turbo/
+**/turbo.json
+**/.turbo/
+
+# ===== DOCKERFILE INTERFERENCE PREVENTION =====
+# Prevent Railway from finding any Dockerfiles that might override Nixpacks
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# ===== KEEP ONLY ESSENTIAL FILES =====
+# Keep: apps/api/ (our NestJS backend)
+# Keep: .nixpacks.toml (our build configuration)  
+# Keep: railway.toml (our deployment configuration)
+# Keep: .railwayignore (this file)
+
+# ===== DEVELOPMENT AND BUILD ARTIFACTS =====
+node_modules/
+dist/
+build/
+.next/
+out/
+coverage/
+.nyc_output/
+
+# ===== VERSION CONTROL AND EDITORS =====
 .git/
+.svn/
+.hg/
 .vscode/
 .idea/
+*.swp
+*.swo
+*~
 
-# Test and documentation
-**/*.test.ts
-**/*.spec.ts
-**/test/
+# ===== ENVIRONMENT AND CONFIG =====
+.env*
+!.env.example
+*.local
+.DS_Store
+Thumbs.db
+
+# ===== DOCUMENTATION AND TESTS =====
+*.md
 docs/
-README.md
+**/*.test.ts
+**/*.test.js
+**/*.spec.ts  
+**/*.spec.js
+**/test/
+**/tests/
+**/__tests__/
+coverage/
+
+# ===== LOG FILES =====
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
