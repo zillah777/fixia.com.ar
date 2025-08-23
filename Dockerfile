@@ -15,11 +15,12 @@ COPY apps/api ./apps/api
 # Install all dependencies (including dev for build)
 RUN cd apps/api && npm ci --include=dev
 
-# Generate Prisma client and build NestJS
-RUN cd apps/api && npx prisma generate && npx nest build
+# Generate Prisma client and build NestJS with detailed logging
+RUN cd apps/api && npx prisma generate
+RUN cd apps/api && echo "About to run NestJS build..." && npm run build && echo "Build completed" || echo "Build failed"
 
-# Verify build output exists
-RUN ls -la apps/api/dist/ || echo "Build output not found"
+# Verify build output exists and show detailed file listing
+RUN echo "=== CHECKING BUILD OUTPUT ===" && cd apps/api && ls -la && echo "=== DIST DIRECTORY ===" && ls -la dist/ 2>/dev/null || echo "DIST DIRECTORY NOT FOUND"
 
 # Remove dev dependencies to reduce image size
 RUN cd apps/api && npm prune --production
