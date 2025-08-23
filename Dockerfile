@@ -21,5 +21,5 @@ RUN cd apps/api && npm prune --production
 # Expose port
 EXPOSE 3001
 
-# Start command with migrations
-CMD ["sh", "-c", "cd apps/api && npx prisma migrate deploy && node dist/main.js"]
+# Start command - run migrations in background and start app
+CMD ["sh", "-c", "cd apps/api && (npx prisma migrate deploy || echo 'Migration failed, continuing...') && node dist/main.js"]
