@@ -82,7 +82,9 @@ echo ""
 echo "🚀 LAUNCHING PRODUCTION SERVER"
 echo "🌐 Server will be available at: http://$HOST:$PORT"
 echo "📡 Health check endpoint: http://$HOST:$PORT/health"
+echo "📊 Railway will healthcheck this endpoint every few seconds"
 echo ""
 
 # Use exec to replace the shell process with node
+# This ensures Railway can properly monitor the process
 exec node dist/main.js

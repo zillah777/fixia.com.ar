@@ -1,0 +1,42 @@
+[nixpacks]
+# Nixpacks configuration for Railway deployment of Fixia NestJS API
+
+[phases.setup]
+nixPkgs = ['nodejs_18', 'npm']
+
+[phases.install]
+cmds = [
+    'cd apps/api',
+    'npm ci --include=dev',
+    'npm install express --save'
+]
+
+[phases.build]
+cmds = [
+    'cd apps/api',
+    'npx prisma generate',
+    'npx nest build',
+    'ls -la dist/'
+]
+
+[start]
+# Critical: Railway will override PORT, so we don't set it here
+# Remove migrations from startup to prevent blocking
+cmd = 'cd apps/api && node dist/apps/api/src/main.js'
+
+[variables]
+NODE_ENV = 'production'
+
+[build]
+excludeGlobs = [
+    'node_modules',
+    '.git',
+    'dist',
+    '*.log',
+    '.env*',
+    'apps/web',
+    'docs',
+    'test',
+    '**/*.test.ts',
+    '**/*.spec.ts'
+]
