@@ -672,7 +672,7 @@ function Footer() {
                 <span className="text-white font-bold text-lg">F</span>
               </div>
               <div className="flex flex-col">
-                <span className="text-xl font-semibold">Fixia</span>
+                <span className="text-xl font-semibold text-foreground">Fixia</span>
                 <span className="text-xs text-muted-foreground">Conecta. Confía. Resuelve.</span>
               </div>
             </Link>
@@ -687,7 +687,7 @@ function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h4 className="font-semibold mb-4">Plataforma</h4>
+            <h4 className="font-semibold mb-4 text-foreground">Plataforma</h4>
             <div className="space-y-2">
               <Link to="/services" className="block text-muted-foreground hover:text-primary transition-colors">
                 Buscar Profesionales
@@ -712,7 +712,7 @@ function Footer() {
 
           {/* Categories */}
           <div>
-            <h4 className="font-semibold mb-4">Categorías Populares</h4>
+            <h4 className="font-semibold mb-4 text-foreground">Categorías Populares</h4>
             <div className="space-y-2">
               <Link to="/services?category=Desarrollo Web" className="block text-muted-foreground hover:text-primary transition-colors">
                 Desarrollo Web
@@ -728,7 +728,7 @@ function Footer() {
 
           {/* Contact */}
           <div>
-            <h4 className="font-semibold mb-4">Contacto</h4>
+            <h4 className="font-semibold mb-4 text-foreground">Contacto</h4>
             <div className="space-y-2 text-muted-foreground">
               <div className="flex items-center space-x-2">
                 <Mail className="h-4 w-4" />
@@ -747,9 +747,10 @@ function Footer() {
         </div>
 
         <div className="border-t border-white/10 mt-12 pt-8 flex flex-col md:flex-row items-center justify-between">
-          <p className="text-muted-foreground text-center md:text-left">
-            &copy; 2024 Fixia. Todos los derechos reservados. Hecho en Chubut, Argentina 🇦🇷
-          </p>
+          <div className="text-muted-foreground text-center md:text-left">
+            <p>&copy; 2025 Fixia. Todos los derechos reservados. Hecho en Chubut, Argentina 🇦🇷</p>
+            <p className="text-xs opacity-30 mt-1">mmata</p>
+          </div>
           <div className="flex items-center space-x-4 mt-4 md:mt-0">
             <Link to="/privacy" className="text-muted-foreground hover:text-primary transition-colors text-sm">
               Privacidad
