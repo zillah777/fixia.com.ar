@@ -8,6 +8,9 @@ nodejs = { version = "18" }
 [phases.setup]
 nixPkgs = ["nodejs-18_x", "npm-9_x"]
 
+[build]
+# Force nixpacks, ignore any Dockerfile or turbo config
+
 [phases.install]
 cmds = [
   "cd apps/api",

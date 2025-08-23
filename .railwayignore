@@ -1,23 +1,30 @@
 # Railway ignore file - Backend deployment
-# Ignore frontend files and turbo config for backend deploy
+# Only deploy backend API, ignore everything else
 
-# Frontend directories
+# Frontend and packages
 apps/web/
-apps/web/**
+packages/
 
-# Turbo configuration (causes conflicts)
+# Turbo monorepo files
 turbo.json
+package-lock.json
+package.json
+
+# Only keep API files and configs
+# apps/api/ is kept
+# .nixpacks.toml is kept
+# railway.toml is kept
 
 # Development files
 *.md
-.env.example
+.env*
 .git/
+.vscode/
+.idea/
 
-# Test files
+# Test and documentation
 **/*.test.ts
 **/*.spec.ts
 **/test/
-
-# Documentation
 docs/
 README.md
