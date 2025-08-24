@@ -53,7 +53,7 @@ enum NotificationType {
 }
 
 model User {
-  id               String    @id @default(cuid())
+  id               String    @id @default(uuid())
   email            String    @unique
   password_hash    String
   name             String
@@ -92,7 +92,7 @@ model User {
 }
 
 model ProfessionalProfile {
-  id                    String             @id @default(cuid())
+  id                    String             @id @default(uuid())
   user_id               String             @unique
   bio                   String?
   specialties           String[]
@@ -116,7 +116,7 @@ model ProfessionalProfile {
 }
 
 model Category {
-  id            String    @id @default(cuid())
+  id            String    @id @default(uuid())
   name          String    @unique
   slug          String    @unique
   description   String?
@@ -133,7 +133,7 @@ model Category {
 }
 
 model Service {
-  id                   String    @id @default(cuid())
+  id                   String    @id @default(uuid())
   professional_id      String
   category_id          String?
   title                String
@@ -166,7 +166,7 @@ model Service {
 }
 
 model Project {
-  id               String        @id @default(cuid())
+  id               String        @id @default(uuid())
   client_id        String
   category_id      String?
   title            String
@@ -195,7 +195,7 @@ model Project {
 }
 
 model Proposal {
-  id                  String         @id @default(cuid())
+  id                  String         @id @default(uuid())
   project_id          String
   professional_id     String
   message             String
@@ -214,7 +214,7 @@ model Proposal {
 }
 
 model Review {
-  id              String   @id @default(cuid())
+  id              String   @id @default(uuid())
   service_id      String
   reviewer_id     String
   professional_id String
@@ -235,7 +235,7 @@ model Review {
 }
 
 model Conversation {
-  id                 String             @id @default(cuid())
+  id                 String             @id @default(uuid())
   project_id         String             @unique
   client_id          String
   professional_id    String
@@ -253,7 +253,7 @@ model Conversation {
 }
 
 model Notification {
-  id         String           @id @default(cuid())
+  id         String           @id @default(uuid())
   user_id    String
   type       NotificationType
   title      String
@@ -269,7 +269,7 @@ model Notification {
 }
 
 model UserSession {
-  id            String   @id @default(cuid())
+  id            String   @id @default(uuid())
   user_id       String
   refresh_token String
   expires_at    DateTime
@@ -284,7 +284,7 @@ model UserSession {
 }
 
 model ServiceView {
-  id         String   @id @default(cuid())
+  id         String   @id @default(uuid())
   service_id String
   viewer_id  String?
   ip_address String?
@@ -299,7 +299,7 @@ model ServiceView {
 }
 
 model UserActivity {
-  id            String   @id @default(cuid())
+  id            String   @id @default(uuid())
   user_id       String
   action        String
   resource_type String?
@@ -314,7 +314,7 @@ model UserActivity {
 }
 
 model PasswordResetToken {
-  id         String   @id @default(cuid())
+  id         String   @id @default(uuid())
   user_id    String
   token      String   @unique
   expires_at DateTime
@@ -328,7 +328,7 @@ model PasswordResetToken {
 }
 
 model EmailVerificationToken {
-  id         String   @id @default(cuid())
+  id         String   @id @default(uuid())
   user_id    String
   token      String   @unique
   expires_at DateTime
