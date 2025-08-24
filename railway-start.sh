@@ -56,17 +56,49 @@ echo "   Host: $HOST"
 echo "   Port: $PORT"
 echo "   Environment: $NODE_ENV"
 
-# Database migrations (if configured)
+# Database migrations and seeding (if configured)
 if [ -n "$DATABASE_URL" ]; then
   echo "🗄️ Running database migrations..."
   if npx prisma migrate deploy; then
     echo "✅ Database migrations completed successfully"
+    
+    # Check if database needs seeding (if no users exist)
+    echo "🌱 Checking if database needs seeding..."
+    USER_COUNT=$(node -e "
+      const { PrismaClient } = require('@prisma/client');
+      const prisma = new PrismaClient();
+      prisma.user.count().then(count => {
+        console.log(count);
+        process.exit(0);
+      }).catch(() => {
+        console.log(0);
+        process.exit(0);
+      }).finally(() => prisma.\$disconnect());
+    ")
+    
+    if [ "$USER_COUNT" -eq 0 ]; then
+      echo "📊 Database is empty, running seed data..."
+      if npm run db:seed:prod; then
+        echo "✅ Seed data loaded successfully"
+      else
+        echo "⚠️  Production seed failed, trying alternative method..."
+        # Fallback: run with npx directly
+        if npx ts-node prisma/seed.ts; then
+          echo "✅ Seed data loaded successfully (fallback method)"
+        else
+          echo "❌ All seed methods failed - continuing without seed data"
+          echo "⚠️  You may need to seed manually later"
+        fi
+      fi
+    else
+      echo "✅ Database already has $USER_COUNT users, skipping seed"
+    fi
   else
     echo "❌ Database migrations failed!"
     echo "⚠️  Continuing with server start (migrations may not be needed)"
   fi
 else
-  echo "⚠️  DATABASE_URL not configured, skipping migrations"
+  echo "⚠️  DATABASE_URL not configured, skipping migrations and seeding"
 fi
 
 # Final pre-flight check

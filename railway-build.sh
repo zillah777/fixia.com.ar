@@ -54,7 +54,7 @@ echo "✅ Production dependencies installed"
 
 # Install build-time dependencies
 echo "🛠️  Installing build-time dependencies..."
-npm install --save-dev @nestjs/cli prisma --silent
+npm install --save-dev @nestjs/cli prisma typescript ts-node --silent
 echo "✅ Build dependencies installed"
 
 # Generate Prisma client

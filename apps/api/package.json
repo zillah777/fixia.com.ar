@@ -26,6 +26,7 @@
     "postinstall": "prisma generate",
     "railway:build": "npm ci && npx prisma generate && npx nest build",
     "railway:start": "npx prisma migrate deploy && node dist/main.js",
+    "db:seed:prod": "node -r ts-node/register prisma/seed.ts",
     "health:test": "node -e \"require('http').get('http://localhost:'+(process.env.PORT||3001)+'/health', res => { let d=''; res.on('data', c => d+=c); res.on('end', () => console.log('Health:', JSON.parse(d).status)); }).on('error', e => console.error('Health check failed:', e.message))\""
   },
   "dependencies": {
