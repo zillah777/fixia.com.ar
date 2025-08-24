@@ -45,13 +45,13 @@ export class RegisterDto {
   password: string;
 
   @ApiProperty({ 
-    example: 'Juan Carlos',
+    example: 'Juan Carlos Pérez',
     description: 'Nombre completo del usuario',
     minLength: 2
   })
   @IsString()
   @MinLength(2)
-  name: string;
+  fullName: string;
 
   @ApiProperty({ 
     example: 'professional',
@@ -59,10 +59,10 @@ export class RegisterDto {
     enum: ['client', 'professional']
   })
   @IsEnum(['client', 'professional'])
-  user_type: 'client' | 'professional';
+  userType: 'client' | 'professional';
 
   @ApiProperty({ 
-    example: 'Rawson, Chubut',
+    example: 'Rawson',
     description: 'Ubicación del usuario',
     required: false
   })
@@ -79,14 +79,68 @@ export class RegisterDto {
   @IsString()
   phone?: string;
 
+  // Professional-only fields
   @ApiProperty({ 
-    example: '+542804567890',
-    description: 'Número de WhatsApp',
+    example: ['Peluquería', 'Manicura'],
+    description: 'Categorías de servicios (solo profesionales)',
+    required: false
+  })
+  @IsOptional()
+  serviceCategories?: string[];
+
+  @ApiProperty({ 
+    example: 'Especialista en cortes modernos y tratamientos capilares',
+    description: 'Descripción de servicios (solo profesionales)',
     required: false
   })
   @IsOptional()
   @IsString()
-  whatsapp_number?: string;
+  description?: string;
+
+  @ApiProperty({ 
+    example: '5-10',
+    description: 'Años de experiencia (solo profesionales)',
+    required: false
+  })
+  @IsOptional()
+  @IsString()
+  experience?: string;
+
+  @ApiProperty({ 
+    example: 'intermedio',
+    description: 'Rango de precios (solo profesionales)',
+    required: false
+  })
+  @IsOptional()
+  @IsString()
+  pricing?: string;
+
+  @ApiProperty({ 
+    example: 'tiempo-completo',
+    description: 'Disponibilidad (solo profesionales)',
+    required: false
+  })
+  @IsOptional()
+  @IsString()
+  availability?: string;
+
+  @ApiProperty({ 
+    example: 'https://mi-portfolio.com',
+    description: 'Portfolio o trabajos anteriores (solo profesionales)',
+    required: false
+  })
+  @IsOptional()
+  @IsString()
+  portfolio?: string;
+
+  @ApiProperty({ 
+    example: 'Técnico en Peluquería, Certificado ANMAT',
+    description: 'Certificaciones o títulos (solo profesionales)',
+    required: false
+  })
+  @IsOptional()
+  @IsString()
+  certifications?: string;
 }
 
 export class RefreshTokenDto {

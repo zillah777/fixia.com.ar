@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import axios, { AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import { toast } from 'sonner';
 
@@ -58,24 +59,92 @@ apiClient.interceptors.request.use(
 );
 
 // Response interceptor - Handle global errors and token refresh
+let isRefreshing = false;
+let failedQueue: any[] = [];
+
+const processQueue = (error: any, token: string | null = null) => {
+  failedQueue.forEach(prom => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+  
+  failedQueue = [];
+};
+
 apiClient.interceptors.response.use(
   (response: AxiosResponse) => {
     return response;
   },
-  (error) => {
-    if (error.response?.status === 401) {
-      // Token expired or invalid
-      tokenManager.removeToken();
-      tokenManager.removeRefreshToken();
-      localStorage.removeItem('fixia_user');
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        }).then(token => {
+          originalRequest.headers.Authorization = `Bearer ${token}`;
+          return apiClient(originalRequest);
+        }).catch(err => {
+          return Promise.reject(err);
+        });
+      }
+
+      originalRequest._retry = true;
+      isRefreshing = true;
+
+      const refreshToken = tokenManager.getRefreshToken();
       
-      // Only show toast if we're not on the login page
-      if (!window.location.pathname.includes('/login')) {
-        toast.error('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
-        // Redirect to login after a short delay
-        setTimeout(() => {
-          window.location.href = '/login';
-        }, 2000);
+      if (refreshToken) {
+        try {
+          const response = await axios.post(`${API_BASE_URL}/auth/refresh`, {
+            refresh_token: refreshToken
+          });
+          
+          const { access_token, refresh_token: newRefreshToken } = response.data;
+          tokenManager.setToken(access_token);
+          
+          if (newRefreshToken) {
+            tokenManager.setRefreshToken(newRefreshToken);
+          }
+          
+          processQueue(null, access_token);
+          originalRequest.headers.Authorization = `Bearer ${access_token}`;
+          
+          return apiClient(originalRequest);
+        } catch (refreshError) {
+          processQueue(refreshError, null);
+          // Clear all auth data and redirect to login
+          tokenManager.removeToken();
+          tokenManager.removeRefreshToken();
+          localStorage.removeItem('fixia_user');
+          
+          if (!window.location.pathname.includes('/login')) {
+            toast.error('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
+            setTimeout(() => {
+              window.location.href = '/login';
+            }, 2000);
+          }
+          
+          return Promise.reject(refreshError);
+        } finally {
+          isRefreshing = false;
+        }
+      } else {
+        // No refresh token available
+        tokenManager.removeToken();
+        tokenManager.removeRefreshToken();
+        localStorage.removeItem('fixia_user');
+        
+        if (!window.location.pathname.includes('/login')) {
+          toast.error('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
+          setTimeout(() => {
+            window.location.href = '/login';
+          }, 2000);
+        }
       }
     } else if (error.response?.status >= 500) {
       toast.error('Error del servidor. Por favor, intenta nuevamente.');

@@ -9,6 +9,7 @@ import { LocalStrategy } from './strategies/local.strategy';
 import { RolesGuard } from './guards/roles.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { CommonModule } from '../common/common.module';
+import { EmailModule } from '../modules/email/email.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { CommonModule } from '../common/common.module';
       inject: [ConfigService],
     }),
     CommonModule,
+    EmailModule,
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy, RolesGuard, JwtAuthGuard],
   controllers: [AuthController],

@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Alert, AlertDescription } from "../components/ui/alert";
 import { useAuth } from "../context/AuthContext";
 import { FixiaNavigation } from "../components/FixiaNavigation";
+import { toast } from "sonner";
 
 interface FormData {
   // Common fields
@@ -810,18 +811,30 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Validate form data
     if (formData.password !== formData.confirmPassword) {
-      alert('Las contraseñas no coinciden');
+      toast.error('Las contraseñas no coinciden');
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      toast.error('La contraseña debe tener al menos 6 caracteres');
       return;
     }
 
     if (currentTab === 'professional' && formData.serviceCategories.length === 0) {
-      alert('Debes seleccionar al menos una categoría de servicio');
+      toast.error('Debes seleccionar al menos una categoría de servicio');
       return;
     }
 
     if (currentTab === 'professional' && formData.serviceCategories.length > 10) {
-      alert('No puedes tener más de 10 categorías de servicio');
+      toast.error('No puedes tener más de 10 categorías de servicio');
+      return;
+    }
+
+    // Check required agreements
+    if (!formData.agreeTerms || !formData.agreePrivacy) {
+      toast.error('Debes aceptar los términos y condiciones y la política de privacidad');
       return;
     }
 
@@ -844,10 +857,12 @@ export default function RegisterPage() {
         certifications: formData.certifications
       });
       
+      // Registration successful, navigate to dashboard
+      // Success toast is already shown in AuthContext
       navigate('/dashboard');
-    } catch (error) {
-      console.error('Error en registro:', error);
-      alert('Error al crear la cuenta. Intenta nuevamente.');
+    } catch (error: any) {
+      // Error handling is already done in AuthContext
+      console.error('Registration error:', error);
     } finally {
       setIsSubmitting(false);
     }

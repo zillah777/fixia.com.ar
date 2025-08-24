@@ -14,51 +14,68 @@ export interface Badge {
 export interface User {
   id: string;
   email: string;
-  name: string;
-  lastName: string;
-  birthDate?: string;
-  address?: string;
-  phone: string;
+  name: string; // This comes from backend as 'name' (mapped from fullName)
+  lastName?: string;
+  phone?: string;
   avatar?: string;
-  accountType: 'client' | 'professional';
+  userType: 'client' | 'professional'; // Backend uses 'userType' not 'accountType'
+  location?: string; // Backend stores location as a single field
   planType: 'free' | 'premium';
   isVerified: boolean;
   emailVerified: boolean;
-  documentVerified?: boolean;
-  professionalVerified?: boolean;
+  role?: string; // Optional role property for compatibility
   
-  // Professional specific fields
-  dni?: string;
-  professionalId?: string;
-  matricula?: string;
-  cuitCuil?: string;
-  serviceCategories?: string[];
-  availability: 'available' | 'busy' | 'offline';
-  badges: Badge[];
-  totalServices: number;
-  completedServices: number;
-  averageRating: number;
-  totalReviews: number;
-  joinDate: string;
+  // Professional specific fields (only populated for professionals)
+  professionalProfile?: {
+    id: string;
+    serviceCategories: string[];
+    description: string;
+    experience: string;
+    pricing: string;
+    availability: string;
+    portfolio?: string;
+    certifications?: string;
+    averageRating: number;
+    totalReviews: number;
+    totalServices: number;
+    completedServices: number;
+    verified: boolean;
+    createdAt: string;
+    updatedAt: string;
+  };
+  
+  // Legacy fields for backwards compatibility
+  accountType: 'client' | 'professional'; // Computed from userType
+  availability: 'available' | 'busy' | 'offline'; // Default for clients
+  badges: Badge[]; // Default empty array
+  totalServices: number; // From professionalProfile or 0
+  completedServices: number; // From professionalProfile or 0
+  averageRating: number; // From professionalProfile or 0
+  totalReviews: number; // From professionalProfile or 0
+  joinDate: string; // ISO date string
   
   // Contact limits for clients
   pendingContactRequests: number;
   maxContactRequests: number;
   
-  // Argentina specific
+  // Argentina specific (computed from location)
   province: string;
   city: string;
-  isMonotributista?: boolean;
   
   // Promotion tracking
   isLaunchPromotion: boolean;
   promotionExpiryDate?: string;
+  
+  // Timestamps
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface AuthContextType {
   user: User | null;
+  isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (userData: any, accountType: 'client' | 'professional') => Promise<void>;
+  register: (userData: any) => Promise<void>;
   logout: () => void;
   updateProfile: (userData: Partial<User>) => Promise<void>;
   requestContactProfessional: (professionalId: string) => Promise<void>;
@@ -78,7 +95,56 @@ export const useAuth = () => {
   return context;
 };
 
-// Removed mock users - now using real API data
+// Transform backend user data to frontend format for compatibility
+const transformBackendUser = (backendUser: any): User => {
+  // Parse location for Argentina specific fields
+  const locationParts = backendUser.location?.split(', ') || ['', ''];
+  const city = locationParts[0] || '';
+  const province = locationParts[1] || 'Chubut';
+  
+  return {
+    id: backendUser.id,
+    email: backendUser.email,
+    name: backendUser.name, // Backend maps fullName to name
+    lastName: backendUser.lastName || '',
+    phone: backendUser.phone || '',
+    avatar: backendUser.avatar || '',
+    userType: backendUser.userType,
+    location: backendUser.location || '',
+    planType: backendUser.planType || 'free',
+    isVerified: backendUser.isVerified || false,
+    emailVerified: backendUser.emailVerified || false,
+    
+    // Professional profile
+    professionalProfile: backendUser.professionalProfile || null,
+    
+    // Legacy computed fields for backward compatibility
+    accountType: backendUser.userType, // Same as userType
+    availability: backendUser.professionalProfile?.availability || 'offline',
+    badges: backendUser.badges || [],
+    totalServices: backendUser.professionalProfile?.totalServices || 0,
+    completedServices: backendUser.professionalProfile?.completedServices || 0,
+    averageRating: backendUser.professionalProfile?.averageRating || 0,
+    totalReviews: backendUser.professionalProfile?.totalReviews || 0,
+    joinDate: backendUser.createdAt || new Date().toISOString(),
+    
+    // Contact limits (default for clients, can be overridden by backend)
+    pendingContactRequests: backendUser.pendingContactRequests || 0,
+    maxContactRequests: backendUser.maxContactRequests || (backendUser.planType === 'premium' ? 10 : 3),
+    
+    // Argentina specific
+    province,
+    city,
+    
+    // Promotion tracking
+    isLaunchPromotion: backendUser.isLaunchPromotion || false,
+    promotionExpiryDate: backendUser.promotionExpiryDate || null,
+    
+    // Timestamps
+    createdAt: backendUser.createdAt || new Date().toISOString(),
+    updatedAt: backendUser.updatedAt || new Date().toISOString(),
+  };
+};
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -95,8 +161,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           // Try to get fresh user data from server
           try {
             const freshUserData = await userService.getProfile();
-            setUser(freshUserData);
-            localStorage.setItem('fixia_user', JSON.stringify(freshUserData));
+            const transformedUser = transformBackendUser(freshUserData);
+            setUser(transformedUser);
+            localStorage.setItem('fixia_user', JSON.stringify(transformedUser));
           } catch (error) {
             // If token is invalid, fallback to stored user data
             console.warn('Failed to fetch fresh user data, using stored data');
@@ -127,10 +194,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const credentials: LoginRequest = { email, password };
       const response: AuthResponse = await authService.login(credentials);
       
-      setUser(response.user);
-      localStorage.setItem('fixia_user', JSON.stringify(response.user));
+      // Transform backend user data to frontend format for compatibility
+      const transformedUser = transformBackendUser(response.user);
       
-      toast.success(`¡Bienvenido/a, ${response.user.name}!`);
+      setUser(transformedUser);
+      localStorage.setItem('fixia_user', JSON.stringify(transformedUser));
+      
+      toast.success(`¡Bienvenido/a, ${transformedUser.name}!`);
     } catch (error: any) {
       // Handle API errors gracefully
       const errorMessage = error.response?.data?.message || error.message || 'Error en el inicio de sesión';
@@ -141,35 +211,36 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const register = async (userData: any, accountType: 'client' | 'professional') => {
+  const register = async (userData: any) => {
     setLoading(true);
     try {
-      // Combine address fields for location if available
-      let location = '';
-      if (userData.address && userData.city && userData.province) {
-        location = `${userData.address}, ${userData.city}, ${userData.province}`;
-      } else if (userData.city && userData.province) {
-        location = `${userData.city}, ${userData.province}`;
-      } else if (userData.province) {
-        location = userData.province;
-      }
-
-      const registerData: RegisterRequest = {
+      // Map RegisterPage data to backend format
+      const registerData = {
         email: userData.email,
         password: userData.password,
-        name: `${userData.name} ${userData.lastName || ''}`.trim(),
-        user_type: accountType,
-        location: location || undefined,
+        fullName: userData.fullName,
+        userType: userData.userType,
+        location: userData.location,
         phone: userData.phone,
-        whatsapp_number: userData.phone, // Use phone as whatsapp for now
+        // Professional-specific fields (will be ignored if userType is 'client')
+        serviceCategories: userData.serviceCategories || [],
+        description: userData.description || '',
+        experience: userData.experience || '',
+        pricing: userData.pricing || '',
+        availability: userData.availability || '',
+        portfolio: userData.portfolio || '',
+        certifications: userData.certifications || ''
       };
 
       const response: AuthResponse = await authService.register(registerData);
       
-      setUser(response.user);
-      localStorage.setItem('fixia_user', JSON.stringify(response.user));
+      // Transform backend user data to frontend format for compatibility
+      const transformedUser = transformBackendUser(response.user);
       
-      toast.success(`¡Cuenta creada exitosamente, ${response.user.name}!`);
+      setUser(transformedUser);
+      localStorage.setItem('fixia_user', JSON.stringify(transformedUser));
+      
+      toast.success(`¡Cuenta creada exitosamente, ${transformedUser.name}!`);
     } catch (error: any) {
       // Handle API errors gracefully
       const errorMessage = error.response?.data?.message || error.message || 'Error en el registro';
@@ -200,8 +271,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     
     try {
       const updatedUser = await userService.updateProfile(userData);
-      setUser(updatedUser);
-      localStorage.setItem('fixia_user', JSON.stringify(updatedUser));
+      const transformedUser = transformBackendUser(updatedUser);
+      setUser(transformedUser);
+      localStorage.setItem('fixia_user', JSON.stringify(transformedUser));
       toast.success('Perfil actualizado correctamente');
     } catch (error: any) {
       const errorMessage = error.response?.data?.message || error.message || 'Error al actualizar el perfil';
@@ -253,8 +325,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     
     try {
       const updatedUser = await userService.updateAvailability(status);
-      setUser(updatedUser);
-      localStorage.setItem('fixia_user', JSON.stringify(updatedUser));
+      const transformedUser = transformBackendUser(updatedUser);
+      setUser(transformedUser);
+      localStorage.setItem('fixia_user', JSON.stringify(transformedUser));
       
       const statusText = status === 'available' ? 'disponible' : status === 'busy' ? 'ocupado' : 'desconectado';
       toast.success(`Estado actualizado a ${statusText}`);
@@ -292,6 +365,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   return (
     <AuthContext.Provider value={{
       user,
+      isAuthenticated: !!user,
       login,
       register,
       logout,

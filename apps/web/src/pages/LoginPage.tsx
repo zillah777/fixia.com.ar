@@ -32,15 +32,14 @@ export default function LoginPage() {
     setLoading(true);
     
     try {
-      const success = await login(email, password);
-      if (success) {
-        toast.success("¡Bienvenido de vuelta!");
-        navigate("/dashboard");
-      } else {
-        toast.error("Credenciales incorrectas");
-      }
-    } catch (error) {
-      toast.error("Algo salió mal. Inténtalo de nuevo.");
+      await login(email, password);
+      // If login succeeds, navigate to dashboard
+      // Success toast is already shown in AuthContext
+      navigate("/dashboard");
+    } catch (error: any) {
+      // Error handling is already done in AuthContext
+      // Just log it for debugging
+      console.error("Login error:", error);
     } finally {
       setLoading(false);
     }

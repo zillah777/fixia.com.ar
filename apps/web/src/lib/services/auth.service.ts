@@ -9,11 +9,18 @@ export interface LoginRequest {
 export interface RegisterRequest {
   email: string;
   password: string;
-  name: string;
-  user_type: 'client' | 'professional';
+  fullName: string;
+  userType: 'client' | 'professional';
   location?: string;
   phone?: string;
-  whatsapp_number?: string;
+  // Professional-specific fields
+  serviceCategories?: string[];
+  description?: string;
+  experience?: string;
+  pricing?: string;
+  availability?: string;
+  portfolio?: string;
+  certifications?: string;
 }
 
 export interface AuthResponse {

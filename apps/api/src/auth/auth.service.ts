@@ -1,16 +1,20 @@
-import { Injectable, UnauthorizedException, ConflictException, BadRequestException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, ConflictException, BadRequestException, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcryptjs';
 import { PrismaService } from '../common/prisma.service';
+import { EmailService } from '../modules/email/email.service';
 import { LoginCredentials, RegisterData, AuthResponse } from '@fixia/types';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+  
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
     private configService: ConfigService,
+    private emailService: EmailService,
   ) {}
 
   async validateUser(email: string, password: string): Promise<any> {
@@ -67,7 +71,7 @@ export class AuthService {
     };
   }
 
-  async register(registerData: RegisterData): Promise<AuthResponse> {
+  async register(registerData: any): Promise<AuthResponse> {
     // Check if user already exists
     const existingUser = await this.prisma.user.findUnique({
       where: { email: registerData.email },
@@ -80,28 +84,38 @@ export class AuthService {
     // Hash password
     const hashedPassword = await bcrypt.hash(registerData.password, 12);
 
-    // Create user (email_verified = false by default)
+    // Map frontend fields to backend fields
+    const userCreateData = {
+      email: registerData.email,
+      password_hash: hashedPassword,
+      name: registerData.fullName || registerData.name,
+      user_type: registerData.userType || registerData.user_type,
+      location: registerData.location,
+      phone: registerData.phone,
+      whatsapp_number: registerData.phone, // Use phone as WhatsApp number
+      email_verified: false, // Require email verification
+    };
+
+    // Create user
     const user = await this.prisma.user.create({
-      data: {
-        email: registerData.email,
-        password_hash: hashedPassword,
-        name: registerData.name,
-        user_type: registerData.user_type,
-        location: registerData.location,
-        phone: registerData.phone,
-        whatsapp_number: registerData.whatsapp_number,
-        email_verified: false, // Require email verification
-      },
+      data: userCreateData,
     });
 
     // Create professional profile if user is professional
-    if (registerData.user_type === 'professional') {
+    if (userCreateData.user_type === 'professional') {
+      const professionalData = {
+        user_id: user.id,
+        bio: registerData.description || '',
+        specialties: registerData.serviceCategories || [],
+        experience_years: registerData.experience || '',
+        pricing_range: registerData.pricing || '',
+        availability: registerData.availability || '',
+        portfolio_url: registerData.portfolio || null,
+        certifications: registerData.certifications || '',
+      };
+
       await this.prisma.professionalProfile.create({
-        data: {
-          user_id: user.id,
-          bio: '',
-          specialties: [],
-        },
+        data: professionalData,
       });
     }
 
@@ -131,16 +145,16 @@ export class AuthService {
     });
 
     // Remove password from response and convert dates to strings
-    const { password_hash, ...userData } = user;
-    const userResponse = {
-      ...userData,
-      created_at: userData.created_at.toISOString(),
-      updated_at: userData.updated_at.toISOString(),
-      deleted_at: userData.deleted_at?.toISOString() || null,
+    const { password_hash, ...userResponse } = user;
+    const userData = {
+      ...userResponse,
+      created_at: userResponse.created_at.toISOString(),
+      updated_at: userResponse.updated_at.toISOString(),
+      deleted_at: userResponse.deleted_at?.toISOString() || null,
     };
 
     return {
-      user: userResponse,
+      user: userData,
       access_token,
       refresh_token,
       expires_in: 7 * 24 * 60 * 60,
@@ -349,10 +363,17 @@ export class AuthService {
       },
     });
 
-    // TODO: Send email with verification link
-    // For now, we'll log the token for development/testing
-    console.log(`Verification token for ${email}: ${token}`);
-    console.log(`Verification URL: ${process.env.FRONTEND_URL || 'http://localhost:3000'}/verify-email?token=${token}`);
+    // Send email with verification link
+    const verificationUrl = `${this.configService.get('FRONTEND_URL', 'http://localhost:3000')}/verify-email?token=${token}`;
+    
+    try {
+      await this.emailService.sendAccountVerification(email, user.name, verificationUrl);
+    } catch (error) {
+      this.logger?.error(`Failed to send verification email to ${email}:`, error);
+      // Still log for development/testing fallback
+      console.log(`Verification token for ${email}: ${token}`);
+      console.log(`Verification URL: ${verificationUrl}`);
+    }
 
     return {
       message: 'Se ha enviado un enlace de verificación a tu email',
