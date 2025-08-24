@@ -95,8 +95,22 @@ export class ServicesService {
       },
     };
 
+    // Handle category filtering - support both ID and name
     if (filters.category_id) {
       where.category_id = filters.category_id;
+    } else if (filters.category) {
+      // Find category by name
+      const category = await this.prisma.category.findFirst({
+        where: {
+          OR: [
+            { name: { equals: filters.category, mode: 'insensitive' } },
+            { slug: { equals: filters.category.toLowerCase().replace(/\s+/g, '-'), mode: 'insensitive' } }
+          ]
+        }
+      });
+      if (category) {
+        where.category_id = category.id;
+      }
     }
 
     if (filters.location) {
@@ -109,10 +123,14 @@ export class ServicesService {
       };
     }
 
-    if (filters.min_price || filters.max_price) {
+    // Handle price filtering - support both formats
+    const minPrice = filters.min_price || filters.minPrice;
+    const maxPrice = filters.max_price || filters.maxPrice;
+    
+    if (minPrice || maxPrice) {
       where.price = {};
-      if (filters.min_price) where.price.gte = filters.min_price;
-      if (filters.max_price) where.price.lte = filters.max_price;
+      if (minPrice) where.price.gte = minPrice;
+      if (maxPrice) where.price.lte = maxPrice;
     }
 
     if (filters.verified) {
@@ -143,6 +161,11 @@ export class ServicesService {
       };
     }
 
+    // Handle featured filter
+    if (filters.featured !== undefined) {
+      where.featured = filters.featured;
+    }
+
     if (filters.search) {
       where.OR = [
         {
@@ -165,24 +188,39 @@ export class ServicesService {
       ];
     }
 
-    // Build orderBy clause
+    // Build orderBy clause - handle both parameter formats
     let orderBy: any = {};
-    switch (filters.sort_by) {
+    const sortBy = filters.sort_by || filters.sortBy;
+    const sortOrder = filters.sort_order || 'desc';
+    
+    switch (sortBy) {
       case 'price':
-        orderBy.price = filters.sort_order || 'asc';
+        orderBy.price = sortOrder;
         break;
       case 'rating':
         orderBy.professional = {
           professional_profile: {
-            rating: filters.sort_order || 'desc',
+            rating: sortOrder,
+          },
+        };
+        break;
+      case 'reviews':
+        orderBy.professional = {
+          professional_profile: {
+            review_count: sortOrder,
           },
         };
         break;
       case 'view_count':
-        orderBy.view_count = filters.sort_order || 'desc';
+      case 'popular':
+        orderBy.view_count = sortOrder;
+        break;
+      case 'newest':
+      case 'created_at':
+        orderBy.created_at = sortOrder;
         break;
       default:
-        orderBy.created_at = filters.sort_order || 'desc';
+        orderBy.created_at = 'desc';
     }
 
     const [services, total] = await Promise.all([

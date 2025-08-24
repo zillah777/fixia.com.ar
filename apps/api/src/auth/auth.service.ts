@@ -400,4 +400,41 @@ export class AuthService {
       success: true
     };
   }
+
+  async changePassword(userId: string, currentPassword: string, newPassword: string): Promise<{ message: string; success: boolean }> {
+    // Get user with current password
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    // Verify current password
+    const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.password_hash);
+    if (!isCurrentPasswordValid) {
+      throw new UnauthorizedException('La contraseña actual es incorrecta');
+    }
+
+    // Hash new password
+    const hashedNewPassword = await bcrypt.hash(newPassword, 12);
+
+    // Update password and invalidate all sessions
+    await this.prisma.$transaction([
+      this.prisma.user.update({
+        where: { id: userId },
+        data: { password_hash: hashedNewPassword }
+      }),
+      // Invalidate all user sessions (force re-login on all devices)
+      this.prisma.userSession.deleteMany({
+        where: { user_id: userId }
+      })
+    ]);
+
+    return {
+      message: 'Contraseña actualizada exitosamente. Por seguridad, se ha cerrado sesión en todos los dispositivos.',
+      success: true
+    };
+  }
 }

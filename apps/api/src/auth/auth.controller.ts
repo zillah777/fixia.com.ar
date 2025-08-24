@@ -12,7 +12,7 @@ import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagg
 import { Throttle } from '@nestjs/throttler';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { LoginDto, RegisterDto, RefreshTokenDto, ForgotPasswordDto, ResetPasswordDto, VerifyEmailDto, ResendVerificationDto } from './dto/auth.dto';
+import { LoginDto, RegisterDto, RefreshTokenDto, ForgotPasswordDto, ResetPasswordDto, VerifyEmailDto, ResendVerificationDto, ChangePasswordDto } from './dto/auth.dto';
 import { AuthResponse } from '@fixia/types';
 
 @ApiTags('Autenticación')
@@ -104,5 +104,21 @@ export class AuthController {
   @ApiResponse({ status: 200, description: 'Email de verificación enviado' })
   async resendVerification(@Body() resendVerificationDto: ResendVerificationDto) {
     return this.authService.sendEmailVerification(resendVerificationDto.email);
+  }
+
+  @Post('change-password')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @Throttle({ default: { limit: 5, ttl: 900000 } }) // 5 intentos por 15 minutos
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Cambiar contraseña del usuario autenticado' })
+  @ApiResponse({ status: 200, description: 'Contraseña cambiada exitosamente' })
+  @ApiResponse({ status: 401, description: 'Contraseña actual incorrecta' })
+  async changePassword(@Request() req, @Body() changePasswordDto: ChangePasswordDto) {
+    return this.authService.changePassword(
+      req.user.sub, 
+      changePasswordDto.current_password, 
+      changePasswordDto.new_password
+    );
   }
 }

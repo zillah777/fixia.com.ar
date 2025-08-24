@@ -142,3 +142,23 @@ export class ResendVerificationDto {
   @IsEmail()
   email: string;
 }
+
+export class ChangePasswordDto {
+  @ApiProperty({ 
+    example: 'miPasswordActual123',
+    description: 'Contraseña actual del usuario',
+    minLength: 8
+  })
+  @IsString()
+  @MinLength(8)
+  current_password: string;
+
+  @ApiProperty({ 
+    example: 'miNuevaPassword123',
+    description: 'Nueva contraseña del usuario',
+    minLength: 8
+  })
+  @IsString()
+  @MinLength(8)
+  new_password: string;
+}

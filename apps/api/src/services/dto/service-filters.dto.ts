@@ -7,6 +7,7 @@ import {
   IsUUID,
   Min,
   Max,
+  ValidateIf,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
@@ -14,12 +15,23 @@ import { Transform, Type } from 'class-transformer';
 export class ServiceFiltersDto {
   @ApiProperty({ 
     example: '550e8400-e29b-41d4-a716-446655440000',
-    description: 'Filtrar por categoría',
+    description: 'Filtrar por categoría (UUID)',
     required: false
   })
   @IsOptional()
+  @ValidateIf((o) => o.category_id && !o.category)
   @IsUUID()
   category_id?: string;
+
+  @ApiProperty({ 
+    example: 'Desarrollo Web',
+    description: 'Filtrar por nombre de categoría',
+    required: false
+  })
+  @IsOptional()
+  @ValidateIf((o) => o.category && !o.category_id)
+  @IsString()
+  category?: string;
 
   @ApiProperty({ 
     example: 'Rawson, Chubut',
@@ -32,7 +44,7 @@ export class ServiceFiltersDto {
 
   @ApiProperty({ 
     example: 1000,
-    description: 'Precio mínimo',
+    description: 'Precio mínimo (snake_case)',
     required: false
   })
   @IsOptional()
@@ -42,8 +54,19 @@ export class ServiceFiltersDto {
   min_price?: number;
 
   @ApiProperty({ 
+    example: 1000,
+    description: 'Precio mínimo (camelCase)',
+    required: false
+  })
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  minPrice?: number;
+
+  @ApiProperty({ 
     example: 50000,
-    description: 'Precio máximo',
+    description: 'Precio máximo (snake_case)',
     required: false
   })
   @IsOptional()
@@ -51,6 +74,17 @@ export class ServiceFiltersDto {
   @IsNumber()
   @Min(0)
   max_price?: number;
+
+  @ApiProperty({ 
+    example: 50000,
+    description: 'Precio máximo (camelCase)',
+    required: false
+  })
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  maxPrice?: number;
 
   @ApiProperty({ 
     example: 4.0,
@@ -85,13 +119,23 @@ export class ServiceFiltersDto {
 
   @ApiProperty({ 
     example: 'price',
-    description: 'Campo por el que ordenar',
+    description: 'Campo por el que ordenar (snake_case)',
     required: false,
-    enum: ['price', 'rating', 'created_at', 'view_count']
+    enum: ['price', 'rating', 'created_at', 'view_count', 'popular']
   })
   @IsOptional()
-  @IsEnum(['price', 'rating', 'created_at', 'view_count'])
-  sort_by?: 'price' | 'rating' | 'created_at' | 'view_count';
+  @IsEnum(['price', 'rating', 'created_at', 'view_count', 'popular'])
+  sort_by?: 'price' | 'rating' | 'created_at' | 'view_count' | 'popular';
+
+  @ApiProperty({ 
+    example: 'price',
+    description: 'Campo por el que ordenar (camelCase)',
+    required: false,
+    enum: ['price', 'rating', 'newest', 'reviews', 'popular']
+  })
+  @IsOptional()
+  @IsEnum(['price', 'rating', 'newest', 'reviews', 'popular'])
+  sortBy?: 'price' | 'rating' | 'newest' | 'reviews' | 'popular';
 
   @ApiProperty({ 
     example: 'asc',
@@ -112,6 +156,16 @@ export class ServiceFiltersDto {
   @Type(() => Boolean)
   @IsBoolean()
   verified?: boolean;
+
+  @ApiProperty({ 
+    example: true,
+    description: 'Filtrar solo servicios destacados',
+    required: false
+  })
+  @IsOptional()
+  @Type(() => Boolean)
+  @IsBoolean()
+  featured?: boolean;
 
   @ApiProperty({ 
     example: 1,
