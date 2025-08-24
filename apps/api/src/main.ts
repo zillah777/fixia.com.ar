@@ -39,6 +39,103 @@ async function bootstrap() {
       });
     });
 
+    // Temporary database debug endpoint
+    app.getHttpAdapter().get('/debug/db', async (req, res) => {
+      try {
+        const { PrismaClient } = require('@prisma/client');
+        const prisma = new PrismaClient();
+        
+        const userCount = await prisma.user.count();
+        const categoryCount = await prisma.category.count();
+        const serviceCount = await prisma.service.count();
+        
+        const seedUsers = await Promise.all([
+          'carlos@fixia.com.ar',
+          'ana@fixia.com.ar', 
+          'miguel@fixia.com.ar',
+          'cliente@fixia.com.ar'
+        ].map(async email => {
+          const user = await prisma.user.findUnique({ where: { email } });
+          return { email, exists: !!user, type: user?.user_type || null };
+        }));
+        
+        await prisma.$disconnect();
+        
+        res.status(200).json({
+          status: 'ok',
+          timestamp: new Date().toISOString(),
+          database: {
+            connected: true,
+            users: userCount,
+            categories: categoryCount,
+            services: serviceCount,
+            seedUsers
+          }
+        });
+      } catch (error) {
+        res.status(500).json({
+          status: 'error',
+          timestamp: new Date().toISOString(),
+          database: {
+            connected: false,
+            error: error.message
+          }
+        });
+      }
+    });
+
+    // Temporary manual seed endpoint
+    app.getHttpAdapter().post('/debug/seed', async (req, res) => {
+      try {
+        const { spawn } = require('child_process');
+        
+        // Run the manual seed script
+        const seedProcess = spawn('node', ['manual-seed.js'], {
+          cwd: process.cwd(),
+          stdio: 'pipe'
+        });
+        
+        let output = '';
+        let errorOutput = '';
+        
+        seedProcess.stdout.on('data', (data) => {
+          output += data.toString();
+        });
+        
+        seedProcess.stderr.on('data', (data) => {
+          errorOutput += data.toString();
+        });
+        
+        seedProcess.on('close', (code) => {
+          if (code === 0) {
+            res.status(200).json({
+              status: 'ok',
+              message: 'Seed completed successfully',
+              timestamp: new Date().toISOString(),
+              output
+            });
+          } else {
+            res.status(500).json({
+              status: 'error',
+              message: 'Seed failed',
+              timestamp: new Date().toISOString(),
+              exitCode: code,
+              output,
+              errorOutput
+            });
+          }
+        });
+        
+      } catch (error) {
+        res.status(500).json({
+          status: 'error',
+          timestamp: new Date().toISOString(),
+          message: 'Failed to run seed',
+          error: error.message
+        });
+      }
+    });
+
     // Root endpoint
     app.getHttpAdapter().get('/', (req, res) => {
       res.json({
