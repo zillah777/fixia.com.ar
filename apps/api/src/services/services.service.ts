@@ -191,7 +191,7 @@ export class ServicesService {
     // Build orderBy clause - handle both parameter formats
     let orderBy: any = {};
     const sortBy = filters.sort_by || filters.sortBy;
-    const sortOrder = filters.sort_order || 'desc';
+    const sortOrder = filters.sort_order || filters.sortOrder || 'desc';
     
     switch (sortBy) {
       case 'price':

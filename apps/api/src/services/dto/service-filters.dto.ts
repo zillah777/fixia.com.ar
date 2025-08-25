@@ -131,21 +131,31 @@ export class ServiceFiltersDto {
     example: 'price',
     description: 'Campo por el que ordenar (camelCase)',
     required: false,
-    enum: ['price', 'rating', 'newest', 'reviews', 'popular']
+    enum: ['price', 'rating', 'created_at', 'view_count', 'popular']
   })
   @IsOptional()
-  @IsEnum(['price', 'rating', 'newest', 'reviews', 'popular'])
-  sortBy?: 'price' | 'rating' | 'newest' | 'reviews' | 'popular';
+  @IsEnum(['price', 'rating', 'created_at', 'view_count', 'popular'])
+  sortBy?: 'price' | 'rating' | 'created_at' | 'view_count' | 'popular';
 
   @ApiProperty({ 
     example: 'asc',
-    description: 'Orden de clasificación',
+    description: 'Orden de clasificación (snake_case)',
     required: false,
     enum: ['asc', 'desc']
   })
   @IsOptional()
   @IsEnum(['asc', 'desc'])
   sort_order?: 'asc' | 'desc';
+
+  @ApiProperty({ 
+    example: 'asc',
+    description: 'Orden de clasificación (camelCase)',
+    required: false,
+    enum: ['asc', 'desc']
+  })
+  @IsOptional()
+  @IsEnum(['asc', 'desc'])
+  sortOrder?: 'asc' | 'desc';
 
   @ApiProperty({ 
     example: true,
