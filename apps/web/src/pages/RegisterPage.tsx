@@ -215,7 +215,7 @@ function ClientRegistrationForm({
               type="date"
               value={formData.birthdate}
               onChange={(e) => setFormData({ ...formData, birthdate: e.target.value })}
-              max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split('T')[0]}
+              max={new Date(new Date().getFullYear() - 18, new Date().getMonth(), new Date().getDate()).toISOString().split('T')[0]}
               required
             />
             <p className="text-xs text-muted-foreground">
@@ -627,7 +627,7 @@ function ProfessionalRegistrationForm({
                 type="date"
                 value={formData.birthdate}
                 onChange={(e) => setFormData({ ...formData, birthdate: e.target.value })}
-                max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split('T')[0]}
+                max={new Date(new Date().getFullYear() - 18, new Date().getMonth(), new Date().getDate()).toISOString().split('T')[0]}
                 required
               />
               <p className="text-xs text-muted-foreground">
