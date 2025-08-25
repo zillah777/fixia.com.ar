@@ -817,8 +817,8 @@ export default function RegisterPage() {
       return;
     }
 
-    if (formData.password.length < 6) {
-      toast.error('La contraseña debe tener al menos 6 caracteres');
+    if (formData.password.length < 8) {
+      toast.error('La contraseña debe tener al menos 8 caracteres');
       return;
     }
 
