@@ -93,6 +93,7 @@ export class AuthService {
       location: registerData.location,
       phone: registerData.phone,
       whatsapp_number: registerData.phone, // Use phone as WhatsApp number
+      birthdate: registerData.birthdate ? new Date(registerData.birthdate) : null,
       email_verified: false, // Require email verification
     };
 

@@ -5,6 +5,7 @@ import {
   IsEnum, 
   IsOptional,
   IsPhoneNumber,
+  IsDateString,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { UserType } from '@prisma/client';
@@ -78,6 +79,15 @@ export class RegisterDto {
   @IsOptional()
   @IsString()
   phone?: string;
+
+  @ApiProperty({ 
+    example: '1990-03-15',
+    description: 'Fecha de nacimiento (YYYY-MM-DD)',
+    required: false
+  })
+  @IsOptional()
+  @IsDateString()
+  birthdate?: string;
 
   // Professional-only fields
   @ApiProperty({ 

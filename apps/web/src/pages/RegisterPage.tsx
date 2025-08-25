@@ -23,6 +23,7 @@ interface FormData {
   confirmPassword: string;
   phone: string;
   location: string;
+  birthdate: string;
   
   // Professional fields
   serviceCategories: string[];
@@ -46,6 +47,7 @@ const initialFormData: FormData = {
   confirmPassword: '',
   phone: '',
   location: '',
+  birthdate: '',
   serviceCategories: [],
   description: '',
   experience: '',
@@ -204,6 +206,21 @@ function ClientRegistrationForm({
                 </SelectContent>
               </Select>
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="birthdate">Fecha de Nacimiento *</Label>
+            <Input
+              id="birthdate"
+              type="date"
+              value={formData.birthdate}
+              onChange={(e) => setFormData({ ...formData, birthdate: e.target.value })}
+              max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split('T')[0]}
+              required
+            />
+            <p className="text-xs text-muted-foreground">
+              Debes ser mayor de 18 años para registrarte
+            </p>
           </div>
 
           {/* Terms and Privacy */}
@@ -602,6 +619,21 @@ function ProfessionalRegistrationForm({
                 </Select>
               </div>
             </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="birthdate">Fecha de Nacimiento *</Label>
+              <Input
+                id="birthdate"
+                type="date"
+                value={formData.birthdate}
+                onChange={(e) => setFormData({ ...formData, birthdate: e.target.value })}
+                max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split('T')[0]}
+                required
+              />
+              <p className="text-xs text-muted-foreground">
+                Debes ser mayor de 18 años para registrarte como profesional
+              </p>
+            </div>
           </div>
 
           {/* Business Information */}
@@ -822,6 +854,27 @@ export default function RegisterPage() {
       return;
     }
 
+    // Validate birthdate
+    if (!formData.birthdate) {
+      toast.error('La fecha de nacimiento es requerida');
+      return;
+    }
+
+    // Validate age (must be 18 or older)
+    const birthDate = new Date(formData.birthdate);
+    const today = new Date();
+    const age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    
+    if (age < 18) {
+      toast.error('Debes ser mayor de 18 años para registrarte');
+      return;
+    }
+
     if (currentTab === 'professional' && formData.serviceCategories.length === 0) {
       toast.error('Debes seleccionar al menos una categoría de servicio');
       return;
@@ -847,6 +900,7 @@ export default function RegisterPage() {
         fullName: formData.fullName,
         phone: formData.phone,
         location: formData.location,
+        birthdate: formData.birthdate,
         userType: currentTab,
         serviceCategories: formData.serviceCategories,
         description: formData.description,

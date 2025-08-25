@@ -60,6 +60,7 @@ model User {
   avatar           String?
   user_type        UserType
   location         String?
+  birthdate        DateTime?
   verified         Boolean   @default(false)
   email_verified   Boolean   @default(false)
   phone            String?
