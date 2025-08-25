@@ -20,6 +20,11 @@ import AboutPage from "./pages/AboutPage";
 import HowItWorksPage from "./pages/HowItWorksPage";
 import ContactPage from "./pages/ContactPage";
 import PricingPage from "./pages/PricingPage";
+import Error404Page from "./pages/Error404Page";
+import FavoritesPage from "./pages/FavoritesPage";
+import HelpPage from "./pages/HelpPage";
+import NotificationsPage from "./pages/NotificationsPage";
+import SettingsPage from "./pages/SettingsPage";
 
 // Context
 import { AuthProvider, useAuth } from "./context/AuthContext";
@@ -48,7 +53,7 @@ function LoadingScreen() {
           <div className="absolute -inset-2 liquid-gradient rounded-2xl blur opacity-30 animate-pulse-slow"></div>
         </div>
         <div className="text-center">
-          <div className="text-xl font-semibold">Fixia</div>
+          <div className="text-xl font-semibold text-foreground">Fixia</div>
           <div className="text-sm text-muted-foreground">Conecta. Confía. Resuelve.</div>
         </div>
       </motion.div>
@@ -102,6 +107,7 @@ function AppRoutes() {
           <Route path="/how-it-works" element={<HowItWorksPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/pricing" element={<PricingPage />} />
+          <Route path="/help" element={<HelpPage />} />
           
           {/* Auth Routes */}
           <Route 
@@ -162,9 +168,33 @@ function AppRoutes() {
               </ProtectedRoute>
             } 
           />
+          <Route 
+            path="/favorites" 
+            element={
+              <ProtectedRoute>
+                <FavoritesPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/notifications" 
+            element={
+              <ProtectedRoute>
+                <NotificationsPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/settings" 
+            element={
+              <ProtectedRoute>
+                <SettingsPage />
+              </ProtectedRoute>
+            } 
+          />
           
           {/* 404 Route */}
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<Error404Page />} />
         </Routes>
       </AnimatePresence>
     </Router>
