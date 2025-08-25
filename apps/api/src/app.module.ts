@@ -8,6 +8,7 @@ import { ProjectsModule } from './projects/projects.module';
 import { ContactModule } from './contact/contact.module';
 import { CommonModule } from './common/common.module';
 import { EmailModule } from './modules/email/email.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { EmailModule } from './modules/email/email.module';
     ProjectsModule,
     ContactModule,
     EmailModule,
+    AdminModule,
   ],
   controllers: [],
   providers: [],
