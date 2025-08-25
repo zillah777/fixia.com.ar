@@ -393,6 +393,166 @@ function SecurityTab() {
   );
 }
 
+function NotificationsTab() {
+  const [emailNotifications, setEmailNotifications] = useState({
+    newOpportunities: true,
+    messages: true,
+    marketing: false,
+    security: true
+  });
+
+  const [pushNotifications, setPushNotifications] = useState({
+    newOpportunities: true,
+    messages: true,
+    reminders: false
+  });
+
+  return (
+    <div className="space-y-6">
+      <Card className="glass border-white/10">
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <Mail className="h-5 w-5" />
+            <span>Notificaciones por Email</span>
+          </CardTitle>
+          <CardDescription>
+            Recibe actualizaciones importantes en tu email
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <p className="font-medium">Nuevas oportunidades</p>
+              <p className="text-sm text-muted-foreground">
+                Cuando hay trabajos que coinciden con tu perfil
+              </p>
+            </div>
+            <Switch 
+              checked={emailNotifications.newOpportunities}
+              onCheckedChange={(checked) => 
+                setEmailNotifications({ ...emailNotifications, newOpportunities: checked })
+              }
+            />
+          </div>
+
+          <Separator className="bg-white/10" />
+
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <p className="font-medium">Mensajes y contactos</p>
+              <p className="text-sm text-muted-foreground">
+                Cuando alguien te contacta o te envía un mensaje
+              </p>
+            </div>
+            <Switch 
+              checked={emailNotifications.messages}
+              onCheckedChange={(checked) => 
+                setEmailNotifications({ ...emailNotifications, messages: checked })
+              }
+            />
+          </div>
+
+          <Separator className="bg-white/10" />
+
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <p className="font-medium">Noticias y ofertas</p>
+              <p className="text-sm text-muted-foreground">
+                Promociones, noticias y tips de Fixia
+              </p>
+            </div>
+            <Switch 
+              checked={emailNotifications.marketing}
+              onCheckedChange={(checked) => 
+                setEmailNotifications({ ...emailNotifications, marketing: checked })
+              }
+            />
+          </div>
+
+          <Separator className="bg-white/10" />
+
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <p className="font-medium">Alertas de seguridad</p>
+              <p className="text-sm text-muted-foreground">
+                Inicios de sesión y cambios importantes en tu cuenta
+              </p>
+            </div>
+            <Switch 
+              checked={emailNotifications.security}
+              onCheckedChange={(checked) => 
+                setEmailNotifications({ ...emailNotifications, security: checked })
+              }
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="glass border-white/10">
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <Bell className="h-5 w-5" />
+            <span>Notificaciones Push</span>
+          </CardTitle>
+          <CardDescription>
+            Recibe notificaciones instantáneas en tu dispositivo
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <p className="font-medium">Nuevas oportunidades</p>
+              <p className="text-sm text-muted-foreground">
+                Notificación inmediata de trabajos relevantes
+              </p>
+            </div>
+            <Switch 
+              checked={pushNotifications.newOpportunities}
+              onCheckedChange={(checked) => 
+                setPushNotifications({ ...pushNotifications, newOpportunities: checked })
+              }
+            />
+          </div>
+
+          <Separator className="bg-white/10" />
+
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <p className="font-medium">Mensajes</p>
+              <p className="text-sm text-muted-foreground">
+                Cuando recibes un mensaje directo
+              </p>
+            </div>
+            <Switch 
+              checked={pushNotifications.messages}
+              onCheckedChange={(checked) => 
+                setPushNotifications({ ...pushNotifications, messages: checked })
+              }
+            />
+          </div>
+
+          <Separator className="bg-white/10" />
+
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <p className="font-medium">Recordatorios</p>
+              <p className="text-sm text-muted-foreground">
+                Recordatorios de trabajos pendientes y citas
+              </p>
+            </div>
+            <Switch 
+              checked={pushNotifications.reminders}
+              onCheckedChange={(checked) => 
+                setPushNotifications({ ...pushNotifications, reminders: checked })
+              }
+            />
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 function SubscriptionTab() {
   const { user } = useAuth();
   const isProfessional = user?.userType === 'professional';
@@ -581,7 +741,7 @@ export default function SettingsPage() {
 
         <div className="max-w-4xl mx-auto">
           <Tabs defaultValue="profile" className="w-full">
-            <TabsList className="glass border-white/10 mb-8 grid grid-cols-2 lg:grid-cols-4">
+            <TabsList className="glass border-white/10 mb-8 grid grid-cols-2 lg:grid-cols-5">
               <TabsTrigger value="profile">
                 <User className="h-4 w-4 mr-2" />
                 Perfil
@@ -589,6 +749,10 @@ export default function SettingsPage() {
               <TabsTrigger value="security">
                 <Lock className="h-4 w-4 mr-2" />
                 Seguridad
+              </TabsTrigger>
+              <TabsTrigger value="notifications">
+                <Bell className="h-4 w-4 mr-2" />
+                Notificaciones
               </TabsTrigger>
               <TabsTrigger value="subscription">
                 <CreditCard className="h-4 w-4 mr-2" />
@@ -606,6 +770,10 @@ export default function SettingsPage() {
             
             <TabsContent value="security">
               <SecurityTab />
+            </TabsContent>
+            
+            <TabsContent value="notifications">
+              <NotificationsTab />
             </TabsContent>
             
             <TabsContent value="subscription">

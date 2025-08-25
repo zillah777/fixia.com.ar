@@ -252,7 +252,7 @@ function CategoriesSection() {
   }, []);
 
   // Use API categories if available, otherwise fallback to static
-  const displayCategories = apiCategories.length > 0 ? apiCategories.map(cat => ({
+  const displayCategories = (Array.isArray(apiCategories) && apiCategories.length > 0) ? apiCategories.map(cat => ({
     name: cat.name,
     icon: getIconForCategory(cat.name),
     count: `${cat.count}+ servicios`,
@@ -419,7 +419,7 @@ function FeaturedServicesSection() {
               </motion.div>
             ))
           ) : (
-            services.map((service, index) => {
+            Array.isArray(services) && services.map((service, index) => {
               const fullName = `${service.professional.name} ${service.professional.lastName}`;
               const serviceImage = service.images?.[0] || "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=300&fit=crop";
               
