@@ -1,4 +1,4 @@
-import { Search, Plus, Bell, User, Briefcase, Heart, Shield, Menu, Gift } from "lucide-react";
+import { Search, Plus, Bell, User, Briefcase, Heart, Shield, Menu, Gift, Settings, HelpCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -43,6 +43,9 @@ export function FixiaNavigation() {
             <Link to="/how-it-works" className="text-foreground hover:text-primary transition-colors font-medium">
               Cómo Funciona
             </Link>
+            <Link to="/help" className="text-foreground hover:text-primary transition-colors font-medium">
+              Ayuda
+            </Link>
             <Link to="/contact" className="text-foreground hover:text-primary transition-colors font-medium">
               Contacto
             </Link>
@@ -65,21 +68,27 @@ export function FixiaNavigation() {
 
               {/* Quick Actions */}
               <div className="flex items-center space-x-2">
-                <Button size="sm" className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg">
-                  <Plus className="mr-2 h-4 w-4" />
-                  Nuevo Proyecto
-                </Button>
+                <Link to="/new-project">
+                  <Button size="sm" className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg">
+                    <Plus className="mr-2 h-4 w-4" />
+                    Nuevo Proyecto
+                  </Button>
+                </Link>
 
-                <Button variant="ghost" size="icon" className="relative hover:glass-medium transition-all duration-300">
-                  <Bell className="h-4 w-4" />
-                  <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 bg-destructive text-xs">
-                    3
-                  </Badge>
-                </Button>
+                <Link to="/notifications">
+                  <Button variant="ghost" size="icon" className="relative hover:bg-white/10 transition-all duration-300">
+                    <Bell className="h-4 w-4" />
+                    <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 bg-destructive text-xs">
+                      3
+                    </Badge>
+                  </Button>
+                </Link>
 
-                <Button variant="ghost" size="icon" className="hover:glass-medium transition-all duration-300">
-                  <Heart className="h-4 w-4" />
-                </Button>
+                <Link to="/favorites">
+                  <Button variant="ghost" size="icon" className="hover:bg-white/10 transition-all duration-300">
+                    <Heart className="h-4 w-4" />
+                  </Button>
+                </Link>
               </div>
 
               {/* User Avatar Dropdown */}
@@ -112,18 +121,37 @@ export function FixiaNavigation() {
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator className="bg-white/10" />
-                  <DropdownMenuItem className="hover:glass-medium">
-                    <User className="mr-3 h-4 w-4" />
-                    Mi Perfil
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="hover:glass-medium">
-                    <Briefcase className="mr-3 h-4 w-4" />
-                    Mis Servicios
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="hover:glass-medium">
-                    <Shield className="mr-3 h-4 w-4" />
-                    Seguridad
-                  </DropdownMenuItem>
+                  <Link to="/profile">
+                    <DropdownMenuItem className="hover:bg-white/10 cursor-pointer">
+                      <User className="mr-3 h-4 w-4" />
+                      Mi Perfil
+                    </DropdownMenuItem>
+                  </Link>
+                  <Link to="/dashboard">
+                    <DropdownMenuItem className="hover:bg-white/10 cursor-pointer">
+                      <Briefcase className="mr-3 h-4 w-4" />
+                      Dashboard
+                    </DropdownMenuItem>
+                  </Link>
+                  <Link to="/opportunities">
+                    <DropdownMenuItem className="hover:bg-white/10 cursor-pointer">
+                      <Briefcase className="mr-3 h-4 w-4" />
+                      Oportunidades
+                    </DropdownMenuItem>
+                  </Link>
+                  <DropdownMenuSeparator className="bg-white/10" />
+                  <Link to="/settings">
+                    <DropdownMenuItem className="hover:bg-white/10 cursor-pointer">
+                      <Settings className="mr-3 h-4 w-4" />
+                      Configuración
+                    </DropdownMenuItem>
+                  </Link>
+                  <Link to="/help">
+                    <DropdownMenuItem className="hover:bg-white/10 cursor-pointer">
+                      <HelpCircle className="mr-3 h-4 w-4" />
+                      Centro de Ayuda
+                    </DropdownMenuItem>
+                  </Link>
                   <DropdownMenuSeparator className="bg-white/10" />
                   <DropdownMenuItem className="hover:glass-medium text-destructive">
                     Cerrar Sesión
