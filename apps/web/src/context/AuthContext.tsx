@@ -109,24 +109,24 @@ const transformBackendUser = (backendUser: any): User => {
     lastName: backendUser.lastName || '',
     phone: backendUser.phone || '',
     avatar: backendUser.avatar || '',
-    userType: backendUser.userType,
+    userType: backendUser.user_type || backendUser.userType,
     location: backendUser.location || '',
     planType: backendUser.planType || 'free',
-    isVerified: backendUser.isVerified || false,
-    emailVerified: backendUser.emailVerified || false,
+    isVerified: backendUser.verified || backendUser.isVerified || false,
+    emailVerified: backendUser.email_verified || backendUser.emailVerified || false,
     
     // Professional profile
-    professionalProfile: backendUser.professionalProfile || null,
+    professionalProfile: backendUser.professional_profile || backendUser.professionalProfile || null,
     
     // Legacy computed fields for backward compatibility
-    accountType: backendUser.userType, // Same as userType
-    availability: backendUser.professionalProfile?.availability || 'offline',
+    accountType: backendUser.user_type || backendUser.userType, // Same as userType
+    availability: (backendUser.professional_profile || backendUser.professionalProfile)?.availability || 'offline',
     badges: backendUser.badges || [],
-    totalServices: backendUser.professionalProfile?.totalServices || 0,
-    completedServices: backendUser.professionalProfile?.completedServices || 0,
-    averageRating: backendUser.professionalProfile?.averageRating || 0,
-    totalReviews: backendUser.professionalProfile?.totalReviews || 0,
-    joinDate: backendUser.createdAt || new Date().toISOString(),
+    totalServices: (backendUser.professional_profile || backendUser.professionalProfile)?.totalServices || 0,
+    completedServices: (backendUser.professional_profile || backendUser.professionalProfile)?.completedServices || 0,
+    averageRating: (backendUser.professional_profile || backendUser.professionalProfile)?.averageRating || 0,
+    totalReviews: (backendUser.professional_profile || backendUser.professionalProfile)?.totalReviews || 0,
+    joinDate: backendUser.created_at || backendUser.createdAt || new Date().toISOString(),
     
     // Contact limits (default for clients, can be overridden by backend)
     pendingContactRequests: backendUser.pendingContactRequests || 0,
@@ -141,8 +141,8 @@ const transformBackendUser = (backendUser: any): User => {
     promotionExpiryDate: backendUser.promotionExpiryDate || null,
     
     // Timestamps
-    createdAt: backendUser.createdAt || new Date().toISOString(),
-    updatedAt: backendUser.updatedAt || new Date().toISOString(),
+    createdAt: backendUser.created_at || backendUser.createdAt || new Date().toISOString(),
+    updatedAt: backendUser.updated_at || backendUser.updatedAt || new Date().toISOString(),
   };
 };
 
