@@ -39,6 +39,125 @@ async function bootstrap() {
       });
     });
 
+    // Emergency services seeding endpoint for production
+    if (process.env.NODE_ENV === 'production') {
+      const { PrismaClient } = require('@prisma/client');
+      const prisma = new PrismaClient();
+      
+      app.getHttpAdapter().get('/seed-services-emergency', async (req, res) => {
+        try {
+          // Check if services already exist
+          const serviceCount = await prisma.service.count();
+          if (serviceCount > 0) {
+            return res.json({
+              status: 'skipped',
+              message: 'Services already exist',
+              serviceCount,
+              timestamp: new Date().toISOString(),
+            });
+          }
+
+          // Get users and categories
+          const userCount = await prisma.user.count();
+          if (userCount === 0) {
+            return res.status(400).json({
+              status: 'error',
+              message: 'No users found - cannot create services'
+            });
+          }
+
+          let categoryCount = await prisma.category.count();
+          const categories = await prisma.category.findMany();
+          const professionals = await prisma.user.findMany({
+            where: { user_type: 'professional' }
+          });
+
+          // Create basic services if none exist
+          let servicesCreated = 0;
+          if (categories.length > 0 && professionals.length > 0) {
+            const webDevCategory = categories.find(c => c.slug === 'desarrollo-web' || c.name.toLowerCase().includes('desarrollo'));
+            const designCategory = categories.find(c => c.slug === 'diseno-grafico' || c.name.toLowerCase().includes('diseño'));
+            const repairCategory = categories.find(c => c.slug === 'reparaciones' || c.name.toLowerCase().includes('reparacion'));
+            
+            const serviceTemplates = [
+              {
+                category: webDevCategory,
+                title: 'Desarrollo Web Profesional',
+                description: 'Desarrollo completo de sitio web empresarial con diseño moderno y responsivo.',
+                price: 75000,
+                image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop'
+              },
+              {
+                category: designCategory,
+                title: 'Diseño de Logo y Branding',
+                description: 'Creación de identidad visual completa para tu empresa.',
+                price: 35000,
+                image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&h=600&fit=crop'
+              },
+              {
+                category: repairCategory,
+                title: 'Reparación de Electrodomésticos',
+                description: 'Servicio técnico especializado con garantía.',
+                price: 8500,
+                image: 'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=800&h=600&fit=crop'
+              }
+            ];
+
+            for (let i = 0; i < serviceTemplates.length && i < professionals.length; i++) {
+              const template = serviceTemplates[i];
+              if (template.category) {
+                await prisma.service.create({
+                  data: {
+                    professional_id: professionals[i].id,
+                    category_id: template.category.id,
+                    title: template.title,
+                    description: template.description,
+                    price: template.price,
+                    main_image: template.image,
+                    gallery: [],
+                    tags: ['Profesional', 'Calidad'],
+                    delivery_time_days: 14,
+                    revisions_included: 2,
+                    featured: true,
+                    view_count: Math.floor(Math.random() * 100) + 10,
+                  }
+                });
+                servicesCreated++;
+              }
+            }
+
+            // Update category counts
+            for (const category of categories) {
+              const count = await prisma.service.count({ where: { category_id: category.id } });
+              await prisma.category.update({
+                where: { id: category.id },
+                data: { service_count: count }
+              });
+            }
+          }
+
+          await prisma.$disconnect();
+
+          res.json({
+            status: 'success',
+            message: 'Services seeding completed',
+            servicesCreated,
+            totalUsers: userCount,
+            totalCategories: categoryCount,
+            timestamp: new Date().toISOString(),
+          });
+
+        } catch (error) {
+          logger.error('Emergency seeding failed:', error);
+          res.status(500).json({
+            status: 'error',
+            message: 'Seeding failed',
+            error: error.message
+          });
+        }
+      });
+    }
+
 
     // Root endpoint
     app.getHttpAdapter().get('/', (req, res) => {
