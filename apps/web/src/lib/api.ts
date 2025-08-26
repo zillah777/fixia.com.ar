@@ -5,6 +5,9 @@ import { toast } from 'sonner';
 // API Configuration
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
 
+// Debug: Log the API base URL
+console.log('🔗 API Base URL:', API_BASE_URL);
+
 // Create axios instance
 export const apiClient: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
