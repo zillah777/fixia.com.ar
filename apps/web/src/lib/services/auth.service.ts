@@ -13,6 +13,7 @@ export interface RegisterRequest {
   userType: 'client' | 'professional';
   location?: string;
   phone?: string;
+  birthdate?: string;
   // Professional-specific fields
   serviceCategories?: string[];
   description?: string;

@@ -222,6 +222,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         userType: userData.userType,
         location: userData.location,
         phone: userData.phone,
+        birthdate: userData.birthdate,
         // Professional-specific fields (will be ignored if userType is 'client')
         serviceCategories: userData.serviceCategories || [],
         description: userData.description || '',

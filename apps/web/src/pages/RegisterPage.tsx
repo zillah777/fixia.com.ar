@@ -894,6 +894,17 @@ export default function RegisterPage() {
     setIsSubmitting(true);
 
     try {
+      console.log('Attempting registration with data:', {
+        email: formData.email,
+        fullName: formData.fullName,
+        phone: formData.phone,
+        location: formData.location,
+        birthdate: formData.birthdate,
+        userType: currentTab,
+        serviceCategories: formData.serviceCategories,
+        hasPassword: !!formData.password
+      });
+      
       await register({
         email: formData.email,
         password: formData.password,
@@ -915,8 +926,13 @@ export default function RegisterPage() {
       // Success toast is already shown in AuthContext
       navigate('/dashboard');
     } catch (error: any) {
-      // Error handling is already done in AuthContext
+      // Error handling is already done in AuthContext, but let's add a fallback
       console.error('Registration error:', error);
+      
+      // Fallback error message if AuthContext doesn't handle it
+      if (!error.message || error.message === 'Error en el registro') {
+        toast.error('Error al crear la cuenta. Por favor, intenta de nuevo o revisa los datos ingresados.');
+      }
     } finally {
       setIsSubmitting(false);
     }
