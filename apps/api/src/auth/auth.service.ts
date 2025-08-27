@@ -83,7 +83,7 @@ export class AuthService {
     });
 
     if (existingUser) {
-      throw new ConflictException('User with this email already exists');
+      throw new ConflictException('Ya existe un usuario registrado con este correo electrónico');
     }
 
     // Hash password

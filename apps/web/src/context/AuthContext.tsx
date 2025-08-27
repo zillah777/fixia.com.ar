@@ -240,10 +240,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       // Don't automatically log in user - they need to verify email first
       // Success message is handled by the RegisterPage component for better UX
     } catch (error: any) {
-      // Handle API errors gracefully
+      // Handle API errors gracefully - don't show toast here, let the page handle it
       const errorMessage = error.response?.data?.message || error.message || 'Error en el registro';
-      toast.error(errorMessage);
-      throw new Error(errorMessage);
+      throw error; // Re-throw the original error to preserve response data
     } finally {
       setLoading(false);
     }

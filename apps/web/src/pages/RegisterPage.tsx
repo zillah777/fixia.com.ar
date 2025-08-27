@@ -1063,32 +1063,66 @@ export default function RegisterPage() {
       // Redirect to email verification page with email parameter
       navigate(`/verify-email?email=${encodeURIComponent(formData.email)}`);
     } catch (error: any) {
-      // Error handling is already done in AuthContext, but let's add a fallback
       console.error('Registration error:', error);
       
-      // Provide more specific error messages based on the error
-      const errorMessage = error.response?.data?.message || error.message;
+      // Extract error details from API response
+      const errorMessage = error.response?.data?.message || error.message || '';
+      const statusCode = error.response?.status;
       
-      if (errorMessage?.includes('email already exists') || errorMessage?.includes('ya existe')) {
+      console.log('Error details:', { errorMessage, statusCode, error: error.response });
+      
+      // Handle specific error cases with user-friendly messages
+      if (statusCode === 409 || errorMessage?.toLowerCase().includes('already exists') || errorMessage?.toLowerCase().includes('ya existe') || errorMessage?.toLowerCase().includes('duplicate')) {
         toast.error(
-          'Esta dirección de email ya está registrada',
+          '📧 Este email ya está registrado',
           {
             description: '¿Ya tienes cuenta? Intenta iniciar sesión o usar otro email.',
             action: {
               label: 'Iniciar Sesión',
               onClick: () => navigate('/login')
-            }
+            },
+            duration: 6000,
           }
         );
-      } else if (errorMessage?.includes('invalid email') || errorMessage?.includes('email inválido')) {
-        toast.error('La dirección de email no es válida. Por favor, verifica que esté correcta.');
-      } else if (errorMessage?.includes('weak password') || errorMessage?.includes('contraseña débil')) {
-        toast.error('La contraseña es muy débil. Debe tener al menos 8 caracteres, incluyendo letras y números.');
-      } else if (!errorMessage || errorMessage === 'Error en el registro') {
+      } else if (statusCode === 400 && (errorMessage?.toLowerCase().includes('email') || errorMessage?.toLowerCase().includes('invalid'))) {
         toast.error(
-          'Error al crear la cuenta',
+          '✉️ Email inválido',
           {
-            description: 'Por favor, verifica los datos ingresados e intenta de nuevo.'
+            description: 'La dirección de email no es válida. Por favor verifica que esté correcta.',
+            duration: 5000,
+          }
+        );
+      } else if (statusCode === 400 && errorMessage?.toLowerCase().includes('password')) {
+        toast.error(
+          '🔒 Contraseña inválida',
+          {
+            description: 'La contraseña debe tener al menos 6 caracteres.',
+            duration: 5000,
+          }
+        );
+      } else if (statusCode === 429) {
+        toast.error(
+          '⏰ Demasiados intentos',
+          {
+            description: 'Has intentado registrarte muchas veces. Espera unos minutos e intenta de nuevo.',
+            duration: 8000,
+          }
+        );
+      } else if (statusCode >= 500) {
+        toast.error(
+          '🔧 Error del servidor',
+          {
+            description: 'Hay un problema temporal con nuestros servidores. Intenta de nuevo en unos minutos.',
+            duration: 6000,
+          }
+        );
+      } else {
+        // Generic error fallback
+        toast.error(
+          '❌ Error al crear la cuenta',
+          {
+            description: errorMessage || 'Por favor, verifica los datos ingresados e intenta de nuevo.',
+            duration: 5000,
           }
         );
       }
