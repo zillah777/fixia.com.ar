@@ -115,7 +115,16 @@ export class EmailService {
       this.logger.log(`📧 Attempting to send email to: ${emailData.to} with template: ${emailData.template}`);
       
       const htmlContent = await this.renderTemplate(emailData.template, emailData.templateData);
-      const fromEmail = emailData.from || this.configService.get<string>('EMAIL_FROM') || this.configService.get<string>('GMAIL_USER', 'noreply@fixia.com.ar');
+      
+      // Use appropriate FROM email based on service
+      let fromEmail = emailData.from || this.configService.get<string>('EMAIL_FROM');
+      
+      // If using Resend and no custom domain configured, use Resend's default domain
+      if (this.resend && (!fromEmail || fromEmail.includes('@gmail.com'))) {
+        fromEmail = 'Fixia <onboarding@resend.dev>';
+      } else if (!fromEmail) {
+        fromEmail = 'noreply@fixia.com.ar';
+      }
       
       this.logger.log(`Sending from: ${fromEmail}`);
 
