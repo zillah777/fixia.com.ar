@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as sgMail from '@sendgrid/mail';
 import * as nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 import * as fs from 'fs';
 import * as path from 'path';
 import Handlebars from 'handlebars';
@@ -24,6 +25,7 @@ export class EmailService {
   private readonly logger = new Logger(EmailService.name);
   private readonly templatesPath = this.getTemplatesPath();
   private gmailTransporter: nodemailer.Transporter;
+  private resend: Resend;
 
   private getTemplatesPath(): string {
     // In production (dist), templates are copied to dist/templates/emails
@@ -39,12 +41,20 @@ export class EmailService {
   }
 
   constructor(private configService: ConfigService) {
-    // Try to configure SendGrid first
-    const sendgridApiKey = this.configService.get<string>('SENDGRID_API_KEY');
+    this.logger.log(`📧 Email configuration check:`);
     
-    this.logger.log(`Email configuration check:`);
+    // Try to configure Resend first (HTTP-based, works with Railway)
+    const resendApiKey = this.configService.get<string>('RESEND_API_KEY');
+    this.logger.log(`- Resend API Key present: ${!!resendApiKey}`);
+    
+    if (resendApiKey) {
+      this.resend = new Resend(resendApiKey);
+      this.logger.log('✅ Resend API service initialized (HTTP-based)');
+    }
+    
+    // Try to configure SendGrid as secondary
+    const sendgridApiKey = this.configService.get<string>('SENDGRID_API_KEY');
     this.logger.log(`- SendGrid API Key present: ${!!sendgridApiKey}`);
-    this.logger.log(`- Email FROM configured: ${this.configService.get<string>('EMAIL_FROM')}`);
     
     if (sendgridApiKey) {
       sgMail.setApiKey(sendgridApiKey);
@@ -84,8 +94,16 @@ export class EmailService {
       });
     }
     
-    if (!sendgridApiKey && (!gmailUser || !gmailPass)) {
-      this.logger.error('❌ No email service configured. Neither SendGrid nor Gmail SMTP available.');
+    this.logger.log(`- Email FROM configured: ${this.configService.get<string>('EMAIL_FROM')}`);
+    
+    if (!resendApiKey && !sendgridApiKey && (!gmailUser || !gmailPass)) {
+      this.logger.error('❌ No email service configured. None of Resend, SendGrid, or Gmail SMTP available.');
+    } else {
+      const services = [];
+      if (resendApiKey) services.push('Resend API');
+      if (sendgridApiKey) services.push('SendGrid');
+      if (gmailUser && gmailPass) services.push('Gmail SMTP');
+      this.logger.log(`📧 Available email services: ${services.join(', ')}`);
     }
   }
 
@@ -101,13 +119,18 @@ export class EmailService {
       
       this.logger.log(`Sending from: ${fromEmail}`);
 
-      // Try SendGrid first if available
+      // Try Resend first if available (HTTP-based, works with Railway)
+      if (this.resend) {
+        return await this.sendWithResend(emailData, fromEmail, htmlContent);
+      }
+      
+      // Try SendGrid as secondary
       const sendgridApiKey = this.configService.get<string>('SENDGRID_API_KEY');
       if (sendgridApiKey) {
         return await this.sendWithSendGrid(emailData, fromEmail, htmlContent);
       }
       
-      // Fallback to Gmail SMTP
+      // Fallback to Gmail SMTP (likely blocked on Railway)
       if (this.gmailTransporter) {
         return await this.sendWithGmail(emailData, fromEmail, htmlContent);
       }
@@ -118,6 +141,31 @@ export class EmailService {
     } catch (error) {
       this.logger.error(`❌ Failed to send email to ${emailData.to}:`, error);
       return false;
+    }
+  }
+
+  private async sendWithResend(emailData: EmailTemplate, fromEmail: string, htmlContent: string): Promise<boolean> {
+    try {
+      const emailPayload = {
+        from: fromEmail,
+        to: Array.isArray(emailData.to) ? emailData.to : [emailData.to],
+        subject: emailData.subject,
+        html: htmlContent,
+      };
+
+      this.logger.log(`📤 Sending via Resend API: ${JSON.stringify({
+        to: emailPayload.to,
+        from: emailPayload.from,
+        subject: emailPayload.subject
+      })}`);
+
+      const result = await this.resend.emails.send(emailPayload);
+      this.logger.log(`✅ Email sent successfully via Resend to ${emailData.to}`);
+      this.logger.log(`Resend response: ${JSON.stringify(result)}`);
+      return true;
+    } catch (error) {
+      this.logger.error(`❌ Resend failed:`, error);
+      throw error;
     }
   }
 
