@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as sgMail from '@sendgrid/mail';
+import * as nodemailer from 'nodemailer';
 import * as fs from 'fs';
 import * as path from 'path';
 import Handlebars from 'handlebars';
@@ -22,20 +23,42 @@ export interface EmailTemplate {
 export class EmailService {
   private readonly logger = new Logger(EmailService.name);
   private readonly templatesPath = path.join(__dirname, '../../templates/emails');
+  private gmailTransporter: nodemailer.Transporter;
 
   constructor(private configService: ConfigService) {
-    const apiKey = this.configService.get<string>('SENDGRID_API_KEY');
+    // Try to configure SendGrid first
+    const sendgridApiKey = this.configService.get<string>('SENDGRID_API_KEY');
     
-    this.logger.log(`SendGrid configuration check: API Key present: ${!!apiKey}`);
-    this.logger.log(`Email FROM configured: ${this.configService.get<string>('EMAIL_FROM')}`);
+    this.logger.log(`Email configuration check:`);
+    this.logger.log(`- SendGrid API Key present: ${!!sendgridApiKey}`);
+    this.logger.log(`- Email FROM configured: ${this.configService.get<string>('EMAIL_FROM')}`);
     
-    if (!apiKey) {
-      this.logger.error('SendGrid API key not configured. Email functionality will be disabled.');
-      return;
+    if (sendgridApiKey) {
+      sgMail.setApiKey(sendgridApiKey);
+      this.logger.log('✅ SendGrid email service initialized');
     }
-
-    sgMail.setApiKey(apiKey);
-    this.logger.log('SendGrid email service initialized successfully');
+    
+    // Configure Gmail SMTP as fallback
+    const gmailUser = this.configService.get<string>('GMAIL_USER');
+    const gmailPass = this.configService.get<string>('GMAIL_APP_PASSWORD');
+    
+    this.logger.log(`- Gmail SMTP User: ${gmailUser}`);
+    this.logger.log(`- Gmail App Password present: ${!!gmailPass}`);
+    
+    if (gmailUser && gmailPass) {
+      this.gmailTransporter = nodemailer.createTransporter({
+        service: 'gmail',
+        auth: {
+          user: gmailUser,
+          pass: gmailPass,
+        },
+      });
+      this.logger.log('✅ Gmail SMTP transporter initialized');
+    }
+    
+    if (!sendgridApiKey && (!gmailUser || !gmailPass)) {
+      this.logger.error('❌ No email service configured. Neither SendGrid nor Gmail SMTP available.');
+    }
   }
 
   /**
@@ -43,13 +66,35 @@ export class EmailService {
    */
   async sendTemplatedEmail(emailData: EmailTemplate): Promise<boolean> {
     try {
-      this.logger.log(`Attempting to send email to: ${emailData.to} with template: ${emailData.template}`);
+      this.logger.log(`📧 Attempting to send email to: ${emailData.to} with template: ${emailData.template}`);
       
       const htmlContent = await this.renderTemplate(emailData.template, emailData.templateData);
+      const fromEmail = emailData.from || this.configService.get<string>('EMAIL_FROM') || this.configService.get<string>('GMAIL_USER', 'noreply@fixia.com.ar');
       
-      const fromEmail = emailData.from || this.configService.get<string>('EMAIL_FROM', 'noreply@fixia.com.ar');
       this.logger.log(`Sending from: ${fromEmail}`);
+
+      // Try SendGrid first if available
+      const sendgridApiKey = this.configService.get<string>('SENDGRID_API_KEY');
+      if (sendgridApiKey) {
+        return await this.sendWithSendGrid(emailData, fromEmail, htmlContent);
+      }
       
+      // Fallback to Gmail SMTP
+      if (this.gmailTransporter) {
+        return await this.sendWithGmail(emailData, fromEmail, htmlContent);
+      }
+      
+      this.logger.error(`❌ No email service available`);
+      return false;
+
+    } catch (error) {
+      this.logger.error(`❌ Failed to send email to ${emailData.to}:`, error);
+      return false;
+    }
+  }
+
+  private async sendWithSendGrid(emailData: EmailTemplate, fromEmail: string, htmlContent: string): Promise<boolean> {
+    try {
       const message = {
         to: Array.isArray(emailData.to) ? emailData.to : [emailData.to],
         from: fromEmail,
@@ -58,21 +103,48 @@ export class EmailService {
         attachments: emailData.attachments || [],
       };
 
-      this.logger.log(`SendGrid message prepared: ${JSON.stringify({
+      this.logger.log(`📤 Sending via SendGrid: ${JSON.stringify({
         to: message.to,
         from: message.from,
-        subject: message.subject,
-        hasHtml: !!message.html
+        subject: message.subject
       })}`);
 
       await sgMail.send(message);
-      this.logger.log(`✅ Email sent successfully to ${emailData.to}`);
+      this.logger.log(`✅ Email sent successfully via SendGrid to ${emailData.to}`);
       return true;
-
     } catch (error) {
-      this.logger.error(`❌ Failed to send email to ${emailData.to}:`, error);
-      this.logger.error(`SendGrid error details:`, JSON.stringify(error.response?.body || error.message));
-      return false;
+      this.logger.error(`❌ SendGrid failed:`, JSON.stringify(error.response?.body || error.message));
+      throw error;
+    }
+  }
+
+  private async sendWithGmail(emailData: EmailTemplate, fromEmail: string, htmlContent: string): Promise<boolean> {
+    try {
+      const mailOptions = {
+        from: fromEmail,
+        to: Array.isArray(emailData.to) ? emailData.to.join(', ') : emailData.to,
+        subject: emailData.subject,
+        html: htmlContent,
+        attachments: emailData.attachments?.map(att => ({
+          filename: att.filename,
+          content: att.content,
+          contentType: att.type
+        })) || [],
+      };
+
+      this.logger.log(`📤 Sending via Gmail SMTP: ${JSON.stringify({
+        to: mailOptions.to,
+        from: mailOptions.from,
+        subject: mailOptions.subject
+      })}`);
+
+      const result = await this.gmailTransporter.sendMail(mailOptions);
+      this.logger.log(`✅ Email sent successfully via Gmail SMTP to ${emailData.to}`);
+      this.logger.log(`Gmail response: ${result.messageId}`);
+      return true;
+    } catch (error) {
+      this.logger.error(`❌ Gmail SMTP failed:`, error);
+      throw error;
     }
   }
 
