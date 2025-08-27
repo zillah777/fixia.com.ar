@@ -25,7 +25,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Inicio de sesión' })
   @ApiResponse({ status: 200, description: 'Login exitoso' })
-  @ApiResponse({ status: 401, description: 'Credenciales inválidas' })
+  @ApiResponse({ status: 401, description: 'Credenciales inválidas o email no verificado' })
   async login(@Body() loginDto: LoginDto): Promise<AuthResponse> {
     return this.authService.login(loginDto);
   }
@@ -95,6 +95,23 @@ export class AuthController {
   @ApiResponse({ status: 400, description: 'Token inválido o expirado' })
   async verifyEmail(@Body() verifyEmailDto: VerifyEmailDto) {
     return this.authService.verifyEmail(verifyEmailDto.token);
+  }
+
+  @Get('verify/:token')
+  @ApiOperation({ summary: 'Verificar email con token via GET (para links directos)' })
+  @ApiResponse({ status: 302, description: 'Redirect a frontend con resultado' })
+  async verifyEmailByGet(@Param('token') token: string, @Res() res) {
+    try {
+      await this.authService.verifyEmail(token);
+      
+      // Redirect to frontend with success message
+      const redirectUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/login?verified=true&message=Email verificado exitosamente`;
+      res.redirect(redirectUrl);
+    } catch (error) {
+      // Redirect to frontend with error message  
+      const redirectUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/register?error=token_invalid&message=Token de verificación inválido o expirado`;
+      res.redirect(redirectUrl);
+    }
   }
 
   @Post('resend-verification')

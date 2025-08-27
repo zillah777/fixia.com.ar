@@ -384,8 +384,8 @@ export class AuthService {
       },
     });
 
-    // Send email with verification link
-    const verificationUrl = `${this.configService.get('FRONTEND_URL', 'http://localhost:3000')}/verify-email?token=${token}`;
+    // Send email with verification link - use backend GET endpoint for direct verification
+    const verificationUrl = `${this.configService.get('APP_URL') || 'https://fixiacomar-production.up.railway.app'}/auth/verify/${token}`;
     
     this.logger.log(`Attempting to send verification email to ${email} with URL: ${verificationUrl}`);
     
