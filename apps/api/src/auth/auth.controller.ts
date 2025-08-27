@@ -7,6 +7,8 @@ import {
   UseGuards,
   Get,
   Request,
+  Param,
+  Res,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
