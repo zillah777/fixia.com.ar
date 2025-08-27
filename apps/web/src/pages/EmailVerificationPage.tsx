@@ -34,7 +34,7 @@ interface VerificationState {
   resendCooldown: number;
 }
 
-export default function EmailVerificationPage() {
+function EmailVerificationPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { login } = useAuth();
@@ -459,3 +459,7 @@ export default function EmailVerificationPage() {
     </div>
   );
 }
+
+// Export both named and default to ensure maximum compatibility
+export { EmailVerificationPage };
+export default EmailVerificationPage;

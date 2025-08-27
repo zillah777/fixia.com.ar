@@ -170,26 +170,84 @@ test.describe('User Registration Flow', () => {
   });
 
   test.describe('Email Verification', () => {
-    test('should display email verification notice after registration', async ({ page }) => {
-      // This test assumes email verification is implemented
-      // Adjust based on actual implementation
-      await page.click('text=Registrarse');
+    test('should redirect to email verification page after successful registration', async ({ page }) => {
+      await page.goto('/register');
       
       const timestamp = Date.now();
       const testEmail = `verify.test.${timestamp}@example.com`;
       
-      await page.fill('[data-testid="fullName-input"]', 'Verification Test');
-      await page.fill('[data-testid="email-input"]', testEmail);
-      await page.fill('[data-testid="password-input"]', 'TestPassword123!');
-      await page.fill('[data-testid="phone-input"]', '+54 280 123-4567');
-      await page.selectOption('[data-testid="location-select"]', 'Puerto Madryn, Chubut');
-      await page.selectOption('[data-testid="userType-select"]', 'client');
-      await page.check('[data-testid="terms-checkbox"]');
+      // Fill basic client registration form
+      await page.fill('#fullName', 'Test User');
+      await page.fill('#email', testEmail);
+      await page.fill('#password', 'TestPassword123!');
+      await page.fill('#confirmPassword', 'TestPassword123!');
+      await page.selectOption('#location', 'Puerto Madryn');
+      await page.fill('#birthdate', '1990-01-01');
+      await page.check('#agreeTerms');
+      await page.check('#agreePrivacy');
       
-      await page.click('[data-testid="register-button"]');
+      // Submit form
+      await page.click('text=Crear Cuenta Gratuita');
       
-      // Should show email verification message
-      await expect(page.locator('text=Verifica tu email')).toBeVisible({ timeout: 10000 });
+      // Should redirect to email verification page
+      await expect(page).toHaveURL(/\/verify-email/, { timeout: 15000 });
+      await expect(page.locator('text=Verifica tu Email')).toBeVisible();
+    });
+
+    test('should prevent login for unverified users and show resend option', async ({ page }) => {
+      await page.goto('/login');
+      
+      // Try to login with unverified account (this would normally fail in real app)
+      await page.fill('#email', 'unverified@example.com');
+      await page.fill('#password', 'TestPassword123!');
+      await page.click('text=Iniciar Sesión');
+      
+      // Should show email verification error with resend option
+      await expect(page.locator('text=Debes verificar tu email')).toBeVisible({ timeout: 10000 });
+      await expect(page.locator('text=Reenviar email de verificación')).toBeVisible();
+    });
+
+    test('should handle email verification token validation', async ({ page }) => {
+      // Test with invalid token
+      await page.goto('/verify-email?token=invalid-token');
+      
+      // Should show error message
+      await expect(page.locator('text=Error de Verificación')).toBeVisible({ timeout: 10000 });
+      await expect(page.locator('text=Reenviar Email de Verificación')).toBeVisible();
+    });
+
+    test('should show success message for valid verification', async ({ page }) => {
+      // This would require a valid token from backend - mock for now
+      await page.route('**/auth/verify-email', route => 
+        route.fulfill({ 
+          status: 200, 
+          body: JSON.stringify({ message: 'Email verificado exitosamente', success: true })
+        })
+      );
+      
+      await page.goto('/verify-email?token=valid-token-mock');
+      
+      // Should show success message
+      await expect(page.locator('text=¡Email Verificado!')).toBeVisible({ timeout: 10000 });
+      await expect(page.locator('text=Ir al Login Ahora')).toBeVisible();
+    });
+
+    test('should allow resending verification email', async ({ page }) => {
+      // Mock the resend endpoint
+      await page.route('**/auth/resend-verification', route => 
+        route.fulfill({ 
+          status: 200, 
+          body: JSON.stringify({ message: 'Email de verificación enviado', success: true })
+        })
+      );
+
+      await page.goto('/verify-email?email=test@example.com');
+      
+      // Click resend button
+      await page.click('text=Reenviar Email de Verificación');
+      
+      // Should show success message
+      await expect(page.locator('text=Email de verificación reenviado')).toBeVisible({ timeout: 5000 });
     });
   });
 

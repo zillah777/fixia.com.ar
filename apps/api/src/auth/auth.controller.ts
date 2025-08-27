@@ -9,6 +9,8 @@ import {
   Request,
   Param,
   Res,
+  Logger,
+  Ip,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
@@ -20,6 +22,8 @@ import { AuthResponse } from '@fixia/types';
 @ApiTags('Autenticación')
 @Controller('auth')
 export class AuthController {
+  private readonly logger = new Logger(AuthController.name);
+  
   constructor(private readonly authService: AuthService) {}
 
   @Post('login')
@@ -91,25 +95,34 @@ export class AuthController {
   }
 
   @Post('verify-email')
+  @Throttle({ default: { limit: 10, ttl: 60000 } }) // 10 attempts per minute to prevent brute force
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Verificar email con token' })
   @ApiResponse({ status: 200, description: 'Email verificado exitosamente' })
   @ApiResponse({ status: 400, description: 'Token inválido o expirado' })
-  async verifyEmail(@Body() verifyEmailDto: VerifyEmailDto) {
+  async verifyEmail(@Body() verifyEmailDto: VerifyEmailDto, @Ip() clientIp: string) {
+    this.logger.log(`Email verification attempt via POST: token=${verifyEmailDto.token.substring(0, 8)}..., ip=${clientIp}`);
     return this.authService.verifyEmail(verifyEmailDto.token);
   }
 
   @Get('verify/:token')
+  @Throttle({ default: { limit: 5, ttl: 60000 } }) // 5 attempts per minute to prevent token enumeration
   @ApiOperation({ summary: 'Verificar email con token via GET (para links directos)' })
   @ApiResponse({ status: 302, description: 'Redirect a frontend con resultado' })
-  async verifyEmailByGet(@Param('token') token: string, @Res() res) {
+  async verifyEmailByGet(@Param('token') token: string, @Res() res, @Ip() clientIp: string) {
+    this.logger.log(`Email verification attempt via GET: token=${token.substring(0, 8)}..., ip=${clientIp}`);
+    
     try {
-      await this.authService.verifyEmail(token);
+      const result = await this.authService.verifyEmail(token);
+      
+      this.logger.log(`Email verification successful via GET: ip=${clientIp}, success=${result.success}`);
       
       // Redirect to frontend with success message
       const redirectUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/login?verified=true&message=Email verificado exitosamente`;
       res.redirect(redirectUrl);
     } catch (error) {
+      this.logger.warn(`Email verification failed via GET: ip=${clientIp}, error=${error.message}`);
+      
       // Redirect to frontend with error message  
       const redirectUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/register?error=token_invalid&message=Token de verificación inválido o expirado`;
       res.redirect(redirectUrl);
@@ -121,7 +134,8 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Reenviar email de verificación' })
   @ApiResponse({ status: 200, description: 'Email de verificación enviado' })
-  async resendVerification(@Body() resendVerificationDto: ResendVerificationDto) {
+  async resendVerification(@Body() resendVerificationDto: ResendVerificationDto, @Ip() clientIp: string) {
+    this.logger.log(`Resend verification request: email=${resendVerificationDto.email}, ip=${clientIp}`);
     return this.authService.sendEmailVerification(resendVerificationDto.email);
   }
 

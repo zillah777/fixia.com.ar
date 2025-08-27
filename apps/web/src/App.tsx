@@ -7,6 +7,7 @@ import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import EmailVerificationPage from "./pages/EmailVerificationPage";
 import DashboardPage from "./pages/DashboardPage";
 import ServicesPage from "./pages/ServicesPage";
 import ServiceDetailPage from "./pages/ServiceDetailPage";
@@ -133,6 +134,14 @@ function AppRoutes() {
                 <ForgotPasswordPage />
               </PublicRoute>
             } 
+          />
+          <Route 
+            path="/verify-email/*" 
+            element={<EmailVerificationPage />} 
+          />
+          <Route 
+            path="/verify-email" 
+            element={<EmailVerificationPage />} 
           />
           
           {/* Protected Routes */}

@@ -79,10 +79,10 @@
         
         <!-- Content -->
         <div class="email-content">
-            <div class="greeting">¡Bienvenido/a a Fixia, {{userName}}! 🎉</div>
+            <div class="greeting">¡Bienvenido/a a Fixia, {{escapeHtml userName}}! 🎉</div>
             
             <div class="message">
-                Estamos emocionados de tenerte como parte de nuestra comunidad. Fixia es el marketplace líder de servicios profesionales en Chubut, donde conectamos {{userType}} con {{#if isProfessional}}clientes que necesitan tus servicios{{else}}los mejores profesionales de la región{{/if}}.
+                Estamos emocionados de tenerte como parte de nuestra comunidad. Fixia es el marketplace líder de servicios profesionales en Chubut, donde conectamos {{escapeHtml userType}} con {{#if isProfessional}}clientes que necesitan tus servicios{{else}}los mejores profesionales de la región{{/if}}.
             </div>
             
             <!-- Features -->
@@ -156,17 +156,17 @@
             
             <div class="cta-container">
                 {{#if isProfessional}}
-                <a href="{{dashboardUrl}}" class="cta-button">Completar mi perfil</a>
-                <a href="{{servicesUrl}}" class="cta-button cta-secondary">Ver servicios</a>
+                <a href="{{escapeUrl dashboardUrl}}" class="cta-button">Completar mi perfil</a>
+                <a href="{{escapeUrl servicesUrl}}" class="cta-button cta-secondary">Ver servicios</a>
                 {{else}}
-                <a href="{{dashboardUrl}}" class="cta-button">Explorar servicios</a>
-                <a href="{{profileUrl}}" class="cta-button cta-secondary">Mi perfil</a>
+                <a href="{{escapeUrl dashboardUrl}}" class="cta-button">Explorar servicios</a>
+                <a href="{{escapeUrl profileUrl}}" class="cta-button cta-secondary">Mi perfil</a>
                 {{/if}}
             </div>
             
             <div class="message">
                 <strong>¿Necesitas ayuda?</strong><br>
-                Nuestro equipo de soporte está disponible para ayudarte. Puedes contactarnos en cualquier momento a través de <a href="mailto:soporte@fixia.com.ar" style="color: #0ea5e9;">soporte@fixia.com.ar</a> o visitando nuestro <a href="{{helpUrl}}" style="color: #0ea5e9;">centro de ayuda</a>.
+                Nuestro equipo de soporte está disponible para ayudarte. Puedes contactarnos en cualquier momento a través de <a href="mailto:soporte@fixia.com.ar" style="color: #0ea5e9;">soporte@fixia.com.ar</a> o visitando nuestro <a href="{{escapeUrl helpUrl}}" style="color: #0ea5e9;">centro de ayuda</a>.
                 <br><br>
                 ¡Gracias por elegir Fixia y esperamos que tengas una excelente experiencia!
             </div>
@@ -185,13 +185,13 @@
             </div>
             
             <div class="social-links">
-                <a href="{{facebookUrl}}">Facebook</a> |
-                <a href="{{instagramUrl}}">Instagram</a> |
-                <a href="{{linkedinUrl}}">LinkedIn</a>
+                <a href="{{escapeUrl facebookUrl}}">Facebook</a> |
+                <a href="{{escapeUrl instagramUrl}}">Instagram</a> |
+                <a href="{{escapeUrl linkedinUrl}}">LinkedIn</a>
             </div>
             
             <div class="unsubscribe">
-                <a href="{{unsubscribeUrl}}">Darse de baja</a> | 
+                <a href="{{escapeUrl unsubscribeUrl}}">Darse de baja</a> | 
                 <a href="mailto:soporte@fixia.com.ar">Contactar soporte</a>
             </div>
         </div>

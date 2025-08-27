@@ -341,6 +341,9 @@ export class AuthService {
   async sendEmailVerification(email: string, userId?: string): Promise<{ message: string; success: boolean }> {
     let user;
     
+    // Security logging: Track verification attempts
+    this.logger.log(`Email verification request: email=${email}, userId=${userId || 'not provided'}`);
+    
     if (userId) {
       user = await this.prisma.user.findUnique({ where: { id: userId } });
     } else {
@@ -348,6 +351,8 @@ export class AuthService {
     }
 
     if (!user) {
+      // Security: Don't reveal whether email exists in database
+      this.logger.warn(`Verification requested for non-existent email: ${email}`);
       return {
         message: 'Si el email existe, se ha enviado un enlace de verificación',
         success: true
@@ -355,6 +360,7 @@ export class AuthService {
     }
 
     if (user.email_verified) {
+      this.logger.log(`Verification requested for already verified email: ${email}`);
       return {
         message: 'El email ya está verificado',
         success: true
@@ -367,13 +373,17 @@ export class AuthService {
     expiresAt.setHours(expiresAt.getHours() + 24); // Token expires in 24 hours
 
     // Invalidate any existing tokens for this user
-    await this.prisma.emailVerificationToken.updateMany({
+    const invalidatedTokens = await this.prisma.emailVerificationToken.updateMany({
       where: { 
         user_id: user.id,
         used: false 
       },
       data: { used: true }
     });
+    
+    if (invalidatedTokens.count > 0) {
+      this.logger.log(`Invalidated ${invalidatedTokens.count} previous verification tokens for user: ${user.id}`);
+    }
 
     // Create new verification token
     await this.prisma.emailVerificationToken.create({
@@ -383,6 +393,8 @@ export class AuthService {
         expires_at: expiresAt,
       },
     });
+    
+    this.logger.log(`New verification token created for user: ${user.id}, expires: ${expiresAt.toISOString()}`);
 
     // Send email with verification link - use backend GET endpoint for direct verification
     const verificationUrl = `${this.configService.get('APP_URL') || 'https://fixiacomar-production.up.railway.app'}/auth/verify/${token}`;
@@ -410,44 +422,75 @@ export class AuthService {
   }
 
   async verifyEmail(token: string): Promise<{ message: string; success: boolean }> {
-    // Find valid token
-    const verificationToken = await this.prisma.emailVerificationToken.findFirst({
-      where: {
-        token,
-        used: false,
-        expires_at: {
-          gt: new Date()
-        }
-      },
-      include: {
-        user: true
+    const startTime = Date.now();
+    
+    // Security: Add minimum processing time to prevent timing attacks
+    const normalizeResponseTime = async (result: { message: string; success: boolean }, error?: boolean) => {
+      const processingTime = Date.now() - startTime;
+      const minProcessingTime = 100; // 100ms minimum to normalize timing
+      
+      if (processingTime < minProcessingTime) {
+        await new Promise(resolve => setTimeout(resolve, minProcessingTime - processingTime));
       }
-    });
-
-    if (!verificationToken) {
-      throw new BadRequestException('Token de verificación inválido o expirado');
-    }
-
-    if (verificationToken.user.email_verified) {
-      throw new BadRequestException('El email ya está verificado');
-    }
-
-    // Update user email_verified and mark token as used
-    await this.prisma.$transaction([
-      this.prisma.user.update({
-        where: { id: verificationToken.user_id },
-        data: { email_verified: true }
-      }),
-      this.prisma.emailVerificationToken.update({
-        where: { id: verificationToken.id },
-        data: { used: true }
-      })
-    ]);
-
-    return {
-      message: 'Email verificado exitosamente',
-      success: true
+      
+      // Log security event
+      this.logger.log(`Email verification attempt: token=${token.substring(0, 8)}..., success=${!error}, processingTime=${Date.now() - startTime}ms`);
+      
+      if (error) {
+        throw new BadRequestException('Token de verificación inválido o expirado');
+      }
+      
+      return result;
     };
+
+    try {
+      // Find valid token
+      const verificationToken = await this.prisma.emailVerificationToken.findFirst({
+        where: {
+          token,
+          used: false,
+          expires_at: {
+            gt: new Date()
+          }
+        },
+        include: {
+          user: true
+        }
+      });
+
+      if (!verificationToken) {
+        return await normalizeResponseTime({ message: '', success: false }, true);
+      }
+
+      if (verificationToken.user.email_verified) {
+        return await normalizeResponseTime({ message: '', success: false }, true);
+      }
+
+      // Update user email_verified and mark token as used
+      await this.prisma.$transaction([
+        this.prisma.user.update({
+          where: { id: verificationToken.user_id },
+          data: { email_verified: true }
+        }),
+        this.prisma.emailVerificationToken.update({
+          where: { id: verificationToken.id },
+          data: { used: true }
+        })
+      ]);
+
+      return await normalizeResponseTime({
+        message: 'Email verificado exitosamente',
+        success: true
+      });
+
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      
+      // For any other errors, normalize response time and throw generic error
+      return await normalizeResponseTime({ message: '', success: false }, true);
+    }
   }
 
   async changePassword(userId: string, currentPassword: string, newPassword: string): Promise<{ message: string; success: boolean }> {

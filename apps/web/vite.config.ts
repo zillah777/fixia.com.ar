@@ -21,6 +21,9 @@ export default defineConfig({
         },
       },
     },
+    // Ensure proper asset handling for SPA routing
+    assetsDir: 'assets',
+    emptyOutDir: true,
   },
   server: {
     port: 3000,

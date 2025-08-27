@@ -7,6 +7,38 @@ import * as fs from 'fs';
 import * as path from 'path';
 import Handlebars from 'handlebars';
 
+// Register secure HTML escaping helper
+Handlebars.registerHelper('escapeHtml', (text: string) => {
+  if (!text || typeof text !== 'string') return '';
+  return Handlebars.escapeExpression(text);
+});
+
+// Register safe URL helper for URLs
+Handlebars.registerHelper('escapeUrl', (url: string) => {
+  if (!url || typeof url !== 'string') return '';
+  
+  // Block dangerous protocols
+  const dangerousProtocols = ['javascript:', 'data:', 'vbscript:', 'file:', 'ftp:'];
+  const lowerUrl = url.toLowerCase().trim();
+  
+  if (dangerousProtocols.some(protocol => lowerUrl.startsWith(protocol))) {
+    return ''; // Return empty string for dangerous protocols
+  }
+  
+  // Basic URL validation and encoding
+  try {
+    const urlObj = new URL(url);
+    // Only allow http and https protocols
+    if (!['http:', 'https:'].includes(urlObj.protocol)) {
+      return '';
+    }
+    return Handlebars.escapeExpression(urlObj.toString());
+  } catch {
+    // If invalid URL, return empty string for security
+    return '';
+  }
+});
+
 export interface EmailTemplate {
   to: string | string[];
   subject: string;

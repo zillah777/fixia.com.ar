@@ -1,13 +1,15 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { motion } from "motion/react";
-import { Eye, EyeOff, Mail, Lock, ArrowLeft, Loader2 } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, ArrowLeft, Loader2, AlertCircle, RefreshCw, CheckCircle2 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Checkbox } from "../components/ui/checkbox";
+import { Alert, AlertDescription } from "../components/ui/alert";
 import { useAuth } from "../context/AuthContext";
+import { authService } from "../lib/services";
 import { toast } from "sonner";
 import { FixiaNavigation } from "../components/FixiaNavigation";
 
@@ -17,9 +19,27 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [emailVerificationError, setEmailVerificationError] = useState(false);
+  const [isResendingVerification, setIsResendingVerification] = useState(false);
+  const [welcomeMessage, setWelcomeMessage] = useState<string | null>(null);
   
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Handle state from navigation (from verification page or registration)
+  useEffect(() => {
+    const state = location.state as any;
+    if (state?.email) {
+      setEmail(state.email);
+    }
+    if (state?.message) {
+      setWelcomeMessage(state.message);
+      toast.success(state.message);
+      // Clear the state to prevent showing the message again on refresh
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,6 +50,7 @@ export default function LoginPage() {
     }
 
     setLoading(true);
+    setEmailVerificationError(false);
     
     try {
       await login(email, password);
@@ -37,11 +58,45 @@ export default function LoginPage() {
       // Success toast is already shown in AuthContext
       navigate("/dashboard");
     } catch (error: any) {
-      // Error handling is already done in AuthContext
-      // Just log it for debugging
+      // Check if it's an email verification error
+      const errorMessage = error.message || '';
+      if (errorMessage.includes('verify your email') || 
+          errorMessage.includes('verifica tu email') || 
+          errorMessage.includes('not verified') || 
+          errorMessage.includes('email verification required')) {
+        setEmailVerificationError(true);
+        toast.error(
+          'Debes verificar tu email antes de iniciar sesión',
+          {
+            description: 'Revisa tu bandeja de entrada o reenvía el email de verificación.',
+            duration: 6000,
+          }
+        );
+      }
+      // For other errors, AuthContext already handles the toast
       console.error("Login error:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleResendVerification = async () => {
+    if (!email) {
+      toast.error("Por favor ingresa tu email primero");
+      return;
+    }
+
+    setIsResendingVerification(true);
+    try {
+      await authService.resendVerificationEmail();
+      toast.success("Email de verificación reenviado. Revisa tu bandeja de entrada.");
+      // Redirect to verification page
+      navigate(`/verify-email?email=${encodeURIComponent(email)}`);
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || error.message || 'Error al reenviar el email';
+      toast.error(errorMessage);
+    } finally {
+      setIsResendingVerification(false);
     }
   };
 
@@ -73,6 +128,23 @@ export default function LoginPage() {
             </CardHeader>
             
             <CardContent>
+              {/* Welcome Message */}
+              {welcomeMessage && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                  className="mb-6"
+                >
+                  <Alert className="border-green-500/50 bg-green-500/10">
+                    <CheckCircle2 className="h-4 w-4 text-green-500" />
+                    <AlertDescription className="text-green-700 dark:text-green-300">
+                      {welcomeMessage}
+                    </AlertDescription>
+                  </Alert>
+                </motion.div>
+              )}
+
               <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Email Field */}
                 <div className="space-y-2">
@@ -140,6 +212,55 @@ export default function LoginPage() {
                     ¿Olvidaste tu contraseña?
                   </Link>
                 </div>
+
+                {/* Email Verification Error */}
+                {emailVerificationError && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <Alert className="border-warning/50 bg-warning/10 space-y-3">
+                      <AlertCircle className="h-4 w-4 text-warning" />
+                      <div className="space-y-3">
+                        <AlertDescription className="text-warning-foreground">
+                          <strong>Email no verificado</strong><br />
+                          Necesitas verificar tu dirección de email antes de iniciar sesión.
+                        </AlertDescription>
+                        <div className="flex flex-col sm:flex-row gap-2">
+                          <Button
+                            onClick={handleResendVerification}
+                            disabled={isResendingVerification}
+                            variant="outline"
+                            size="sm"
+                            className="flex-1 border-warning/50 text-warning hover:bg-warning/10"
+                          >
+                            {isResendingVerification ? (
+                              <>
+                                <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                                Enviando...
+                              </>
+                            ) : (
+                              <>
+                                <RefreshCw className="h-4 w-4 mr-2" />
+                                Reenviar Email
+                              </>
+                            )}
+                          </Button>
+                          <Button
+                            onClick={() => navigate(`/verify-email?email=${encodeURIComponent(email)}`)}
+                            variant="outline"
+                            size="sm"
+                            className="flex-1 border-primary/50 text-primary hover:bg-primary/10"
+                          >
+                            <Mail className="h-4 w-4 mr-2" />
+                            Ir a Verificación
+                          </Button>
+                        </div>
+                      </div>
+                    </Alert>
+                  </motion.div>
+                )}
 
                 {/* Submit Button */}
                 <Button

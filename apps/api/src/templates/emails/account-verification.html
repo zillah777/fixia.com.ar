@@ -13,12 +13,12 @@
         /* Container */
         .email-container { max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
         
-        /* Header */
-        .email-header { background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%); padding: 30px; text-align: center; color: white; }
+        /* Header - Fixia Brand Colors */
+        .email-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center; color: white; }
         .logo-container { margin-bottom: 20px; }
-        .logo { width: 48px; height: 48px; background: rgba(255, 255, 255, 0.2); border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; color: white; backdrop-filter: blur(10px); }
-        .brand-name { font-size: 28px; font-weight: bold; margin-top: 10px; }
-        .tagline { font-size: 14px; opacity: 0.9; margin-top: 5px; }
+        .logo { width: 56px; height: 56px; background: rgba(255, 255, 255, 0.2); border-radius: 16px; display: inline-flex; align-items: center; justify-content: center; font-size: 26px; font-weight: bold; color: white; backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.2); }
+        .brand-name { font-size: 32px; font-weight: 800; margin-top: 12px; letter-spacing: -0.5px; }
+        .tagline { font-size: 15px; opacity: 0.95; margin-top: 8px; font-weight: 500; }
         
         /* Content */
         .email-content { padding: 40px 30px; }
@@ -63,7 +63,7 @@
         
         <!-- Content -->
         <div class="email-content">
-            <div class="greeting">¡Hola {{userName}}!</div>
+            <div class="greeting">¡Hola {{escapeHtml userName}}!</div>
             
             <div class="message">
                 Te damos la bienvenida a <strong>Fixia</strong>, el marketplace de servicios profesionales de Chubut.
@@ -74,13 +74,13 @@
             </div>
             
             <div class="cta-container">
-                <a href="{{verificationUrl}}" class="cta-button">Verificar mi cuenta</a>
+                <a href="{{escapeUrl verificationUrl}}" class="cta-button">Verificar mi cuenta</a>
             </div>
             
             <div class="alt-link">
                 <strong>¿No funciona el botón?</strong><br>
                 Copia y pega este enlace en tu navegador:<br>
-                <a href="{{verificationUrl}}">{{verificationUrl}}</a>
+                <a href="{{escapeUrl verificationUrl}}">{{escapeUrl verificationUrl}}</a>
             </div>
             
             <div class="message">
@@ -103,7 +103,7 @@
             </div>
             
             <div class="unsubscribe">
-                <a href="{{unsubscribeUrl}}">Darse de baja</a> | 
+                <a href="{{escapeUrl unsubscribeUrl}}">Darse de baja</a> | 
                 <a href="mailto:soporte@fixia.com.ar">Contactar soporte</a>
             </div>
         </div>

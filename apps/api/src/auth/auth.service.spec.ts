@@ -525,9 +525,10 @@ describe('AuthService', () => {
       password: 'password123',
     };
 
-    it('should successfully login with valid credentials', async () => {
+    it('should successfully login with valid credentials and verified email', async () => {
       // Arrange
-      prismaService.user.findUnique.mockResolvedValue(mockUser);
+      const verifiedUser = { ...mockUser, email_verified: true };
+      prismaService.user.findUnique.mockResolvedValue(verifiedUser);
       prismaService.userSession.create.mockResolvedValue({
         id: 'session-123',
         user_id: mockUser.id,
@@ -564,6 +565,25 @@ describe('AuthService', () => {
       });
     });
 
+    it('should reject login when email is not verified', async () => {
+      // Arrange
+      const unverifiedUser = { ...mockUser, email_verified: false };
+      prismaService.user.findUnique.mockResolvedValue(unverifiedUser);
+
+      // Act & Assert
+      await expect(service.login(loginCredentials)).rejects.toThrow(
+        new UnauthorizedException('Please verify your email address before logging in. Check your email for the verification link, or request a new verification email.')
+      );
+
+      expect(mockedBcrypt.compare).toHaveBeenCalledWith(
+        loginCredentials.password,
+        mockUser.password_hash
+      );
+
+      expect(jwtService.sign).not.toHaveBeenCalled();
+      expect(prismaService.userSession.create).not.toHaveBeenCalled();
+    });
+
     it('should reject login with invalid email', async () => {
       // Arrange
       prismaService.user.findUnique.mockResolvedValue(null);
@@ -590,9 +610,10 @@ describe('AuthService', () => {
       expect(jwtService.sign).not.toHaveBeenCalled();
     });
 
-    it('should include professional profile in login response', async () => {
+    it('should include professional profile in login response when email is verified', async () => {
       // Arrange
-      prismaService.user.findUnique.mockResolvedValue(mockProfessionalUser);
+      const verifiedProfessionalUser = { ...mockProfessionalUser, email_verified: true };
+      prismaService.user.findUnique.mockResolvedValue(verifiedProfessionalUser);
       prismaService.userSession.create.mockResolvedValue({
         id: 'session-123',
         user_id: mockProfessionalUser.id,
