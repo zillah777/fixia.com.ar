@@ -131,7 +131,9 @@ export class AuthService {
     }
 
     // Generate and send verification email
+    this.logger.log(`About to send verification email to: ${registerData.email}`);
     await this.sendEmailVerification(registerData.email, user.id);
+    this.logger.log(`Verification email process completed for: ${registerData.email}`);
 
     // Generate tokens and return same as login
     const payload = { 
@@ -385,13 +387,20 @@ export class AuthService {
     // Send email with verification link
     const verificationUrl = `${this.configService.get('FRONTEND_URL', 'http://localhost:3000')}/verify-email?token=${token}`;
     
+    this.logger.log(`Attempting to send verification email to ${email} with URL: ${verificationUrl}`);
+    
     try {
-      await this.emailService.sendAccountVerification(email, user.name, verificationUrl);
+      const emailSent = await this.emailService.sendAccountVerification(email, user.name, verificationUrl);
+      if (emailSent) {
+        this.logger.log(`✅ Verification email sent successfully to ${email}`);
+      } else {
+        this.logger.error(`❌ Email service returned false for ${email}`);
+      }
     } catch (error) {
-      this.logger?.error(`Failed to send verification email to ${email}:`, error);
+      this.logger.error(`❌ Failed to send verification email to ${email}:`, error);
       // Still log for development/testing fallback
-      console.log(`Verification token for ${email}: ${token}`);
-      console.log(`Verification URL: ${verificationUrl}`);
+      console.log(`🔍 DEBUG - Verification token for ${email}: ${token}`);
+      console.log(`🔍 DEBUG - Verification URL: ${verificationUrl}`);
     }
 
     return {

@@ -26,13 +26,16 @@ export class EmailService {
   constructor(private configService: ConfigService) {
     const apiKey = this.configService.get<string>('SENDGRID_API_KEY');
     
+    this.logger.log(`SendGrid configuration check: API Key present: ${!!apiKey}`);
+    this.logger.log(`Email FROM configured: ${this.configService.get<string>('EMAIL_FROM')}`);
+    
     if (!apiKey) {
-      this.logger.warn('SendGrid API key not configured. Email functionality will be disabled.');
+      this.logger.error('SendGrid API key not configured. Email functionality will be disabled.');
       return;
     }
 
     sgMail.setApiKey(apiKey);
-    this.logger.log('SendGrid email service initialized');
+    this.logger.log('SendGrid email service initialized successfully');
   }
 
   /**
@@ -40,22 +43,35 @@ export class EmailService {
    */
   async sendTemplatedEmail(emailData: EmailTemplate): Promise<boolean> {
     try {
+      this.logger.log(`Attempting to send email to: ${emailData.to} with template: ${emailData.template}`);
+      
       const htmlContent = await this.renderTemplate(emailData.template, emailData.templateData);
+      
+      const fromEmail = emailData.from || this.configService.get<string>('EMAIL_FROM', 'noreply@fixia.com.ar');
+      this.logger.log(`Sending from: ${fromEmail}`);
       
       const message = {
         to: Array.isArray(emailData.to) ? emailData.to : [emailData.to],
-        from: emailData.from || this.configService.get<string>('EMAIL_FROM', 'noreply@fixia.com.ar'),
+        from: fromEmail,
         subject: emailData.subject,
         html: htmlContent,
         attachments: emailData.attachments || [],
       };
 
+      this.logger.log(`SendGrid message prepared: ${JSON.stringify({
+        to: message.to,
+        from: message.from,
+        subject: message.subject,
+        hasHtml: !!message.html
+      })}`);
+
       await sgMail.send(message);
-      this.logger.log(`Email sent successfully to ${emailData.to}`);
+      this.logger.log(`✅ Email sent successfully to ${emailData.to}`);
       return true;
 
     } catch (error) {
-      this.logger.error(`Failed to send email: ${error.message}`, error.stack);
+      this.logger.error(`❌ Failed to send email to ${emailData.to}:`, error);
+      this.logger.error(`SendGrid error details:`, JSON.stringify(error.response?.body || error.message));
       return false;
     }
   }
@@ -266,13 +282,26 @@ export class EmailService {
   private async renderTemplate(templateName: string, data: Record<string, any>): Promise<string> {
     try {
       const templatePath = path.join(this.templatesPath, `${templateName}.html`);
+      this.logger.log(`Looking for template at: ${templatePath}`);
+      this.logger.log(`Template data: ${JSON.stringify(data)}`);
+      
+      if (!fs.existsSync(templatePath)) {
+        this.logger.error(`Template file not found: ${templatePath}`);
+        throw new Error(`Template file not found: ${templatePath}`);
+      }
+      
       const templateContent = fs.readFileSync(templatePath, 'utf8');
+      this.logger.log(`Template loaded successfully, size: ${templateContent.length} chars`);
       
       const template = Handlebars.compile(templateContent);
-      return template(data);
+      const renderedContent = template(data);
+      
+      this.logger.log(`Template rendered successfully, output size: ${renderedContent.length} chars`);
+      return renderedContent;
 
     } catch (error) {
       this.logger.error(`Failed to render template ${templateName}: ${error.message}`);
+      this.logger.error(`Templates path: ${this.templatesPath}`);
       throw new Error(`Template rendering failed: ${templateName}`);
     }
   }
