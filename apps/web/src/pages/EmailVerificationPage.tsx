@@ -21,6 +21,8 @@ import { useAuth } from "../context/AuthContext";
 import { toast } from "sonner";
 import { FixiaNavigation } from "../components/FixiaNavigation";
 
+// Email verification page component for user account activation
+
 interface VerificationState {
   isVerifying: boolean;
   isVerified: boolean;
