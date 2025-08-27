@@ -82,6 +82,8 @@ interface AuthContextType {
   respondToContactRequest: (requestId: string, accept: boolean) => Promise<void>;
   updateAvailability: (status: 'available' | 'busy' | 'offline') => Promise<void>;
   upgradeToPremium: () => Promise<void>;
+  verifyEmail: (token: string) => Promise<void>;
+  resendVerificationEmail: (email?: string) => Promise<void>;
   loading: boolean;
 }
 
@@ -235,13 +237,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       const response: AuthResponse = await authService.register(registerData);
       
-      // Transform backend user data to frontend format for compatibility
-      const transformedUser = transformBackendUser(response.user);
-      
-      setUser(transformedUser);
-      localStorage.setItem('fixia_user', JSON.stringify(transformedUser));
-      
-      toast.success(`¡Cuenta creada exitosamente, ${transformedUser.name}!`);
+      // Don't automatically log in user - they need to verify email first
+      // Success message is handled by the RegisterPage component for better UX
     } catch (error: any) {
       // Handle API errors gracefully
       const errorMessage = error.response?.data?.message || error.message || 'Error en el registro';
@@ -363,6 +360,38 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const verifyEmail = async (token: string) => {
+    try {
+      await authService.verifyEmail(token);
+      
+      // Update user's email verification status if they're logged in
+      if (user) {
+        const updatedUser = { ...user, emailVerified: true, isVerified: true };
+        setUser(updatedUser);
+        localStorage.setItem('fixia_user', JSON.stringify(updatedUser));
+      }
+      
+      toast.success('¡Email verificado exitosamente!');
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || error.message || 'Error al verificar el email';
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+  };
+
+  const resendVerificationEmail = async (email?: string) => {
+    try {
+      // If email is provided, we might need to set it in the request context
+      // For now, the backend should handle it based on the current user session or token
+      await authService.resendVerificationEmail();
+      toast.success('Email de verificación reenviado. Revisa tu bandeja de entrada.');
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || error.message || 'Error al reenviar el email de verificación';
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+  };
+
   return (
     <AuthContext.Provider value={{
       user,
@@ -375,6 +404,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       respondToContactRequest,
       updateAvailability,
       upgradeToPremium,
+      verifyEmail,
+      resendVerificationEmail,
       loading
     }}>
       {children}

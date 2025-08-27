@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "motion/react";
 import { ArrowLeft, Eye, EyeOff, CheckCircle, AlertCircle, Crown, UserPlus, FileText, CreditCard, X, Hash, Plus } from "lucide-react";
@@ -84,6 +84,35 @@ function ClientRegistrationForm({
 }) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
+  const [passwordsMatch, setPasswordsMatch] = useState(true);
+
+  // Real-time password validation
+  useEffect(() => {
+    const errors: string[] = [];
+    if (formData.password.length > 0) {
+      if (formData.password.length < 8) {
+        errors.push('Mínimo 8 caracteres');
+      }
+      if (!/[A-Z]/.test(formData.password)) {
+        errors.push('Una letra mayúscula');
+      }
+      if (!/[a-z]/.test(formData.password)) {
+        errors.push('Una letra minúscula');
+      }
+      if (!/[0-9]/.test(formData.password)) {
+        errors.push('Un número');
+      }
+    }
+    setPasswordErrors(errors);
+  }, [formData.password]);
+
+  // Real-time password match validation
+  useEffect(() => {
+    if (formData.confirmPassword.length > 0) {
+      setPasswordsMatch(formData.password === formData.confirmPassword);
+    }
+  }, [formData.password, formData.confirmPassword]);
 
   const locations = [
     "Rawson", "Puerto Madryn", "Comodoro Rivadavia", "Trelew", 
@@ -175,6 +204,39 @@ function ClientRegistrationForm({
               </div>
             </div>
           </div>
+
+          {/* Password validation feedback */}
+          {(passwordErrors.length > 0 || (formData.confirmPassword && !passwordsMatch)) && (
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                {passwordErrors.length > 0 && (
+                  <div className="text-sm space-y-1">
+                    <p className="text-orange-500 font-medium">Requisitos de contraseña:</p>
+                    {passwordErrors.map((error, index) => (
+                      <div key={index} className="flex items-center space-x-2 text-orange-500">
+                        <AlertCircle className="h-3 w-3" />
+                        <span>{error}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <div className="space-y-2">
+                {formData.confirmPassword && !passwordsMatch && (
+                  <div className="flex items-center space-x-2 text-red-500 text-sm">
+                    <AlertCircle className="h-3 w-3" />
+                    <span>Las contraseñas no coinciden</span>
+                  </div>
+                )}
+                {formData.confirmPassword && passwordsMatch && formData.password && (
+                  <div className="flex items-center space-x-2 text-green-500 text-sm">
+                    <CheckCircle className="h-3 w-3" />
+                    <span>Las contraseñas coinciden</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
 
           <div className="grid md:grid-cols-2 gap-4">
             <div className="space-y-2">
@@ -277,13 +339,13 @@ function ClientRegistrationForm({
 
           <Button
             type="submit"
-            className="w-full liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg"
+            className="w-full liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg disabled:opacity-70"
             disabled={isSubmitting}
           >
             {isSubmitting ? (
               <>
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                Creando cuenta...
+                Creando tu cuenta...
               </>
             ) : (
               <>
@@ -485,6 +547,35 @@ function ProfessionalRegistrationForm({
 }) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
+  const [passwordsMatch, setPasswordsMatch] = useState(true);
+
+  // Real-time password validation
+  useEffect(() => {
+    const errors: string[] = [];
+    if (formData.password.length > 0) {
+      if (formData.password.length < 8) {
+        errors.push('Mínimo 8 caracteres');
+      }
+      if (!/[A-Z]/.test(formData.password)) {
+        errors.push('Una letra mayúscula');
+      }
+      if (!/[a-z]/.test(formData.password)) {
+        errors.push('Una letra minúscula');
+      }
+      if (!/[0-9]/.test(formData.password)) {
+        errors.push('Un número');
+      }
+    }
+    setPasswordErrors(errors);
+  }, [formData.password]);
+
+  // Real-time password match validation
+  useEffect(() => {
+    if (formData.confirmPassword.length > 0) {
+      setPasswordsMatch(formData.password === formData.confirmPassword);
+    }
+  }, [formData.password, formData.confirmPassword]);
 
   const locations = [
     "Rawson", "Puerto Madryn", "Comodoro Rivadavia", "Trelew", 
@@ -586,6 +677,39 @@ function ProfessionalRegistrationForm({
                 </div>
               </div>
             </div>
+
+            {/* Password validation feedback */}
+            {(passwordErrors.length > 0 || (formData.confirmPassword && !passwordsMatch)) && (
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  {passwordErrors.length > 0 && (
+                    <div className="text-sm space-y-1">
+                      <p className="text-orange-500 font-medium">Requisitos de contraseña:</p>
+                      {passwordErrors.map((error, index) => (
+                        <div key={index} className="flex items-center space-x-2 text-orange-500">
+                          <AlertCircle className="h-3 w-3" />
+                          <span>{error}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <div className="space-y-2">
+                  {formData.confirmPassword && !passwordsMatch && (
+                    <div className="flex items-center space-x-2 text-red-500 text-sm">
+                      <AlertCircle className="h-3 w-3" />
+                      <span>Las contraseñas no coinciden</span>
+                    </div>
+                  )}
+                  {formData.confirmPassword && passwordsMatch && formData.password && (
+                    <div className="flex items-center space-x-2 text-green-500 text-sm">
+                      <CheckCircle className="h-3 w-3" />
+                      <span>Las contraseñas coinciden</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
 
             <div className="grid md:grid-cols-2 gap-4">
               <div className="space-y-2">
@@ -808,13 +932,13 @@ function ProfessionalRegistrationForm({
 
           <Button
             type="submit"
-            className="w-full liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg"
+            className="w-full liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg disabled:opacity-70"
             disabled={isSubmitting || formData.serviceCategories.length === 0}
           >
             {isSubmitting ? (
               <>
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                Creando perfil profesional...
+                Creando tu perfil profesional...
               </>
             ) : (
               <>
@@ -922,16 +1046,46 @@ export default function RegisterPage() {
         certifications: formData.certifications
       });
       
-      // Registration successful, navigate to dashboard
-      // Success toast is already shown in AuthContext
-      navigate('/dashboard');
+      // Registration successful - show enhanced success message and redirect to email verification
+      toast.success(
+        `¡Bienvenido/a a Fixia, ${formData.fullName}! Te hemos enviado un email de verificación.`,
+        {
+          description: `Revisa tu bandeja de entrada en ${formData.email}`,
+          duration: 5000,
+        }
+      );
+      
+      // Redirect to email verification page with email parameter
+      navigate(`/verify-email?email=${encodeURIComponent(formData.email)}`);
     } catch (error: any) {
       // Error handling is already done in AuthContext, but let's add a fallback
       console.error('Registration error:', error);
       
-      // Fallback error message if AuthContext doesn't handle it
-      if (!error.message || error.message === 'Error en el registro') {
-        toast.error('Error al crear la cuenta. Por favor, intenta de nuevo o revisa los datos ingresados.');
+      // Provide more specific error messages based on the error
+      const errorMessage = error.response?.data?.message || error.message;
+      
+      if (errorMessage?.includes('email already exists') || errorMessage?.includes('ya existe')) {
+        toast.error(
+          'Esta dirección de email ya está registrada',
+          {
+            description: '¿Ya tienes cuenta? Intenta iniciar sesión o usar otro email.',
+            action: {
+              label: 'Iniciar Sesión',
+              onClick: () => navigate('/login')
+            }
+          }
+        );
+      } else if (errorMessage?.includes('invalid email') || errorMessage?.includes('email inválido')) {
+        toast.error('La dirección de email no es válida. Por favor, verifica que esté correcta.');
+      } else if (errorMessage?.includes('weak password') || errorMessage?.includes('contraseña débil')) {
+        toast.error('La contraseña es muy débil. Debe tener al menos 8 caracteres, incluyendo letras y números.');
+      } else if (!errorMessage || errorMessage === 'Error en el registro') {
+        toast.error(
+          'Error al crear la cuenta',
+          {
+            description: 'Por favor, verifica los datos ingresados e intenta de nuevo.'
+          }
+        );
       }
     } finally {
       setIsSubmitting(false);

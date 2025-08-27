@@ -42,6 +42,11 @@ export class AuthService {
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
     const user = await this.validateUser(credentials.email, credentials.password);
     
+    // Check if email is verified - required for login security
+    if (!user.email_verified) {
+      throw new UnauthorizedException('Please verify your email address before logging in. Check your email for the verification link, or request a new verification email.');
+    }
+    
     const payload = { 
       sub: user.id, 
       email: user.email, 
@@ -104,15 +109,20 @@ export class AuthService {
 
     // Create professional profile if user is professional
     if (userCreateData.user_type === 'professional') {
+      // Convert experience string to years number
+      const experienceMap = {
+        'menos-1': 0,
+        '1-3': 2,
+        '3-5': 4,
+        '5-10': 7,
+        'mas-10': 15
+      };
+      
       const professionalData = {
         user_id: user.id,
         bio: registerData.description || '',
         specialties: registerData.serviceCategories || [],
-        experience_years: registerData.experience || '',
-        pricing_range: registerData.pricing || '',
-        availability: registerData.availability || '',
-        portfolio_url: registerData.portfolio || null,
-        certifications: registerData.certifications || '',
+        years_experience: experienceMap[registerData.experience as keyof typeof experienceMap] || null,
       };
 
       await this.prisma.professionalProfile.create({
@@ -255,10 +265,18 @@ export class AuthService {
         },
       });
 
-      // TODO: Send email with reset link
-      // For now, we'll log the token for development/testing
-      console.log(`Reset token for ${email}: ${token}`);
-      console.log(`Reset URL: ${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password?token=${token}`);
+      // Send password reset email
+      const resetUrl = `${this.configService.get('FRONTEND_URL') || 'http://localhost:3000'}/reset-password?token=${token}`;
+      
+      try {
+        await this.emailService.sendPasswordReset(email, user.name, resetUrl);
+        this.logger.log(`Password reset email sent to ${email}`);
+      } catch (error) {
+        this.logger.error(`Failed to send password reset email to ${email}: ${error.message}`);
+        // For development/testing fallback
+        console.log(`Reset token for ${email}: ${token}`);
+        console.log(`Reset URL: ${resetUrl}`);
+      }
     }
 
     // Always return success for security (don't reveal if email exists)

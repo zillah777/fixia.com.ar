@@ -25,9 +25,13 @@ export default defineConfig({
   server: {
     port: 3000,
     host: true,
+    // Enable SPA fallback for development
+    historyApiFallback: true,
   },
   preview: {
     port: 4173,
     host: true,
+    // Enable SPA fallback for preview
+    historyApiFallback: true,
   },
 });
