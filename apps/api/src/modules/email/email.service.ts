@@ -46,7 +46,7 @@ export class EmailService {
     this.logger.log(`- Gmail App Password present: ${!!gmailPass}`);
     
     if (gmailUser && gmailPass) {
-      this.gmailTransporter = nodemailer.createTransporter({
+      this.gmailTransporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
           user: gmailUser,
