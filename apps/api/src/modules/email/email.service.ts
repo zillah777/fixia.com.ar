@@ -60,13 +60,28 @@ export class EmailService {
     
     if (gmailUser && gmailPass) {
       this.gmailTransporter = nodemailer.createTransport({
-        service: 'gmail',
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false, // true for 465, false for other ports
         auth: {
           user: gmailUser,
           pass: gmailPass,
         },
+        tls: {
+          rejectUnauthorized: false
+        },
+        connectionTimeout: 60000, // 60 seconds
+        greetingTimeout: 30000,   // 30 seconds  
+        socketTimeout: 75000,     // 75 seconds
       });
-      this.logger.log('✅ Gmail SMTP transporter initialized');
+      this.logger.log('✅ Gmail SMTP transporter initialized with explicit configuration');
+      
+      // Test connection
+      this.gmailTransporter.verify().then(() => {
+        this.logger.log('✅ Gmail SMTP connection verified successfully');
+      }).catch((error) => {
+        this.logger.error(`❌ Gmail SMTP connection verification failed:`, error.message);
+      });
     }
     
     if (!sendgridApiKey && (!gmailUser || !gmailPass)) {
