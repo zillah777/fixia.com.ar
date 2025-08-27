@@ -5,6 +5,12 @@
   "compilerOptions": {
     "deleteOutDir": true,
     "outDir": "dist",
-    "preserveOutDir": false
+    "preserveOutDir": false,
+    "assets": [
+      {
+        "include": "templates/**/*.html",
+        "outDir": "dist"
+      }
+    ]
   }
 }

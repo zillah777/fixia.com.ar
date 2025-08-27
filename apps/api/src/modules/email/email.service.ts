@@ -22,8 +22,21 @@ export interface EmailTemplate {
 @Injectable()
 export class EmailService {
   private readonly logger = new Logger(EmailService.name);
-  private readonly templatesPath = path.join(__dirname, '../../templates/emails');
+  private readonly templatesPath = this.getTemplatesPath();
   private gmailTransporter: nodemailer.Transporter;
+
+  private getTemplatesPath(): string {
+    // In production (dist), templates are copied to dist/templates/emails
+    // In development, they're in src/templates/emails
+    const isDev = process.env.NODE_ENV === 'development';
+    
+    if (isDev) {
+      return path.join(__dirname, '../../templates/emails');
+    } else {
+      // In production, templates are in dist/templates/emails
+      return path.join(process.cwd(), 'dist', 'templates', 'emails');
+    }
+  }
 
   constructor(private configService: ConfigService) {
     // Try to configure SendGrid first
