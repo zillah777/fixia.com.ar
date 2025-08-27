@@ -22,6 +22,7 @@ import { toast } from "sonner";
 import { FixiaNavigation } from "../components/FixiaNavigation";
 
 // Email verification page component for user account activation
+// Force Vercel redeploy to fix 404 routing issue
 
 interface VerificationState {
   isVerifying: boolean;
