@@ -91,17 +91,17 @@ function ClientRegistrationForm({
   useEffect(() => {
     const errors: string[] = [];
     if (formData.password.length > 0) {
-      if (formData.password.length < 8) {
-        errors.push('Mínimo 8 caracteres');
+      if (formData.password.length < 6) {
+        errors.push('Mínimo 6 caracteres');
       }
-      if (!/[A-Z]/.test(formData.password)) {
-        errors.push('Una letra mayúscula');
-      }
-      if (!/[a-z]/.test(formData.password)) {
-        errors.push('Una letra minúscula');
-      }
-      if (!/[0-9]/.test(formData.password)) {
-        errors.push('Un número');
+      // Make other validations optional for now
+      if (formData.password.length >= 8) {
+        if (!/[A-Z]/.test(formData.password)) {
+          errors.push('Recomendado: una letra mayúscula');
+        }
+        if (!/[0-9]/.test(formData.password)) {
+          errors.push('Recomendado: un número');
+        }
       }
     }
     setPasswordErrors(errors);
@@ -554,17 +554,17 @@ function ProfessionalRegistrationForm({
   useEffect(() => {
     const errors: string[] = [];
     if (formData.password.length > 0) {
-      if (formData.password.length < 8) {
-        errors.push('Mínimo 8 caracteres');
+      if (formData.password.length < 6) {
+        errors.push('Mínimo 6 caracteres');
       }
-      if (!/[A-Z]/.test(formData.password)) {
-        errors.push('Una letra mayúscula');
-      }
-      if (!/[a-z]/.test(formData.password)) {
-        errors.push('Una letra minúscula');
-      }
-      if (!/[0-9]/.test(formData.password)) {
-        errors.push('Un número');
+      // Make other validations optional for now
+      if (formData.password.length >= 8) {
+        if (!/[A-Z]/.test(formData.password)) {
+          errors.push('Recomendado: una letra mayúscula');
+        }
+        if (!/[0-9]/.test(formData.password)) {
+          errors.push('Recomendado: un número');
+        }
       }
     }
     setPasswordErrors(errors);
@@ -973,8 +973,8 @@ export default function RegisterPage() {
       return;
     }
 
-    if (formData.password.length < 8) {
-      toast.error('La contraseña debe tener al menos 8 caracteres');
+    if (formData.password.length < 6) {
+      toast.error('La contraseña debe tener al menos 6 caracteres');
       return;
     }
 
@@ -1029,6 +1029,7 @@ export default function RegisterPage() {
         hasPassword: !!formData.password
       });
       
+      console.log('About to call register function...');
       await register({
         email: formData.email,
         password: formData.password,
@@ -1046,6 +1047,8 @@ export default function RegisterPage() {
         certifications: formData.certifications
       });
       
+      console.log('Registration completed successfully!');
+      
       // Registration successful - show enhanced success message and redirect to email verification
       toast.success(
         `¡Bienvenido/a a Fixia, ${formData.fullName}! Te hemos enviado un email de verificación.`,
@@ -1054,6 +1057,8 @@ export default function RegisterPage() {
           duration: 5000,
         }
       );
+      
+      console.log(`About to navigate to: /verify-email?email=${encodeURIComponent(formData.email)}`);
       
       // Redirect to email verification page with email parameter
       navigate(`/verify-email?email=${encodeURIComponent(formData.email)}`);
