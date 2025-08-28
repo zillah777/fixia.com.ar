@@ -14,10 +14,10 @@ export default defineConfig({
     sourcemap: false,
     rollupOptions: {
       output: {
-        // Force new filenames with timestamp to bust Vercel cache
-        entryFileNames: `assets/[name]-${Date.now()}.[hash].js`,
-        chunkFileNames: `assets/[name]-${Date.now()}.[hash].js`,
-        assetFileNames: `assets/[name]-${Date.now()}.[hash].[ext]`,
+        // AGGRESSIVE cache busting: timestamp + random string + hash
+        entryFileNames: `assets/[name]-${Date.now()}-${Math.random().toString(36).substring(2, 15)}.[hash].js`,
+        chunkFileNames: `assets/[name]-${Date.now()}-${Math.random().toString(36).substring(2, 15)}.[hash].js`,
+        assetFileNames: `assets/[name]-${Date.now()}-${Math.random().toString(36).substring(2, 15)}.[hash].[ext]`,
         manualChunks: {
           vendor: ['react', 'react-dom'],
           router: ['react-router-dom'],
@@ -28,6 +28,9 @@ export default defineConfig({
     // Ensure proper asset handling for SPA routing
     assetsDir: 'assets',
     emptyOutDir: true,
+    // Force rebuild even if files haven't changed
+    minify: 'terser',
+    cssCodeSplit: true,
   },
   server: {
     port: 3000,

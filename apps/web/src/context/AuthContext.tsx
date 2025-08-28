@@ -97,73 +97,186 @@ export const useAuth = () => {
   return context;
 };
 
+// Helper function to safely get nested object property
+const safeGet = (obj: any, path: string[], fallback: any = null) => {
+  try {
+    return path.reduce((current, key) => {
+      return current && typeof current === 'object' && current[key] !== undefined ? current[key] : fallback;
+    }, obj);
+  } catch {
+    return fallback;
+  }
+};
+
+// Helper function to safely convert to string
+const safeString = (value: any, fallback = ''): string => {
+  if (value === null || value === undefined) return fallback;
+  if (typeof value === 'string') return value;
+  try {
+    return String(value);
+  } catch {
+    return fallback;
+  }
+};
+
+// Helper function to safely convert to number
+const safeNumber = (value: any, fallback = 0): number => {
+  if (value === null || value === undefined) return fallback;
+  if (typeof value === 'number' && !isNaN(value)) return value;
+  try {
+    const parsed = Number(value);
+    return isNaN(parsed) ? fallback : parsed;
+  } catch {
+    return fallback;
+  }
+};
+
+// Helper function to safely convert to boolean
+const safeBool = (value: any, fallback = false): boolean => {
+  if (value === null || value === undefined) return fallback;
+  if (typeof value === 'boolean') return value;
+  if (typeof value === 'string') return value.toLowerCase() === 'true';
+  return Boolean(value);
+};
+
 // Transform backend user data to frontend format for compatibility
 const transformBackendUser = (backendUser: any): User => {
-  // Validate backendUser exists
-  if (!backendUser) {
-    throw new Error('Backend user data is required');
+  // Absolute validation - handle ANY falsy value
+  if (!backendUser || typeof backendUser !== 'object') {
+    console.error('🚨 transformBackendUser: Invalid backend user data received:', backendUser);
+    throw new Error('Invalid user data received from server');
   }
   
-  // Debug logging to understand the issue
-  console.log('🔍 transformBackendUser received:', JSON.stringify(backendUser, null, 2));
+  // Debug logging with safe stringification
+  try {
+    console.log('🔍 transformBackendUser received:', JSON.stringify(backendUser, null, 2));
+  } catch (stringifyError) {
+    console.log('🔍 transformBackendUser received (unstringifiable object):', backendUser);
+  }
   
-  // Safely parse location for Argentina specific fields
+  // BULLETPROOF location parsing - handle ALL edge cases
   let city = '';
-  let province = 'Chubut';
+  let province = 'Chubut'; // Default province for Argentina
   
   try {
-    if (backendUser?.location && typeof backendUser.location === 'string') {
-      const locationParts = backendUser.location.split(', ');
-      city = locationParts[0] || '';
-      province = locationParts[1] || 'Chubut';
+    const locationValue = backendUser.location || backendUser.Location || '';
+    const locationStr = safeString(locationValue).trim();
+    
+    if (locationStr && locationStr.length > 0) {
+      // Handle various location formats
+      if (locationStr.includes(', ')) {
+        const locationParts = locationStr.split(', ').map(part => part.trim()).filter(Boolean);
+        city = safeString(locationParts[0], '');
+        province = safeString(locationParts[1], 'Chubut');
+      } else if (locationStr.includes(',')) {
+        const locationParts = locationStr.split(',').map(part => part.trim()).filter(Boolean);
+        city = safeString(locationParts[0], '');
+        province = safeString(locationParts[1], 'Chubut');
+      } else {
+        // Single value - assume it's a city
+        city = locationStr;
+        province = 'Chubut';
+      }
     }
-  } catch (error) {
-    console.warn('Error parsing location:', error);
-    // Use defaults
+  } catch (locationError) {
+    console.warn('🚨 Error parsing location, using defaults:', locationError);
+    city = '';
+    province = 'Chubut';
   }
   
-  return {
-    id: backendUser.id,
-    email: backendUser.email,
-    name: backendUser.name, // Backend maps fullName to name
-    lastName: backendUser.lastName || '',
-    phone: backendUser.phone || '',
-    avatar: backendUser.avatar || '',
-    userType: backendUser.user_type || backendUser.userType,
-    location: backendUser.location || '',
-    planType: backendUser.planType || 'free',
-    isVerified: backendUser.verified || backendUser.isVerified || false,
-    emailVerified: backendUser.email_verified || backendUser.emailVerified || false,
+  // Get professional profile safely
+  const professionalProfile = safeGet(backendUser, ['professional_profile']) || 
+                              safeGet(backendUser, ['professionalProfile']) || 
+                              null;
+  
+  // Safely extract user type with multiple fallbacks
+  const userType = safeString(backendUser.user_type) || 
+                   safeString(backendUser.userType) || 
+                   safeString(backendUser.accountType) || 
+                   'client';
+  
+  // Ensure user type is valid
+  const validUserType = (userType === 'professional' || userType === 'client') ? userType : 'client';
+  
+  // Build the user object with comprehensive safety checks
+  const transformedUser: User = {
+    // Essential fields with absolute safety
+    id: safeString(backendUser.id || backendUser._id, ''),
+    email: safeString(backendUser.email, ''),
+    name: safeString(backendUser.name || backendUser.fullName || backendUser.firstName, 'Usuario'),
+    lastName: safeString(backendUser.lastName || backendUser.last_name, ''),
+    phone: safeString(backendUser.phone || backendUser.phoneNumber, ''),
+    avatar: safeString(backendUser.avatar || backendUser.profileImage, ''),
+    userType: validUserType as 'client' | 'professional',
+    location: safeString(backendUser.location, ''),
+    planType: (safeString(backendUser.planType) === 'premium' ? 'premium' : 'free') as 'free' | 'premium',
     
-    // Professional profile
-    professionalProfile: backendUser.professional_profile || backendUser.professionalProfile || null,
+    // Verification fields
+    isVerified: safeBool(backendUser.verified || backendUser.isVerified),
+    emailVerified: safeBool(backendUser.email_verified || backendUser.emailVerified),
+    
+    // Professional profile with safe extraction
+    professionalProfile: professionalProfile ? {
+      id: safeString(professionalProfile.id, ''),
+      serviceCategories: Array.isArray(professionalProfile.serviceCategories) 
+        ? professionalProfile.serviceCategories.map(cat => safeString(cat)).filter(Boolean)
+        : [],
+      description: safeString(professionalProfile.description, ''),
+      experience: safeString(professionalProfile.experience, ''),
+      pricing: safeString(professionalProfile.pricing, ''),
+      availability: safeString(professionalProfile.availability, 'offline'),
+      portfolio: safeString(professionalProfile.portfolio, ''),
+      certifications: safeString(professionalProfile.certifications, ''),
+      averageRating: safeNumber(professionalProfile.averageRating, 0),
+      totalReviews: safeNumber(professionalProfile.totalReviews, 0),
+      totalServices: safeNumber(professionalProfile.totalServices, 0),
+      completedServices: safeNumber(professionalProfile.completedServices, 0),
+      verified: safeBool(professionalProfile.verified),
+      createdAt: safeString(professionalProfile.createdAt || professionalProfile.created_at, new Date().toISOString()),
+      updatedAt: safeString(professionalProfile.updatedAt || professionalProfile.updated_at, new Date().toISOString()),
+    } : undefined,
     
     // Legacy computed fields for backward compatibility
-    accountType: backendUser.user_type || backendUser.userType, // Same as userType
-    availability: (backendUser.professional_profile || backendUser.professionalProfile)?.availability || 'offline',
-    badges: backendUser.badges || [],
-    totalServices: (backendUser.professional_profile || backendUser.professionalProfile)?.totalServices || 0,
-    completedServices: (backendUser.professional_profile || backendUser.professionalProfile)?.completedServices || 0,
-    averageRating: (backendUser.professional_profile || backendUser.professionalProfile)?.averageRating || 0,
-    totalReviews: (backendUser.professional_profile || backendUser.professionalProfile)?.totalReviews || 0,
-    joinDate: backendUser.created_at || backendUser.createdAt || new Date().toISOString(),
+    accountType: validUserType as 'client' | 'professional',
+    availability: safeString(professionalProfile?.availability, 'offline') as 'available' | 'busy' | 'offline',
+    badges: Array.isArray(backendUser.badges) ? backendUser.badges : [],
+    totalServices: safeNumber(professionalProfile?.totalServices, 0),
+    completedServices: safeNumber(professionalProfile?.completedServices, 0),
+    averageRating: safeNumber(professionalProfile?.averageRating, 0),
+    totalReviews: safeNumber(professionalProfile?.totalReviews, 0),
+    joinDate: safeString(backendUser.created_at || backendUser.createdAt, new Date().toISOString()),
     
-    // Contact limits (default for clients, can be overridden by backend)
-    pendingContactRequests: backendUser.pendingContactRequests || 0,
-    maxContactRequests: backendUser.maxContactRequests || (backendUser.planType === 'premium' ? 10 : 3),
+    // Contact limits with safe defaults
+    pendingContactRequests: safeNumber(backendUser.pendingContactRequests, 0),
+    maxContactRequests: safeNumber(
+      backendUser.maxContactRequests, 
+      (safeString(backendUser.planType) === 'premium' ? 10 : 3)
+    ),
     
-    // Argentina specific
+    // Argentina specific - safely parsed above
     province,
     city,
     
     // Promotion tracking
-    isLaunchPromotion: backendUser.isLaunchPromotion || false,
-    promotionExpiryDate: backendUser.promotionExpiryDate || null,
+    isLaunchPromotion: safeBool(backendUser.isLaunchPromotion),
+    promotionExpiryDate: safeString(backendUser.promotionExpiryDate, '') || undefined,
     
     // Timestamps
-    createdAt: backendUser.created_at || backendUser.createdAt || new Date().toISOString(),
-    updatedAt: backendUser.updated_at || backendUser.updatedAt || new Date().toISOString(),
+    createdAt: safeString(backendUser.created_at || backendUser.createdAt, new Date().toISOString()),
+    updatedAt: safeString(backendUser.updated_at || backendUser.updatedAt, new Date().toISOString()),
   };
+  
+  // Final validation - ensure we have minimum required fields
+  if (!transformedUser.id || !transformedUser.email) {
+    console.error('🚨 Missing critical user fields after transformation:', { 
+      id: transformedUser.id, 
+      email: transformedUser.email 
+    });
+    throw new Error('Missing critical user information');
+  }
+  
+  console.log('✅ User transformation completed successfully:', transformedUser);
+  return transformedUser;
 };
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -173,28 +286,73 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const initializeAuth = async () => {
       try {
-        // Check for stored auth data
-        const storedUser = localStorage.getItem('fixia_user');
-        const token = localStorage.getItem('fixia_token');
+        // Check for stored auth data with safety checks
+        let storedUser: string | null = null;
+        let token: string | null = null;
+        
+        try {
+          storedUser = localStorage.getItem('fixia_user');
+          token = localStorage.getItem('fixia_token');
+        } catch (storageError) {
+          console.warn('⚠️ LocalStorage access failed:', storageError);
+        }
         
         if (storedUser && token) {
-          // Try to get fresh user data from server
           try {
+            // Try to get fresh user data from server
             const freshUserData = await userService.getProfile();
-            const transformedUser = transformBackendUser(freshUserData);
+            
+            // BULLETPROOF transformation with fallback
+            let transformedUser: User;
+            try {
+              transformedUser = transformBackendUser(freshUserData);
+            } catch (transformError) {
+              console.warn('⚠️ Fresh user data transformation failed, using fallback:', transformError);
+              
+              try {
+                // Parse stored user data as backup
+                const parsedStoredUser = JSON.parse(storedUser);
+                transformedUser = validateStoredUser(parsedStoredUser);
+              } catch (parseError) {
+                console.error('🚨 Both fresh and stored user data failed:', parseError);
+                throw new Error('Unable to initialize user data');
+              }
+            }
+            
             setUser(transformedUser);
-            localStorage.setItem('fixia_user', JSON.stringify(transformedUser));
-          } catch (error) {
-            // If token is invalid, fallback to stored user data
-            console.warn('Failed to fetch fresh user data, using stored data');
-            setUser(JSON.parse(storedUser));
+            
+            // Update localStorage with fresh data
+            try {
+              localStorage.setItem('fixia_user', JSON.stringify(transformedUser));
+            } catch (storageError) {
+              console.warn('⚠️ Failed to update localStorage:', storageError);
+            }
+            
+          } catch (apiError) {
+            // If API call fails, fallback to stored user data
+            console.warn('⚠️ Failed to fetch fresh user data, using stored data:', apiError);
+            
+            try {
+              const parsedStoredUser = JSON.parse(storedUser);
+              const validatedUser = validateStoredUser(parsedStoredUser);
+              setUser(validatedUser);
+            } catch (parseError) {
+              console.error('🚨 Stored user data is corrupted:', parseError);
+              // Clear invalid data
+              localStorage.removeItem('fixia_user');
+              localStorage.removeItem('fixia_token');
+            }
           }
         }
       } catch (error) {
-        console.warn('Auth initialization failed:', error);
+        console.warn('🚨 Auth initialization failed:', error);
         // Clear invalid data
-        localStorage.removeItem('fixia_user');
-        localStorage.removeItem('fixia_token');
+        try {
+          localStorage.removeItem('fixia_user');
+          localStorage.removeItem('fixia_token');
+        } catch (clearError) {
+          console.warn('⚠️ Failed to clear localStorage:', clearError);
+        }
       } finally {
         setLoading(false);
       }
@@ -208,27 +366,157 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => clearTimeout(timer);
   }, []);
 
+  // Validate and sanitize stored user data
+  const validateStoredUser = (storedUserData: any): User => {
+    if (!storedUserData || typeof storedUserData !== 'object') {
+      throw new Error('Invalid stored user data');
+    }
+
+    // If stored data is already valid, return it
+    if (storedUserData.id && storedUserData.email && storedUserData.name) {
+      return storedUserData as User;
+    }
+
+    // If stored data is incomplete, try to repair it
+    const now = new Date().toISOString();
+    return {
+      id: storedUserData.id || 'temp-' + Math.random().toString(36),
+      email: storedUserData.email || '',
+      name: storedUserData.name || 'Usuario',
+      lastName: storedUserData.lastName || '',
+      phone: storedUserData.phone || '',
+      avatar: storedUserData.avatar || '',
+      userType: (storedUserData.userType === 'professional' || storedUserData.userType === 'client') 
+        ? storedUserData.userType : 'client',
+      location: storedUserData.location || '',
+      planType: (storedUserData.planType === 'premium') ? 'premium' : 'free',
+      isVerified: Boolean(storedUserData.isVerified),
+      emailVerified: Boolean(storedUserData.emailVerified),
+      professionalProfile: storedUserData.professionalProfile || undefined,
+      accountType: storedUserData.accountType || storedUserData.userType || 'client',
+      availability: storedUserData.availability || 'offline',
+      badges: Array.isArray(storedUserData.badges) ? storedUserData.badges : [],
+      totalServices: Number(storedUserData.totalServices) || 0,
+      completedServices: Number(storedUserData.completedServices) || 0,
+      averageRating: Number(storedUserData.averageRating) || 0,
+      totalReviews: Number(storedUserData.totalReviews) || 0,
+      joinDate: storedUserData.joinDate || now,
+      pendingContactRequests: Number(storedUserData.pendingContactRequests) || 0,
+      maxContactRequests: Number(storedUserData.maxContactRequests) || 3,
+      province: storedUserData.province || 'Chubut',
+      city: storedUserData.city || '',
+      isLaunchPromotion: Boolean(storedUserData.isLaunchPromotion),
+      promotionExpiryDate: storedUserData.promotionExpiryDate || undefined,
+      createdAt: storedUserData.createdAt || now,
+      updatedAt: storedUserData.updatedAt || now,
+    };
+  };
+
   const login = async (email: string, password: string) => {
     setLoading(true);
     try {
       const credentials: LoginRequest = { email, password };
       const response: AuthResponse = await authService.login(credentials);
       
-      // Transform backend user data to frontend format for compatibility
-      const transformedUser = transformBackendUser(response.user);
+      // BULLETPROOF user transformation with multiple error boundaries
+      let transformedUser: User;
+      
+      try {
+        // Primary transformation attempt
+        transformedUser = transformBackendUser(response.user);
+      } catch (transformError) {
+        console.error('🚨 Primary user transformation failed:', transformError);
+        
+        // Fallback transformation with minimal safe user object
+        try {
+          transformedUser = createSafeUserFallback(response.user, email);
+          console.warn('⚠️ Using fallback user transformation');
+        } catch (fallbackError) {
+          console.error('🚨 Fallback user transformation also failed:', fallbackError);
+          throw new Error('No se pudo procesar la información del usuario. Por favor, intenta nuevamente.');
+        }
+      }
+      
+      // Additional validation before setting user
+      if (!transformedUser?.id || !transformedUser?.email) {
+        console.error('🚨 Transformed user missing critical fields:', transformedUser);
+        throw new Error('Datos de usuario incompletos. Por favor, contacta soporte.');
+      }
       
       setUser(transformedUser);
-      localStorage.setItem('fixia_user', JSON.stringify(transformedUser));
+      
+      // Safe localStorage storage with error handling
+      try {
+        localStorage.setItem('fixia_user', JSON.stringify(transformedUser));
+      } catch (storageError) {
+        console.warn('⚠️ Failed to store user data locally:', storageError);
+        // Don't throw here - user can still function without localStorage
+      }
       
       toast.success(`¡Bienvenido/a, ${transformedUser.name}!`);
     } catch (error: any) {
-      // Handle API errors gracefully
-      const errorMessage = error.response?.data?.message || error.message || 'Error en el inicio de sesión';
+      console.error('🚨 Login process failed:', error);
+      
+      // Enhanced error handling with more specific messages
+      let errorMessage = 'Error en el inicio de sesión';
+      
+      if (error.response?.status === 401) {
+        errorMessage = 'Credenciales incorrectas. Verifica tu email y contraseña.';
+      } else if (error.response?.status === 403) {
+        errorMessage = 'Cuenta no verificada. Revisa tu email para verificar tu cuenta.';
+      } else if (error.response?.status >= 500) {
+        errorMessage = 'Error del servidor. Por favor, intenta más tarde.';
+      } else if (error.message?.includes('usuario')) {
+        errorMessage = error.message;
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      }
+      
       toast.error(errorMessage);
       throw new Error(errorMessage);
     } finally {
       setLoading(false);
     }
+  };
+
+  // Fallback function to create a minimal safe user object
+  const createSafeUserFallback = (backendUser: any, email: string): User => {
+    console.log('🔧 Creating safe user fallback for:', backendUser);
+    
+    const now = new Date().toISOString();
+    const safeId = String(backendUser?.id || backendUser?._id || Math.random().toString(36));
+    const safeName = String(backendUser?.name || backendUser?.fullName || 'Usuario');
+    
+    return {
+      id: safeId,
+      email: email,
+      name: safeName,
+      lastName: '',
+      phone: '',
+      avatar: '',
+      userType: 'client',
+      location: '',
+      planType: 'free',
+      isVerified: false,
+      emailVerified: false,
+      professionalProfile: undefined,
+      accountType: 'client',
+      availability: 'offline',
+      badges: [],
+      totalServices: 0,
+      completedServices: 0,
+      averageRating: 0,
+      totalReviews: 0,
+      joinDate: now,
+      pendingContactRequests: 0,
+      maxContactRequests: 3,
+      province: 'Chubut',
+      city: '',
+      isLaunchPromotion: false,
+      promotionExpiryDate: undefined,
+      createdAt: now,
+      updatedAt: now,
+    };
   };
 
   const register = async (userData: any) => {
