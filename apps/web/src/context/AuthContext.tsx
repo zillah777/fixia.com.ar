@@ -104,6 +104,9 @@ const transformBackendUser = (backendUser: any): User => {
     throw new Error('Backend user data is required');
   }
   
+  // Debug logging to understand the issue
+  console.log('🔍 transformBackendUser received:', JSON.stringify(backendUser, null, 2));
+  
   // Safely parse location for Argentina specific fields
   let city = '';
   let province = 'Chubut';
