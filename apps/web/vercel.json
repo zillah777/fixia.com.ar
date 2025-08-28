@@ -1,15 +1,7 @@
 {
   "rewrites": [
     {
-      "source": "/api/(.*)",
-      "destination": "/api/$1"
-    },
-    {
       "source": "/verify-email",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/verify-email/",
       "destination": "/index.html"
     },
     {
@@ -19,12 +11,6 @@
     {
       "source": "/((?!api/|_next/|_static/|favicon.ico|robots.txt|sitemap.xml).*)",
       "destination": "/index.html"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/verify-email(.*)",
-      "dest": "/index.html"
     }
   ],
   "headers": [
@@ -53,24 +39,6 @@
           "value": "1; mode=block"
         }
       ]
-    }
-  ],
-  "functions": {
-    "app/api/**": {
-      "runtime": "nodejs18.x"
-    }
-  },
-  "routes": [
-    {
-      "src": "/verify-email(.*)",
-      "dest": "/index.html"
-    },
-    {
-      "handle": "filesystem"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
     }
   ]
 }
