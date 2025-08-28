@@ -14,6 +14,10 @@ export default defineConfig({
     sourcemap: false,
     rollupOptions: {
       output: {
+        // Force new filenames with timestamp to bust Vercel cache
+        entryFileNames: `assets/[name]-${Date.now()}.[hash].js`,
+        chunkFileNames: `assets/[name]-${Date.now()}.[hash].js`,
+        assetFileNames: `assets/[name]-${Date.now()}.[hash].[ext]`,
         manualChunks: {
           vendor: ['react', 'react-dom'],
           router: ['react-router-dom'],
