@@ -21,6 +21,12 @@
       "destination": "/index.html"
     }
   ],
+  "routes": [
+    {
+      "src": "/verify-email(.*)",
+      "dest": "/index.html"
+    }
+  ],
   "headers": [
     {
       "source": "/service-worker.js",
