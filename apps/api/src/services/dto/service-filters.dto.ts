@@ -121,21 +121,21 @@ export class ServiceFiltersDto {
     example: 'price',
     description: 'Campo por el que ordenar (snake_case)',
     required: false,
-    enum: ['price', 'rating', 'created_at', 'view_count', 'popular']
+    enum: ['price', 'rating', 'created_at', 'view_count', 'popular', 'reviews', 'newest']
   })
   @IsOptional()
-  @IsEnum(['price', 'rating', 'created_at', 'view_count', 'popular'])
-  sort_by?: 'price' | 'rating' | 'created_at' | 'view_count' | 'popular';
+  @IsEnum(['price', 'rating', 'created_at', 'view_count', 'popular', 'reviews', 'newest'])
+  sort_by?: 'price' | 'rating' | 'created_at' | 'view_count' | 'popular' | 'reviews' | 'newest';
 
   @ApiProperty({ 
     example: 'price',
     description: 'Campo por el que ordenar (camelCase)',
     required: false,
-    enum: ['price', 'rating', 'created_at', 'view_count', 'popular']
+    enum: ['price', 'rating', 'created_at', 'view_count', 'popular', 'reviews', 'newest']
   })
   @IsOptional()
-  @IsEnum(['price', 'rating', 'created_at', 'view_count', 'popular'])
-  sortBy?: 'price' | 'rating' | 'created_at' | 'view_count' | 'popular';
+  @IsEnum(['price', 'rating', 'created_at', 'view_count', 'popular', 'reviews', 'newest'])
+  sortBy?: 'price' | 'rating' | 'created_at' | 'view_count' | 'popular' | 'reviews' | 'newest';
 
   @ApiProperty({ 
     example: 'asc',
