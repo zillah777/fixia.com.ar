@@ -177,23 +177,53 @@ export interface PaginatedResponse<T = any> {
 // API methods wrapper with error handling
 export const api = {
   get: <T = any>(url: string, config?: any): Promise<T> => {
-    return apiClient.get(url, config).then(response => response.data);
+    return apiClient.get(url, config).then(response => {
+      // Handle backend's TransformInterceptor wrapper format
+      if (response.data && typeof response.data === 'object' && 'data' in response.data && 'success' in response.data) {
+        return response.data.data;
+      }
+      return response.data;
+    });
   },
 
   post: <T = any>(url: string, data?: any, config?: any): Promise<T> => {
-    return apiClient.post(url, data, config).then(response => response.data);
+    return apiClient.post(url, data, config).then(response => {
+      // Handle backend's TransformInterceptor wrapper format
+      if (response.data && typeof response.data === 'object' && 'data' in response.data && 'success' in response.data) {
+        return response.data.data;
+      }
+      return response.data;
+    });
   },
 
   put: <T = any>(url: string, data?: any, config?: any): Promise<T> => {
-    return apiClient.put(url, data, config).then(response => response.data);
+    return apiClient.put(url, data, config).then(response => {
+      // Handle backend's TransformInterceptor wrapper format
+      if (response.data && typeof response.data === 'object' && 'data' in response.data && 'success' in response.data) {
+        return response.data.data;
+      }
+      return response.data;
+    });
   },
 
   patch: <T = any>(url: string, data?: any, config?: any): Promise<T> => {
-    return apiClient.patch(url, data, config).then(response => response.data);
+    return apiClient.patch(url, data, config).then(response => {
+      // Handle backend's TransformInterceptor wrapper format
+      if (response.data && typeof response.data === 'object' && 'data' in response.data && 'success' in response.data) {
+        return response.data.data;
+      }
+      return response.data;
+    });
   },
 
   delete: <T = any>(url: string, config?: any): Promise<T> => {
-    return apiClient.delete(url, config).then(response => response.data);
+    return apiClient.delete(url, config).then(response => {
+      // Handle backend's TransformInterceptor wrapper format
+      if (response.data && typeof response.data === 'object' && 'data' in response.data && 'success' in response.data) {
+        return response.data.data;
+      }
+      return response.data;
+    });
   },
 };
 
