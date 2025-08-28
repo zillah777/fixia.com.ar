@@ -99,10 +99,25 @@ export const useAuth = () => {
 
 // Transform backend user data to frontend format for compatibility
 const transformBackendUser = (backendUser: any): User => {
-  // Parse location for Argentina specific fields
-  const locationParts = backendUser.location?.split(', ') || ['', ''];
-  const city = locationParts[0] || '';
-  const province = locationParts[1] || 'Chubut';
+  // Validate backendUser exists
+  if (!backendUser) {
+    throw new Error('Backend user data is required');
+  }
+  
+  // Safely parse location for Argentina specific fields
+  let city = '';
+  let province = 'Chubut';
+  
+  try {
+    if (backendUser?.location && typeof backendUser.location === 'string') {
+      const locationParts = backendUser.location.split(', ');
+      city = locationParts[0] || '';
+      province = locationParts[1] || 'Chubut';
+    }
+  } catch (error) {
+    console.warn('Error parsing location:', error);
+    // Use defaults
+  }
   
   return {
     id: backendUser.id,
