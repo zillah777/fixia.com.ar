@@ -154,4 +154,11 @@ export class AuthController {
       changePasswordDto.new_password
     );
   }
+
+  @Post('admin/verify-user')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Verificar usuario manualmente (temporal)' })
+  async adminVerifyUser(@Body() body: { userId: string }) {
+    return this.authService.adminVerifyUser(body.userId);
+  }
 }

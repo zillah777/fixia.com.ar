@@ -542,4 +542,27 @@ export class AuthService {
       success: true
     };
   }
+
+  async adminVerifyUser(userId: string): Promise<{ message: string; success: boolean }> {
+    try {
+      // Update user to verified
+      const user = await this.prisma.user.update({
+        where: { id: userId },
+        data: { 
+          email_verified: true,
+          verified: true
+        }
+      });
+
+      this.logger.log(`✅ Admin verification completed for user: ${user.email}`);
+      
+      return {
+        message: `Usuario ${user.email} verificado exitosamente`,
+        success: true
+      };
+    } catch (error) {
+      this.logger.error(`❌ Admin verification failed for userId: ${userId}`, error);
+      throw new BadRequestException('Error verificando usuario');
+    }
+  }
 }
