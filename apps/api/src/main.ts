@@ -179,7 +179,8 @@ async function bootstrap() {
         ? [
             'https://fixia.com.ar', 
             'https://www.fixia.com.ar',
-            'https://fixiaweb.vercel.app'
+            'https://fixiaweb.vercel.app',
+            'https://fixia.vercel.app'
           ]
         : process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000', 'http://localhost:5173'],
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
