@@ -34,9 +34,12 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    // Remove password from return object
+    // Remove password from return object and ensure location is never undefined
     const { password_hash, ...result } = user;
-    return result;
+    return {
+      ...result,
+      location: result.location || '', // Ensure location is always a string
+    };
   }
 
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
@@ -164,6 +167,8 @@ export class AuthService {
       created_at: userResponse.created_at.toISOString(),
       updated_at: userResponse.updated_at.toISOString(),
       deleted_at: userResponse.deleted_at?.toISOString() || null,
+      // Ensure location is always a string to prevent frontend errors
+      location: userResponse.location || '',
     };
 
     return {
