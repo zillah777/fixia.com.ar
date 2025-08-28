@@ -397,9 +397,17 @@ export class AuthService {
     this.logger.log(`New verification token created for user: ${user.id}, expires: ${expiresAt.toISOString()}`);
 
     // Send email with verification link - use backend GET endpoint for direct verification
-    const verificationUrl = `${this.configService.get('APP_URL') || 'https://fixiacomar-production.up.railway.app'}/auth/verify/${token}`;
+    const appUrl = this.configService.get('APP_URL');
+    const backendUrl = this.configService.get('BACKEND_URL');
+    const finalBackendUrl = appUrl || backendUrl || 'https://fixiacomar-production.up.railway.app';
+    const verificationUrl = `${finalBackendUrl}/auth/verify/${token}`;
     
-    this.logger.log(`Attempting to send verification email to ${email} with URL: ${verificationUrl}`);
+    this.logger.log(`🔍 URL Generation Debug:`);
+    this.logger.log(`  APP_URL: ${appUrl}`);
+    this.logger.log(`  BACKEND_URL: ${backendUrl}`);
+    this.logger.log(`  Final Backend URL: ${finalBackendUrl}`);
+    this.logger.log(`  Verification URL: ${verificationUrl}`);
+    this.logger.log(`Attempting to send verification email to ${email}`);
     
     try {
       const emailSent = await this.emailService.sendAccountVerification(email, user.name, verificationUrl);
