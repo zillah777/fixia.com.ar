@@ -31,6 +31,11 @@ const SettingsPage = lazy(() => import("./pages/SettingsPage"));
 import { SecureAuthProvider, useSecureAuth } from "./context/SecureAuthContext";
 import { NotificationProvider } from "./context/NotificationContext";
 
+// Error Boundaries
+import ErrorBoundary from "./components/ErrorBoundary";
+import RouteErrorBoundary from "./components/RouteErrorBoundary";
+import AsyncErrorBoundary from "./components/AsyncErrorBoundary";
+
 // Loading component for initial app load
 function LoadingScreen() {
   return (
@@ -121,119 +126,209 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
 function AppRoutes() {
   return (
     <Router>
-      <AnimatePresence mode="wait">
-        <Suspense fallback={<PageLoadingSpinner />}>
-          <Routes>
-            {/* Public Routes */}
-            <Route path="/" element={<HomePage />} />
-            <Route path="/services" element={<ServicesPage />} />
-            <Route path="/services/:id" element={<ServiceDetailPage />} />
-            <Route path="/profile/:userId" element={<PublicProfilePage />} />
-            <Route path="/terms" element={<TermsPage />} />
-            <Route path="/privacy" element={<PrivacyPage />} />
-            <Route path="/about" element={<AboutPage />} />
-            <Route path="/how-it-works" element={<HowItWorksPage />} />
-            <Route path="/contact" element={<ContactPage />} />
-            <Route path="/pricing" element={<PricingPage />} />
-            <Route path="/help" element={<HelpPage />} />
+      <RouteErrorBoundary routeName="App Routes">
+        <AnimatePresence mode="wait">
+          <ErrorBoundary level="page" name="Page Container">
+            <Suspense fallback={<PageLoadingSpinner />}>
+              <Routes>
+                {/* Public Routes */}
+                <Route path="/" element={
+                  <RouteErrorBoundary routeName="Inicio">
+                    <HomePage />
+                  </RouteErrorBoundary>
+                } />
+                <Route path="/services" element={
+                  <RouteErrorBoundary routeName="Servicios" fallbackRoute="/">
+                    <ServicesPage />
+                  </RouteErrorBoundary>
+                } />
+                <Route path="/services/:id" element={
+                  <RouteErrorBoundary routeName="Detalle de Servicio" fallbackRoute="/services">
+                    <ServiceDetailPage />
+                  </RouteErrorBoundary>
+                } />
+                <Route path="/profile/:userId" element={
+                  <RouteErrorBoundary routeName="Perfil Público" fallbackRoute="/">
+                    <PublicProfilePage />
+                  </RouteErrorBoundary>
+                } />
+                <Route path="/terms" element={
+                  <RouteErrorBoundary routeName="Términos" fallbackRoute="/">
+                    <TermsPage />
+                  </RouteErrorBoundary>
+                } />
+                <Route path="/privacy" element={
+                  <RouteErrorBoundary routeName="Privacidad" fallbackRoute="/">
+                    <PrivacyPage />
+                  </RouteErrorBoundary>
+                } />
+                <Route path="/about" element={
+                  <RouteErrorBoundary routeName="Acerca de" fallbackRoute="/">
+                    <AboutPage />
+                  </RouteErrorBoundary>
+                } />
+                <Route path="/how-it-works" element={
+                  <RouteErrorBoundary routeName="Cómo Funciona" fallbackRoute="/">
+                    <HowItWorksPage />
+                  </RouteErrorBoundary>
+                } />
+                <Route path="/contact" element={
+                  <RouteErrorBoundary routeName="Contacto" fallbackRoute="/">
+                    <ContactPage />
+                  </RouteErrorBoundary>
+                } />
+                <Route path="/pricing" element={
+                  <RouteErrorBoundary routeName="Precios" fallbackRoute="/">
+                    <PricingPage />
+                  </RouteErrorBoundary>
+                } />
+                <Route path="/help" element={
+                  <RouteErrorBoundary routeName="Ayuda" fallbackRoute="/">
+                    <HelpPage />
+                  </RouteErrorBoundary>
+                } />
             
-            {/* Auth Routes */}
-            <Route 
-              path="/login" 
-              element={
-                <PublicRoute>
-                  <LoginPage />
-                </PublicRoute>
-              } 
-            />
-            <Route 
-              path="/register" 
-              element={
-                <PublicRoute>
-                  <RegisterPage />
-                </PublicRoute>
-              } 
-            />
-            <Route 
-              path="/forgot-password" 
-              element={
-                <PublicRoute>
-                  <ForgotPasswordPage />
-                </PublicRoute>
-              } 
-            />
-            <Route 
-              path="/verify-email/*" 
-              element={<EmailVerificationPage />} 
-            />
-            <Route 
-              path="/verify-email" 
-              element={<EmailVerificationPage />} 
-            />
+                {/* Auth Routes */}
+                <Route 
+                  path="/login" 
+                  element={
+                    <RouteErrorBoundary routeName="Iniciar Sesión" fallbackRoute="/">
+                      <PublicRoute>
+                        <LoginPage />
+                      </PublicRoute>
+                    </RouteErrorBoundary>
+                  } 
+                />
+                <Route 
+                  path="/register" 
+                  element={
+                    <RouteErrorBoundary routeName="Registro" fallbackRoute="/">
+                      <PublicRoute>
+                        <RegisterPage />
+                      </PublicRoute>
+                    </RouteErrorBoundary>
+                  } 
+                />
+                <Route 
+                  path="/forgot-password" 
+                  element={
+                    <RouteErrorBoundary routeName="Recuperar Contraseña" fallbackRoute="/login">
+                      <PublicRoute>
+                        <ForgotPasswordPage />
+                      </PublicRoute>
+                    </RouteErrorBoundary>
+                  } 
+                />
+                <Route 
+                  path="/verify-email/*" 
+                  element={
+                    <RouteErrorBoundary routeName="Verificación de Email" fallbackRoute="/">
+                      <EmailVerificationPage />
+                    </RouteErrorBoundary>
+                  } 
+                />
+                <Route 
+                  path="/verify-email" 
+                  element={
+                    <RouteErrorBoundary routeName="Verificación de Email" fallbackRoute="/">
+                      <EmailVerificationPage />
+                    </RouteErrorBoundary>
+                  } 
+                />
             
-            {/* Protected Routes */}
-            <Route 
-              path="/dashboard" 
-              element={
-                <ProtectedRoute>
-                  <DashboardPage />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/profile" 
-              element={
-                <ProtectedRoute>
-                  <ProfilePage />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/new-project" 
-              element={
-                <ProtectedRoute>
-                  <NewProjectPage />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/opportunities" 
-              element={
-                <ProtectedRoute>
-                  <OpportunitiesPage />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/favorites" 
-              element={
-                <ProtectedRoute>
-                  <FavoritesPage />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/notifications" 
-              element={
-                <ProtectedRoute>
-                  <NotificationsPage />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/settings" 
-              element={
-                <ProtectedRoute>
-                  <SettingsPage />
-                </ProtectedRoute>
-              } 
-            />
-            
-            {/* 404 Route */}
-            <Route path="*" element={<Error404Page />} />
-          </Routes>
-        </Suspense>
-      </AnimatePresence>
+                {/* Protected Routes */}
+                <Route 
+                  path="/dashboard" 
+                  element={
+                    <RouteErrorBoundary routeName="Dashboard" fallbackRoute="/">
+                      <ProtectedRoute>
+                        <AsyncErrorBoundary>
+                          <DashboardPage />
+                        </AsyncErrorBoundary>
+                      </ProtectedRoute>
+                    </RouteErrorBoundary>
+                  } 
+                />
+                <Route 
+                  path="/profile" 
+                  element={
+                    <RouteErrorBoundary routeName="Mi Perfil" fallbackRoute="/dashboard">
+                      <ProtectedRoute>
+                        <AsyncErrorBoundary>
+                          <ProfilePage />
+                        </AsyncErrorBoundary>
+                      </ProtectedRoute>
+                    </RouteErrorBoundary>
+                  } 
+                />
+                <Route 
+                  path="/new-project" 
+                  element={
+                    <RouteErrorBoundary routeName="Nuevo Proyecto" fallbackRoute="/dashboard">
+                      <ProtectedRoute>
+                        <NewProjectPage />
+                      </ProtectedRoute>
+                    </RouteErrorBoundary>
+                  } 
+                />
+                <Route 
+                  path="/opportunities" 
+                  element={
+                    <RouteErrorBoundary routeName="Oportunidades" fallbackRoute="/dashboard">
+                      <ProtectedRoute>
+                        <AsyncErrorBoundary>
+                          <OpportunitiesPage />
+                        </AsyncErrorBoundary>
+                      </ProtectedRoute>
+                    </RouteErrorBoundary>
+                  } 
+                />
+                <Route 
+                  path="/favorites" 
+                  element={
+                    <RouteErrorBoundary routeName="Favoritos" fallbackRoute="/dashboard">
+                      <ProtectedRoute>
+                        <AsyncErrorBoundary>
+                          <FavoritesPage />
+                        </AsyncErrorBoundary>
+                      </ProtectedRoute>
+                    </RouteErrorBoundary>
+                  } 
+                />
+                <Route 
+                  path="/notifications" 
+                  element={
+                    <RouteErrorBoundary routeName="Notificaciones" fallbackRoute="/dashboard">
+                      <ProtectedRoute>
+                        <NotificationsPage />
+                      </ProtectedRoute>
+                    </RouteErrorBoundary>
+                  } 
+                />
+                <Route 
+                  path="/settings" 
+                  element={
+                    <RouteErrorBoundary routeName="Configuración" fallbackRoute="/dashboard">
+                      <ProtectedRoute>
+                        <AsyncErrorBoundary>
+                          <SettingsPage />
+                        </AsyncErrorBoundary>
+                      </ProtectedRoute>
+                    </RouteErrorBoundary>
+                  } 
+                />
+                
+                {/* 404 Route */}
+                <Route path="*" element={
+                  <RouteErrorBoundary routeName="Página No Encontrada" fallbackRoute="/">
+                    <Error404Page />
+                  </RouteErrorBoundary>
+                } />
+              </Routes>
+            </Suspense>
+          </ErrorBoundary>
+        </AnimatePresence>
+      </RouteErrorBoundary>
     </Router>
   );
 }
@@ -255,19 +350,21 @@ export default function App() {
   }
 
   return (
-    <SecureAuthProvider>
-      <NotificationProvider>
-        <div className="min-h-screen bg-background">
-          <AppRoutes />
-          
-          {/* Background decorative elements */}
-          <div className="fixed inset-0 pointer-events-none overflow-hidden">
-            <div className="absolute top-1/4 -left-32 w-64 h-64 liquid-gradient rounded-full blur-3xl opacity-10 animate-float"></div>
-            <div className="absolute top-3/4 -right-32 w-64 h-64 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full blur-3xl opacity-10 animate-float" style={{ animationDelay: '2s' }}></div>
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-full blur-3xl animate-pulse-slow"></div>
+    <ErrorBoundary level="critical" name="App">
+      <SecureAuthProvider>
+        <NotificationProvider>
+          <div className="min-h-screen bg-background">
+            <AppRoutes />
+            
+            {/* Background decorative elements */}
+            <div className="fixed inset-0 pointer-events-none overflow-hidden">
+              <div className="absolute top-1/4 -left-32 w-64 h-64 liquid-gradient rounded-full blur-3xl opacity-10 animate-float"></div>
+              <div className="absolute top-3/4 -right-32 w-64 h-64 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full blur-3xl opacity-10 animate-float" style={{ animationDelay: '2s' }}></div>
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-full blur-3xl animate-pulse-slow"></div>
+            </div>
           </div>
-        </div>
-      </NotificationProvider>
-    </SecureAuthProvider>
+        </NotificationProvider>
+      </SecureAuthProvider>
+    </ErrorBoundary>
   );
 }
