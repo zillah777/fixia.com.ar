@@ -134,13 +134,11 @@ function Navigation() {
 
 function ProfileHeader({ user, isEditing, setIsEditing }: any) {
   const [profileData, setProfileData] = useState({
-    name: user.name,
-    bio: user.role === 'professional' 
-      ? "Desarrolladora Full Stack especializada en e-commerce con +5 años de experiencia."
-      : "Emprendedor apasionado por la tecnología y la innovación digital.",
-    location: "Ciudad de México, MX",
-    website: "https://anamartinez.dev",
-    phone: "+52 55 1234 5678"
+    name: user.name || 'Usuario',
+    bio: user.professionalProfile?.description || '',
+    location: user.location || '',
+    website: user.professionalProfile?.portfolio || '',
+    phone: user.phone || ''
   });
 
   const handleSave = () => {
@@ -224,13 +222,13 @@ function ProfileHeader({ user, isEditing, setIsEditing }: any) {
                 
                 <div className="flex items-center space-x-3 mt-2">
                   <Badge className="bg-primary/20 text-primary border-primary/30">
-                    {user.role === 'professional' ? 'Top Rated Plus' : 'Cliente Premium'}
+                    {user.userType === 'professional' ? (user.professionalProfile?.verified ? 'Profesional Verificado' : 'Profesional') : user.planType === 'premium' ? 'Cliente Premium' : 'Cliente'}
                   </Badge>
-                  {user.role === 'professional' && (
+                  {user.userType === 'professional' && user.professionalProfile && (
                     <div className="flex items-center space-x-1">
                       <Star className="h-4 w-4 text-warning fill-current" />
-                      <span className="font-medium">{user.rating}</span>
-                      <span className="text-muted-foreground">({user.totalServices} servicios)</span>
+                      <span className="font-medium">{user.professionalProfile.averageRating.toFixed(1)}</span>
+                      <span className="text-muted-foreground">({user.professionalProfile.totalReviews} reseñas)</span>
                     </div>
                   )}
                 </div>
@@ -266,7 +264,9 @@ function ProfileHeader({ user, isEditing, setIsEditing }: any) {
                   rows={3}
                 />
               ) : (
-                <p className="text-muted-foreground leading-relaxed">{profileData.bio}</p>
+                <p className="text-muted-foreground leading-relaxed">
+                  {profileData.bio || 'No hay descripción disponible. Haz clic en "Editar Perfil" para agregar información sobre ti.'}
+                </p>
               )}
             </div>
             
@@ -281,12 +281,12 @@ function ProfileHeader({ user, isEditing, setIsEditing }: any) {
                     className="w-32 h-6 text-sm glass border-white/20"
                   />
                 ) : (
-                  <span>{profileData.location}</span>
+                  <span>{profileData.location || 'Ubicación no especificada'}</span>
                 )}
               </div>
               <div className="flex items-center space-x-1">
                 <Calendar className="h-4 w-4" />
-                <span>Miembro desde 2019</span>
+                <span>Miembro desde {new Date(user.createdAt || Date.now()).getFullYear()}</span>
               </div>
               <div className="flex items-center space-x-1">
                 <Globe className="h-4 w-4" />
@@ -296,32 +296,34 @@ function ProfileHeader({ user, isEditing, setIsEditing }: any) {
                     onChange={(e) => setProfileData({...profileData, website: e.target.value})}
                     className="w-32 h-6 text-sm glass border-white/20"
                   />
-                ) : (
+                ) : profileData.website ? (
                   <a href={profileData.website} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
                     {profileData.website}
                   </a>
+                ) : (
+                  <span>Sin sitio web</span>
                 )}
               </div>
             </div>
             
             {/* Stats for professionals */}
-            {user.role === 'professional' && (
+            {user.userType === 'professional' && user.professionalProfile && (
               <div className="flex space-x-8 pt-4 border-t border-white/10">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-primary">156</div>
-                  <div className="text-sm text-muted-foreground">Proyectos</div>
+                  <div className="text-2xl font-bold text-primary">{user.professionalProfile.totalServices || 0}</div>
+                  <div className="text-sm text-muted-foreground">Servicios</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-success">98%</div>
-                  <div className="text-sm text-muted-foreground">Satisfacción</div>
+                  <div className="text-2xl font-bold text-success">{user.professionalProfile.completedServices || 0}</div>
+                  <div className="text-sm text-muted-foreground">Completados</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-warning">4.9</div>
+                  <div className="text-2xl font-bold text-warning">{user.professionalProfile.averageRating?.toFixed(1) || '0.0'}</div>
                   <div className="text-sm text-muted-foreground">Rating</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold">1h</div>
-                  <div className="text-sm text-muted-foreground">Respuesta</div>
+                  <div className="text-2xl font-bold">{user.professionalProfile.totalReviews || 0}</div>
+                  <div className="text-sm text-muted-foreground">Reseñas</div>
                 </div>
               </div>
             )}
@@ -767,9 +769,9 @@ export default function ProfilePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
           >
-            <Tabs defaultValue={user.role === 'professional' ? 'portfolio' : 'activity'} className="w-full">
+            <Tabs defaultValue={user.userType === 'professional' ? 'portfolio' : 'activity'} className="w-full">
               <TabsList className="glass w-full md:w-auto">
-                {user.role === 'professional' ? (
+                {user.userType === 'professional' ? (
                   <>
                     <TabsTrigger value="portfolio">Portafolio</TabsTrigger>
                     <TabsTrigger value="reviews">Reseñas</TabsTrigger>
@@ -787,7 +789,7 @@ export default function ProfilePage() {
               </TabsList>
 
               {/* Professional Tabs */}
-              {user.role === 'professional' && (
+              {user.userType === 'professional' && (
                 <>
                   <TabsContent value="portfolio" className="mt-6">
                     <ProfessionalPortfolio />
@@ -838,7 +840,7 @@ export default function ProfilePage() {
               )}
 
               {/* Client Tabs */}
-              {user.role === 'client' && (
+              {user.userType === 'client' && (
                 <>
                   <TabsContent value="activity" className="mt-6">
                     <Card className="glass border-white/10">
@@ -846,28 +848,20 @@ export default function ProfilePage() {
                         <CardTitle>Actividad Reciente</CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <div className="space-y-4">
-                          <div className="flex items-center space-x-4 p-4 glass-medium rounded-lg">
-                            <div className="h-10 w-10 bg-success/20 rounded-full flex items-center justify-center">
-                              <CheckCircle className="h-5 w-5 text-success" />
-                            </div>
-                            <div className="flex-1">
-                              <div className="font-medium">Servicio completado</div>
-                              <div className="text-sm text-muted-foreground">Desarrollo E-commerce - Ana Martínez</div>
-                            </div>
-                            <div className="text-sm text-muted-foreground">Hace 2 días</div>
+                        <div className="text-center py-12">
+                          <div className="h-16 w-16 liquid-gradient rounded-xl flex items-center justify-center mx-auto mb-4 opacity-50">
+                            <Clock className="h-8 w-8 text-white" />
                           </div>
-                          
-                          <div className="flex items-center space-x-4 p-4 glass-medium rounded-lg">
-                            <div className="h-10 w-10 bg-primary/20 rounded-full flex items-center justify-center">
-                              <MessageSquare className="h-5 w-5 text-primary" />
-                            </div>
-                            <div className="flex-1">
-                              <div className="font-medium">Nuevo mensaje</div>
-                              <div className="text-sm text-muted-foreground">Carlos Ruiz te ha enviado un mensaje</div>
-                            </div>
-                            <div className="text-sm text-muted-foreground">Hace 1 semana</div>
-                          </div>
+                          <h3 className="text-lg font-medium mb-2">Sin actividad reciente</h3>
+                          <p className="text-muted-foreground mb-4">
+                            Tu actividad aparecerá aquí cuando comiences a interactuar con la plataforma.
+                          </p>
+                          <Link to="/services">
+                            <Button className="liquid-gradient hover:opacity-90">
+                              <Plus className="h-4 w-4 mr-2" />
+                              Explorar servicios
+                            </Button>
+                          </Link>
                         </div>
                       </CardContent>
                     </Card>
@@ -899,26 +893,20 @@ export default function ProfilePage() {
                         <CardTitle>Historial de Pedidos</CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <div className="space-y-4">
-                          <div className="flex items-center justify-between p-4 glass-medium rounded-lg">
-                            <div className="flex items-center space-x-4">
-                              <img 
-                                src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=60&h=60&fit=crop"
-                                alt="Servicio"
-                                className="w-12 h-12 rounded object-cover"
-                              />
-                              <div>
-                                <div className="font-medium">Desarrollo E-commerce Completo</div>
-                                <div className="text-sm text-muted-foreground">Ana Martínez</div>
-                              </div>
-                            </div>
-                            <div className="text-right">
-                              <Badge className="bg-success/20 text-success border-success/30 mb-1">
-                                Completado
-                              </Badge>
-                              <div className="text-sm text-muted-foreground">$1,250</div>
-                            </div>
+                        <div className="text-center py-12">
+                          <div className="h-16 w-16 liquid-gradient rounded-xl flex items-center justify-center mx-auto mb-4 opacity-50">
+                            <Briefcase className="h-8 w-8 text-white" />
                           </div>
+                          <h3 className="text-lg font-medium mb-2">Sin pedidos realizados</h3>
+                          <p className="text-muted-foreground mb-4">
+                            Cuando hagas pedidos de servicios, aparecerán aquí con su estado y detalles.
+                          </p>
+                          <Link to="/services">
+                            <Button className="liquid-gradient hover:opacity-90">
+                              <Plus className="h-4 w-4 mr-2" />
+                              Explorar servicios
+                            </Button>
+                          </Link>
                         </div>
                       </CardContent>
                     </Card>

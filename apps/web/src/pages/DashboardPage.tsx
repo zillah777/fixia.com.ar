@@ -32,12 +32,12 @@ function Navigation() {
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 400, damping: 10 }}
           >
-            <div className="h-8 w-8 liquid-gradient rounded-lg flex items-center justify-center shadow-lg">
-              <span className="text-white font-bold">F</span>
+            <div className="h-10 w-10 liquid-gradient rounded-xl flex items-center justify-center shadow-lg">
+              <span className="text-white font-bold text-lg">F</span>
             </div>
-            <div className="absolute -inset-1 liquid-gradient rounded-lg blur opacity-20 animate-pulse-slow"></div>
+            <div className="absolute -inset-1 liquid-gradient rounded-xl blur opacity-20 animate-pulse-slow"></div>
           </motion.div>
-          <span className="font-semibold">Fixia</span>
+          <span className="text-xl font-semibold tracking-tight text-white">Fixia</span>
         </Link>
         
         <nav className="hidden md:flex items-center space-x-6">
@@ -199,7 +199,7 @@ function RecentActivity({ dashboardData, loading }: { dashboardData: DashboardSt
     }
   ];
 
-  // Transform API data to activities format
+  // Transform API data to activities format, show empty if no real data
   const activities = dashboardData?.recentActivity?.map(activity => ({
     id: activity.id,
     type: activity.type,
@@ -209,7 +209,7 @@ function RecentActivity({ dashboardData, loading }: { dashboardData: DashboardSt
     status: activity.type === 'contact_request' ? 'new' : 'completed',
     icon: getActivityIcon(activity.type),
     color: getActivityColor(activity.type)
-  })) || defaultActivities;
+  })) || [];
 
   function getActivityTitle(type: string): string {
     const titles: { [key: string]: string } = {
@@ -273,6 +273,16 @@ function RecentActivity({ dashboardData, loading }: { dashboardData: DashboardSt
               </div>
             ))}
           </div>
+        ) : activities.length === 0 ? (
+          <div className="text-center py-8">
+            <div className="h-12 w-12 liquid-gradient rounded-xl flex items-center justify-center mx-auto mb-3 opacity-50">
+              <Clock className="h-6 w-6 text-white" />
+            </div>
+            <h3 className="font-medium mb-2">Sin actividad reciente</h3>
+            <p className="text-sm text-muted-foreground">
+              Tu actividad aparecerá aquí cuando comiences a usar la plataforma.
+            </p>
+          </div>
         ) : (
           <div className="space-y-4">
             {activities.slice(0, 3).map((activity) => {
@@ -295,11 +305,13 @@ function RecentActivity({ dashboardData, loading }: { dashboardData: DashboardSt
             })}
           </div>
         )}
-        <div className="mt-4">
-          <Button variant="outline" className="w-full glass border-white/20 hover:glass-medium">
-            Ver Todo el Historial
-          </Button>
-        </div>
+        {activities.length > 0 && (
+          <div className="mt-4">
+            <Button variant="outline" className="w-full glass border-white/20 hover:glass-medium">
+              Ver Todo el Historial
+            </Button>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
@@ -418,79 +430,70 @@ function StatCards({ dashboardData, loading }: { dashboardData: DashboardStats |
 }
 
 function CurrentProjects() {
-  const projects = [
-    {
-      id: 1,
-      title: "E-commerce para ModaStyle",
-      client: "Ana García",
-      deadline: "En 5 días",
-      progress: 75,
-      status: "in_progress",
-      priority: "high"
-    },
-    {
-      id: 2,
-      title: "App Móvil FitTracker",
-      client: "Roberto Silva",
-      deadline: "En 12 días",
-      progress: 45,
-      status: "in_progress",
-      priority: "normal"
-    },
-    {
-      id: 3,
-      title: "Branding TechVision",
-      client: "María López",
-      deadline: "En 8 días",
-      progress: 90,
-      status: "review",
-      priority: "normal"
-    }
-  ];
+  // TODO: Replace with real projects from API when implemented
+  const projects: any[] = [];
 
   return (
     <Card className="glass border-white/10">
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle>Proyectos Actuales</CardTitle>
-          <Button variant="outline" size="sm" className="glass border-white/20">
+          <Button variant="outline" size="sm" className="glass border-white/20" disabled>
             Ver Todos
           </Button>
         </div>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
-          {projects.map((project) => (
-            <div key={project.id} className="p-4 glass-medium rounded-lg">
-              <div className="flex items-center justify-between mb-3">
-                <div>
-                  <h4 className="font-medium">{project.title}</h4>
-                  <p className="text-sm text-muted-foreground">Cliente: {project.client}</p>
-                </div>
-                <div className="text-right">
-                  <Badge 
-                    className={
-                      project.status === 'in_progress' ? 'bg-blue-500/20 text-blue-400 border-blue-500/30' :
-                      project.status === 'review' ? 'bg-warning/20 text-warning border-warning/30' :
-                      'bg-success/20 text-success border-success/30'
-                    }
-                  >
-                    {project.status === 'in_progress' ? 'En Progreso' :
-                     project.status === 'review' ? 'En Revisión' : 'Completado'}
-                  </Badge>
-                  <p className="text-xs text-muted-foreground mt-1">{project.deadline}</p>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-sm">
-                  <span>Progreso</span>
-                  <span>{project.progress}%</span>
-                </div>
-                <Progress value={project.progress} className="h-2" />
-              </div>
+        {projects.length === 0 ? (
+          <div className="text-center py-12">
+            <div className="h-16 w-16 liquid-gradient rounded-xl flex items-center justify-center mx-auto mb-4 opacity-50">
+              <Briefcase className="h-8 w-8 text-white" />
             </div>
-          ))}
-        </div>
+            <h3 className="text-lg font-medium mb-2">No tienes proyectos actuales</h3>
+            <p className="text-muted-foreground mb-4">
+              Cuando tengas proyectos activos, aparecerán aquí para que puedas hacer seguimiento de su progreso.
+            </p>
+            <Link to="/new-project">
+              <Button className="liquid-gradient hover:opacity-90">
+                <Plus className="h-4 w-4 mr-2" />
+                Crear tu primer servicio
+              </Button>
+            </Link>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {projects.map((project) => (
+              <div key={project.id} className="p-4 glass-medium rounded-lg">
+                <div className="flex items-center justify-between mb-3">
+                  <div>
+                    <h4 className="font-medium">{project.title}</h4>
+                    <p className="text-sm text-muted-foreground">Cliente: {project.client}</p>
+                  </div>
+                  <div className="text-right">
+                    <Badge 
+                      className={
+                        project.status === 'in_progress' ? 'bg-blue-500/20 text-blue-400 border-blue-500/30' :
+                        project.status === 'review' ? 'bg-warning/20 text-warning border-warning/30' :
+                        'bg-success/20 text-success border-success/30'
+                      }
+                    >
+                      {project.status === 'in_progress' ? 'En Progreso' :
+                       project.status === 'review' ? 'En Revisión' : 'Completado'}
+                    </Badge>
+                    <p className="text-xs text-muted-foreground mt-1">{project.deadline}</p>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span>Progreso</span>
+                    <span>{project.progress}%</span>
+                  </div>
+                  <Progress value={project.progress} className="h-2" />
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </CardContent>
     </Card>
   );
