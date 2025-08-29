@@ -537,7 +537,7 @@ export default function DashboardPage() {
           transition={{ duration: 0.8 }}
           className="mb-8"
         >
-          <h1 className="text-3xl font-bold mb-2">
+          <h1 className="text-3xl font-bold mb-2 text-white">
             Bienvenido de vuelta, {user?.name} 👋
           </h1>
           <p className="text-muted-foreground">
