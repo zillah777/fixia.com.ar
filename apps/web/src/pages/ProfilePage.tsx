@@ -1,18 +1,18 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "motion/react";
 import { 
-  User, Mail, Phone, MapPin, Calendar, Camera, Settings, Shield, 
+  User, Mail, Phone, MapPin, Calendar, Settings, Shield, 
   Edit3, Save, X, Plus, Star, Award, Briefcase, Eye, Heart, 
   MessageSquare, DollarSign, TrendingUp, Clock, CheckCircle, 
   Upload, FileText, Globe, Linkedin, Twitter, Instagram, Github,
   Bell, Lock, CreditCard, LogOut, Trash2, ExternalLink,
-  BarChart3, Users, Target, Zap
+  BarChart3, Users, Target, Zap, Loader2, AlertTriangle, Camera
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
-import { Label } from "../components/ui/label";
 import { Textarea } from "../components/ui/textarea";
+import { Label } from "../components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
@@ -21,9 +21,14 @@ import { Separator } from "../components/ui/separator";
 import { Switch } from "../components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import { Progress } from "../components/ui/progress";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "../components/ui/dialog";
+import { Alert, AlertDescription } from "../components/ui/alert";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "../components/ui/dialog";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "sonner";
+
+// Componentes seguros importados
+import { SecureInput, SecureTextarea } from "../components/SecureInput";
+import { SecureAvatarUpload } from "../components/SecureAvatarUpload";
 
 // Mock data for portfolio items
 const portfolioItems = [
@@ -147,11 +152,83 @@ function ProfileHeader({ user, isEditing, setIsEditing }: any) {
     website: user.professionalProfile?.portfolio || '',
     phone: user.phone || ''
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const { updateProfile } = useAuth();
 
-  const handleSave = () => {
-    // Here you would update the user profile
-    toast.success("Perfil actualizado correctamente");
-    setIsEditing(false);
+  // Validación de campos
+  const validateFields = () => {
+    const newErrors: Record<string, string> = {};
+
+    // Validar nombre
+    if (!profileData.name || profileData.name.length < 2) {
+      newErrors.name = 'El nombre debe tener al menos 2 caracteres';
+    }
+
+    // Validar biografía
+    if (profileData.bio && profileData.bio.length > 500) {
+      newErrors.bio = 'La biografía no puede exceder 500 caracteres';
+    }
+
+    // Validar website
+    if (profileData.website) {
+      try {
+        new URL(profileData.website);
+      } catch {
+        newErrors.website = 'La URL del sitio web no es válida';
+      }
+    }
+
+    // Validar teléfono (formato básico)
+    if (profileData.phone && profileData.phone.length > 0) {
+      const phoneRegex = /^[+]?[\d\s\-()]{10,}$/;
+      if (!phoneRegex.test(profileData.phone)) {
+        newErrors.phone = 'Formato de teléfono no válido';
+      }
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSave = async () => {
+    if (!validateFields()) {
+      toast.error('Por favor, corrije los errores en el formulario');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      await updateProfile({
+        name: profileData.name,
+        location: profileData.location,
+        phone: profileData.phone,
+        // Si es profesional, actualizar bio en el perfil profesional
+        ...(user.userType === 'professional' && {
+          professionalProfile: {
+            ...user.professionalProfile,
+            description: profileData.bio,
+            portfolio: profileData.website
+          }
+        })
+      });
+      
+      toast.success("Perfil actualizado correctamente");
+      setIsEditing(false);
+    } catch (error: any) {
+      toast.error(error.message || 'Error al actualizar el perfil');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleAvatarUpdate = async (newAvatarUrl: string) => {
+    try {
+      await updateProfile({ avatar: newAvatarUrl });
+      toast.success('Foto de perfil actualizada');
+    } catch (error: any) {
+      toast.error('Error al actualizar la foto de perfil');
+    }
   };
 
   return (
@@ -165,41 +242,10 @@ function ProfileHeader({ user, isEditing, setIsEditing }: any) {
               <AvatarFallback className="text-2xl">{user.name.charAt(0)}</AvatarFallback>
             </Avatar>
             
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button 
-                  size="icon" 
-                  className="absolute -bottom-2 -right-2 h-10 w-10 rounded-full liquid-gradient shadow-lg"
-                >
-                  <Camera className="h-5 w-5" />
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="glass border-white/10">
-                <DialogHeader>
-                  <DialogTitle>Cambiar Foto de Perfil</DialogTitle>
-                  <DialogDescription>
-                    Selecciona una nueva imagen para tu perfil
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-center w-full">
-                    <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-white/20 rounded-lg cursor-pointer glass hover:glass-medium">
-                      <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                        <Upload className="w-8 h-8 mb-4 text-muted-foreground" />
-                        <p className="mb-2 text-sm text-muted-foreground">
-                          <span className="font-semibold">Haz clic para subir</span> o arrastra una imagen
-                        </p>
-                        <p className="text-xs text-muted-foreground">PNG, JPG (MAX. 5MB)</p>
-                      </div>
-                      <input type="file" className="hidden" accept="image/*" />
-                    </label>
-                  </div>
-                  <Button className="w-full liquid-gradient">
-                    Guardar Imagen
-                  </Button>
-                </div>
-              </DialogContent>
-            </Dialog>
+            <SecureAvatarUpload 
+              currentAvatar={user.avatar}
+              onAvatarUpdate={handleAvatarUpdate}
+            />
             
             {user.verified && (
               <div className="absolute -top-2 -right-2">
@@ -217,11 +263,20 @@ function ProfileHeader({ user, isEditing, setIsEditing }: any) {
               <div>
                 {isEditing ? (
                   <div className="space-y-2">
-                    <Input
+                    <SecureInput
                       value={profileData.name}
                       onChange={(e) => setProfileData({...profileData, name: e.target.value})}
                       className="text-2xl font-bold glass border-white/20"
+                      sanitizationType="plainText"
+                      maxLength={50}
+                      customValidation={(value) => ({
+                        isValid: value.length >= 2,
+                        message: 'El nombre debe tener al menos 2 caracteres'
+                      })}
                     />
+                    {errors.name && (
+                      <div className="text-destructive text-sm">{errors.name}</div>
+                    )}
                   </div>
                 ) : (
                   <h1 className="text-3xl font-bold">{profileData.name}</h1>
@@ -264,12 +319,24 @@ function ProfileHeader({ user, isEditing, setIsEditing }: any) {
             {/* Bio */}
             <div>
               {isEditing ? (
-                <Textarea
-                  value={profileData.bio}
-                  onChange={(e) => setProfileData({...profileData, bio: e.target.value})}
-                  className="glass border-white/20"
-                  rows={3}
-                />
+                <div className="space-y-2">
+                  <SecureTextarea
+                    value={profileData.bio}
+                    onChange={(e) => setProfileData({...profileData, bio: e.target.value})}
+                    className="glass border-white/20"
+                    rows={3}
+                    sanitizationType="basicHTML"
+                    maxLength={500}
+                    customValidation={(value) => ({
+                      isValid: value.length <= 500,
+                      message: 'La biografía no puede exceder 500 caracteres'
+                    })}
+                    placeholder="Describe tu experiencia, especialidades y lo que te diferencia..."
+                  />
+                  {errors.bio && (
+                    <div className="text-destructive text-sm">{errors.bio}</div>
+                  )}
+                </div>
               ) : (
                 <p className="text-muted-foreground leading-relaxed">
                   {profileData.bio || 'No hay descripción disponible. Haz clic en "Editar Perfil" para agregar información sobre ti.'}
@@ -282,10 +349,14 @@ function ProfileHeader({ user, isEditing, setIsEditing }: any) {
               <div className="flex items-center space-x-1">
                 <MapPin className="h-4 w-4" />
                 {isEditing ? (
-                  <Input
+                  <SecureInput
                     value={profileData.location}
                     onChange={(e) => setProfileData({...profileData, location: e.target.value})}
-                    className="w-32 h-6 text-sm glass border-white/20"
+                    className="w-40 h-6 text-sm glass border-white/20"
+                    sanitizationType="plainText"
+                    maxLength={100}
+                    showSecurityStatus={false}
+                    placeholder="Ciudad, País"
                   />
                 ) : (
                   <span>{profileData.location || 'Ubicación no especificada'}</span>
@@ -298,11 +369,28 @@ function ProfileHeader({ user, isEditing, setIsEditing }: any) {
               <div className="flex items-center space-x-1">
                 <Globe className="h-4 w-4" />
                 {isEditing ? (
-                  <Input
-                    value={profileData.website}
-                    onChange={(e) => setProfileData({...profileData, website: e.target.value})}
-                    className="w-32 h-6 text-sm glass border-white/20"
-                  />
+                  <div>
+                    <SecureInput
+                      value={profileData.website}
+                      onChange={(e) => setProfileData({...profileData, website: e.target.value})}
+                      className="w-40 h-6 text-sm glass border-white/20"
+                      sanitizationType="url"
+                      showSecurityStatus={false}
+                      customValidation={(value) => {
+                        if (!value) return { isValid: true };
+                        try {
+                          new URL(value);
+                          return { isValid: true };
+                        } catch {
+                          return { isValid: false, message: 'URL no válida' };
+                        }
+                      }}
+                      placeholder="https://..."
+                    />
+                    {errors.website && (
+                      <div className="text-destructive text-xs mt-1">{errors.website}</div>
+                    )}
+                  </div>
                 ) : profileData.website ? (
                   <a href={profileData.website} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
                     {profileData.website}
@@ -370,7 +458,12 @@ function ProfessionalPortfolio() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Título del Proyecto</Label>
-                    <Input className="glass border-white/20" placeholder="Ej: App Móvil Innovadora" />
+                    <SecureInput 
+                      className="glass border-white/20" 
+                      placeholder="Ej: App Móvil Innovadora"
+                      sanitizationType="plainText"
+                      maxLength={100}
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label>Categoría</Label>
@@ -388,11 +481,30 @@ function ProfessionalPortfolio() {
                 </div>
                 <div className="space-y-2">
                   <Label>Descripción</Label>
-                  <Textarea className="glass border-white/20" rows={3} />
+                  <SecureTextarea 
+                    className="glass border-white/20" 
+                    rows={3}
+                    sanitizationType="basicHTML"
+                    maxLength={500}
+                    placeholder="Describe el proyecto, tecnologías utilizadas, desafíos superados..."
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label>URL del Proyecto (opcional)</Label>
-                  <Input className="glass border-white/20" placeholder="https://..." />
+                  <SecureInput 
+                    className="glass border-white/20" 
+                    placeholder="https://..."
+                    sanitizationType="url"
+                    customValidation={(value) => {
+                      if (!value) return { isValid: true };
+                      try {
+                        new URL(value);
+                        return { isValid: true };
+                      } catch {
+                        return { isValid: false, message: 'URL no válida' };
+                      }
+                    }}
+                  />
                 </div>
                 <div className="flex justify-end space-x-2">
                   <Button variant="outline" className="glass border-white/20">Cancelar</Button>
@@ -597,6 +709,8 @@ function ReviewsSection() {
 }
 
 function SettingsSection() {
+  const { user } = useAuth();
+  if (!user) return null;
   return (
     <div className="space-y-6">
       {/* Account Settings */}
@@ -612,11 +726,35 @@ function SettingsSection() {
           <div className="grid md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <Label>Email</Label>
-              <Input defaultValue="ana@ejemplo.com" className="glass border-white/20" />
+              <SecureInput 
+                defaultValue={user?.email || ""}
+                className="glass border-white/20"
+                sanitizationType="email"
+                customValidation={(value) => {
+                  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                  return {
+                    isValid: emailRegex.test(value),
+                    message: 'Formato de email inválido'
+                  };
+                }}
+              />
             </div>
             <div className="space-y-2">
               <Label>Teléfono</Label>
-              <Input defaultValue="+52 55 1234 5678" className="glass border-white/20" />
+              <SecureInput 
+                defaultValue={user?.phone || ""}
+                className="glass border-white/20"
+                sanitizationType="phone"
+                customValidation={(value) => {
+                  if (!value) return { isValid: true };
+                  const phoneRegex = /^[+]?[\d\s\-()]{10,}$/;
+                  return {
+                    isValid: phoneRegex.test(value),
+                    message: 'Formato de teléfono inválido'
+                  };
+                }}
+                placeholder="+54 11 1234-5678"
+              />
             </div>
           </div>
           
@@ -639,19 +777,63 @@ function SettingsSection() {
             <div className="grid md:grid-cols-2 gap-4">
               <div className="flex items-center space-x-3">
                 <Linkedin className="h-5 w-5 text-blue-500" />
-                <Input placeholder="LinkedIn URL" className="glass border-white/20" />
+                <SecureInput 
+                  placeholder="LinkedIn URL" 
+                  className="glass border-white/20"
+                  sanitizationType="url"
+                  customValidation={(value) => {
+                    if (!value) return { isValid: true };
+                    return {
+                      isValid: value.includes('linkedin.com'),
+                      message: 'Debe ser una URL de LinkedIn válida'
+                    };
+                  }}
+                />
               </div>
               <div className="flex items-center space-x-3">
                 <Twitter className="h-5 w-5 text-blue-400" />
-                <Input placeholder="Twitter URL" className="glass border-white/20" />
+                <SecureInput 
+                  placeholder="Twitter URL" 
+                  className="glass border-white/20"
+                  sanitizationType="url"
+                  customValidation={(value) => {
+                    if (!value) return { isValid: true };
+                    return {
+                      isValid: value.includes('twitter.com') || value.includes('x.com'),
+                      message: 'Debe ser una URL de Twitter/X válida'
+                    };
+                  }}
+                />
               </div>
               <div className="flex items-center space-x-3">
                 <Github className="h-5 w-5" />
-                <Input placeholder="GitHub URL" className="glass border-white/20" />
+                <SecureInput 
+                  placeholder="GitHub URL" 
+                  className="glass border-white/20"
+                  sanitizationType="url"
+                  customValidation={(value) => {
+                    if (!value) return { isValid: true };
+                    return {
+                      isValid: value.includes('github.com'),
+                      message: 'Debe ser una URL de GitHub válida'
+                    };
+                  }}
+                />
               </div>
               <div className="flex items-center space-x-3">
                 <Instagram className="h-5 w-5 text-pink-500" />
-                <Input placeholder="Instagram URL" className="glass border-white/20" />
+                <SecureInput 
+                  placeholder="Instagram URL" 
+                  className="glass border-white/20"
+                  sanitizationType="url"
+                  customValidation={(value) => {
+                    if (!value) return { isValid: true };
+                    return {
+                      isValid: value.includes('instagram.com'),
+                      message: 'Debe ser una URL de Instagram válida'
+                    };
+                  }}
+                />
               </div>
             </div>
           </div>
