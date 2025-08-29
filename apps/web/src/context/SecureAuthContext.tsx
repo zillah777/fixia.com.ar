@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect, ReactNode } from 'react
 import { toast } from 'sonner';
 import { secureTokenManager } from '../utils/secureTokenManager';
 import { sanitizeInput, detectMaliciousContent } from '../utils/sanitization';
+import { validatePassword } from '../utils/passwordValidation';
 
 // Interfaces existentes mantenidas para compatibilidad
 export interface Badge {
@@ -312,6 +313,7 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
         throw new Error('Email inválido');
       }
 
+      // Enhanced password validation for login (more lenient for existing accounts)
       if (!sanitizedPassword || sanitizedPassword.length < 6) {
         throw new Error('Contraseña debe tener al menos 6 caracteres');
       }
@@ -388,8 +390,10 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
         throw new Error('Email y nombre son requeridos');
       }
 
-      if (!sanitizedData.password || sanitizedData.password.length < 6) {
-        throw new Error('La contraseña debe tener al menos 6 caracteres');
+      // Enhanced password validation
+      const passwordValidation = validatePassword(sanitizedData.password);
+      if (!passwordValidation.isValid) {
+        throw new Error(`Contraseña no válida: ${passwordValidation.errors[0]}`);
       }
 
       const response = await fetch('/api/auth/register', {

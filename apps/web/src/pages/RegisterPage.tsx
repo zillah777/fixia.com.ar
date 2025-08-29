@@ -14,6 +14,7 @@ import { Alert, AlertDescription } from "../components/ui/alert";
 import { useSecureAuth } from "../context/SecureAuthContext";
 import { FixiaNavigation } from "../components/FixiaNavigation";
 import { toast } from "sonner";
+import { usePasswordValidation, validatePassword } from "../utils/passwordValidation";
 
 interface FormData {
   // Common fields
@@ -84,28 +85,10 @@ function ClientRegistrationForm({
 }) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
   const [passwordsMatch, setPasswordsMatch] = useState(true);
-
-  // Real-time password validation
-  useEffect(() => {
-    const errors: string[] = [];
-    if (formData.password.length > 0) {
-      if (formData.password.length < 6) {
-        errors.push('Mínimo 6 caracteres');
-      }
-      // Make other validations optional for now
-      if (formData.password.length >= 8) {
-        if (!/[A-Z]/.test(formData.password)) {
-          errors.push('Recomendado: una letra mayúscula');
-        }
-        if (!/[0-9]/.test(formData.password)) {
-          errors.push('Recomendado: un número');
-        }
-      }
-    }
-    setPasswordErrors(errors);
-  }, [formData.password]);
+  
+  // Enhanced password validation with security standards
+  const passwordValidation = usePasswordValidation(formData.password);
 
   // Real-time password match validation
   useEffect(() => {
@@ -205,35 +188,84 @@ function ClientRegistrationForm({
             </div>
           </div>
 
-          {/* Password validation feedback */}
-          {(passwordErrors.length > 0 || (formData.confirmPassword && !passwordsMatch)) && (
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                {passwordErrors.length > 0 && (
-                  <div className="text-sm space-y-1">
-                    <p className="text-orange-500 font-medium">Requisitos de contraseña:</p>
-                    {passwordErrors.map((error, index) => (
-                      <div key={index} className="flex items-center space-x-2 text-orange-500">
-                        <AlertCircle className="h-3 w-3" />
-                        <span>{error}</span>
-                      </div>
+          {/* Enhanced Password validation feedback */}
+          {(formData.password.length > 0 || (formData.confirmPassword && !passwordsMatch)) && (
+            <div className="space-y-4">
+              {/* Password strength indicator */}
+              {formData.password.length > 0 && (
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-foreground">Fortaleza de contraseña</span>
+                    <span className={`text-sm font-medium ${passwordValidation.strengthColor}`}>
+                      {passwordValidation.strengthLabel} ({passwordValidation.score}/100)
+                    </span>
+                  </div>
+                  
+                  {/* Strength bars */}
+                  <div className="flex space-x-1">
+                    {[1, 2, 3, 4, 5].map((bar) => (
+                      <div 
+                        key={bar}
+                        className={`h-2 flex-1 rounded-sm ${
+                          bar <= passwordValidation.strengthBars
+                            ? passwordValidation.strength === 'very-strong' ? 'bg-green-600'
+                              : passwordValidation.strength === 'strong' ? 'bg-green-500'
+                              : passwordValidation.strength === 'good' ? 'bg-blue-500'
+                              : passwordValidation.strength === 'fair' ? 'bg-yellow-500'
+                              : passwordValidation.strength === 'weak' ? 'bg-orange-500'
+                              : 'bg-red-500'
+                            : 'bg-gray-200'
+                        }`}
+                      />
                     ))}
                   </div>
-                )}
-              </div>
-              <div className="space-y-2">
-                {formData.confirmPassword && !passwordsMatch && (
-                  <div className="flex items-center space-x-2 text-red-500 text-sm">
-                    <AlertCircle className="h-3 w-3" />
-                    <span>Las contraseñas no coinciden</span>
-                  </div>
-                )}
-                {formData.confirmPassword && passwordsMatch && formData.password && (
-                  <div className="flex items-center space-x-2 text-green-500 text-sm">
-                    <CheckCircle className="h-3 w-3" />
-                    <span>Las contraseñas coinciden</span>
-                  </div>
-                )}
+                </div>
+              )}
+
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  {/* Password errors */}
+                  {passwordValidation.errors.length > 0 && (
+                    <div className="text-sm space-y-1">
+                      <p className="text-red-500 font-medium">Errores:</p>
+                      {passwordValidation.errors.map((error, index) => (
+                        <div key={index} className="flex items-center space-x-2 text-red-500">
+                          <AlertCircle className="h-3 w-3" />
+                          <span>{error}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  
+                  {/* Password warnings */}
+                  {passwordValidation.warnings.length > 0 && (
+                    <div className="text-sm space-y-1">
+                      <p className="text-orange-500 font-medium">Recomendaciones:</p>
+                      {passwordValidation.warnings.map((warning, index) => (
+                        <div key={index} className="flex items-center space-x-2 text-orange-500">
+                          <AlertCircle className="h-3 w-3" />
+                          <span>{warning}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                
+                <div className="space-y-2">
+                  {/* Password match validation */}
+                  {formData.confirmPassword && !passwordsMatch && (
+                    <div className="flex items-center space-x-2 text-red-500 text-sm">
+                      <AlertCircle className="h-3 w-3" />
+                      <span>Las contraseñas no coinciden</span>
+                    </div>
+                  )}
+                  {formData.confirmPassword && passwordsMatch && formData.password && (
+                    <div className="flex items-center space-x-2 text-green-500 text-sm">
+                      <CheckCircle className="h-3 w-3" />
+                      <span>Las contraseñas coinciden</span>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           )}
@@ -547,28 +579,10 @@ function ProfessionalRegistrationForm({
 }) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
   const [passwordsMatch, setPasswordsMatch] = useState(true);
-
-  // Real-time password validation
-  useEffect(() => {
-    const errors: string[] = [];
-    if (formData.password.length > 0) {
-      if (formData.password.length < 6) {
-        errors.push('Mínimo 6 caracteres');
-      }
-      // Make other validations optional for now
-      if (formData.password.length >= 8) {
-        if (!/[A-Z]/.test(formData.password)) {
-          errors.push('Recomendado: una letra mayúscula');
-        }
-        if (!/[0-9]/.test(formData.password)) {
-          errors.push('Recomendado: un número');
-        }
-      }
-    }
-    setPasswordErrors(errors);
-  }, [formData.password]);
+  
+  // Enhanced password validation with security standards
+  const passwordValidation = usePasswordValidation(formData.password);
 
   // Real-time password match validation
   useEffect(() => {
@@ -678,35 +692,84 @@ function ProfessionalRegistrationForm({
               </div>
             </div>
 
-            {/* Password validation feedback */}
-            {(passwordErrors.length > 0 || (formData.confirmPassword && !passwordsMatch)) && (
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  {passwordErrors.length > 0 && (
-                    <div className="text-sm space-y-1">
-                      <p className="text-orange-500 font-medium">Requisitos de contraseña:</p>
-                      {passwordErrors.map((error, index) => (
-                        <div key={index} className="flex items-center space-x-2 text-orange-500">
-                          <AlertCircle className="h-3 w-3" />
-                          <span>{error}</span>
-                        </div>
+            {/* Enhanced Password validation feedback */}
+            {(formData.password.length > 0 || (formData.confirmPassword && !passwordsMatch)) && (
+              <div className="space-y-4">
+                {/* Password strength indicator */}
+                {formData.password.length > 0 && (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-foreground">Fortaleza de contraseña</span>
+                      <span className={`text-sm font-medium ${passwordValidation.strengthColor}`}>
+                        {passwordValidation.strengthLabel} ({passwordValidation.score}/100)
+                      </span>
+                    </div>
+                    
+                    {/* Strength bars */}
+                    <div className="flex space-x-1">
+                      {[1, 2, 3, 4, 5].map((bar) => (
+                        <div 
+                          key={bar}
+                          className={`h-2 flex-1 rounded-sm ${
+                            bar <= passwordValidation.strengthBars
+                              ? passwordValidation.strength === 'very-strong' ? 'bg-green-600'
+                                : passwordValidation.strength === 'strong' ? 'bg-green-500'
+                                : passwordValidation.strength === 'good' ? 'bg-blue-500'
+                                : passwordValidation.strength === 'fair' ? 'bg-yellow-500'
+                                : passwordValidation.strength === 'weak' ? 'bg-orange-500'
+                                : 'bg-red-500'
+                              : 'bg-gray-200'
+                          }`}
+                        />
                       ))}
                     </div>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  {formData.confirmPassword && !passwordsMatch && (
-                    <div className="flex items-center space-x-2 text-red-500 text-sm">
-                      <AlertCircle className="h-3 w-3" />
-                      <span>Las contraseñas no coinciden</span>
-                    </div>
-                  )}
-                  {formData.confirmPassword && passwordsMatch && formData.password && (
-                    <div className="flex items-center space-x-2 text-green-500 text-sm">
-                      <CheckCircle className="h-3 w-3" />
-                      <span>Las contraseñas coinciden</span>
-                    </div>
-                  )}
+                  </div>
+                )}
+
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    {/* Password errors */}
+                    {passwordValidation.errors.length > 0 && (
+                      <div className="text-sm space-y-1">
+                        <p className="text-red-500 font-medium">Errores:</p>
+                        {passwordValidation.errors.map((error, index) => (
+                          <div key={index} className="flex items-center space-x-2 text-red-500">
+                            <AlertCircle className="h-3 w-3" />
+                            <span>{error}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    
+                    {/* Password warnings */}
+                    {passwordValidation.warnings.length > 0 && (
+                      <div className="text-sm space-y-1">
+                        <p className="text-orange-500 font-medium">Recomendaciones:</p>
+                        {passwordValidation.warnings.map((warning, index) => (
+                          <div key={index} className="flex items-center space-x-2 text-orange-500">
+                            <AlertCircle className="h-3 w-3" />
+                            <span>{warning}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="space-y-2">
+                    {/* Password match validation */}
+                    {formData.confirmPassword && !passwordsMatch && (
+                      <div className="flex items-center space-x-2 text-red-500 text-sm">
+                        <AlertCircle className="h-3 w-3" />
+                        <span>Las contraseñas no coinciden</span>
+                      </div>
+                    )}
+                    {formData.confirmPassword && passwordsMatch && formData.password && (
+                      <div className="flex items-center space-x-2 text-green-500 text-sm">
+                        <CheckCircle className="h-3 w-3" />
+                        <span>Las contraseñas coinciden</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             )}
@@ -967,14 +1030,15 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validate form data
-    if (formData.password !== formData.confirmPassword) {
-      toast.error('Las contraseñas no coinciden');
+    // Enhanced password validation
+    const passwordValidation = validatePassword(formData.password);
+    if (!passwordValidation.isValid) {
+      toast.error(`Contraseña no válida: ${passwordValidation.errors[0]}`);
       return;
     }
 
-    if (formData.password.length < 6) {
-      toast.error('La contraseña debe tener al menos 6 caracteres');
+    if (formData.password !== formData.confirmPassword) {
+      toast.error('Las contraseñas no coinciden');
       return;
     }
 

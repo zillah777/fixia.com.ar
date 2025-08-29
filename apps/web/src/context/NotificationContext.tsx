@@ -54,11 +54,29 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     }
   ]);
 
+  // Track if component is still mounted to prevent state updates after unmount
+  const [isUmounted, setIsUmounted] = useState(false);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      setIsUmounted(true);
+    };
+  }, []);
+
   const unreadCount = notifications.filter(n => !n.read).length;
 
-  // Simulate real-time notifications
+  // Simulate real-time notifications with proper memory management
   useEffect(() => {
-    const interval = setInterval(() => {
+    let intervalId: NodeJS.Timeout;
+    
+    intervalId = setInterval(() => {
+      // Prevent state updates if component is unmounted
+      if (isUmounted) {
+        clearInterval(intervalId);
+        return;
+      }
+
       if (Math.random() > 0.7) { // 30% chance every 30 seconds
         const mockNotifications = [
           {
@@ -80,12 +98,44 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
         ];
         
         const randomNotif = mockNotifications[Math.floor(Math.random() * mockNotifications.length)];
-        addNotification(randomNotif);
+        
+        // Use functional state update to avoid dependency issues
+        setNotifications(prev => {
+          // Double-check mount status before state update
+          if (isUmounted) return prev;
+          
+          const newNotification: Notification = {
+            ...randomNotif,
+            id: "notif_" + Math.random().toString(36).substr(2, 9),
+            timestamp: new Date(),
+            read: false
+          };
+
+          // Show toast notification safely
+          try {
+            toast(randomNotif.title, {
+              description: randomNotif.message,
+              action: (randomNotif as any).actionUrl ? {
+                label: "Ver",
+                onClick: () => window.location.href = (randomNotif as any).actionUrl!
+              } : undefined,
+            });
+          } catch (error) {
+            console.warn('Failed to show notification toast:', error);
+          }
+
+          return [newNotification, ...prev];
+        });
       }
     }, 30000);
 
-    return () => clearInterval(interval);
-  }, []);
+    // Cleanup function with guaranteed interval clearing
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, [isUmounted]); // Include isUmounted in dependencies
 
   const addNotification = (notification: Omit<Notification, 'id' | 'timestamp' | 'read'>) => {
     const newNotification: Notification = {

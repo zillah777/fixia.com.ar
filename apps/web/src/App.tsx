@@ -1,37 +1,37 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { motion, AnimatePresence } from "motion/react";
 
-// Pages
-import HomePage from "./pages/HomePage";
-import LoginPage from "./pages/LoginPage";
-import RegisterPage from "./pages/RegisterPage";
-import ForgotPasswordPage from "./pages/ForgotPasswordPage";
-import EmailVerificationPage from "./pages/EmailVerificationPage";
-import DashboardPage from "./pages/DashboardPage";
-import ServicesPage from "./pages/ServicesPage";
-import ServiceDetailPage from "./pages/ServiceDetailPage";
-import ProfilePage from "./pages/ProfilePage";
-import PublicProfilePage from "./pages/PublicProfilePage";
-import NewProjectPage from "./pages/NewProjectPage";
-import OpportunitiesPage from "./pages/OpportunitiesPage";
-import TermsPage from "./pages/TermsPage";
-import PrivacyPage from "./pages/PrivacyPage";
-import AboutPage from "./pages/AboutPage";
-import HowItWorksPage from "./pages/HowItWorksPage";
-import ContactPage from "./pages/ContactPage";
-import PricingPage from "./pages/PricingPage";
-import Error404Page from "./pages/Error404Page";
-import FavoritesPage from "./pages/FavoritesPage";
-import HelpPage from "./pages/HelpPage";
-import NotificationsPage from "./pages/NotificationsPage";
-import SettingsPage from "./pages/SettingsPage";
+// Lazy-loaded Pages for better performance
+const HomePage = lazy(() => import("./pages/HomePage"));
+const LoginPage = lazy(() => import("./pages/LoginPage"));
+const RegisterPage = lazy(() => import("./pages/RegisterPage"));
+const ForgotPasswordPage = lazy(() => import("./pages/ForgotPasswordPage"));
+const EmailVerificationPage = lazy(() => import("./pages/EmailVerificationPage"));
+const DashboardPage = lazy(() => import("./pages/DashboardPage"));
+const ServicesPage = lazy(() => import("./pages/ServicesPage"));
+const ServiceDetailPage = lazy(() => import("./pages/ServiceDetailPage"));
+const ProfilePage = lazy(() => import("./pages/ProfilePage"));
+const PublicProfilePage = lazy(() => import("./pages/PublicProfilePage"));
+const NewProjectPage = lazy(() => import("./pages/NewProjectPage"));
+const OpportunitiesPage = lazy(() => import("./pages/OpportunitiesPage"));
+const TermsPage = lazy(() => import("./pages/TermsPage"));
+const PrivacyPage = lazy(() => import("./pages/PrivacyPage"));
+const AboutPage = lazy(() => import("./pages/AboutPage"));
+const HowItWorksPage = lazy(() => import("./pages/HowItWorksPage"));
+const ContactPage = lazy(() => import("./pages/ContactPage"));
+const PricingPage = lazy(() => import("./pages/PricingPage"));
+const Error404Page = lazy(() => import("./pages/Error404Page"));
+const FavoritesPage = lazy(() => import("./pages/FavoritesPage"));
+const HelpPage = lazy(() => import("./pages/HelpPage"));
+const NotificationsPage = lazy(() => import("./pages/NotificationsPage"));
+const SettingsPage = lazy(() => import("./pages/SettingsPage"));
 
 // Context
 import { SecureAuthProvider, useSecureAuth } from "./context/SecureAuthContext";
 import { NotificationProvider } from "./context/NotificationContext";
 
-// Loading component
+// Loading component for initial app load
 function LoadingScreen() {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center">
@@ -57,6 +57,32 @@ function LoadingScreen() {
           <div className="text-xl font-semibold text-foreground">Fixia</div>
           <div className="text-sm text-muted-foreground">Conecta. Confía. Resuelve.</div>
         </div>
+      </motion.div>
+    </div>
+  );
+}
+
+// Lightweight loading component for lazy-loaded pages
+function PageLoadingSpinner() {
+  return (
+    <div className="min-h-screen bg-background flex items-center justify-center">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="flex flex-col items-center space-y-3"
+      >
+        <div className="relative">
+          <div className="h-12 w-12 liquid-gradient rounded-xl flex items-center justify-center">
+            <motion.span
+              className="text-white font-bold text-lg"
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+            >
+              F
+            </motion.span>
+          </div>
+        </div>
+        <div className="text-sm text-muted-foreground">Cargando...</div>
       </motion.div>
     </div>
   );
@@ -96,115 +122,117 @@ function AppRoutes() {
   return (
     <Router>
       <AnimatePresence mode="wait">
-        <Routes>
-          {/* Public Routes */}
-          <Route path="/" element={<HomePage />} />
-          <Route path="/services" element={<ServicesPage />} />
-          <Route path="/services/:id" element={<ServiceDetailPage />} />
-          <Route path="/profile/:userId" element={<PublicProfilePage />} />
-          <Route path="/terms" element={<TermsPage />} />
-          <Route path="/privacy" element={<PrivacyPage />} />
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/how-it-works" element={<HowItWorksPage />} />
-          <Route path="/contact" element={<ContactPage />} />
-          <Route path="/pricing" element={<PricingPage />} />
-          <Route path="/help" element={<HelpPage />} />
-          
-          {/* Auth Routes */}
-          <Route 
-            path="/login" 
-            element={
-              <PublicRoute>
-                <LoginPage />
-              </PublicRoute>
-            } 
-          />
-          <Route 
-            path="/register" 
-            element={
-              <PublicRoute>
-                <RegisterPage />
-              </PublicRoute>
-            } 
-          />
-          <Route 
-            path="/forgot-password" 
-            element={
-              <PublicRoute>
-                <ForgotPasswordPage />
-              </PublicRoute>
-            } 
-          />
-          <Route 
-            path="/verify-email/*" 
-            element={<EmailVerificationPage />} 
-          />
-          <Route 
-            path="/verify-email" 
-            element={<EmailVerificationPage />} 
-          />
-          
-          {/* Protected Routes */}
-          <Route 
-            path="/dashboard" 
-            element={
-              <ProtectedRoute>
-                <DashboardPage />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/profile" 
-            element={
-              <ProtectedRoute>
-                <ProfilePage />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/new-project" 
-            element={
-              <ProtectedRoute>
-                <NewProjectPage />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/opportunities" 
-            element={
-              <ProtectedRoute>
-                <OpportunitiesPage />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/favorites" 
-            element={
-              <ProtectedRoute>
-                <FavoritesPage />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/notifications" 
-            element={
-              <ProtectedRoute>
-                <NotificationsPage />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/settings" 
-            element={
-              <ProtectedRoute>
-                <SettingsPage />
-              </ProtectedRoute>
-            } 
-          />
-          
-          {/* 404 Route */}
-          <Route path="*" element={<Error404Page />} />
-        </Routes>
+        <Suspense fallback={<PageLoadingSpinner />}>
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<HomePage />} />
+            <Route path="/services" element={<ServicesPage />} />
+            <Route path="/services/:id" element={<ServiceDetailPage />} />
+            <Route path="/profile/:userId" element={<PublicProfilePage />} />
+            <Route path="/terms" element={<TermsPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/how-it-works" element={<HowItWorksPage />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/pricing" element={<PricingPage />} />
+            <Route path="/help" element={<HelpPage />} />
+            
+            {/* Auth Routes */}
+            <Route 
+              path="/login" 
+              element={
+                <PublicRoute>
+                  <LoginPage />
+                </PublicRoute>
+              } 
+            />
+            <Route 
+              path="/register" 
+              element={
+                <PublicRoute>
+                  <RegisterPage />
+                </PublicRoute>
+              } 
+            />
+            <Route 
+              path="/forgot-password" 
+              element={
+                <PublicRoute>
+                  <ForgotPasswordPage />
+                </PublicRoute>
+              } 
+            />
+            <Route 
+              path="/verify-email/*" 
+              element={<EmailVerificationPage />} 
+            />
+            <Route 
+              path="/verify-email" 
+              element={<EmailVerificationPage />} 
+            />
+            
+            {/* Protected Routes */}
+            <Route 
+              path="/dashboard" 
+              element={
+                <ProtectedRoute>
+                  <DashboardPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/profile" 
+              element={
+                <ProtectedRoute>
+                  <ProfilePage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/new-project" 
+              element={
+                <ProtectedRoute>
+                  <NewProjectPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/opportunities" 
+              element={
+                <ProtectedRoute>
+                  <OpportunitiesPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/favorites" 
+              element={
+                <ProtectedRoute>
+                  <FavoritesPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/notifications" 
+              element={
+                <ProtectedRoute>
+                  <NotificationsPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/settings" 
+              element={
+                <ProtectedRoute>
+                  <SettingsPage />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* 404 Route */}
+            <Route path="*" element={<Error404Page />} />
+          </Routes>
+        </Suspense>
       </AnimatePresence>
     </Router>
   );
