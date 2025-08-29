@@ -95,10 +95,17 @@ function Navigation() {
         </button>
         
         <Link to="/dashboard" className="flex items-center space-x-3">
-          <div className="h-8 w-8 liquid-gradient rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold">F</span>
-          </div>
-          <span className="font-semibold">Fixia</span>
+          <motion.div 
+            className="relative"
+            whileHover={{ scale: 1.05 }}
+            transition={{ type: "spring", stiffness: 400, damping: 10 }}
+          >
+            <div className="h-10 w-10 liquid-gradient rounded-xl flex items-center justify-center shadow-lg">
+              <span className="text-white font-bold text-lg">F</span>
+            </div>
+            <div className="absolute -inset-1 liquid-gradient rounded-xl blur opacity-20 animate-pulse-slow"></div>
+          </motion.div>
+          <span className="text-xl font-semibold tracking-tight text-white">Fixia</span>
         </Link>
         
         <div className="flex items-center space-x-2">
@@ -1072,7 +1079,7 @@ export default function NewProjectPage() {
           transition={{ duration: 0.6 }}
           className="text-center mb-8"
         >
-          <h1 className="text-3xl lg:text-4xl font-bold mb-4">
+          <h1 className="text-3xl lg:text-4xl font-bold mb-4 text-white">
             Crear Nuevo Servicio
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
