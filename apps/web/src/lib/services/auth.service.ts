@@ -1,5 +1,21 @@
-import { api, tokenManager } from '../api';
-import { User } from '../../context/AuthContext';
+/**
+ * @deprecated This auth service is deprecated in favor of SecureAuthContext methods.
+ * It still uses localStorage token management which is less secure.
+ * New code should use the SecureAuthContext directly which uses httpOnly cookies.
+ */
+
+import { api } from '../api';
+import { User } from '../../context/SecureAuthContext';
+
+// DEPRECATED: Stub tokenManager for backward compatibility
+const tokenManager = {
+  setToken: (token: string) => localStorage.setItem('fixia_token', token),
+  getToken: () => localStorage.getItem('fixia_token'),
+  removeToken: () => localStorage.removeItem('fixia_token'),
+  setRefreshToken: (token: string) => localStorage.setItem('fixia_refresh_token', token),
+  getRefreshToken: () => localStorage.getItem('fixia_refresh_token'),
+  removeRefreshToken: () => localStorage.removeItem('fixia_refresh_token'),
+};
 
 export interface LoginRequest {
   email: string;

@@ -1,5 +1,5 @@
 import { api } from '../api';
-import { User } from '../../context/AuthContext';
+import { User } from '../../context/SecureAuthContext';
 
 export interface DashboardStats {
   totalServices: number;

@@ -22,7 +22,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Textarea } from "../components/ui/textarea";
 import { Label } from "../components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
-import { useAuth } from "../context/AuthContext";
+import { useSecureAuth } from "../context/SecureAuthContext";
 import { toast } from "sonner";
 
 // Mock data for opportunities
@@ -201,7 +201,7 @@ const sortOptions = [
 ];
 
 function Navigation() {
-  const { user, logout } = useAuth();
+  const { user, logout } = useSecureAuth();
 
   return (
     <motion.header 

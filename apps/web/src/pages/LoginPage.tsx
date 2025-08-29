@@ -8,7 +8,7 @@ import { Label } from "../components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Checkbox } from "../components/ui/checkbox";
 import { Alert, AlertDescription } from "../components/ui/alert";
-import { useAuth } from "../context/AuthContext";
+import { useSecureAuth } from "../context/SecureAuthContext";
 import { authService } from "../lib/services";
 import { toast } from "sonner";
 import { FixiaNavigation } from "../components/FixiaNavigation";
@@ -23,7 +23,7 @@ export default function LoginPage() {
   const [isResendingVerification, setIsResendingVerification] = useState(false);
   const [welcomeMessage, setWelcomeMessage] = useState<string | null>(null);
   
-  const { login } = useAuth();
+  const { login } = useSecureAuth();
   const navigate = useNavigate();
   const location = useLocation();
 

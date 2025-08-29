@@ -11,7 +11,7 @@ import { Button } from "../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Alert, AlertDescription } from "../components/ui/alert";
-import { useAuth } from "../context/AuthContext";
+import { useSecureAuth } from "../context/SecureAuthContext";
 import { FixiaNavigation } from "../components/FixiaNavigation";
 
 interface PlanFeature {
@@ -152,7 +152,7 @@ function HeroSection() {
 }
 
 function PricingCardsSection() {
-  const { user } = useAuth();
+  const { user } = useSecureAuth();
   const navigate = useNavigate();
   const [isUpgrading, setIsUpgrading] = useState(false);
 

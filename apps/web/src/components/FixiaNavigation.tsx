@@ -1,15 +1,28 @@
-import { Search, Plus, Bell, User, Briefcase, Heart, Shield, Menu, Gift, Settings, HelpCircle } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Search, Plus, Bell, User, Briefcase, Heart, Shield, Menu, Gift, Settings, HelpCircle, LogOut } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
 import { Badge } from "./ui/badge";
 import { motion } from "motion/react";
-import { useAuth } from "../context/AuthContext";
+import { useSecureAuth } from "../context/SecureAuthContext";
 
 export function FixiaNavigation() {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, logout } = useSecureAuth();
+  const navigate = useNavigate();
+  
+  // Handle logout with navigation
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/');
+    } catch (error) {
+      console.error('Error during logout:', error);
+      // Force navigation even if logout fails
+      navigate('/');
+    }
+  };
   return (
     <motion.header 
       initial={{ y: -100 }}
@@ -96,8 +109,10 @@ export function FixiaNavigation() {
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative h-10 w-10 rounded-full hover:glass-medium transition-all duration-300">
                     <Avatar className="h-10 w-10 ring-2 ring-primary/20">
-                      <AvatarImage src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face" alt="Usuario" />
-                      <AvatarFallback className="glass">JD</AvatarFallback>
+                      <AvatarImage src={user?.avatar} alt={user?.name || 'Usuario'} />
+                      <AvatarFallback className="glass">
+                        {user?.name?.charAt(0)?.toUpperCase() || 'U'}
+                      </AvatarFallback>
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
@@ -106,16 +121,31 @@ export function FixiaNavigation() {
                     <div className="flex flex-col space-y-2">
                       <div className="flex items-center space-x-3">
                         <Avatar className="h-12 w-12">
-                          <AvatarImage src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=48&h=48&fit=crop&crop=face" alt="Usuario" />
-                          <AvatarFallback>JD</AvatarFallback>
+                          <AvatarImage src={user?.avatar} alt={user?.name || 'Usuario'} />
+                          <AvatarFallback>{user?.name?.charAt(0)?.toUpperCase() || 'U'}</AvatarFallback>
                         </Avatar>
                         <div>
-                          <p className="font-medium">Juan Desarrollador</p>
-                          <p className="text-sm text-muted-foreground">Desarrollador Full Stack</p>
-                          <div className="flex items-center space-x-1 mt-1">
-                            <div className="flex text-yellow-400">★★★★★</div>
-                            <span className="text-xs text-muted-foreground">4.9 (127 reseñas)</span>
-                          </div>
+                          <p className="font-medium">{user?.name || 'Usuario'}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {user?.userType === 'professional' 
+                              ? (user?.professionalProfile?.description || 'Profesional') 
+                              : user?.planType === 'premium' 
+                                ? 'Cliente Premium' 
+                                : 'Cliente'
+                            }
+                          </p>
+                          {user?.userType === 'professional' && user?.professionalProfile && (
+                            <div className="flex items-center space-x-1 mt-1">
+                              <div className="flex text-yellow-400">
+                                {'★'.repeat(Math.floor(user.professionalProfile.averageRating || 0))}
+                                {'☆'.repeat(5 - Math.floor(user.professionalProfile.averageRating || 0))}
+                              </div>
+                              <span className="text-xs text-muted-foreground">
+                                {user.professionalProfile.averageRating?.toFixed(1) || '0.0'} 
+                                ({user.professionalProfile.totalReviews || 0} reseñas)
+                              </span>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -153,7 +183,11 @@ export function FixiaNavigation() {
                     </DropdownMenuItem>
                   </Link>
                   <DropdownMenuSeparator className="bg-white/10" />
-                  <DropdownMenuItem className="hover:glass-medium text-destructive">
+                  <DropdownMenuItem 
+                    onClick={handleLogout} 
+                    className="hover:glass-medium text-destructive cursor-pointer"
+                  >
+                    <LogOut className="mr-3 h-4 w-4" />
                     Cerrar Sesión
                   </DropdownMenuItem>
                 </DropdownMenuContent>

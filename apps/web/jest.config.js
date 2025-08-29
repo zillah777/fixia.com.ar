@@ -12,6 +12,7 @@ const config = {
   ],
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov', 'html'],
+  setupFiles: ['<rootDir>/tests/setup/polyfills.ts'],
   setupFilesAfterEnv: ['<rootDir>/tests/setup/jest.setup.ts'],
   transform: {
     '^.+\\.(ts|tsx)$': ['ts-jest', {
@@ -36,6 +37,21 @@ const config = {
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
     '^motion/react$': '<rootDir>/tests/__mocks__/motion.ts',
     '^sonner$': '<rootDir>/tests/__mocks__/sonner.ts',
+    // Mock API to avoid import.meta issues
+    '^../lib/api$': '<rootDir>/tests/__mocks__/api.ts',
+    '^../../lib/api$': '<rootDir>/tests/__mocks__/api.ts',
+  },
+  // Handle import.meta.env in Jest
+  globals: {
+    'import.meta': {
+      env: {
+        VITE_API_URL: 'http://localhost:4000',
+        NODE_ENV: 'test',
+        DEV: false,
+        PROD: false,
+        MODE: 'test'
+      }
+    }
   },
 };
 

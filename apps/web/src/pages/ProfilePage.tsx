@@ -23,7 +23,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Progress } from "../components/ui/progress";
 import { Alert, AlertDescription } from "../components/ui/alert";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "../components/ui/dialog";
-import { useAuth } from "../context/AuthContext";
+import { useSecureAuth } from "../context/SecureAuthContext";
 import { toast } from "sonner";
 
 // Componentes seguros importados
@@ -96,7 +96,7 @@ const userReviews = [
 ];
 
 function Navigation() {
-  const { logout } = useAuth();
+  const { logout } = useSecureAuth();
 
   return (
     <motion.header 
@@ -154,7 +154,7 @@ function ProfileHeader({ user, isEditing, setIsEditing }: any) {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const { updateProfile } = useAuth();
+  const { updateProfile } = useSecureAuth();
 
   // Validación de campos
   const validateFields = () => {
@@ -709,7 +709,7 @@ function ReviewsSection() {
 }
 
 function SettingsSection() {
-  const { user } = useAuth();
+  const { user } = useSecureAuth();
   if (!user) return null;
   return (
     <div className="space-y-6">
@@ -932,7 +932,7 @@ function SettingsSection() {
 }
 
 export default function ProfilePage() {
-  const { user } = useAuth();
+  const { user } = useSecureAuth();
   const [isEditing, setIsEditing] = useState(false);
 
   if (!user) return null;

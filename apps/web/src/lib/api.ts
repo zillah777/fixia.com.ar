@@ -2,58 +2,65 @@
 import axios, { AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import { toast } from 'sonner';
 
-// API Configuration
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+// API Configuration with robust validation
+const getAPIBaseURL = (): string => {
+  const envURL = import.meta.env.VITE_API_URL;
+  
+  // Validate environment URL if provided
+  if (envURL) {
+    try {
+      new URL(envURL);
+      return envURL;
+    } catch (error) {
+      console.error('😨 Invalid VITE_API_URL:', envURL);
+      throw new Error('Invalid API URL configuration');
+    }
+  }
+  
+  // Production fallback
+  if (import.meta.env.PROD) {
+    console.error('😨 VITE_API_URL not configured for production!');
+    throw new Error('API URL must be configured for production deployment');
+  }
+  
+  // Development fallback
+  const fallbackURL = 'http://localhost:4000';
+  console.warn('⚠️ Using fallback API URL for development:', fallbackURL);
+  return fallbackURL;
+};
 
-// Debug: Log the API base URL
-console.log('🔗 API Base URL:', API_BASE_URL);
+const API_BASE_URL = getAPIBaseURL();
 
-// Create axios instance
+// Debug: Log the API base URL (only in development)
+if (import.meta.env.DEV) {
+  console.log('🔗 API Base URL:', API_BASE_URL);
+}
+
+// Create axios instance with secure httpOnly cookie configuration
 export const apiClient: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 30000,
+  timeout: import.meta.env.PROD ? 10000 : 30000, // Shorter timeout in production
   headers: {
     'Content-Type': 'application/json',
   },
+  // SECURITY: Enable credentials for httpOnly cookie authentication
+  withCredentials: true, // Required for httpOnly cookies
+  maxContentLength: 50 * 1024 * 1024, // 50MB limit
+  maxBodyLength: 50 * 1024 * 1024, // 50MB limit
+  validateStatus: (status) => {
+    // Accept 2xx and 3xx status codes
+    return status >= 200 && status < 400;
+  },
 });
 
-// Token management
-const TOKEN_KEY = 'fixia_token';
-const REFRESH_TOKEN_KEY = 'fixia_refresh_token';
+// SECURITY: No more localStorage token management - using httpOnly cookies
+// Cookies are automatically included with withCredentials: true
 
-export const tokenManager = {
-  getToken: (): string | null => {
-    return localStorage.getItem(TOKEN_KEY);
-  },
-  
-  setToken: (token: string): void => {
-    localStorage.setItem(TOKEN_KEY, token);
-  },
-  
-  removeToken: (): void => {
-    localStorage.removeItem(TOKEN_KEY);
-  },
-
-  getRefreshToken: (): string | null => {
-    return localStorage.getItem(REFRESH_TOKEN_KEY);
-  },
-  
-  setRefreshToken: (refreshToken: string): void => {
-    localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
-  },
-  
-  removeRefreshToken: (): void => {
-    localStorage.removeItem(REFRESH_TOKEN_KEY);
-  },
-};
-
-// Request interceptor - Add auth token to requests
+// Request interceptor - No manual token handling needed with httpOnly cookies
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    const token = tokenManager.getToken();
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
+    // httpOnly cookies are automatically included by the browser
+    // No manual token management needed
     return config;
   },
   (error) => {
@@ -65,12 +72,12 @@ apiClient.interceptors.request.use(
 let isRefreshing = false;
 let failedQueue: any[] = [];
 
-const processQueue = (error: any, token: string | null = null) => {
+const processQueue = (error: any) => {
   failedQueue.forEach(prom => {
     if (error) {
       prom.reject(error);
     } else {
-      prom.resolve(token);
+      prom.resolve();
     }
   });
   
@@ -88,8 +95,7 @@ apiClient.interceptors.response.use(
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
-        }).then(token => {
-          originalRequest.headers.Authorization = `Bearer ${token}`;
+        }).then(() => {
           return apiClient(originalRequest);
         }).catch(err => {
           return Promise.reject(err);
@@ -99,48 +105,26 @@ apiClient.interceptors.response.use(
       originalRequest._retry = true;
       isRefreshing = true;
 
-      const refreshToken = tokenManager.getRefreshToken();
-      
-      if (refreshToken) {
-        try {
-          const response = await axios.post(`${API_BASE_URL}/auth/refresh`, {
-            refresh_token: refreshToken
-          });
-          
-          const { access_token, refresh_token: newRefreshToken } = response.data;
-          tokenManager.setToken(access_token);
-          
-          if (newRefreshToken) {
-            tokenManager.setRefreshToken(newRefreshToken);
-          }
-          
-          processQueue(null, access_token);
-          originalRequest.headers.Authorization = `Bearer ${access_token}`;
-          
+      try {
+        // SECURITY: Attempt token refresh via httpOnly cookies
+        const response = await axios.post(`${API_BASE_URL}/auth/refresh`, {}, {
+          withCredentials: true, // Include httpOnly cookies
+          timeout: 5000,
+          validateStatus: (status) => status === 200
+        });
+        
+        if (response.status === 200) {
+          processQueue(null);
           return apiClient(originalRequest);
-        } catch (refreshError) {
-          processQueue(refreshError, null);
-          // Clear all auth data and redirect to login
-          tokenManager.removeToken();
-          tokenManager.removeRefreshToken();
-          localStorage.removeItem('fixia_user');
-          
-          if (!window.location.pathname.includes('/login')) {
-            toast.error('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
-            setTimeout(() => {
-              window.location.href = '/login';
-            }, 2000);
-          }
-          
-          return Promise.reject(refreshError);
-        } finally {
-          isRefreshing = false;
+        } else {
+          throw new Error('Token refresh failed');
         }
-      } else {
-        // No refresh token available
-        tokenManager.removeToken();
-        tokenManager.removeRefreshToken();
-        localStorage.removeItem('fixia_user');
+      } catch (refreshError) {
+        processQueue(refreshError);
+        
+        // Clear any localStorage user data (non-sensitive)
+        localStorage.removeItem('fixia_user_basic');
+        localStorage.removeItem('fixia_preferences');
         
         if (!window.location.pathname.includes('/login')) {
           toast.error('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
@@ -148,11 +132,74 @@ apiClient.interceptors.response.use(
             window.location.href = '/login';
           }, 2000);
         }
+        
+        return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
       }
-    } else if (error.response?.status >= 500) {
-      toast.error('Error del servidor. Por favor, intenta nuevamente.');
-    } else if (error.code === 'ECONNREFUSED' || error.code === 'ERR_NETWORK') {
-      toast.error('No se pudo conectar con el servidor. Verifica tu conexión.');
+    }
+    
+    // Enhanced error handling with specific messages
+    if (error.response) {
+      const status = error.response.status;
+      const message = error.response.data?.message || 'Error desconocido';
+      
+      switch (status) {
+        case 400:
+          toast.error('Solicitud inválida. Verifica los datos enviados.');
+          break;
+        case 403:
+          toast.error('No tienes permisos para realizar esta acción.');
+          break;
+        case 404:
+          toast.error('El recurso solicitado no fue encontrado.');
+          break;
+        case 409:
+          toast.error('Conflicto con el estado actual del recurso.');
+          break;
+        case 422:
+          toast.error('Los datos enviados no son válidos.');
+          break;
+        case 429:
+          toast.error('Demasiadas solicitudes. Espera un momento e intenta nuevamente.');
+          break;
+        case 500:
+        case 502:
+        case 503:
+        case 504:
+          toast.error('Error del servidor. Por favor, intenta nuevamente.');
+          break;
+        default:
+          if (status >= 400 && status < 500) {
+            toast.error(message || 'Error en la solicitud.');
+          } else if (status >= 500) {
+            toast.error('Error interno del servidor.');
+          }
+      }
+    } else if (error.code) {
+      // Network errors
+      switch (error.code) {
+        case 'ECONNREFUSED':
+        case 'ERR_NETWORK':
+          toast.error('No se pudo conectar con el servidor. Verifica tu conexión.');
+          break;
+        case 'ECONNABORTED':
+          toast.error('La solicitud tardó demasiado tiempo. Intenta nuevamente.');
+          break;
+        case 'ERR_CANCELED':
+          // Don't show toast for cancelled requests
+          break;
+        default:
+          toast.error('Error de conexión. Verifica tu red.');
+      }
+    } else {
+      // Generic error
+      console.error('Unknown API error:', error);
+      if (import.meta.env.DEV) {
+        toast.error('Error desconocido. Revisa la consola para más detalles.');
+      } else {
+        toast.error('Ocurrió un error inesperado.');
+      }
     }
     
     return Promise.reject(error);

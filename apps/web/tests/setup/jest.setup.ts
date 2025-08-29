@@ -1,37 +1,10 @@
+// CRITICAL: Import polyfills FIRST before any other imports
+// This ensures MSW has access to fetch, Response, etc.
+import './polyfills';
+
+// Now safe to import testing utilities
 import '@testing-library/jest-dom';
 import { server } from '../__mocks__/server';
-
-// Mock global fetch and Response for MSW
-import { TextEncoder, TextDecoder } from 'util';
-global.TextEncoder = TextEncoder;
-global.TextDecoder = TextDecoder as any;
-
-// Polyfill for Response
-if (typeof global.Response === 'undefined') {
-  global.Response = class Response {
-    ok: boolean;
-    status: number;
-    statusText: string;
-    headers: any;
-    body: any;
-
-    constructor(body?: any, init?: any) {
-      this.ok = (init?.status || 200) >= 200 && (init?.status || 200) < 300;
-      this.status = init?.status || 200;
-      this.statusText = init?.statusText || 'OK';
-      this.headers = new Map();
-      this.body = body;
-    }
-
-    async json() {
-      return JSON.parse(this.body);
-    }
-
-    async text() {
-      return this.body?.toString() || '';
-    }
-  } as any;
-}
 
 // Establish API mocking before all tests
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));

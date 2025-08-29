@@ -20,7 +20,7 @@ import { Separator } from "../components/ui/separator";
 import { Progress } from "../components/ui/progress";
 import { Alert, AlertDescription } from "../components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
-import { useAuth } from "../context/AuthContext";
+import { useSecureAuth } from "../context/SecureAuthContext";
 import { toast } from "sonner";
 
 const categories = [
@@ -978,7 +978,7 @@ function FinalStep({ data, setData }: { data: ProjectData; setData: (data: Proje
 }
 
 export default function NewProjectPage() {
-  const { user } = useAuth();
+  const { user } = useSecureAuth();
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const totalSteps = 6;

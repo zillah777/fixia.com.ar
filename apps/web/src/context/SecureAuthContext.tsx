@@ -50,8 +50,27 @@ export interface User {
   accountType: 'client' | 'professional';
   availability: 'available' | 'busy' | 'offline';
   badges: Badge[];
-  createdAt?: string;
-  updatedAt?: string;
+  totalServices: number;
+  completedServices: number;
+  averageRating: number;
+  totalReviews: number;
+  joinDate: string;
+  
+  // Contact limits for clients
+  pendingContactRequests: number;
+  maxContactRequests: number;
+  
+  // Argentina specific (computed from location)
+  province: string;
+  city: string;
+  
+  // Promotion tracking
+  isLaunchPromotion: boolean;
+  promotionExpiryDate?: string;
+  
+  // Timestamps
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface SecureAuthContextType {
@@ -64,6 +83,12 @@ interface SecureAuthContextType {
   updateProfile: (userData: Partial<User>) => Promise<void>;
   refreshUserData: () => Promise<void>;
   updateAvailability: (status: 'available' | 'busy' | 'offline') => Promise<void>;
+  // Legacy compatibility methods
+  requestContactProfessional: (professionalId: string, message?: string) => Promise<void>;
+  respondToContactRequest: (requestId: string, accept: boolean, message?: string) => Promise<void>;
+  upgradeToPremium: () => Promise<void>;
+  verifyEmail: (token: string) => Promise<void>;
+  resendVerificationEmail: (email?: string) => Promise<void>;
 }
 
 interface RegisterRequest {
@@ -118,6 +143,19 @@ const transformBackendUserSecurely = (backendUser: any): User => {
 
   const now = new Date().toISOString();
 
+  // Parse location safely
+  let city = '';
+  let province = 'Chubut';
+  
+  if (sanitizedLocation) {
+    const locationParts = sanitizedLocation.includes(',') 
+      ? sanitizedLocation.split(',').map(part => part.trim()) 
+      : [sanitizedLocation];
+    
+    city = locationParts[0] || '';
+    province = locationParts[1] || 'Chubut';
+  }
+
   // Construir objeto usuario con datos sanitizados
   const baseUser: User = {
     id: String(backendUser.id || backendUser._id || ''),
@@ -140,7 +178,25 @@ const transformBackendUserSecurely = (backendUser: any): User => {
       ? backendUser.userType 
       : 'client',
     availability: 'available',
-    badges: [],
+    badges: Array.isArray(backendUser.badges) ? backendUser.badges : [],
+    totalServices: Number(backendUser.totalServices) || 0,
+    completedServices: Number(backendUser.completedServices) || 0,
+    averageRating: Number(backendUser.averageRating) || 0,
+    totalReviews: Number(backendUser.totalReviews) || 0,
+    joinDate: backendUser.created_at || backendUser.createdAt || now,
+    
+    // Contact limits
+    pendingContactRequests: Number(backendUser.pendingContactRequests) || 0,
+    maxContactRequests: Number(backendUser.maxContactRequests) || 3,
+    
+    // Argentina specific
+    province,
+    city,
+    
+    // Promotion tracking
+    isLaunchPromotion: Boolean(backendUser.isLaunchPromotion),
+    promotionExpiryDate: backendUser.promotionExpiryDate || undefined,
+    
     createdAt: backendUser.createdAt || now,
     updatedAt: backendUser.updatedAt || now
   };
@@ -183,6 +239,11 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
     const initializeAuth = async () => {
       setLoading(true);
       try {
+        // SECURITY: Clear any deprecated localStorage tokens
+        localStorage.removeItem('fixia_token');
+        localStorage.removeItem('fixia_refresh_token');
+        localStorage.removeItem('fixia_user'); // Old user storage
+        
         const isAuth = await secureTokenManager.initialize();
         setIsAuthenticated(isAuth);
         
@@ -465,6 +526,112 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  // Legacy compatibility methods (implement as needed)
+  const requestContactProfessional = async (professionalId: string, message?: string) => {
+    try {
+      const response = await fetch('/api/contact/request', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ professionalId, message }),
+      });
+      
+      if (response.ok) {
+        toast.success('Solicitud de contacto enviada');
+      } else {
+        throw new Error('Error al enviar solicitud');
+      }
+    } catch (error: any) {
+      toast.error(error.message || 'Error al enviar solicitud');
+      throw error;
+    }
+  };
+
+  const respondToContactRequest = async (requestId: string, accept: boolean, message?: string) => {
+    try {
+      const response = await fetch('/api/contact/respond', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ requestId, accept, message }),
+      });
+      
+      if (response.ok) {
+        const action = accept ? 'aceptada' : 'rechazada';
+        toast.success(`Solicitud ${action}`);
+      } else {
+        throw new Error('Error al responder solicitud');
+      }
+    } catch (error: any) {
+      toast.error(error.message || 'Error al responder solicitud');
+      throw error;
+    }
+  };
+
+  const upgradeToPremium = async () => {
+    try {
+      const response = await fetch('/api/user/upgrade', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        if (result.paymentUrl) {
+          window.open(result.paymentUrl, '_blank');
+        }
+        toast.success('Procesando actualización...');
+      } else {
+        throw new Error('Error al procesar actualización');
+      }
+    } catch (error: any) {
+      toast.error(error.message || 'Error al procesar actualización');
+      throw error;
+    }
+  };
+
+  const verifyEmail = async (token: string) => {
+    try {
+      const response = await fetch('/api/auth/verify-email', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token }),
+      });
+      
+      if (response.ok) {
+        toast.success('Email verificado exitosamente');
+        await refreshUserData();
+      } else {
+        throw new Error('Token de verificación inválido');
+      }
+    } catch (error: any) {
+      toast.error(error.message || 'Error al verificar email');
+      throw error;
+    }
+  };
+
+  const resendVerificationEmail = async (email?: string) => {
+    try {
+      const response = await fetch('/api/auth/resend-verification', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: email ? JSON.stringify({ email }) : '{}',
+      });
+      
+      if (response.ok) {
+        toast.success('Email de verificación reenviado');
+      } else {
+        throw new Error('Error al reenviar verificación');
+      }
+    } catch (error: any) {
+      toast.error(error.message || 'Error al reenviar verificación');
+      throw error;
+    }
+  };
+
   const value: SecureAuthContextType = {
     user,
     loading,
@@ -475,6 +642,11 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
     updateProfile,
     refreshUserData,
     updateAvailability,
+    requestContactProfessional,
+    respondToContactRequest,
+    upgradeToPremium,
+    verifyEmail,
+    resendVerificationEmail,
   };
 
   return (

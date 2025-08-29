@@ -18,10 +18,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Alert, AlertDescription } from "../components/ui/alert";
 import { Separator } from "../components/ui/separator";
 import { FixiaNavigation } from "../components/FixiaNavigation";
-import { useAuth } from "../context/AuthContext";
+import { useSecureAuth } from "../context/SecureAuthContext";
 
 function ProfileTab() {
-  const { user, updateProfile } = useAuth();
+  const { user, updateProfile } = useSecureAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState({
@@ -29,8 +29,7 @@ function ProfileTab() {
     email: user?.email || '',
     phone: user?.phone || '',
     location: user?.location || '',
-    businessName: user?.businessName || '',
-    description: user?.description || ''
+    description: user?.professionalProfile?.description || ''
   });
 
   const locations = [
@@ -57,8 +56,7 @@ function ProfileTab() {
       email: user?.email || '',
       phone: user?.phone || '',
       location: user?.location || '',
-      businessName: user?.businessName || '',
-      description: user?.description || ''
+      description: user?.professionalProfile?.description || ''
     });
     setIsEditing(false);
   };
@@ -174,30 +172,18 @@ function ProfileTab() {
           </div>
 
           {user?.userType === 'professional' && (
-            <>
-              <div className="space-y-2">
-                <Label htmlFor="businessName">Nombre del Negocio</Label>
-                <Input
-                  id="businessName"
-                  value={formData.businessName}
-                  onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
-                  disabled={!isEditing}
-                  className="glass border-white/20"
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="description">Descripción Profesional</Label>
-                <textarea
-                  id="description"
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  disabled={!isEditing}
-                  rows={4}
-                  className="w-full px-3 py-2 bg-input border border-border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
-                />
-              </div>
-            </>
+            <div className="space-y-2">
+              <Label htmlFor="description">Descripción Profesional</Label>
+              <textarea
+                id="description"
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                disabled={!isEditing}
+                rows={4}
+                className="w-full px-3 py-2 bg-input border border-border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
+                placeholder="Describe tu experiencia profesional y servicios que ofreces..."
+              />
+            </div>
           )}
         </CardContent>
       </Card>
@@ -554,7 +540,7 @@ function NotificationsTab() {
 }
 
 function SubscriptionTab() {
-  const { user } = useAuth();
+  const { user } = useSecureAuth();
   const isProfessional = user?.userType === 'professional';
 
   return (
@@ -650,7 +636,7 @@ function SubscriptionTab() {
 
 function DangerZone() {
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { logout } = useSecureAuth();
 
   const handleLogout = () => {
     logout();
@@ -698,7 +684,7 @@ function DangerZone() {
 }
 
 export default function SettingsPage() {
-  const { user } = useAuth();
+  const { user } = useSecureAuth();
 
   if (!user) {
     return (

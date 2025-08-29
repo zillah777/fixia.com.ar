@@ -17,7 +17,7 @@ import { Button } from "../components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Alert, AlertDescription } from "../components/ui/alert";
 import { authService } from "../lib/services";
-import { useAuth } from "../context/AuthContext";
+import { useSecureAuth } from "../context/SecureAuthContext";
 import { toast } from "sonner";
 import { FixiaNavigation } from "../components/FixiaNavigation";
 
@@ -37,7 +37,7 @@ interface VerificationState {
 function EmailVerificationPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { login } = useAuth();
+  const { login } = useSecureAuth();
   
   const [state, setState] = useState<VerificationState>({
     isVerifying: false,

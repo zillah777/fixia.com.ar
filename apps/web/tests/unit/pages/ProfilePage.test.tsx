@@ -10,7 +10,7 @@ import { render, screen, fireEvent, waitFor, within } from '@testing-library/rea
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 import ProfilePage from '../../../src/pages/ProfilePage';
-import { AuthContext } from '../../../src/context/AuthContext';
+import { SecureAuthContext } from '../../../src/context/SecureAuthContext';
 import { toast } from 'sonner';
 
 // Mock dependencies
@@ -28,7 +28,7 @@ jest.mock('motion/react', () => ({
   },
 }));
 
-// Mock AuthContext values for different user types
+// Mock SecureAuthContext values for different user types
 const mockProfessionalUser = {
   id: 'prof-123',
   email: 'professional@test.com',
@@ -76,7 +76,7 @@ const mockClientUser = {
   emailVerified: true,
 };
 
-const mockAuthContextValue = {
+const mockSecureAuthContextValue = {
   user: mockProfessionalUser,
   isAuthenticated: true,
   login: jest.fn(),
@@ -94,15 +94,15 @@ const mockAuthContextValue = {
 
 const renderProfilePage = (userOverride?: any) => {
   const contextValue = {
-    ...mockAuthContextValue,
+    ...mockSecureAuthContextValue,
     user: userOverride || mockProfessionalUser,
   };
 
   return render(
     <BrowserRouter>
-      <AuthContext.Provider value={contextValue}>
+      <SecureAuthContext.Provider value={contextValue}>
         <ProfilePage />
-      </AuthContext.Provider>
+      </SecureAuthContext.Provider>
     </BrowserRouter>
   );
 };
@@ -130,7 +130,7 @@ describe('ProfilePage', () => {
       const logoutButton = screen.getByRole('button', { name: /salir/i });
       await user.click(logoutButton);
       
-      expect(mockAuthContextValue.logout).toHaveBeenCalledTimes(1);
+      expect(mockSecureAuthContextValue.logout).toHaveBeenCalledTimes(1);
     });
 
     it('has correct navigation links', () => {
@@ -526,15 +526,15 @@ describe('ProfilePage', () => {
   describe('Error Handling', () => {
     it('handles null user gracefully', () => {
       const contextValue = {
-        ...mockAuthContextValue,
+        ...mockSecureAuthContextValue,
         user: null,
       };
 
       render(
         <BrowserRouter>
-          <AuthContext.Provider value={contextValue}>
+          <SecureAuthContext.Provider value={contextValue}>
             <ProfilePage />
-          </AuthContext.Provider>
+          </SecureAuthContext.Provider>
         </BrowserRouter>
       );
 

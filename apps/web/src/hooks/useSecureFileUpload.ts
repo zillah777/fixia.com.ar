@@ -110,7 +110,7 @@ export const useSecureFileUpload = (config: Partial<FileUploadConfig> = {}): Use
           'X-File-Size': file.size.toString(),
           'X-Original-Name': encodeURIComponent(file.name),
         },
-        onUploadProgress: (progressEvent) => {
+        onUploadProgress: (progressEvent: any) => {
           if (progressEvent.total) {
             const percentCompleted = Math.round(
               (progressEvent.loaded * 100) / progressEvent.total

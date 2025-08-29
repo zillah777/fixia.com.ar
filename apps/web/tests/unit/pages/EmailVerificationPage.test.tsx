@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
-import { AuthProvider } from '../../../src/context/AuthContext';
+import { SecureAuthProvider } from '../../../src/context/SecureAuthContext';
 import EmailVerificationPage from '../../../src/pages/EmailVerificationPage';
 import { toast } from 'sonner';
 import { authService } from '../../../src/lib/services';
@@ -30,9 +30,9 @@ const renderWithProviders = (
 
   return render(
     <MemoryRouter>
-      <AuthProvider>
+      <SecureAuthProvider>
         <EmailVerificationPage />
-      </AuthProvider>
+      </SecureAuthProvider>
     </MemoryRouter>
   );
 };

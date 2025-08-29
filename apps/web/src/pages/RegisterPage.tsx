@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs"
 import { Checkbox } from "../components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import { Alert, AlertDescription } from "../components/ui/alert";
-import { useAuth } from "../context/AuthContext";
+import { useSecureAuth } from "../context/SecureAuthContext";
 import { FixiaNavigation } from "../components/FixiaNavigation";
 import { toast } from "sonner";
 
@@ -956,7 +956,7 @@ function ProfessionalRegistrationForm({
 export default function RegisterPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { register } = useAuth();
+  const { register } = useSecureAuth();
   
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -1024,7 +1024,7 @@ export default function RegisterPage() {
         phone: formData.phone,
         location: formData.location,
         birthdate: formData.birthdate,
-        userType: currentTab,
+        userType: currentTab as 'client' | 'professional',
         serviceCategories: formData.serviceCategories,
         hasPassword: !!formData.password
       });
@@ -1037,7 +1037,7 @@ export default function RegisterPage() {
         phone: formData.phone,
         location: formData.location,
         birthdate: formData.birthdate,
-        userType: currentTab,
+        userType: currentTab as 'client' | 'professional',
         serviceCategories: formData.serviceCategories,
         description: formData.description,
         experience: formData.experience,

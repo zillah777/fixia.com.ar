@@ -14,10 +14,10 @@ import { Badge } from "../components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Progress } from "../components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
-import { useAuth } from "../context/AuthContext";
+import { useSecureAuth } from "../context/SecureAuthContext";
 
 function Navigation() {
-  const { user, logout } = useAuth();
+  const { user, logout } = useSecureAuth();
 
   return (
     <motion.header 
@@ -500,7 +500,7 @@ function CurrentProjects() {
 }
 
 export default function DashboardPage() {
-  const { user } = useAuth();
+  const { user } = useSecureAuth();
   const [dashboardData, setDashboardData] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

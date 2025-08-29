@@ -16,7 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { FixiaNavigation } from "../components/FixiaNavigation";
-import { useAuth } from "../context/AuthContext";
+import { useSecureAuth } from "../context/SecureAuthContext";
 
 interface FavoriteService {
   id: string;
@@ -366,7 +366,7 @@ function ProfessionalCard({ professional }: { professional: FavoriteProfessional
 }
 
 export default function FavoritesPage() {
-  const { user } = useAuth();
+  const { user } = useSecureAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("dateAdded");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");

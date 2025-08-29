@@ -14,7 +14,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Switch } from "../components/ui/switch";
 import { FixiaNavigation } from "../components/FixiaNavigation";
-import { useAuth } from "../context/AuthContext";
+import { useSecureAuth } from "../context/SecureAuthContext";
 
 interface Notification {
   id: string;
@@ -371,7 +371,7 @@ function NotificationSettings() {
 }
 
 export default function NotificationsPage() {
-  const { user } = useAuth();
+  const { user } = useSecureAuth();
   const [activeTab, setActiveTab] = useState("all");
   
   const unreadCount = notifications.filter(n => !n.read).length;

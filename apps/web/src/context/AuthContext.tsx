@@ -1,3 +1,11 @@
+/**
+ * @deprecated This AuthContext is deprecated in favor of SecureAuthContext.
+ * All new code should use SecureAuthContext which provides httpOnly cookie-based authentication
+ * instead of localStorage token storage for better security.
+ * 
+ * This file is kept for compatibility during migration but will be removed in future versions.
+ */
+
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { authService, userService, AuthResponse, LoginRequest, RegisterRequest } from '../lib/services';
 import { toast } from 'sonner';
@@ -219,7 +227,7 @@ const transformBackendUser = (backendUser: any): User => {
     professionalProfile: professionalProfile ? {
       id: safeString(professionalProfile.id, ''),
       serviceCategories: Array.isArray(professionalProfile.serviceCategories) 
-        ? professionalProfile.serviceCategories.map(cat => safeString(cat)).filter(Boolean)
+        ? professionalProfile.serviceCategories.map((cat: any) => safeString(cat)).filter(Boolean)
         : [],
       description: safeString(professionalProfile.description, ''),
       experience: safeString(professionalProfile.experience, ''),

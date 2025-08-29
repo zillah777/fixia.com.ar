@@ -2,10 +2,10 @@ import React from 'react';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
-import { AuthProvider } from '../../../src/context/AuthContext';
+import { SecureAuthProvider } from '../../../src/context/SecureAuthContext';
 import RegisterPage from '../../../src/pages/RegisterPage';
 import { toast } from 'sonner';
-import { useAuth } from '../../../src/context/AuthContext';
+import { useSecureAuth } from '../../../src/context/SecureAuthContext';
 
 // Mock dependencies
 jest.mock('sonner');
@@ -19,13 +19,13 @@ const mockNavigate = jest.fn();
 const mockRegister = jest.fn();
 const mockToast = toast as jest.Mocked<typeof toast>;
 
-// Mock useAuth hook
-jest.mock('../../../src/context/AuthContext', () => ({
-  ...jest.requireActual('../../../src/context/AuthContext'),
-  useAuth: jest.fn(),
+// Mock useSecureAuth hook
+jest.mock('../../../src/context/SecureAuthContext', () => ({
+  ...jest.requireActual('../../../src/context/SecureAuthContext'),
+  useSecureAuth: jest.fn(),
 }));
 
-const mockUseAuth = useAuth as jest.MockedFunction<typeof useAuth>;
+const mockUseAuth = useSecureAuth as jest.MockedFunction<typeof useSecureAuth>;
 
 // Helper function to render component with providers
 const renderWithProviders = (searchParams: string = '') => {
@@ -50,9 +50,9 @@ const renderWithProviders = (searchParams: string = '') => {
 
   return render(
     <MemoryRouter>
-      <AuthProvider>
+      <SecureAuthProvider>
         <RegisterPage />
-      </AuthProvider>
+      </SecureAuthProvider>
     </MemoryRouter>
   );
 };
