@@ -1,3 +1,4 @@
+import React, { memo, useCallback } from "react";
 import { Search, Plus, Bell, User, Briefcase, Heart, Shield, Menu, Gift, Settings, HelpCircle, LogOut } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
@@ -8,12 +9,12 @@ import { Badge } from "./ui/badge";
 import { motion } from "motion/react";
 import { useSecureAuth } from "../context/SecureAuthContext";
 
-export function FixiaNavigation() {
+export const FixiaNavigation = memo(function FixiaNavigation() {
   const { user, isAuthenticated, logout } = useSecureAuth();
   const navigate = useNavigate();
   
-  // Handle logout with navigation
-  const handleLogout = async () => {
+  // Handle logout with navigation - memoized to prevent unnecessary re-renders
+  const handleLogout = useCallback(async () => {
     try {
       await logout();
       navigate('/');
@@ -22,7 +23,7 @@ export function FixiaNavigation() {
       // Force navigation even if logout fails
       navigate('/');
     }
-  };
+  }, [logout, navigate]);
   return (
     <motion.header 
       initial={{ y: -100 }}
@@ -218,4 +219,4 @@ export function FixiaNavigation() {
       </div>
     </motion.header>
   );
-}
+});

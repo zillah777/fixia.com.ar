@@ -1,11 +1,11 @@
-import { useState, useRef } from 'react';
+import React, { useState, useRef, memo, useCallback } from 'react';
 import { Camera, Upload, X, AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
 import { Progress } from './ui/progress';
 import { Alert, AlertDescription } from './ui/alert';
 import useSecureFileUpload from '../hooks/useSecureFileUpload';
-import { useAuth } from '../context/AuthContext';
+import { useSecureAuth } from '../context/SecureAuthContext';
 
 interface SecureAvatarUploadProps {
   currentAvatar?: string;
@@ -13,16 +13,16 @@ interface SecureAvatarUploadProps {
   className?: string;
 }
 
-export const SecureAvatarUpload = ({ 
+export const SecureAvatarUpload = memo<SecureAvatarUploadProps>(({ 
   currentAvatar, 
   onAvatarUpdate, 
   className = '' 
-}: SecureAvatarUploadProps) => {
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { user } = useAuth();
+  const { user } = useSecureAuth();
 
   const { uploadFile, isUploading, progress, error } = useSecureFileUpload({
     maxSize: 5 * 1024 * 1024, // 5MB
@@ -48,7 +48,15 @@ export const SecureAvatarUpload = ({
     reader.readAsDataURL(file);
   };
 
-  const handleUpload = async () => {
+  const resetForm = useCallback(() => {
+    setSelectedFile(null);
+    setPreviewUrl(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  }, []);
+
+  const handleUpload = useCallback(async () => {
     if (!selectedFile) return;
 
     try {
@@ -59,20 +67,12 @@ export const SecureAvatarUpload = ({
     } catch (error) {
       // Error ya manejado por el hook
     }
-  };
+  }, [selectedFile, uploadFile, onAvatarUpdate, resetForm]);
 
-  const resetForm = () => {
-    setSelectedFile(null);
-    setPreviewUrl(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-  };
-
-  const handleCancel = () => {
+  const handleCancel = useCallback(() => {
     resetForm();
     setIsOpen(false);
-  };
+  }, [resetForm]);
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -221,6 +221,6 @@ export const SecureAvatarUpload = ({
       </DialogContent>
     </Dialog>
   );
-};
+});
 
 export default SecureAvatarUpload;

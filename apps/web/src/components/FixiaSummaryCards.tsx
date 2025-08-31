@@ -1,3 +1,4 @@
+import React, { memo } from "react";
 import { Calendar, Clock, Star, TrendingUp, Users, MessageSquare, Shield, Zap } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Progress } from "./ui/progress";
@@ -5,7 +6,7 @@ import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { motion } from "motion/react";
 
-export function FixiaSummaryCards() {
+export const FixiaSummaryCards = memo(function FixiaSummaryCards() {
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
@@ -230,4 +231,4 @@ export function FixiaSummaryCards() {
       </div>
     </motion.div>
   );
-}
+});
