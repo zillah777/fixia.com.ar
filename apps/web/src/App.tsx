@@ -36,6 +36,10 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import RouteErrorBoundary from "./components/RouteErrorBoundary";
 import AsyncErrorBoundary from "./components/AsyncErrorBoundary";
 
+// Accessibility
+import { useFocusManagement } from "./hooks/useFocusManagement";
+import "./utils/colorContrastAudit"; // Auto-runs audit in development
+
 // Loading component for initial app load
 function LoadingScreen() {
   return (
@@ -123,9 +127,16 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+// Component to handle focus management inside Router context
+function FocusManager() {
+  useFocusManagement();
+  return null;
+}
+
 function AppRoutes() {
   return (
     <Router>
+      <FocusManager />
       <RouteErrorBoundary routeName="App Routes">
         <AnimatePresence mode="wait">
           <ErrorBoundary level="page" name="Page Container">
