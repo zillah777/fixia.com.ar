@@ -4,6 +4,8 @@ import { motion } from "motion/react";
 import { Eye, EyeOff, Mail, Lock, ArrowLeft, Loader2, AlertCircle, RefreshCw, CheckCircle2 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
+import { SecureInput } from "../components/SecureInput";
+import { PasswordInput } from "../components/forms/PasswordInput";
 import { Label } from "../components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Checkbox } from "../components/ui/checkbox";
@@ -148,49 +150,36 @@ export default function LoginPage() {
               <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Email Field */}
                 <div className="space-y-2">
-                  <Label htmlFor="email">Correo Electrónico</Label>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
+                    <SecureInput
                       id="email"
                       type="email"
+                      label="Correo Electrónico"
                       placeholder="tu@email.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className="pl-10 glass border-white/20 focus:border-primary/50 focus:ring-primary/30"
+                      sanitizationType="email"
+                      maxLength={200}
                       required
                     />
                   </div>
                 </div>
 
                 {/* Password Field */}
-                <div className="space-y-2">
-                  <Label htmlFor="password">Contraseña</Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="password"
-                      type={showPassword ? "text" : "password"}
-                      placeholder="Tu contraseña"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="pl-10 pr-10 glass border-white/20 focus:border-primary/50 focus:ring-primary/30"
-                      required
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 hover:bg-transparent"
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      {showPassword ? (
-                        <EyeOff className="h-4 w-4 text-muted-foreground" />
-                      ) : (
-                        <Eye className="h-4 w-4 text-muted-foreground" />
-                      )}
-                    </Button>
-                  </div>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
+                  <PasswordInput
+                    id="password"
+                    label="Contraseña"
+                    placeholder="Tu contraseña"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="pl-10 glass border-white/20 focus:border-primary/50 focus:ring-primary/30"
+                    showToggle={true}
+                    required
+                  />
                 </div>
 
                 {/* Options */}

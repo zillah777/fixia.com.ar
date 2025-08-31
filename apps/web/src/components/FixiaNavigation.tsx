@@ -1,5 +1,5 @@
 import React, { memo, useCallback } from "react";
-import { Search, Plus, Bell, User, Briefcase, Heart, Shield, Menu, Gift, Settings, HelpCircle, LogOut } from "lucide-react";
+import { Search, Plus, Bell, User, Briefcase, Heart, Shield, Gift, Settings, HelpCircle, LogOut } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -8,6 +8,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Badge } from "./ui/badge";
 import { motion } from "motion/react";
 import { useSecureAuth } from "../context/SecureAuthContext";
+import { MobileNavigation } from "./MobileNavigation";
 
 export const FixiaNavigation = memo(function FixiaNavigation() {
   const { user, isAuthenticated, logout } = useSecureAuth();
@@ -211,10 +212,8 @@ export const FixiaNavigation = memo(function FixiaNavigation() {
             </>
           )}
 
-          {/* Mobile Menu */}
-          <Button variant="ghost" size="icon" className="lg:hidden hover:glass-medium">
-            <Menu className="h-5 w-5" />
-          </Button>
+          {/* Mobile Navigation */}
+          <MobileNavigation />
         </div>
       </div>
     </motion.header>

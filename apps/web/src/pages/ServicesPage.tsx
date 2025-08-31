@@ -18,6 +18,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Separator } from "../components/ui/separator";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "../components/ui/sheet";
 import { FixiaNavigation } from "../components/FixiaNavigation";
+import { MobileBottomNavigation } from "../components/MobileBottomNavigation";
+import { SkipNavigation } from "../components/SkipNavigation";
 
 
 const categories = [
@@ -536,9 +538,10 @@ export default function ServicesPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      <SkipNavigation />
       <FixiaNavigation />
       
-      <main className="container mx-auto px-6 py-8">
+      <main id="main-content" role="main" aria-label="Servicios disponibles" className="container mx-auto px-6 py-8">
         {/* Hero Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -720,6 +723,7 @@ export default function ServicesPage() {
           </motion.div>
         )}
       </main>
+      <MobileBottomNavigation />
     </div>
   );
 }

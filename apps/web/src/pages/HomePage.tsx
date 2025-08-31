@@ -16,6 +16,8 @@ import {
 } from "lucide-react";
 import { servicesService, Service } from "../lib/services";
 import { toast } from "sonner";
+import { MobileBottomNavigation } from "../components/MobileBottomNavigation";
+import { SkipNavigation } from "../components/SkipNavigation";
 
 const featuredServices = [
   {
@@ -85,6 +87,8 @@ const categories = [
 function Navigation() {
   return (
     <motion.header 
+      id="navigation"
+      role="banner"
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       className="sticky top-0 z-50 w-full glass border-b border-white/10"
@@ -662,7 +666,7 @@ function CTASection() {
 
 function Footer() {
   return (
-    <footer className="py-16 border-t border-white/10">
+    <footer id="footer" role="contentinfo" className="py-16 border-t border-white/10">
       <div className="container mx-auto px-6">
         <div className="grid lg:grid-cols-4 gap-8">
           {/* Logo and Description */}
@@ -768,13 +772,17 @@ function Footer() {
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-background">
+      <SkipNavigation />
       <Navigation />
-      <HeroSection />
-      <CategoriesSection />
-      <FeaturedServicesSection />
-      <HowItWorksSection />
-      <CTASection />
+      <main id="main-content" role="main" aria-label="Contenido principal">
+        <HeroSection />
+        <CategoriesSection />
+        <FeaturedServicesSection />
+        <HowItWorksSection />
+        <CTASection />
+      </main>
       <Footer />
+      <MobileBottomNavigation />
     </div>
   );
 }

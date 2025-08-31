@@ -3,6 +3,7 @@ import { toast } from 'sonner';
 import { secureTokenManager } from '../utils/secureTokenManager';
 import { sanitizeInput, detectMaliciousContent } from '../utils/sanitization';
 import { validatePassword } from '../utils/passwordValidation';
+import { validateProductionCredentials } from '../utils/credentialValidator';
 
 // Interfaces existentes mantenidas para compatibilidad
 export interface Badge {
@@ -313,6 +314,12 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
         throw new Error('Email inválido');
       }
 
+      // Validar que no sean credenciales demo en producción
+      const credentialValidation = validateProductionCredentials(sanitizedEmail, sanitizedPassword);
+      if (!credentialValidation.isValid && credentialValidation.warnings.length > 0) {
+        console.warn('Demo credentials detected in login attempt:', credentialValidation.warnings);
+      }
+
       // Enhanced password validation for login (more lenient for existing accounts)
       if (!sanitizedPassword || sanitizedPassword.length < 6) {
         throw new Error('Contraseña debe tener al menos 6 caracteres');
@@ -388,6 +395,16 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
       // Validaciones
       if (!sanitizedData.email || !sanitizedData.fullName) {
         throw new Error('Email y nombre son requeridos');
+      }
+
+      // Validar que no sean credenciales demo en producción
+      const credentialValidation = validateProductionCredentials(
+        sanitizedData.email, 
+        sanitizedData.password, 
+        sanitizedData.fullName
+      );
+      if (!credentialValidation.isValid && credentialValidation.warnings.length > 0) {
+        console.warn('Demo credentials detected in registration attempt:', credentialValidation.warnings);
       }
 
       // Enhanced password validation

@@ -15,6 +15,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Progress } from "../components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { useSecureAuth } from "../context/SecureAuthContext";
+import { MobileBottomNavigation } from "../components/MobileBottomNavigation";
 
 function Navigation() {
   const { user, logout } = useSecureAuth();
@@ -620,6 +621,7 @@ export default function DashboardPage() {
           </Card>
         </motion.div>
       </main>
+      <MobileBottomNavigation />
     </div>
   );
 }

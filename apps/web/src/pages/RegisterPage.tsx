@@ -4,6 +4,7 @@ import { motion } from "motion/react";
 import { ArrowLeft, Eye, EyeOff, CheckCircle, AlertCircle, Crown, UserPlus, FileText, CreditCard, X, Hash, Plus } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
+import { SecureInput } from "../components/SecureInput";
 import { Label } from "../components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
@@ -118,24 +119,28 @@ function ClientRegistrationForm({
         <form onSubmit={onSubmit} className="space-y-6">
           <div className="grid md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="fullName">Nombre Completo *</Label>
-              <Input
+              <SecureInput
                 id="fullName"
                 type="text"
+                label="Nombre Completo *"
                 value={formData.fullName}
                 onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                 placeholder="Juan Pérez"
+                sanitizationType="plainText"
+                maxLength={100}
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">Correo Electrónico *</Label>
-              <Input
+              <SecureInput
                 id="email"
                 type="email"
+                label="Correo Electrónico *"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 placeholder="juan@email.com"
+                sanitizationType="email"
+                maxLength={200}
                 required
               />
             </div>
@@ -272,13 +277,15 @@ function ClientRegistrationForm({
 
           <div className="grid md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="phone">Teléfono</Label>
-              <Input
+              <SecureInput
                 id="phone"
                 type="tel"
+                label="Teléfono"
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 placeholder="+54 280 1234567"
+                sanitizationType="phone"
+                maxLength={20}
               />
             </div>
             <div className="space-y-2">
@@ -776,13 +783,15 @@ function ProfessionalRegistrationForm({
 
             <div className="grid md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="phone">Teléfono (WhatsApp) *</Label>
-                <Input
+                <SecureInput
                   id="phone"
                   type="tel"
+                  label="Teléfono (WhatsApp) *"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   placeholder="+54 280 1234567"
+                  sanitizationType="phone"
+                  maxLength={20}
                   required
                 />
               </div>
