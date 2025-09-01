@@ -70,11 +70,11 @@ function ContactInfoSection() {
     {
       icon: Mail,
       title: "Correo Electrónico",
-      primary: "soporte@fixia.com.ar",
-      secondary: "comercial@fixia.com.ar",
+      primary: "soporte@fixia.app",
+      secondary: "comercial@fixia.app",
       description: "Para consultas generales y soporte técnico",
       color: "text-primary",
-      action: "mailto:soporte@fixia.com.ar"
+      action: "mailto:soporte@fixia.app"
     },
     {
       icon: Phone,

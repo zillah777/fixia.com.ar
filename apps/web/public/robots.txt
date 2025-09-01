@@ -1,0 +1,27 @@
+User-agent: *
+Allow: /
+
+# Important pages
+Allow: /services
+Allow: /how-it-works
+Allow: /pricing
+Allow: /about
+Allow: /contact
+
+# Disallow private/internal pages
+Disallow: /dashboard
+Disallow: /profile
+Disallow: /settings
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+Disallow: /verify-email
+Disallow: /notifications
+Disallow: /favorites
+
+# Disallow admin and API endpoints
+Disallow: /admin
+Disallow: /api
+
+# Sitemap
+Sitemap: https://fixia.app/sitemap.xml

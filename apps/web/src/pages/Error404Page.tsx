@@ -304,7 +304,7 @@ function CTASection() {
                 </div>
                 
                 <div className="flex items-center justify-center space-x-8 mt-8 text-sm text-muted-foreground">
-                  <span>📧 soporte@fixia.com.ar</span>
+                  <span>📧 soporte@fixia.app</span>
                   <span>📱 +54 280 4567890</span>
                   <span>⏰ Lun-Vie 9-18hs</span>
                 </div>

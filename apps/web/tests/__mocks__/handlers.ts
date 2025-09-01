@@ -1,6 +1,6 @@
 import { http, HttpResponse } from 'msw';
 
-const API_BASE = process.env.VITE_API_URL || 'https://api.fixia.com.ar/api';
+const API_BASE = process.env.VITE_API_URL || 'https://api.fixia.app';
 
 export const handlers = [
   // Auth endpoints

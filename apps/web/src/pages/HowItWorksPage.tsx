@@ -390,10 +390,10 @@ function ContactSection() {
             Nuestro equipo está aquí para ayudarte en cada paso del proceso
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <a href="mailto:soporte@fixia.com.ar">
+            <a href="mailto:soporte@fixia.app">
               <Button variant="outline" className="glass border-white/20 hover:glass-medium">
                 <Mail className="mr-2 h-4 w-4" />
-                soporte@fixia.com.ar
+                soporte@fixia.app
               </Button>
             </a>
             <a href="tel:+542804567890">

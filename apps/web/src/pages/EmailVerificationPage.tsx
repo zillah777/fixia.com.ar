@@ -422,7 +422,7 @@ function EmailVerificationPage() {
                           to="/contact" 
                           className="text-primary hover:underline"
                         >
-                          soporte@fixia.com.ar
+                          soporte@fixia.app
                         </Link>
                       </p>
                     </motion.div>

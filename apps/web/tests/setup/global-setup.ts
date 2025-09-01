@@ -18,7 +18,7 @@ async function globalSetup(config: FullConfig) {
   try {
     // 1. Validate backend connectivity
     console.log('📡 Testing backend connectivity...');
-    const backendUrl = 'https://fixiacomar-production.up.railway.app';
+    const backendUrl = 'https://api.fixia.app';
     
     try {
       const healthResponse = await page.request.get(`${backendUrl}/health`);

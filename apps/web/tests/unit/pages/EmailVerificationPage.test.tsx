@@ -291,7 +291,7 @@ describe('EmailVerificationPage', () => {
 
       expect(screen.getByText(/¿necesitas ayuda?/i)).toBeInTheDocument();
       
-      const supportLink = screen.getByText('soporte@fixia.com.ar');
+      const supportLink = screen.getByText('soporte@fixia.app');
       expect(supportLink).toBeInTheDocument();
       expect(supportLink.closest('a')).toHaveAttribute('href', '/contact');
     });

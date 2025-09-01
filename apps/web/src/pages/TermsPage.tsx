@@ -453,7 +453,7 @@ export default function TermsPage() {
                   <Mail className="h-5 w-5 text-primary" />
                   <div>
                     <p className="text-sm font-medium">Email</p>
-                    <p className="text-sm text-muted-foreground">soporte@fixia.com.ar</p>
+                    <p className="text-sm text-muted-foreground">soporte@fixia.app</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-3 p-3 glass-medium rounded-lg">
@@ -467,7 +467,7 @@ export default function TermsPage() {
                   <MapPin className="h-5 w-5 text-primary" />
                   <div>
                     <p className="text-sm font-medium">Web</p>
-                    <p className="text-sm text-muted-foreground">www.fixia.com.ar</p>
+                    <p className="text-sm text-muted-foreground">www.fixia.app</p>
                   </div>
                 </div>
               </div>
