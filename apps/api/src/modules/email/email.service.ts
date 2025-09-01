@@ -45,11 +45,23 @@ export interface EmailTemplate {
   template: string;
   templateData: Record<string, any>;
   from?: string;
+  fromType?: 'support' | 'contact' | 'privacy' | 'commercial' | 'no-reply' | 'custom';
   attachments?: Array<{
     content: string;
     filename: string;
     type?: string;
   }>;
+}
+
+export interface EmailQueueItem {
+  id: string;
+  emailData: EmailTemplate;
+  retryCount: number;
+  maxRetries: number;
+  createdAt: Date;
+  nextRetry: Date;
+  status: 'pending' | 'processing' | 'sent' | 'failed';
+  error?: string;
 }
 
 @Injectable()
@@ -58,6 +70,8 @@ export class EmailService {
   private readonly templatesPath = this.getTemplatesPath();
   private gmailTransporter: nodemailer.Transporter;
   private resend: Resend;
+  private emailQueue: EmailQueueItem[] = [];
+  private isProcessingQueue = false;
 
   private getTemplatesPath(): string {
     // In production (dist), templates are copied to dist/templates/emails
@@ -151,11 +165,12 @@ export class EmailService {
       // Use appropriate FROM email based on service
       let fromEmail = emailData.from || this.configService.get<string>('EMAIL_FROM');
       
-      // If using Resend and no custom domain configured, use Resend's default domain
+      // Configure appropriate FROM email based on service and purpose
       if (this.resend && (!fromEmail || fromEmail.includes('@gmail.com'))) {
-        fromEmail = 'Fixia <onboarding@resend.dev>';
+        // Use Resend with fixia.app domain if configured, otherwise default
+        fromEmail = this.configService.get<string>('EMAIL_FROM') || 'Fixia <no-reply@fixia.app>';
       } else if (!fromEmail) {
-        fromEmail = 'noreply@fixia.com.ar';
+        fromEmail = this.configService.get<string>('EMAIL_FROM') || 'no-reply@fixia.app';
       }
       
       this.logger.log(`Sending from: ${fromEmail}`);

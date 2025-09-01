@@ -173,12 +173,17 @@ async function bootstrap() {
       });
     });
 
-    // Enable CORS with production-ready configuration
+    // Enable CORS with production-ready configuration - Updated for fixia.app domain
     app.enableCors({
       origin: process.env.NODE_ENV === 'production' 
         ? [
+            // New primary domain
+            'https://fixia.app', 
+            'https://www.fixia.app',
+            // Legacy domain support
             'https://fixia.com.ar', 
             'https://www.fixia.com.ar',
+            // Vercel deployments
             'https://fixiaweb.vercel.app',
             'https://fixia.vercel.app'
           ]
@@ -221,8 +226,8 @@ async function bootstrap() {
         .setVersion('1.0.0')
         .addBearerAuth()
         .addServer('http://localhost:4000', 'Desarrollo local')
-        .addServer('https://api-staging.fixia.com.ar', 'Staging')
-        .addServer('https://api.fixia.com.ar', 'Producción')
+        .addServer('https://api.fixia.app', 'Producción')
+        .addServer('https://api.fixia.com.ar', 'Producción (Legacy)')
         .build();
       
       const document = SwaggerModule.createDocument(app, config);
