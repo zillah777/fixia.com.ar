@@ -22,19 +22,12 @@ class SecureTokenManager {
   async isAuthenticated(): Promise<boolean> {
     try {
       // Hacer una llamada liviana al servidor para verificar la autenticación
-      const response = await fetch('/api/auth/verify', {
-        method: 'GET',
-        credentials: 'include', // Importante: incluir cookies
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
+      const response = await api.get('/auth/verify');
+      
+      if (response.data) {
         this.tokenInfo = {
           isAuthenticated: true,
-          expiresAt: data.expiresAt,
+          expiresAt: response.data.expiresAt,
           lastRefresh: Date.now(),
         };
         return true;
@@ -58,34 +51,19 @@ class SecureTokenManager {
     error?: string;
   }> {
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        credentials: 'include', // Incluir cookies
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(credentials),
-      });
+      const response = await api.post('/auth/login', credentials);
+      const data = response.data;
 
-      const data = await response.json();
+      this.tokenInfo = {
+        isAuthenticated: true,
+        expiresAt: data.expiresAt,
+        lastRefresh: Date.now(),
+      };
 
-      if (response.ok) {
-        this.tokenInfo = {
-          isAuthenticated: true,
-          expiresAt: data.expiresAt,
-          lastRefresh: Date.now(),
-        };
-
-        return {
-          success: true,
-          user: data.user,
-        };
-      } else {
-        return {
-          success: false,
-          error: data.message || 'Error en el login',
-        };
-      }
+      return {
+        success: true,
+        user: data.user,
+      };
     } catch (error: any) {
       console.error('Error en login:', error);
       return {
@@ -100,13 +78,7 @@ class SecureTokenManager {
    */
   async logout(): Promise<void> {
     try {
-      await fetch('/api/auth/logout', {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+      await api.post('/auth/logout', {});
     } catch (error) {
       console.error('Error en logout:', error);
     } finally {
@@ -138,25 +110,14 @@ class SecureTokenManager {
 
   private async _performRefresh(): Promise<void> {
     try {
-      const response = await fetch('/api/auth/refresh', {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        this.tokenInfo = {
-          isAuthenticated: true,
-          expiresAt: data.expiresAt,
-          lastRefresh: Date.now(),
-        };
-      } else {
-        this.tokenInfo = { isAuthenticated: false };
-        this.clearLocalData();
-      }
+      const response = await api.post('/auth/refresh', {});
+      const data = response.data;
+      
+      this.tokenInfo = {
+        isAuthenticated: true,
+        expiresAt: data.expiresAt,
+        lastRefresh: Date.now(),
+      };
     } catch (error) {
       console.error('Error refrescando token:', error);
       this.tokenInfo = { isAuthenticated: false };

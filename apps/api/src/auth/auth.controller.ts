@@ -85,6 +85,20 @@ export class AuthController {
     return this.authService.resetPassword(resetPasswordDto.token, resetPasswordDto.new_password);
   }
 
+  @Get('verify')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Verificar estado de autenticación' })
+  @ApiResponse({ status: 200, description: 'Usuario autenticado' })
+  @ApiResponse({ status: 401, description: 'Usuario no autenticado' })
+  async verifyAuth(@Request() req) {
+    return { 
+      isAuthenticated: true, 
+      userId: req.user.sub,
+      expiresAt: req.user.exp ? new Date(req.user.exp * 1000).toISOString() : null
+    };
+  }
+
   @Get('profile')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()

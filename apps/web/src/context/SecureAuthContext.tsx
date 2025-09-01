@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { toast } from 'sonner';
+import { api } from '../lib/api';
 import { secureTokenManager } from '../utils/secureTokenManager';
 import { sanitizeInput, detectMaliciousContent } from '../utils/sanitization';
 import { validatePassword } from '../utils/passwordValidation';
@@ -413,25 +414,17 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
         throw new Error(`Contraseña no válida: ${passwordValidation.errors[0]}`);
       }
 
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(sanitizedData),
-      });
+      const response = await api.post('/auth/register', sanitizedData);
+      const result = response.data;
 
-      const result = await response.json();
-
-      if (response.ok && result.user) {
+      if (result.user) {
         const transformedUser = transformBackendUserSecurely(result.user);
         setUser(transformedUser);
         setIsAuthenticated(true);
         
         toast.success('¡Cuenta creada exitosamente!');
       } else {
-        throw new Error(result.message || 'Error en el registro');
+        throw new Error('Error en el registro');
       }
     } catch (error: any) {
       console.error('Error en registro:', error);
@@ -614,19 +607,10 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
 
   const verifyEmail = async (token: string) => {
     try {
-      const response = await fetch('/api/auth/verify-email', {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token }),
-      });
+      const response = await api.post('/auth/verify-email', { token });
       
-      if (response.ok) {
-        toast.success('Email verificado exitosamente');
-        await refreshUserData();
-      } else {
-        throw new Error('Token de verificación inválido');
-      }
+      toast.success('Email verificado exitosamente');
+      await refreshUserData();
     } catch (error: any) {
       toast.error(error.message || 'Error al verificar email');
       throw error;
@@ -635,18 +619,9 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
 
   const resendVerificationEmail = async (email?: string) => {
     try {
-      const response = await fetch('/api/auth/resend-verification', {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: email ? JSON.stringify({ email }) : '{}',
-      });
+      const response = await api.post('/auth/resend-verification', email ? { email } : {});
       
-      if (response.ok) {
-        toast.success('Email de verificación reenviado');
-      } else {
-        throw new Error('Error al reenviar verificación');
-      }
+      toast.success('Email de verificación reenviado');
     } catch (error: any) {
       toast.error(error.message || 'Error al reenviar verificación');
       throw error;

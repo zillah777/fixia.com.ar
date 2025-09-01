@@ -404,7 +404,7 @@ export class AuthService {
     // Send email with verification link - use backend GET endpoint for direct verification
     const appUrl = this.configService.get('APP_URL');
     const backendUrl = this.configService.get('BACKEND_URL');
-    const finalBackendUrl = appUrl || backendUrl || 'https://fixiacomar-production.up.railway.app';
+    const finalBackendUrl = appUrl || backendUrl || 'https://api.fixia.app';
     const verificationUrl = `${finalBackendUrl}/auth/verify/${token}`;
     
     this.logger.log(`🔍 URL Generation Debug:`);
