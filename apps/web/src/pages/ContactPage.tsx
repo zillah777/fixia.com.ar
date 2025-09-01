@@ -285,6 +285,10 @@ function ContactFormSection() {
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       placeholder="Tu nombre y apellido"
+                      autoComplete="name"
+                      autoCorrect="off"
+                      autoCapitalize="words"
+                      spellCheck="false"
                       required
                     />
                   </div>

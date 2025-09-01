@@ -128,6 +128,10 @@ function ClientRegistrationForm({
                 onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                 placeholder="Juan Pérez"
                 maxLength={100}
+                autoComplete="name"
+                autoCorrect="off"
+                autoCapitalize="words"
+                spellCheck="false"
                 required
               />
             </div>
@@ -634,6 +638,10 @@ function ProfessionalRegistrationForm({
                   value={formData.fullName}
                   onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                   placeholder="Juan Pérez"
+                  autoComplete="name"
+                  autoCorrect="off"
+                  autoCapitalize="words"
+                  spellCheck="false"
                   required
                 />
               </div>

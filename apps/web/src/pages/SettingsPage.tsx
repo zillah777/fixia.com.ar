@@ -124,6 +124,10 @@ function ProfileTab() {
                 onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                 disabled={!isEditing}
                 className="glass border-white/20"
+                autoComplete="name"
+                autoCorrect="off"
+                autoCapitalize="words"
+                spellCheck="false"
               />
             </div>
             <div className="space-y-2">
