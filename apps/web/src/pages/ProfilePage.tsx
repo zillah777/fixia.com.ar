@@ -730,13 +730,8 @@ function SettingsSection() {
                 defaultValue={user?.email || ""}
                 className="glass border-white/20"
                 sanitizationType="email"
-                customValidation={(value) => {
-                  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                  return {
-                    isValid: emailRegex.test(value),
-                    message: 'Formato de email inválido'
-                  };
-                }}
+                // Email validation removed from real-time input to allow typing
+                // Email format validation should be done on form submit, not during typing
               />
             </div>
             <div className="space-y-2">

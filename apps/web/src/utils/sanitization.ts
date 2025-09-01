@@ -59,24 +59,30 @@ export const sanitizeRichText = (input: string): string => {
 };
 
 /**
- * Valida y sanitiza URLs
+ * Sanitiza URLs sin validar formato durante escritura
  */
 export const sanitizeURL = (input: string): string => {
   if (!input || typeof input !== 'string') return '';
   
-  // Sanitizar primero
+  // Solo sanitizar, no validar formato durante la escritura
+  // La validación de URL debe hacerse en el submit, no en tiempo real
   const cleaned = DOMPurify.sanitize(input.trim(), SANITIZATION_CONFIGS.URL);
   
-  // Validar que sea una URL válida
+  return cleaned;
+};
+
+/**
+ * Valida el formato de URL (para usar en submit, no durante escritura)
+ */
+export const validateURLFormat = (url: string): boolean => {
+  if (!url || typeof url !== 'string') return false;
+  
   try {
-    const url = new URL(cleaned);
+    const urlObj = new URL(url);
     // Solo permitir http y https
-    if (!['http:', 'https:'].includes(url.protocol)) {
-      return '';
-    }
-    return cleaned;
+    return ['http:', 'https:'].includes(urlObj.protocol);
   } catch {
-    return '';
+    return false;
   }
 };
 
@@ -102,13 +108,22 @@ export const sanitizeEmail = (email: string): string => {
   
   const cleaned = sanitizePlainText(email);
   
-  // Validar formato de email
-  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-  if (!emailRegex.test(cleaned)) {
-    return '';
-  }
+  // Solo sanitizar, no validar formato durante la escritura
+  // La validación de formato debe hacerse en el submit, no en tiempo real
+  // Permitir caracteres válidos para emails: letras, números, @, ., -, _, +, %
+  const emailSafeChars = cleaned.replace(/[^a-zA-Z0-9@.\-_+%]/g, '');
   
-  return cleaned.toLowerCase();
+  return emailSafeChars.toLowerCase();
+};
+
+/**
+ * Valida el formato de email (para usar en submit, no durante escritura)
+ */
+export const validateEmailFormat = (email: string): boolean => {
+  if (!email || typeof email !== 'string') return false;
+  
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  return emailRegex.test(email.trim());
 };
 
 /**

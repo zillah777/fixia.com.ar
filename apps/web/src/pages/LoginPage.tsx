@@ -14,6 +14,7 @@ import { useSecureAuth } from "../context/SecureAuthContext";
 import { authService } from "../lib/services";
 import { toast } from "sonner";
 import { FixiaNavigation } from "../components/FixiaNavigation";
+import { validateEmailFormat } from "../utils/sanitization";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -48,6 +49,12 @@ export default function LoginPage() {
     
     if (!email || !password) {
       toast.error("Por favor completa todos los campos");
+      return;
+    }
+
+    // Validate email format on submit
+    if (!validateEmailFormat(email)) {
+      toast.error("Por favor ingresa un email válido");
       return;
     }
 

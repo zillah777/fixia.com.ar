@@ -16,6 +16,7 @@ import { useSecureAuth } from "../context/SecureAuthContext";
 import { FixiaNavigation } from "../components/FixiaNavigation";
 import { toast } from "sonner";
 import { usePasswordValidation, validatePassword } from "../utils/passwordValidation";
+import { validateEmailFormat } from "../utils/sanitization";
 
 interface FormData {
   // Common fields
@@ -1038,6 +1039,12 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate email format
+    if (!validateEmailFormat(formData.email)) {
+      toast.error("Por favor ingresa un email válido");
+      return;
+    }
     
     // Enhanced password validation
     const passwordValidation = validatePassword(formData.password);
