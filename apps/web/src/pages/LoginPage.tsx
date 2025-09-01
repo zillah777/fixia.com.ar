@@ -14,7 +14,7 @@ import { useSecureAuth } from "../context/SecureAuthContext";
 import { authService } from "../lib/services";
 import { toast } from "sonner";
 import { FixiaNavigation } from "../components/FixiaNavigation";
-import { validateEmailFormat } from "../utils/sanitization";
+import { validateEmailFormat, FormSanitizers } from "../utils/sanitization";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -62,7 +62,9 @@ export default function LoginPage() {
     setEmailVerificationError(false);
     
     try {
-      await login(email, password);
+      // Sanitize form data before submission
+      const sanitizedData = FormSanitizers.LOGIN({ email, password });
+      await login(sanitizedData.email, sanitizedData.password);
       // If login succeeds, navigate to dashboard
       // Success toast is already shown in AuthContext
       navigate("/dashboard");
@@ -157,17 +159,16 @@ export default function LoginPage() {
               <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Email Field */}
                 <div className="space-y-2">
+                  <Label htmlFor="email">Correo Electrónico</Label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
-                    <SecureInput
+                    <Input
                       id="email"
                       type="email"
-                      label="Correo Electrónico"
                       placeholder="tu@email.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className="pl-10 glass border-white/20 focus:border-primary/50 focus:ring-primary/30"
-                      sanitizationType="email"
                       maxLength={200}
                       required
                     />

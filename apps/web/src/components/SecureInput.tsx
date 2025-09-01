@@ -9,19 +9,21 @@ import { sanitizeInput, detectMaliciousContent } from '../utils/sanitization';
 interface SecureInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   sanitizationType?: 'plainText' | 'basicHTML' | 'richText' | 'url' | 'email' | 'phone' | 'filename';
-  onSecureChange?: (sanitizedValue: string, originalValue: string) => void;
+  onSecureChange?: (rawValue: string, sanitizedValue: string) => void; // Parameters swapped for clarity
   showSecurityStatus?: boolean;
   customValidation?: (value: string) => { isValid: boolean; message?: string };
   maxLength?: number;
+  getSanitizedValue?: () => string; // Expose method to get sanitized value when needed
 }
 
 interface SecureTextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   label?: string;
   sanitizationType?: 'plainText' | 'basicHTML' | 'richText';
-  onSecureChange?: (sanitizedValue: string, originalValue: string) => void;
+  onSecureChange?: (rawValue: string, sanitizedValue: string) => void; // Parameters swapped for clarity
   showSecurityStatus?: boolean;
   customValidation?: (value: string) => { isValid: boolean; message?: string };
   maxLength?: number;
+  getSanitizedValue?: () => string; // Expose method to get sanitized value when needed
 }
 
 export const SecureInput = React.forwardRef<HTMLInputElement, SecureInputProps>(({
@@ -47,47 +49,49 @@ export const SecureInput = React.forwardRef<HTMLInputElement, SecureInputProps>(
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const originalValue = e.target.value;
     
-    // Aplicar límite de longitud si se especifica
+    // Only apply length limit during typing - no sanitization
     const truncatedValue = maxLength ? originalValue.substring(0, maxLength) : originalValue;
     
-    // Detectar contenido malicioso antes de sanitizar
+    // Only detect malicious content without sanitizing during typing
     const maliciousCheck = detectMaliciousContent(truncatedValue);
     
-    // Sanitizar el contenido
-    const sanitizedValue = sanitizeInput(truncatedValue, sanitizationType);
-    
-    // Verificar si hubo cambios en la sanitización
-    const wasSanitized = originalValue !== sanitizedValue;
-    
-    // Actualizar estado de seguridad
+    // Update security status based on detection only
     setSecurityStatus({
       isSafe: maliciousCheck.isSafe,
       reasons: maliciousCheck.reasons,
-      sanitized: wasSanitized
+      sanitized: false // No sanitization during typing
     });
     
-    // Validación personalizada
+    // Custom validation on raw input
     if (customValidation) {
-      const validation = customValidation(sanitizedValue);
+      const validation = customValidation(truncatedValue);
       setValidationError(validation.isValid ? null : validation.message || 'Valor inválido');
     } else {
       setValidationError(null);
     }
     
-    // Llamar callbacks
+    // Pass the original (unsanitized) value to callbacks
     if (onSecureChange) {
-      onSecureChange(sanitizedValue, originalValue);
+      // For onSecureChange, provide both original and what would be sanitized
+      const wouldBeSanitized = sanitizeInput(truncatedValue, sanitizationType);
+      onSecureChange(truncatedValue, wouldBeSanitized);
     }
     
     if (onChange) {
-      // Crear un evento sintético con el valor sanitizado
+      // Pass through the original event with truncated value (no sanitization)
       const syntheticEvent = {
         ...e,
-        target: { ...e.target, value: sanitizedValue }
+        target: { ...e.target, value: truncatedValue }
       };
       onChange(syntheticEvent as React.ChangeEvent<HTMLInputElement>);
     }
   };
+
+  // Add a method to get sanitized value for form submission
+  const getSanitizedValue = useCallback(() => {
+    if (!value || typeof value !== 'string') return '';
+    return sanitizeInput(value, sanitizationType);
+  }, [value, sanitizationType]);
 
   const getSecurityIndicator = () => {
     if (!showSecurityStatus) return null;
@@ -101,14 +105,7 @@ export const SecureInput = React.forwardRef<HTMLInputElement, SecureInputProps>(
       );
     }
     
-    if (securityStatus.sanitized) {
-      return (
-        <div className="flex items-center space-x-1 text-warning text-xs mt-1">
-          <Shield className="h-3 w-3" />
-          <span>Contenido sanitizado por seguridad</span>
-        </div>
-      );
-    }
+    // Note: We no longer show "sanitized" status during typing since we don't sanitize in real-time
     
     if (value && securityStatus.isSafe) {
       return (
@@ -194,47 +191,49 @@ export const SecureTextarea = React.forwardRef<HTMLTextAreaElement, SecureTextar
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const originalValue = e.target.value;
     
-    // Aplicar límite de longitud si se especifica
+    // Only apply length limit during typing - no sanitization
     const truncatedValue = maxLength ? originalValue.substring(0, maxLength) : originalValue;
     
-    // Detectar contenido malicioso antes de sanitizar
+    // Only detect malicious content without sanitizing during typing
     const maliciousCheck = detectMaliciousContent(truncatedValue);
     
-    // Sanitizar el contenido
-    const sanitizedValue = sanitizeInput(truncatedValue, sanitizationType);
-    
-    // Verificar si hubo cambios en la sanitización
-    const wasSanitized = originalValue !== sanitizedValue;
-    
-    // Actualizar estado de seguridad
+    // Update security status based on detection only
     setSecurityStatus({
       isSafe: maliciousCheck.isSafe,
       reasons: maliciousCheck.reasons,
-      sanitized: wasSanitized
+      sanitized: false // No sanitization during typing
     });
     
-    // Validación personalizada
+    // Custom validation on raw input
     if (customValidation) {
-      const validation = customValidation(sanitizedValue);
+      const validation = customValidation(truncatedValue);
       setValidationError(validation.isValid ? null : validation.message || 'Valor inválido');
     } else {
       setValidationError(null);
     }
     
-    // Llamar callbacks
+    // Pass the original (unsanitized) value to callbacks
     if (onSecureChange) {
-      onSecureChange(sanitizedValue, originalValue);
+      // For onSecureChange, provide both original and what would be sanitized
+      const wouldBeSanitized = sanitizeInput(truncatedValue, sanitizationType);
+      onSecureChange(truncatedValue, wouldBeSanitized);
     }
     
     if (onChange) {
-      // Crear un evento sintético con el valor sanitizado
+      // Pass through the original event with truncated value (no sanitization)
       const syntheticEvent = {
         ...e,
-        target: { ...e.target, value: sanitizedValue }
+        target: { ...e.target, value: truncatedValue }
       };
       onChange(syntheticEvent as React.ChangeEvent<HTMLTextAreaElement>);
     }
   };
+
+  // Add a method to get sanitized value for form submission
+  const getSanitizedValue = useCallback(() => {
+    if (!value || typeof value !== 'string') return '';
+    return sanitizeInput(value, sanitizationType);
+  }, [value, sanitizationType]);
 
   const getSecurityIndicator = () => {
     if (!showSecurityStatus) return null;
@@ -248,14 +247,7 @@ export const SecureTextarea = React.forwardRef<HTMLTextAreaElement, SecureTextar
       );
     }
     
-    if (securityStatus.sanitized) {
-      return (
-        <div className="flex items-center space-x-1 text-warning text-xs mt-1">
-          <Shield className="h-3 w-3" />
-          <span>Contenido sanitizado por seguridad</span>
-        </div>
-      );
-    }
+    // Note: We no longer show "sanitized" status during typing since we don't sanitize in real-time
     
     if (value && securityStatus.isSafe) {
       return (

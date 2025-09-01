@@ -224,6 +224,8 @@ export const sanitizeInput = (
 
 /**
  * Hook personalizado para sanitización en tiempo real
+ * DEPRECATED: Use sanitizeForSubmission instead
+ * This hook was used for real-time sanitization which caused input blocking issues
  */
 export const useSanitizedInput = (
   initialValue: string = '',
@@ -235,4 +237,74 @@ export const useSanitizedInput = (
     sanitize,
     validate: (value: string) => detectMaliciousContent(value)
   };
+};
+
+/**
+ * Sanitize form data on submission (recommended approach)
+ * This function should be used when submitting forms to ensure data is cleaned
+ * without interfering with user input during typing
+ */
+export const sanitizeForSubmission = <T extends Record<string, any>>(
+  formData: T,
+  fieldMappings: Record<keyof T, Parameters<typeof sanitizeInput>[1]>
+): T => {
+  const sanitized = { ...formData };
+  
+  for (const [field, sanitizationType] of Object.entries(fieldMappings)) {
+    if (field in sanitized && sanitized[field] && typeof sanitized[field] === 'string') {
+      sanitized[field as keyof T] = sanitizeInput(sanitized[field], sanitizationType) as T[keyof T];
+    }
+  }
+  
+  return sanitized;
+};
+
+/**
+ * Helper to create form submission sanitizer for common form types
+ */
+export const createFormSanitizer = <T extends Record<string, any>>(
+  fieldMappings: Record<keyof T, Parameters<typeof sanitizeInput>[1]>
+) => {
+  return (formData: T) => sanitizeForSubmission(formData, fieldMappings);
+};
+
+// Pre-configured sanitizers for common forms
+export const FormSanitizers = {
+  // Login form sanitizer
+  LOGIN: createFormSanitizer({
+    email: 'email',
+    password: 'plainText'
+  }),
+  
+  // Registration form sanitizer
+  REGISTRATION: createFormSanitizer({
+    fullName: 'plainText',
+    email: 'email',
+    password: 'plainText',
+    confirmPassword: 'plainText',
+    phone: 'phone',
+    location: 'plainText',
+    description: 'basicHTML',
+    portfolio: 'url',
+    certifications: 'plainText'
+  }),
+  
+  // Contact form sanitizer
+  CONTACT: createFormSanitizer({
+    name: 'plainText',
+    email: 'email',
+    subject: 'plainText',
+    message: 'basicHTML',
+    phone: 'phone'
+  }),
+  
+  // Profile update sanitizer
+  PROFILE: createFormSanitizer({
+    name: 'plainText',
+    email: 'email',
+    phone: 'phone',
+    location: 'plainText',
+    bio: 'basicHTML',
+    website: 'url'
+  })
 };

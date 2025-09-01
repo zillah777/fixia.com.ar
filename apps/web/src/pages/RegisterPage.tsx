@@ -16,7 +16,7 @@ import { useSecureAuth } from "../context/SecureAuthContext";
 import { FixiaNavigation } from "../components/FixiaNavigation";
 import { toast } from "sonner";
 import { usePasswordValidation, validatePassword } from "../utils/passwordValidation";
-import { validateEmailFormat } from "../utils/sanitization";
+import { validateEmailFormat, FormSanitizers } from "../utils/sanitization";
 
 interface FormData {
   // Common fields
@@ -120,27 +120,25 @@ function ClientRegistrationForm({
         <form onSubmit={onSubmit} className="space-y-6">
           <div className="grid md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <SecureInput
+              <Label htmlFor="fullName">Nombre Completo *</Label>
+              <Input
                 id="fullName"
                 type="text"
-                label="Nombre Completo *"
                 value={formData.fullName}
                 onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                 placeholder="Juan Pérez"
-                sanitizationType="plainText"
                 maxLength={100}
                 required
               />
             </div>
             <div className="space-y-2">
-              <SecureInput
+              <Label htmlFor="email">Correo Electrónico *</Label>
+              <Input
                 id="email"
                 type="email"
-                label="Correo Electrónico *"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 placeholder="juan@email.com"
-                sanitizationType="email"
                 maxLength={200}
                 required
               />
@@ -278,14 +276,13 @@ function ClientRegistrationForm({
 
           <div className="grid md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <SecureInput
+              <Label htmlFor="phone">Teléfono</Label>
+              <Input
                 id="phone"
                 type="tel"
-                label="Teléfono"
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 placeholder="+54 280 1234567"
-                sanitizationType="phone"
                 maxLength={20}
               />
             </div>
@@ -784,14 +781,13 @@ function ProfessionalRegistrationForm({
 
             <div className="grid md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <SecureInput
+                <Label htmlFor="phone">Teléfono (WhatsApp) *</Label>
+                <Input
                   id="phone"
                   type="tel"
-                  label="Teléfono (WhatsApp) *"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   placeholder="+54 280 1234567"
-                  sanitizationType="phone"
                   maxLength={20}
                   required
                 />
@@ -1098,33 +1094,36 @@ export default function RegisterPage() {
     setIsSubmitting(true);
 
     try {
+      // Sanitize form data before submission
+      const sanitizedData = FormSanitizers.REGISTRATION(formData);
+      
       console.log('Attempting registration with data:', {
-        email: formData.email,
-        fullName: formData.fullName,
-        phone: formData.phone,
-        location: formData.location,
-        birthdate: formData.birthdate,
+        email: sanitizedData.email,
+        fullName: sanitizedData.fullName,
+        phone: sanitizedData.phone,
+        location: sanitizedData.location,
+        birthdate: sanitizedData.birthdate,
         userType: currentTab as 'client' | 'professional',
-        serviceCategories: formData.serviceCategories,
-        hasPassword: !!formData.password
+        serviceCategories: sanitizedData.serviceCategories,
+        hasPassword: !!sanitizedData.password
       });
       
       console.log('About to call register function...');
       await register({
-        email: formData.email,
-        password: formData.password,
-        fullName: formData.fullName,
-        phone: formData.phone,
-        location: formData.location,
-        birthdate: formData.birthdate,
+        email: sanitizedData.email,
+        password: sanitizedData.password,
+        fullName: sanitizedData.fullName,
+        phone: sanitizedData.phone,
+        location: sanitizedData.location,
+        birthdate: sanitizedData.birthdate,
         userType: currentTab as 'client' | 'professional',
-        serviceCategories: formData.serviceCategories,
-        description: formData.description,
-        experience: formData.experience,
-        pricing: formData.pricing,
-        availability: formData.availability,
-        portfolio: formData.portfolio,
-        certifications: formData.certifications
+        serviceCategories: sanitizedData.serviceCategories,
+        description: sanitizedData.description,
+        experience: sanitizedData.experience,
+        pricing: sanitizedData.pricing,
+        availability: sanitizedData.availability,
+        portfolio: sanitizedData.portfolio,
+        certifications: sanitizedData.certifications
       });
       
       console.log('Registration completed successfully!');
