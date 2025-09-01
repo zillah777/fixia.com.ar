@@ -156,10 +156,12 @@ export class RegisterDto {
 export class RefreshTokenDto {
   @ApiProperty({ 
     example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
-    description: 'Refresh token JWT'
+    description: 'Refresh token JWT (optional if using httpOnly cookies)',
+    required: false
   })
+  @IsOptional()
   @IsString()
-  refresh_token: string;
+  refresh_token?: string;
 }
 
 export class ForgotPasswordDto {

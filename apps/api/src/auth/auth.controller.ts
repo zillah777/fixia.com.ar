@@ -11,6 +11,7 @@ import {
   Res,
   Logger,
   Ip,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
@@ -32,8 +33,13 @@ export class AuthController {
   @ApiOperation({ summary: 'Inicio de sesión' })
   @ApiResponse({ status: 200, description: 'Login exitoso' })
   @ApiResponse({ status: 401, description: 'Credenciales inválidas o email no verificado' })
-  async login(@Body() loginDto: LoginDto): Promise<AuthResponse> {
-    return this.authService.login(loginDto);
+  async login(@Body() loginDto: LoginDto, @Res({ passthrough: true }) res): Promise<AuthResponse> {
+    const result = await this.authService.login(loginDto);
+    
+    // Set httpOnly cookies for secure token management
+    this.setAuthCookies(res, result.access_token, result.refresh_token);
+    
+    return result;
   }
 
   @Post('register')
@@ -42,8 +48,13 @@ export class AuthController {
   @ApiResponse({ status: 201, description: 'Usuario registrado exitosamente' })
   @ApiResponse({ status: 400, description: 'Datos inválidos' })
   @ApiResponse({ status: 409, description: 'Email ya registrado' })
-  async register(@Body() registerDto: RegisterDto): Promise<AuthResponse> {
-    return this.authService.register(registerDto);
+  async register(@Body() registerDto: RegisterDto, @Res({ passthrough: true }) res): Promise<AuthResponse> {
+    const result = await this.authService.register(registerDto);
+    
+    // Set httpOnly cookies for secure token management
+    this.setAuthCookies(res, result.access_token, result.refresh_token);
+    
+    return result;
   }
 
   @Post('refresh')
@@ -51,8 +62,25 @@ export class AuthController {
   @ApiOperation({ summary: 'Renovar token de acceso' })
   @ApiResponse({ status: 200, description: 'Token renovado exitosamente' })
   @ApiResponse({ status: 401, description: 'Refresh token inválido' })
-  async refreshToken(@Body() refreshTokenDto: RefreshTokenDto) {
-    return this.authService.refreshToken(refreshTokenDto.refresh_token);
+  async refreshToken(@Body() refreshTokenDto: RefreshTokenDto, @Request() req, @Res({ passthrough: true }) res) {
+    // Support both body parameter and httpOnly cookie
+    const refreshToken = refreshTokenDto.refresh_token || req.cookies?.refresh_token;
+    
+    if (!refreshToken) {
+      throw new UnauthorizedException('Refresh token is required');
+    }
+    
+    const result = await this.authService.refreshToken(refreshToken);
+    
+    // Update access token cookie
+    res.cookie('access_token', result.access_token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+    
+    return result;
   }
 
   @Post('logout')
@@ -61,8 +89,16 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Cerrar sesión' })
   @ApiResponse({ status: 200, description: 'Sesión cerrada exitosamente' })
-  async logout(@Request() req, @Body() refreshTokenDto: RefreshTokenDto) {
-    await this.authService.logout(req.user.sub, refreshTokenDto.refresh_token);
+  async logout(@Request() req, @Body() refreshTokenDto: RefreshTokenDto, @Res({ passthrough: true }) res) {
+    const refreshToken = refreshTokenDto.refresh_token || req.cookies?.refresh_token;
+    
+    if (refreshToken) {
+      await this.authService.logout(req.user.sub, refreshToken);
+    }
+    
+    // Clear httpOnly cookies
+    this.clearAuthCookies(res);
+    
     return { message: 'Logout successful' };
   }
 
@@ -174,5 +210,43 @@ export class AuthController {
   @ApiOperation({ summary: 'Verificar usuario manualmente (temporal)' })
   async adminVerifyUser(@Body() body: { userId: string }) {
     return this.authService.adminVerifyUser(body.userId);
+  }
+
+  /**
+   * Set httpOnly cookies for secure authentication
+   */
+  private setAuthCookies(res: any, accessToken: string, refreshToken: string) {
+    // Set access token cookie (shorter expiration)
+    res.cookie('access_token', accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
+    // Set refresh token cookie (longer expiration)  
+    res.cookie('refresh_token', refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+    });
+  }
+
+  /**
+   * Clear authentication cookies
+   */
+  private clearAuthCookies(res: any) {
+    res.clearCookie('access_token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+    });
+    
+    res.clearCookie('refresh_token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+    });
   }
 }
