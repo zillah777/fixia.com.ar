@@ -12,27 +12,26 @@ const Toaster = ({ ...props }: ToasterProps) => {
       className="toaster group"
       toastOptions={{
         style: {
-          background: 'rgba(255, 255, 255, 0.95)',
-          backdropFilter: 'blur(20px)',
-          color: '#0f172a',
-          border: '1px solid rgba(148, 163, 184, 0.2)',
+          background: 'hsl(var(--card))',
+          color: 'hsl(var(--card-foreground))',
+          border: '1px solid hsl(var(--border))',
           fontSize: '14px',
           fontWeight: '500',
-          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-          borderRadius: '16px',
+          boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+          borderRadius: '12px',
           padding: '16px 20px',
-          minHeight: '64px',
-          maxWidth: '400px',
+          minHeight: '60px',
+          maxWidth: '420px',
         },
         classNames: {
-          error: '!border-red-200 !bg-gradient-to-br !from-red-50/90 !to-red-100/90 !text-red-800 dark:!from-red-950/90 dark:!to-red-900/90 dark:!text-red-200 dark:!border-red-800/30',
-          success: '!border-green-200 !bg-gradient-to-br !from-green-50/90 !to-emerald-100/90 !text-green-800 dark:!from-green-950/90 dark:!to-green-900/90 dark:!text-green-200 dark:!border-green-800/30',
-          warning: '!border-amber-200 !bg-gradient-to-br !from-amber-50/90 !to-orange-100/90 !text-amber-800 dark:!from-amber-950/90 dark:!to-amber-900/90 dark:!text-amber-200 dark:!border-amber-800/30',
-          info: '!border-blue-200 !bg-gradient-to-br !from-blue-50/90 !to-sky-100/90 !text-blue-800 dark:!from-blue-950/90 dark:!to-blue-900/90 dark:!text-blue-200 dark:!border-blue-800/30',
-          description: '!text-slate-600 dark:!text-slate-300 !font-normal !text-sm !mt-1 !leading-relaxed',
+          error: '!border-red-200 !bg-red-50 !text-red-900 dark:!bg-red-950/50 dark:!text-red-100 dark:!border-red-800/40 !shadow-red-100/50 dark:!shadow-red-900/20',
+          success: '!bg-primary/10 !text-primary !border-primary/20 dark:!bg-primary/5 dark:!border-primary/30 !shadow-primary/10',
+          warning: '!border-amber-200 !bg-amber-50 !text-amber-900 dark:!bg-amber-950/50 dark:!text-amber-100 dark:!border-amber-800/40 !shadow-amber-100/50',
+          info: '!border-blue-200 !bg-blue-50 !text-blue-900 dark:!bg-blue-950/50 dark:!text-blue-100 dark:!border-blue-800/40 !shadow-blue-100/50',
+          description: '!text-muted-foreground !font-normal !text-sm !mt-1 !leading-relaxed',
           title: '!font-semibold !text-base !leading-tight',
-          closeButton: '!bg-white/80 !text-slate-400 hover:!bg-white hover:!text-slate-600 !border-0 !right-3 !top-3 !w-6 !h-6 !rounded-full !p-0 !flex !items-center !justify-center hover:!scale-105 !transition-all !duration-200 !shadow-sm',
-          toast: '!backdrop-blur-md !border-white/20 dark:!border-slate-800/20',
+          closeButton: '!bg-background !text-muted-foreground hover:!text-foreground !border !border-border !right-3 !top-3 !w-6 !h-6 !rounded-md !p-0 !flex !items-center !justify-center hover:!scale-105 !transition-all !duration-200',
+          toast: 'glass !backdrop-blur-sm',
         },
       }}
       position="top-right"
@@ -41,7 +40,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
       closeButton={true}
       offset={24}
       gap={12}
-      duration={7000}
+      duration={6000}
       {...props}
     />
   );
