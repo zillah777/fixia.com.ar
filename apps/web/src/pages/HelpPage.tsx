@@ -231,7 +231,7 @@ function PopularFAQ() {
                       <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
                         <HelpCircle className="h-4 w-4 text-primary" />
                       </div>
-                      <span className="font-medium">{faq.question}</span>
+                      <span className="font-medium text-foreground">{faq.question}</span>
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="text-muted-foreground pl-11">
@@ -282,7 +282,7 @@ function HelpArticles() {
                         <Icon className="h-6 w-6 text-primary" />
                       </div>
                       <div className="flex-1">
-                        <h3 className="font-semibold mb-2 group-hover:text-primary transition-colors">
+                        <h3 className="font-semibold mb-2 text-foreground group-hover:text-primary transition-colors">
                           {article.title}
                         </h3>
                         <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
@@ -418,7 +418,7 @@ function AllFAQ() {
                           <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
                             <HelpCircle className="h-4 w-4 text-primary" />
                           </div>
-                          <span className="font-medium">{faq.question}</span>
+                          <span className="font-medium text-foreground">{faq.question}</span>
                           {faq.popular && (
                             <Badge variant="secondary" className="ml-auto bg-yellow-500/20 text-yellow-600">
                               Popular
