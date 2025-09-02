@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams, useParams, useLocation } from "react-router-dom";
 import { motion } from "motion/react";
 import { 
   Mail, 
@@ -37,6 +37,8 @@ interface VerificationState {
 function EmailVerificationPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const params = useParams();
+  const location = useLocation();
   const { login } = useSecureAuth();
   
   const [state, setState] = useState<VerificationState>({
@@ -49,9 +51,20 @@ function EmailVerificationPage() {
     resendCooldown: 0
   });
 
-  // Check for verification token in URL
+  // Check for verification token in URL (both query params and path params)
   useEffect(() => {
-    const token = searchParams.get('token');
+    // Try to get token from query params first
+    let token = searchParams.get('token');
+    
+    // If not found in query params, try to extract from path
+    if (!token) {
+      const pathSegments = location.pathname.split('/');
+      const verifyIndex = pathSegments.findIndex(segment => segment === 'verify-email');
+      if (verifyIndex !== -1 && pathSegments[verifyIndex + 1]) {
+        token = pathSegments[verifyIndex + 1];
+      }
+    }
+    
     const email = searchParams.get('email');
     
     if (email) {
@@ -61,7 +74,7 @@ function EmailVerificationPage() {
     if (token) {
       handleVerification(token);
     }
-  }, [searchParams]);
+  }, [searchParams, location.pathname]);
 
   // Countdown timer for resend cooldown
   useEffect(() => {

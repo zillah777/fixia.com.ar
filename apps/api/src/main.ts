@@ -177,14 +177,13 @@ async function bootstrap() {
     app.enableCors({
       origin: process.env.NODE_ENV === 'production' 
         ? [
-            // New primary domain
+            // Primary domain
             'https://fixia.app', 
             'https://www.fixia.app',
             // Legacy domain support
             'https://fixia.com.ar', 
             'https://www.fixia.com.ar',
             // Vercel deployments
-            'https://fixiaweb.vercel.app',
             'https://fixia.vercel.app'
           ]
         : process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000', 'http://localhost:5173'],
