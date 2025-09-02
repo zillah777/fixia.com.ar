@@ -383,14 +383,58 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
         };
         localStorage.setItem('fixia_user_basic', JSON.stringify(safeUserData));
         
-        toast.success('¡Bienvenido de vuelta!');
+        toast.success(`¡Hola ${transformedUser.name || 'Usuario'}! 👋`, {
+          description: "Has iniciado sesión correctamente. Redirigiendo al dashboard...",
+          duration: 5000,
+        });
       } else {
         throw new Error(result.error || 'Error en el login');
       }
     } catch (error: any) {
       console.error('Error en login:', error);
-      const errorMessage = error.message || 'Error al iniciar sesión';
-      toast.error(errorMessage);
+      
+      // Determinar el mensaje de error específico
+      let errorTitle = "Error al iniciar sesión";
+      let errorMessage = "";
+      
+      const statusCode = error.response?.status;
+      const serverMessage = error.response?.data?.message || error.message || "";
+      
+      if (statusCode === 401) {
+        if (serverMessage.toLowerCase().includes('verify') || 
+            serverMessage.toLowerCase().includes('verifica') || 
+            serverMessage.toLowerCase().includes('email verification')) {
+          errorTitle = "📧 Email no verificado";
+          errorMessage = "Necesitas verificar tu email antes de iniciar sesión. Revisa tu bandeja de entrada o reenvía el email de verificación.";
+        } else if (serverMessage.toLowerCase().includes('credentials') || 
+                   serverMessage.toLowerCase().includes('invalid') ||
+                   serverMessage.toLowerCase().includes('contraseña') ||
+                   serverMessage.toLowerCase().includes('password')) {
+          errorTitle = "🔐 Credenciales incorrectas";
+          errorMessage = "El email o la contraseña que ingresaste no son correctos. Verifica tus datos e intenta nuevamente.";
+        } else {
+          errorTitle = "🔐 Acceso denegado";
+          errorMessage = "No se pudo iniciar sesión. Verifica tu email y contraseña.";
+        }
+      } else if (statusCode === 404) {
+        errorTitle = "👤 Usuario no encontrado";
+        errorMessage = "No existe una cuenta registrada con este email. ¿Necesitas crear una cuenta?";
+      } else if (statusCode === 429) {
+        errorTitle = "⏰ Demasiados intentos";
+        errorMessage = "Has hecho muchos intentos de inicio de sesión. Espera unos minutos antes de intentar nuevamente.";
+      } else if (error.code === 'ERR_NETWORK' || serverMessage.toLowerCase().includes('network')) {
+        errorTitle = "🌐 Error de conexión";
+        errorMessage = "No se pudo conectar con el servidor. Verifica tu conexión a internet e intenta nuevamente.";
+      } else {
+        errorTitle = "❌ Error inesperado";
+        errorMessage = serverMessage || "Ocurrió un error inesperado. Por favor intenta nuevamente.";
+      }
+      
+      toast.error(errorTitle, {
+        description: errorMessage,
+        duration: 10000,
+      });
+      
       throw error;
     } finally {
       setLoading(false);
@@ -478,7 +522,10 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
       localStorage.removeItem('fixia_user_basic');
       localStorage.removeItem('fixia_preferences');
       
-      toast.success('Sesión cerrada correctamente');
+      toast.success('¡Hasta pronto! 👋', {
+        description: "Has cerrado sesión correctamente. Te esperamos de vuelta.",
+        duration: 4000,
+      });
     } catch (error) {
       console.error('Error en logout:', error);
       // Limpiar estado local aunque haya error
