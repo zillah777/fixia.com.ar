@@ -453,14 +453,13 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
         setUser(transformedUser);
         setIsAuthenticated(true);
         
-        toast.success('¡Cuenta creada exitosamente!');
+        // Success message is handled by the calling component (RegisterPage)
       } else {
         throw new Error('Error en el registro');
       }
     } catch (error: any) {
       console.error('Error en registro:', error);
-      const errorMessage = error.message || 'Error al crear la cuenta';
-      toast.error(errorMessage);
+      // Error message is handled by the calling component (RegisterPage)
       throw error;
     } finally {
       setLoading(false);

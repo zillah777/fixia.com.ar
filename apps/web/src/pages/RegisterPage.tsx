@@ -1138,10 +1138,10 @@ export default function RegisterPage() {
       
       // Registration successful - show enhanced success message and redirect to email verification
       toast.success(
-        `¡Bienvenido/a a Fixia, ${formData.fullName}! Te hemos enviado un email de verificación.`,
+        "Su cuenta ha sido creada exitosamente, enviamos un correo electrónico para que verifiques tu cuenta",
         {
           description: `Revisa tu bandeja de entrada en ${formData.email}`,
-          duration: 5000,
+          duration: 6000,
         }
       );
       
