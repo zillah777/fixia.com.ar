@@ -12,32 +12,36 @@ const Toaster = ({ ...props }: ToasterProps) => {
       className="toaster group"
       toastOptions={{
         style: {
-          background: 'white',
-          color: '#1a1a1a',
-          border: '2px solid',
-          fontSize: '15px',
-          fontWeight: '600',
-          boxShadow: '0 10px 40px rgba(0, 0, 0, 0.15), 0 4px 6px rgba(0, 0, 0, 0.1)',
-          borderRadius: '12px',
+          background: 'rgba(255, 255, 255, 0.95)',
+          backdropFilter: 'blur(20px)',
+          color: '#0f172a',
+          border: '1px solid rgba(148, 163, 184, 0.2)',
+          fontSize: '14px',
+          fontWeight: '500',
+          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+          borderRadius: '16px',
           padding: '16px 20px',
-          minHeight: '72px',
+          minHeight: '64px',
+          maxWidth: '400px',
         },
         classNames: {
-          error: '!border-red-500 !bg-red-50 !text-red-900 dark:!bg-red-900 dark:!text-red-50 shadow-lg shadow-red-500/20',
-          success: '!border-green-500 !bg-green-50 !text-green-900 dark:!bg-green-900 dark:!text-green-50 shadow-lg shadow-green-500/20',
-          warning: '!border-yellow-500 !bg-yellow-50 !text-yellow-900 dark:!bg-yellow-900 dark:!text-yellow-50 shadow-lg shadow-yellow-500/20',
-          info: '!border-blue-500 !bg-blue-50 !text-blue-900 dark:!bg-blue-900 dark:!text-blue-50 shadow-lg shadow-blue-500/20',
-          description: '!text-gray-700 dark:!text-gray-300 !font-medium !text-sm !mt-2',
-          title: '!font-bold !text-base',
-          closeButton: '!bg-white !text-gray-500 hover:!bg-gray-100 !border !border-gray-200 !right-4 !top-4 !w-8 !h-8 !rounded-lg hover:!scale-110 transition-transform',
+          error: '!border-red-200 !bg-gradient-to-br !from-red-50/90 !to-red-100/90 !text-red-800 dark:!from-red-950/90 dark:!to-red-900/90 dark:!text-red-200 dark:!border-red-800/30',
+          success: '!border-green-200 !bg-gradient-to-br !from-green-50/90 !to-emerald-100/90 !text-green-800 dark:!from-green-950/90 dark:!to-green-900/90 dark:!text-green-200 dark:!border-green-800/30',
+          warning: '!border-amber-200 !bg-gradient-to-br !from-amber-50/90 !to-orange-100/90 !text-amber-800 dark:!from-amber-950/90 dark:!to-amber-900/90 dark:!text-amber-200 dark:!border-amber-800/30',
+          info: '!border-blue-200 !bg-gradient-to-br !from-blue-50/90 !to-sky-100/90 !text-blue-800 dark:!from-blue-950/90 dark:!to-blue-900/90 dark:!text-blue-200 dark:!border-blue-800/30',
+          description: '!text-slate-600 dark:!text-slate-300 !font-normal !text-sm !mt-1 !leading-relaxed',
+          title: '!font-semibold !text-base !leading-tight',
+          closeButton: '!bg-white/80 !text-slate-400 hover:!bg-white hover:!text-slate-600 !border-0 !right-3 !top-3 !w-6 !h-6 !rounded-full !p-0 !flex !items-center !justify-center hover:!scale-105 !transition-all !duration-200 !shadow-sm',
+          toast: '!backdrop-blur-md !border-white/20 dark:!border-slate-800/20',
         },
       }}
-      position="top-center"
+      position="top-right"
       expand={true}
-      richColors={true}
+      richColors={false}
       closeButton={true}
-      offset={20}
-      duration={8000}
+      offset={24}
+      gap={12}
+      duration={7000}
       {...props}
     />
   );

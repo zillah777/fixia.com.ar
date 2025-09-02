@@ -24,35 +24,7 @@ interface NotificationContextType {
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
 
 export function NotificationProvider({ children }: { children: ReactNode }) {
-  const [notifications, setNotifications] = useState<Notification[]>([
-    {
-      id: "notif_1",
-      type: 'message',
-      title: "Nuevo mensaje",
-      message: "María González te ha enviado un mensaje sobre el proyecto de e-commerce",
-      read: false,
-      timestamp: new Date(Date.now() - 5 * 60 * 1000),
-      actionUrl: "/chat/chat_maria",
-      avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b77c?w=40&h=40&fit=crop&crop=face"
-    },
-    {
-      id: "notif_2",
-      type: 'service',
-      title: "Servicio completado",
-      message: "Has completado exitosamente el diseño de identidad para Carlos Ruiz",
-      read: false,
-      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
-      actionUrl: "/services/FX002"
-    },
-    {
-      id: "notif_3",
-      type: 'payment',
-      title: "Pago recibido",
-      message: "Has recibido $1,200 por el proyecto completado",
-      read: true,
-      timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000)
-    }
-  ]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
 
   // Track if component is still mounted to prevent state updates after unmount
   const [isUmounted, setIsUmounted] = useState(false);
@@ -66,76 +38,8 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
-  // Simulate real-time notifications with proper memory management
-  useEffect(() => {
-    let intervalId: NodeJS.Timeout;
-    
-    intervalId = setInterval(() => {
-      // Prevent state updates if component is unmounted
-      if (isUmounted) {
-        clearInterval(intervalId);
-        return;
-      }
-
-      if (Math.random() > 0.7) { // 30% chance every 30 seconds
-        const mockNotifications = [
-          {
-            type: 'message' as const,
-            title: "Nuevo mensaje",
-            message: "Un cliente está interesado en tus servicios",
-            avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face"
-          },
-          {
-            type: 'service' as const,
-            title: "Nueva propuesta",
-            message: "Has recibido una nueva solicitud de servicio",
-          },
-          {
-            type: 'system' as const,
-            title: "Actualización de perfil",
-            message: "Tu verificación de identidad ha sido aprobada",
-          }
-        ];
-        
-        const randomNotif = mockNotifications[Math.floor(Math.random() * mockNotifications.length)];
-        
-        // Use functional state update to avoid dependency issues
-        setNotifications(prev => {
-          // Double-check mount status before state update
-          if (isUmounted) return prev;
-          
-          const newNotification: Notification = {
-            ...randomNotif,
-            id: "notif_" + Math.random().toString(36).substr(2, 9),
-            timestamp: new Date(),
-            read: false
-          };
-
-          // Show toast notification safely
-          try {
-            toast(randomNotif.title, {
-              description: randomNotif.message,
-              action: (randomNotif as any).actionUrl ? {
-                label: "Ver",
-                onClick: () => window.location.href = (randomNotif as any).actionUrl!
-              } : undefined,
-            });
-          } catch (error) {
-            console.warn('Failed to show notification toast:', error);
-          }
-
-          return [newNotification, ...prev];
-        });
-      }
-    }, 30000);
-
-    // Cleanup function with guaranteed interval clearing
-    return () => {
-      if (intervalId) {
-        clearInterval(intervalId);
-      }
-    };
-  }, [isUmounted]); // Include isUmounted in dependencies
+  // TODO: Connect to real-time notification service in production
+  // This should be replaced with WebSocket or Server-Sent Events for real notifications
 
   const addNotification = (notification: Omit<Notification, 'id' | 'timestamp' | 'read'>) => {
     const newNotification: Notification = {
