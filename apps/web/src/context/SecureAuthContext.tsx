@@ -247,7 +247,25 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
         localStorage.removeItem('fixia_refresh_token');
         localStorage.removeItem('fixia_user'); // Old user storage
         
-        const isAuth = await secureTokenManager.initialize();
+        // Initialize token manager first (sets up interceptors)
+        secureTokenManager.setupAxiosInterceptor();
+        
+        // Check if we have basic user data from a recent successful login
+        const basicUserData = localStorage.getItem('fixia_user_basic');
+        if (basicUserData) {
+          try {
+            const parsedData = JSON.parse(basicUserData);
+            // If we have recent user data, try to load full user data instead of verification
+            await loadUserData();
+            return; // Exit early if user data loaded successfully
+          } catch (error) {
+            console.warn('Failed to load user from basic data:', error);
+            localStorage.removeItem('fixia_user_basic');
+          }
+        }
+        
+        // Only do authentication verification if we don't have any user data
+        const isAuth = await secureTokenManager.isAuthenticated();
         setIsAuthenticated(isAuth);
         
         if (isAuth) {
@@ -281,6 +299,7 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
         const userData = await response.json();
         const transformedUser = transformBackendUserSecurely(userData);
         setUser(transformedUser);
+        setIsAuthenticated(true); // Set authenticated state when user data loads successfully
         
         // Almacenamiento local seguro (solo datos no sensibles)
         const safeUserData = {
@@ -292,13 +311,25 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
           // NO almacenar tokens o datos sensibles
         };
         localStorage.setItem('fixia_user_basic', JSON.stringify(safeUserData));
+      } else if (response.status === 401) {
+        // User is not authenticated - don't throw error, just set state
+        console.log('User not authenticated - clearing state');
+        setUser(null);
+        setIsAuthenticated(false);
+        localStorage.removeItem('fixia_user_basic');
       } else {
         throw new Error('Error cargando datos del usuario');
       }
     } catch (error) {
       console.error('Error cargando datos del usuario:', error);
-      setUser(null);
-      setIsAuthenticated(false);
+      // Only clear state if it's not a network error
+      if (error.message?.includes('fetch')) {
+        console.warn('Network error loading user data - keeping current state');
+      } else {
+        setUser(null);
+        setIsAuthenticated(false);
+        localStorage.removeItem('fixia_user_basic');
+      }
     }
   };
 

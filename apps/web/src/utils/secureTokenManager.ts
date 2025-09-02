@@ -14,12 +14,19 @@ interface TokenInfo {
 class SecureTokenManager {
   private tokenInfo: TokenInfo = { isAuthenticated: false };
   private refreshPromise: Promise<void> | null = null;
+  private skipNextVerification = false; // Flag to skip verification after successful login
 
   /**
    * Verifica si el usuario está autenticado
    * Se basa en la presencia de cookies httpOnly que solo el servidor puede leer
    */
-  async isAuthenticated(): Promise<boolean> {
+  async isAuthenticated(skipVerification: boolean = false): Promise<boolean> {
+    // If login just succeeded, skip the verification call and trust the login state
+    if (this.skipNextVerification || skipVerification) {
+      this.skipNextVerification = false;
+      return this.tokenInfo.isAuthenticated;
+    }
+
     try {
       // Hacer una llamada liviana al servidor para verificar la autenticación
       const response = await api.get('/auth/verify');
@@ -59,6 +66,9 @@ class SecureTokenManager {
         expiresAt: data.expiresAt,
         lastRefresh: Date.now(),
       };
+
+      // Set flag to skip next verification call since login just succeeded
+      this.skipNextVerification = true;
 
       return {
         success: true,
@@ -180,7 +190,9 @@ class SecureTokenManager {
    */
   async initialize(): Promise<boolean> {
     this.setupAxiosInterceptor();
-    return await this.isAuthenticated();
+    // Don't automatically verify on initialization to prevent redirect loops
+    // Verification will happen when needed by the context
+    return this.tokenInfo.isAuthenticated;
   }
 }
 
@@ -189,20 +201,29 @@ export const secureTokenManager = new SecureTokenManager();
 
 /**
  * Hook para usar el gestor seguro de tokens en componentes React
+ * Note: This hook is kept for backward compatibility but SecureAuthContext should be used instead
  */
 export const useSecureAuth = () => {
   const [authState, setAuthState] = React.useState<TokenInfo>({ isAuthenticated: false });
 
   React.useEffect(() => {
     const checkAuth = async () => {
-      const isAuth = await secureTokenManager.isAuthenticated();
-      setAuthState(secureTokenManager.getAuthState());
+      // Get current auth state without triggering verification on first load
+      const currentState = secureTokenManager.getAuthState();
+      setAuthState(currentState);
+      
+      // Only verify if we think we should be authenticated but haven't verified recently
+      if (currentState.isAuthenticated && 
+          (!currentState.lastRefresh || Date.now() - currentState.lastRefresh > 10 * 60 * 1000)) {
+        const isAuth = await secureTokenManager.isAuthenticated();
+        setAuthState(secureTokenManager.getAuthState());
+      }
     };
 
     checkAuth();
 
-    // Verificar autenticación cada 5 minutos
-    const interval = setInterval(checkAuth, 5 * 60 * 1000);
+    // Verificar autenticación cada 10 minutos (less frequent)
+    const interval = setInterval(checkAuth, 10 * 60 * 1000);
 
     return () => clearInterval(interval);
   }, []);

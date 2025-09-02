@@ -126,7 +126,13 @@ apiClient.interceptors.response.use(
         localStorage.removeItem('fixia_user_basic');
         localStorage.removeItem('fixia_preferences');
         
-        if (!window.location.pathname.includes('/login')) {
+        // Only redirect if we're not already on auth pages and this isn't an initial auth check
+        const currentPath = window.location.pathname;
+        const isAuthPage = currentPath.includes('/login') || currentPath.includes('/register') || 
+                          currentPath.includes('/verify-email') || currentPath.includes('/forgot-password');
+        const isAuthVerification = originalRequest?.url?.includes('/auth/verify');
+        
+        if (!isAuthPage && !isAuthVerification) {
           toast.error('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
           setTimeout(() => {
             window.location.href = '/login';
