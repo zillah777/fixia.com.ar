@@ -77,10 +77,10 @@ export default function LoginPage() {
           errorMessage.includes('email verification required')) {
         setEmailVerificationError(true);
         toast.error(
-          'Debes verificar tu email antes de iniciar sesión',
+          '📧 Email no verificado - Acción requerida',
           {
-            description: 'Revisa tu bandeja de entrada o reenvía el email de verificación.',
-            duration: 6000,
+            description: `Revisa tu bandeja de entrada en ${email} o usa el botón "Reenviar Email" que aparece abajo.`,
+            duration: 10000,
           }
         );
       }
