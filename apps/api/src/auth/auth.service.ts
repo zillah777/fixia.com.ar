@@ -30,29 +30,29 @@ export class AuthService {
       throw createSecureError(ERROR_CODES.AUTH_INVALID_CREDENTIALS, UnauthorizedException);
     }
 
-    // Check if account is locked (TODO: Enable after database migration)
-    // if (user.locked_until && user.locked_until > new Date()) {
-    //   const remainingTime = Math.ceil((user.locked_until.getTime() - Date.now()) / 1000 / 60);
-    //   throw createSecureError(ERROR_CODES.AUTH_ACCOUNT_LOCKED, UnauthorizedException, { remainingMinutes: remainingTime });
-    // }
+    // Check if account is locked
+    if (user.locked_until && user.locked_until > new Date()) {
+      const remainingTime = Math.ceil((user.locked_until.getTime() - Date.now()) / 1000 / 60);
+      throw createSecureError(ERROR_CODES.AUTH_ACCOUNT_LOCKED, UnauthorizedException, { remainingMinutes: remainingTime });
+    }
 
     const isPasswordValid = await bcrypt.compare(password, user.password_hash);
     if (!isPasswordValid) {
-      // Increment failed login attempts (TODO: Enable after database migration)
-      // await this.handleFailedLogin(user.id);
+      // Increment failed login attempts
+      await this.handleFailedLogin(user.id);
       throw createSecureError(ERROR_CODES.AUTH_INVALID_CREDENTIALS, UnauthorizedException);
     }
 
-    // Reset failed login attempts on successful login (TODO: Enable after database migration)
-    // if (user.failed_login_attempts > 0 || user.locked_until) {
-    //   await this.prisma.user.update({
-    //     where: { id: user.id },
-    //     data: {
-    //       failed_login_attempts: 0,
-    //       locked_until: null,
-    //     },
-    //   });
-    // }
+    // Reset failed login attempts on successful login
+    if (user.failed_login_attempts > 0 || user.locked_until) {
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: {
+          failed_login_attempts: 0,
+          locked_until: null,
+        },
+      });
+    }
 
     // Remove password from return object and ensure location is never undefined
     const { password_hash, ...result } = user;
@@ -554,15 +554,15 @@ export class AuthService {
   }
 
   async changePassword(userId: string, currentPassword: string, newPassword: string): Promise<{ message: string; success: boolean }> {
-    // Get user with current password (history disabled until migration)
+    // Get user with current password and history
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      // include: {
-      //   password_history: {
-      //     orderBy: { created_at: 'desc' },
-      //     take: 5, // Check last 5 passwords
-      //   },
-      // },
+      include: {
+        password_history: {
+          orderBy: { created_at: 'desc' },
+          take: 5, // Check last 5 passwords
+        },
+      },
     });
 
     if (!user) {
@@ -581,23 +581,44 @@ export class AuthService {
       throw createSecureError(ERROR_CODES.PWD_SAME_AS_CURRENT, BadRequestException);
     }
 
-    // Check against password history (TODO: Enable after database migration)
-    // for (const historyEntry of user.password_history) {
-    //   const isSameAsHistory = await bcrypt.compare(newPassword, historyEntry.password_hash);
-    //   if (isSameAsHistory) {
-    //     throw createSecureError(ERROR_CODES.PWD_RECENTLY_USED, BadRequestException, { historyCount: 5 });
-    //   }
-    // }
+    // Check against password history (prevent reuse of last 5 passwords)
+    for (const historyEntry of user.password_history) {
+      const isSameAsHistory = await bcrypt.compare(newPassword, historyEntry.password_hash);
+      if (isSameAsHistory) {
+        throw createSecureError(ERROR_CODES.PWD_RECENTLY_USED, BadRequestException, { historyCount: 5 });
+      }
+    }
 
     // Hash new password
     const hashedNewPassword = await bcrypt.hash(newPassword, 12);
 
-    // Update password and invalidate all sessions (history disabled until migration)
+    // Update password, save to history, and invalidate all sessions
     await this.prisma.$transaction([
+      // Save current password to history before changing
+      this.prisma.passwordHistory.create({
+        data: {
+          user_id: userId,
+          password_hash: user.password_hash,
+        },
+      }),
       // Update to new password
       this.prisma.user.update({
         where: { id: userId },
         data: { password_hash: hashedNewPassword }
+      }),
+      // Clean up old history (keep only last 5)
+      this.prisma.passwordHistory.deleteMany({
+        where: {
+          user_id: userId,
+          id: {
+            notIn: (await this.prisma.passwordHistory.findMany({
+              where: { user_id: userId },
+              orderBy: { created_at: 'desc' },
+              take: 5,
+              select: { id: true },
+            })).map(p => p.id),
+          },
+        },
       }),
       // Invalidate all user sessions (force re-login on all devices)
       this.prisma.userSession.deleteMany({
