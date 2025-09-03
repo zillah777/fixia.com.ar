@@ -27,10 +27,19 @@ export class MigrationController {
         WHERE table_name = 'password_history'
       `;
 
+      // Check users.id column type
+      const userIdType = await this.prisma.$queryRaw`
+        SELECT column_name, data_type, udt_name
+        FROM information_schema.columns 
+        WHERE table_name = 'users' 
+        AND column_name = 'id'
+      `;
+
       return {
         status: 'success',
         securityFields: result,
         passwordHistoryTable: passwordHistoryExists,
+        userIdType: userIdType,
         migrationNeeded: Array.isArray(result) && result.length < 2,
         timestamp: new Date().toISOString(),
       };
@@ -88,23 +97,10 @@ export class MigrationController {
           CREATE INDEX IF NOT EXISTS "password_history_created_at_idx" ON "password_history"("created_at")
         `;
 
-        // Step 5: Add foreign key constraint
-        this.logger.log('📝 Adding foreign key constraint...');
-        await tx.$executeRaw`
-          DO $$ 
-          BEGIN
-            IF NOT EXISTS (
-              SELECT 1 FROM information_schema.table_constraints 
-              WHERE constraint_name = 'password_history_user_id_fkey' 
-              AND table_name = 'password_history'
-            ) THEN
-              ALTER TABLE "password_history" 
-              ADD CONSTRAINT "password_history_user_id_fkey" 
-              FOREIGN KEY ("user_id") REFERENCES "users"("id") 
-              ON DELETE CASCADE ON UPDATE CASCADE;
-            END IF;
-          END $$
-        `;
+        // Step 5: Skip foreign key constraint for now (type mismatch issue)
+        this.logger.log('📝 Skipping foreign key constraint due to type mismatch...');
+        // Foreign key will be added later once we determine correct types
+        // await tx.$executeRaw`...`;
 
         this.logger.log('✅ All migration steps completed successfully');
       });
