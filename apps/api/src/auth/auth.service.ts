@@ -135,7 +135,7 @@ export class AuthService {
     });
 
     if (existingUser) {
-      throw createSecureError(ERROR_CODES.REG_EMAIL_EXISTS, ConflictException, { email: registerData.email });
+      throw new ConflictException('Ya existe un usuario registrado con este correo electrónico');
     }
 
     // Hash password
