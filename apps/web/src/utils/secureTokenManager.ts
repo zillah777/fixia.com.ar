@@ -61,9 +61,17 @@ class SecureTokenManager {
       const response = await api.post('/auth/login', credentials);
       const data = response.data;
 
-      // Handle both legacy format and new secured response format
-      const userData = data?.data?.user || data?.user;
-      const expiresAt = data?.data?.expires_in || data?.expires_in || data?.expiresAt;
+      // Handle both legacy format and new secured response format - Fixed initialization  
+      let userData;
+      let expiresAt;
+      
+      if (data?.data?.user) {
+        userData = data.data.user;
+        expiresAt = data.data.expires_in;
+      } else if (data?.user) {
+        userData = data.user;
+        expiresAt = data.expires_in || data.expiresAt;
+      }
 
       this.tokenInfo = {
         isAuthenticated: true,

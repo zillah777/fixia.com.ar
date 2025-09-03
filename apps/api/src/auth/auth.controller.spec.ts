@@ -195,6 +195,87 @@ describe('AuthController', () => {
       await expect(controller.refreshToken(refreshTokenDto)).rejects.toThrow(error);
       expect(authService.refreshToken).toHaveBeenCalledWith('invalid-refresh-token');
     });
+
+    it('should successfully refresh token from httpOnly cookie', async () => {
+      // Arrange
+      const refreshTokenDto = {}; // Empty body
+      const mockRequest = {
+        cookies: {
+          refresh_token: 'cookie-refresh-token',
+          access_token: 'old-access-token'
+        }
+      };
+      const mockResponse = {
+        cookie: jest.fn(),
+      };
+      const refreshResponse = { access_token: 'new-access-token' };
+      authService.refreshToken.mockResolvedValue(refreshResponse);
+
+      // Act
+      const result = await controller.refreshToken(refreshTokenDto, mockRequest, mockResponse);
+
+      // Assert
+      expect(result).toEqual(refreshResponse);
+      expect(authService.refreshToken).toHaveBeenCalledWith('cookie-refresh-token');
+      expect(mockResponse.cookie).toHaveBeenCalledWith('access_token', 'new-access-token', {
+        httpOnly: true,
+        secure: false, // NODE_ENV is not production in tests
+        sameSite: 'lax',
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      });
+    });
+
+    it('should prefer body token over cookie token', async () => {
+      // Arrange
+      const refreshTokenDto = { refresh_token: 'body-refresh-token' };
+      const mockRequest = {
+        cookies: {
+          refresh_token: 'cookie-refresh-token'
+        }
+      };
+      const mockResponse = {
+        cookie: jest.fn(),
+      };
+      const refreshResponse = { access_token: 'new-access-token' };
+      authService.refreshToken.mockResolvedValue(refreshResponse);
+
+      // Act
+      const result = await controller.refreshToken(refreshTokenDto, mockRequest, mockResponse);
+
+      // Assert
+      expect(result).toEqual(refreshResponse);
+      expect(authService.refreshToken).toHaveBeenCalledWith('body-refresh-token');
+    });
+
+    it('should throw unauthorized when no refresh token provided', async () => {
+      // Arrange
+      const refreshTokenDto = {};
+      const mockRequest = {
+        cookies: {} // No cookies
+      };
+      const mockResponse = {
+        cookie: jest.fn(),
+      };
+
+      // Act & Assert
+      await expect(controller.refreshToken(refreshTokenDto, mockRequest, mockResponse))
+        .rejects.toThrow('Refresh token is required');
+      expect(authService.refreshToken).not.toHaveBeenCalled();
+    });
+
+    it('should handle missing cookies object gracefully', async () => {
+      // Arrange
+      const refreshTokenDto = {};
+      const mockRequest = {}; // No cookies property
+      const mockResponse = {
+        cookie: jest.fn(),
+      };
+
+      // Act & Assert
+      await expect(controller.refreshToken(refreshTokenDto, mockRequest, mockResponse))
+        .rejects.toThrow('Refresh token is required');
+      expect(authService.refreshToken).not.toHaveBeenCalled();
+    });
   });
 
   describe('POST /auth/logout', () => {

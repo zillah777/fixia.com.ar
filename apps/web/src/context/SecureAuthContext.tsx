@@ -495,8 +495,17 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
       console.log('Registration response:', result);
 
       // Handle both legacy format and new secured response format
-      const userData = result?.data?.user || result?.user;
-      const accessToken = result?.data?.access_token || result?.access_token;
+      // Fix for "Cannot access before initialization" error - separate variable declarations
+      let userData;
+      let accessToken;
+      
+      if (result?.data?.user) {
+        userData = result.data.user;
+        accessToken = result.data.access_token;
+      } else if (result?.user) {
+        userData = result.user;
+        accessToken = result.access_token;
+      }
       
       if (result && result.success && userData) {
         const transformedUser = transformBackendUserSecurely(userData);

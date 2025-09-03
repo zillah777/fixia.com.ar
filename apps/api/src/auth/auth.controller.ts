@@ -63,22 +63,42 @@ export class AuthController {
   @ApiResponse({ status: 200, description: 'Token renovado exitosamente' })
   @ApiResponse({ status: 401, description: 'Refresh token inválido' })
   async refreshToken(@Body() refreshTokenDto: RefreshTokenDto, @Request() req, @Res({ passthrough: true }) res) {
-    // Support both body parameter and httpOnly cookie
-    const refreshToken = refreshTokenDto.refresh_token || req.cookies?.refresh_token;
+    // Support both body parameter and httpOnly cookie with detailed logging
+    const bodyToken = refreshTokenDto?.refresh_token;
+    const cookieToken = req.cookies?.refresh_token;
+    const refreshToken = bodyToken || cookieToken;
+    
+    // Enhanced logging for debugging
+    this.logger.debug(`Refresh token request:`, {
+      hasBodyToken: !!bodyToken,
+      bodyTokenPreview: bodyToken ? `${bodyToken.substring(0, 10)}...` : null,
+      hasCookieToken: !!cookieToken,
+      cookieTokenPreview: cookieToken ? `${cookieToken.substring(0, 10)}...` : null,
+      cookiesAvailable: !!req.cookies,
+      allCookieKeys: req.cookies ? Object.keys(req.cookies) : [],
+      hasRefreshToken: !!refreshToken
+    });
     
     if (!refreshToken) {
+      this.logger.warn('Refresh token missing from both body and cookies', {
+        requestBody: refreshTokenDto,
+        cookiesAvailable: !!req.cookies,
+        cookieKeys: req.cookies ? Object.keys(req.cookies) : []
+      });
       throw new UnauthorizedException('Refresh token is required');
     }
     
     const result = await this.authService.refreshToken(refreshToken);
     
-    // Update access token cookie
+    // Update access token cookie (refresh token remains the same)
     res.cookie('access_token', result.access_token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
+    
+    this.logger.log(`Token refreshed successfully for token: ${refreshToken.substring(0, 10)}...`);
     
     return result;
   }

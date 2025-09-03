@@ -1,7 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe, Logger } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import * as helmet from 'helmet';
+import helmet from 'helmet';
+import * as cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
@@ -28,6 +29,9 @@ async function bootstrap() {
         ? ['error', 'warn', 'log'] 
         : ['error', 'warn', 'log', 'debug', 'verbose']
     });
+
+    // Cookie Parser for httpOnly cookie support
+    app.use(cookieParser());
 
     // Security Headers with Helmet - Production-compatible configuration
     app.use(helmet({
