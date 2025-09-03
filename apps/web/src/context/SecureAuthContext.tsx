@@ -492,14 +492,20 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
       const response = await api.post('/auth/register', sanitizedData);
       const result = response.data;
 
-      if (result.user) {
+      console.log('Registration response:', result);
+
+      if (result && result.user) {
         const transformedUser = transformBackendUserSecurely(result.user);
         setUser(transformedUser);
         setIsAuthenticated(true);
         
         // Success message is handled by the calling component (RegisterPage)
+      } else if (result && result.success) {
+        // Registration successful but no user object returned (email verification required)
+        console.log('Registration successful, verification email sent');
       } else {
-        throw new Error('Error en el registro');
+        console.error('Unexpected registration response:', result);
+        throw new Error(result?.message || result?.error || 'Error en el registro');
       }
     } catch (error: any) {
       console.error('Error en registro:', error);
