@@ -102,7 +102,9 @@ function EmailVerificationPage() {
       await authService.verifyEmail(token);
       
       setState(prev => ({ ...prev, isVerified: true, isVerifying: false }));
-      toast.success('¡Email verificado exitosamente! Ya puedes iniciar sesión.');
+      toast.success('✅ Email verificado exitosamente', {
+        description: "¡Perfecto! Ya puedes iniciar sesión con tu cuenta"
+      });
       
       // Auto-redirect to login after 3 seconds
       setTimeout(() => {
@@ -127,7 +129,9 @@ function EmailVerificationPage() {
 
   const handleResendVerification = async () => {
     if (!state.canResend || !state.email) {
-      toast.error('Por favor espera antes de reenviar el email');
+      toast.error('⏰ Espera un momento', {
+        description: "Debes esperar antes de poder reenviar el email de verificación"
+      });
       return;
     }
 
@@ -136,7 +140,9 @@ function EmailVerificationPage() {
     try {
       await authService.resendVerificationEmail();
       
-      toast.success('Email de verificación reenviado. Revisa tu bandeja de entrada.');
+      toast.success('📧 Email reenviado', {
+        description: "Revisa tu bandeja de entrada y spam. El enlace expira en 24 horas"
+      });
       
       // Start cooldown
       setState(prev => ({

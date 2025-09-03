@@ -193,7 +193,9 @@ function ProfileHeader({ user, isEditing, setIsEditing }: any) {
 
   const handleSave = async () => {
     if (!validateFields()) {
-      toast.error('Por favor, corrije los errores en el formulario');
+      toast.error('⚠️ Errores en el formulario', {
+        description: "Por favor, corrije los errores marcados antes de guardar"
+      });
       return;
     }
 
@@ -213,7 +215,9 @@ function ProfileHeader({ user, isEditing, setIsEditing }: any) {
         })
       });
       
-      toast.success("Perfil actualizado correctamente");
+      toast.success("✅ Perfil actualizado", {
+        description: "Tus cambios se guardaron correctamente"
+      });
       setIsEditing(false);
     } catch (error: any) {
       toast.error(error.message || 'Error al actualizar el perfil');
@@ -225,9 +229,13 @@ function ProfileHeader({ user, isEditing, setIsEditing }: any) {
   const handleAvatarUpdate = async (newAvatarUrl: string) => {
     try {
       await updateProfile({ avatar: newAvatarUrl });
-      toast.success('Foto de perfil actualizada');
+      toast.success('📸 Foto actualizada', {
+        description: "Tu nueva foto de perfil se guardó correctamente"
+      });
     } catch (error: any) {
-      toast.error('Error al actualizar la foto de perfil');
+      toast.error('❌ Error al actualizar foto', {
+        description: "No se pudo guardar tu nueva foto de perfil. Intenta nuevamente"
+      });
     }
   };
 

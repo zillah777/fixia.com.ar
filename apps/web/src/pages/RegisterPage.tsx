@@ -1046,25 +1046,33 @@ export default function RegisterPage() {
     
     // Validate email format
     if (!validateEmailFormat(formData.email)) {
-      toast.error("Por favor ingresa un email válido");
+      toast.error("📧 Email inválido", {
+        description: "Por favor ingresa una dirección de email válida"
+      });
       return;
     }
     
     // Enhanced password validation
     const passwordValidation = validatePassword(formData.password);
     if (!passwordValidation.isValid) {
-      toast.error(`Contraseña no válida: ${passwordValidation.errors[0]}`);
+      toast.error("🔒 Contraseña no válida", {
+        description: passwordValidation.errors[0]
+      });
       return;
     }
 
     if (formData.password !== formData.confirmPassword) {
-      toast.error('Las contraseñas no coinciden');
+      toast.error('🔐 Las contraseñas no coinciden', {
+        description: "Asegúrate de que ambas contraseñas sean idénticas"
+      });
       return;
     }
 
     // Validate birthdate
     if (!formData.birthdate) {
-      toast.error('La fecha de nacimiento es requerida');
+      toast.error('📅 Fecha de nacimiento requerida', {
+        description: "Por favor selecciona tu fecha de nacimiento"
+      });
       return;
     }
 
@@ -1079,23 +1087,31 @@ export default function RegisterPage() {
     }
     
     if (age < 18) {
-      toast.error('Debes ser mayor de 18 años para registrarte');
+      toast.error('🔞 Edad mínima requerida', {
+        description: "Debes ser mayor de 18 años para registrarte en Fixia"
+      });
       return;
     }
 
     if (currentTab === 'professional' && formData.serviceCategories.length === 0) {
-      toast.error('Debes seleccionar al menos una categoría de servicio');
+      toast.error('🛠️ Categorías requeridas', {
+        description: "Los profesionales deben seleccionar al menos una categoría de servicio"
+      });
       return;
     }
 
     if (currentTab === 'professional' && formData.serviceCategories.length > 10) {
-      toast.error('No puedes tener más de 10 categorías de servicio');
+      toast.error('⚠️ Demasiadas categorías', {
+        description: "Máximo 10 categorías de servicio permitidas"
+      });
       return;
     }
 
     // Check required agreements
     if (!formData.agreeTerms || !formData.agreePrivacy) {
-      toast.error('Debes aceptar los términos y condiciones y la política de privacidad');
+      toast.error('📋 Términos requeridos', {
+        description: "Debes aceptar los términos y condiciones y la política de privacidad"
+      });
       return;
     }
 
