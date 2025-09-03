@@ -31,22 +31,22 @@ export const FixiaNavigation = memo(function FixiaNavigation() {
       animate={{ y: 0 }}
       className="sticky top-0 z-50 w-full glass border-b border-white/10"
     >
-      <div className="container mx-auto flex h-20 items-center justify-between px-6">
+      <div className="container mx-auto flex h-16 sm:h-20 items-center justify-between px-4 sm:px-6">
         {/* Logo and Navigation Links */}
-        <div className="flex items-center space-x-8">
-          <Link to="/" className="flex items-center space-x-3">
+        <div className="flex items-center space-x-4 sm:space-x-8">
+          <Link to="/" className="flex items-center space-x-2 sm:space-x-3">
             <motion.div 
               className="relative"
               whileHover={{ scale: 1.05 }}
               transition={{ type: "spring", stiffness: 400, damping: 10 }}
             >
-              <div className="h-10 w-10 liquid-gradient rounded-xl flex items-center justify-center shadow-lg">
-                <span className="text-white font-bold text-lg">F</span>
+              <div className="h-8 w-8 sm:h-10 sm:w-10 liquid-gradient rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg">
+                <span className="text-white font-bold text-base sm:text-lg">F</span>
               </div>
-              <div className="absolute -inset-1 liquid-gradient rounded-xl blur opacity-20 animate-pulse-slow"></div>
+              <div className="absolute -inset-1 liquid-gradient rounded-lg sm:rounded-xl blur opacity-20 animate-pulse-slow"></div>
             </motion.div>
-            <div className="flex flex-col">
-              <span className="text-xl font-semibold tracking-tight text-foreground">Fixia</span>
+            <div className="hidden sm:flex flex-col">
+              <span className="text-lg sm:text-xl font-semibold tracking-tight text-foreground">Fixia</span>
               <span className="text-xs text-muted-foreground -mt-1">Conecta. Confía. Resuelve.</span>
             </div>
           </Link>
@@ -68,38 +68,41 @@ export const FixiaNavigation = memo(function FixiaNavigation() {
         </div>
 
         {/* Actions */}
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-2 sm:space-x-4">
           {isAuthenticated ? (
             // Authenticated User Menu
             <>
-              {/* Search */}
-              <div className="relative hidden md:block">
+              {/* Search - Hidden on mobile */}
+              <div className="relative hidden lg:block">
                 <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   placeholder="Buscar profesionales o servicios..."
-                  className="w-80 pl-12 glass border-white/20 focus:border-primary/50 focus:ring-primary/30 transition-all duration-300"
+                  className="w-64 xl:w-80 pl-12 glass border-white/20 focus:border-primary/50 focus:ring-primary/30 transition-all duration-300"
                 />
               </div>
 
               {/* Quick Actions */}
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-1 sm:space-x-2">
+                {/* New Project Button - Responsive */}
                 <Link to="/new-project">
                   <Button size="sm" className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg">
-                    <Plus className="mr-2 h-4 w-4" />
-                    Nuevo Proyecto
+                    <Plus className="h-4 w-4 sm:mr-2" />
+                    <span className="hidden sm:inline">Nuevo Proyecto</span>
                   </Button>
                 </Link>
 
+                {/* Notifications */}
                 <Link to="/notifications">
-                  <Button variant="ghost" size="icon" className="relative hover:bg-white/10 transition-all duration-300">
+                  <Button variant="ghost" size="icon" className="relative hover:bg-white/10 transition-all duration-300 h-9 w-9 sm:h-10 sm:w-10">
                     <Bell className="h-4 w-4" />
-                    <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 bg-destructive text-xs">
+                    <Badge className="absolute -top-1 -right-1 h-4 w-4 sm:h-5 sm:w-5 p-0 bg-destructive text-xs flex items-center justify-center">
                       3
                     </Badge>
                   </Button>
                 </Link>
 
-                <Link to="/favorites">
+                {/* Favorites - Hidden on small screens */}
+                <Link to="/favorites" className="hidden sm:block">
                   <Button variant="ghost" size="icon" className="hover:bg-white/10 transition-all duration-300">
                     <Heart className="h-4 w-4" />
                   </Button>
@@ -109,10 +112,10 @@ export const FixiaNavigation = memo(function FixiaNavigation() {
               {/* User Avatar Dropdown */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-10 w-10 rounded-full hover:glass-medium transition-all duration-300">
-                    <Avatar className="h-10 w-10 ring-2 ring-primary/20">
+                  <Button variant="ghost" className="relative h-8 w-8 sm:h-10 sm:w-10 rounded-full hover:glass-medium transition-all duration-300">
+                    <Avatar className="h-8 w-8 sm:h-10 sm:w-10 ring-2 ring-primary/20">
                       <AvatarImage src={user?.avatar} alt={user?.name || 'Usuario'} />
-                      <AvatarFallback className="glass">
+                      <AvatarFallback className="glass text-sm">
                         {user?.name?.charAt(0)?.toUpperCase() || 'U'}
                       </AvatarFallback>
                     </Avatar>
@@ -199,14 +202,16 @@ export const FixiaNavigation = memo(function FixiaNavigation() {
             // Public/Not Authenticated Menu
             <>
               <Link to="/login">
-                <Button variant="ghost" className="hover:glass-medium transition-all duration-300">
-                  Iniciar Sesión
+                <Button variant="ghost" className="hover:glass-medium transition-all duration-300 text-sm sm:text-base">
+                  <span className="hidden sm:inline">Iniciar Sesión</span>
+                  <span className="sm:hidden">Entrar</span>
                 </Button>
               </Link>
               <Link to="/register">
-                <Button className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg">
-                  <Gift className="h-4 w-4 mr-2" />
-                  Únete Gratis
+                <Button className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg text-sm">
+                  <Gift className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Únete Gratis</span>
+                  <span className="sm:hidden">Únete</span>
                 </Button>
               </Link>
             </>

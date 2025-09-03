@@ -106,13 +106,13 @@ function ClientRegistrationForm({
   ];
 
   return (
-    <Card className="glass border-white/10 max-w-2xl mx-auto">
-      <CardHeader className="text-center">
-        <div className="flex items-center justify-center space-x-2 mb-4">
-          <UserPlus className="h-8 w-8 text-success" />
-          <CardTitle className="text-2xl text-foreground">Registro como Cliente</CardTitle>
+    <Card className="glass border-white/10 max-w-2xl mx-auto mobile-card">
+      <CardHeader className="text-center space-y-2 sm:space-y-3">
+        <div className="flex items-center justify-center space-x-2 mb-3 sm:mb-4">
+          <UserPlus className="h-6 w-6 sm:h-8 sm:w-8 text-success" />
+          <CardTitle className="mobile-text-2xl text-foreground">Registro como Cliente</CardTitle>
         </div>
-        <CardDescription>
+        <CardDescription className="mobile-text-base">
           Acceso gratuito para buscar y contactar profesionales verificados
         </CardDescription>
       </CardHeader>
@@ -1238,16 +1238,16 @@ export default function RegisterPage() {
     <div className="min-h-screen bg-background">
       <FixiaNavigation />
       
-      <div className="py-12 px-6">
+      <div className="mobile-container mobile-section">
         <div className="container mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="text-center mb-12"
+            className="text-center mb-8 sm:mb-12"
           >
-            <h1 className="text-4xl font-bold mb-4 text-foreground">Únete a Fixia</h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            <h1 className="mobile-text-3xl font-bold mb-3 sm:mb-4 text-foreground">Únete a Fixia</h1>
+            <p className="mobile-text-lg text-muted-foreground max-w-2xl mx-auto">
               Elige tu tipo de cuenta y comienza a conectar con la mejor red 
               de profesionales de Chubut
             </p>
@@ -1263,14 +1263,16 @@ export default function RegisterPage() {
               onValueChange={setCurrentTab}
               className="max-w-6xl mx-auto"
             >
-              <TabsList className="grid w-full grid-cols-2 glass border-white/10 p-1 max-w-md mx-auto mb-8">
-                <TabsTrigger value="client" className="text-sm">
-                  <UserPlus className="h-4 w-4 mr-2" />
-                  Cliente
+              <TabsList className="grid w-full grid-cols-2 glass border-white/10 p-1 max-w-sm sm:max-w-md mx-auto mb-6 sm:mb-8">
+                <TabsTrigger value="client" className="mobile-text-base touch-target">
+                  <UserPlus className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                  <span className="hidden sm:inline">Cliente</span>
+                  <span className="sm:hidden">Cliente</span>
                 </TabsTrigger>
-                <TabsTrigger value="professional" className="text-sm">
-                  <Crown className="h-4 w-4 mr-2" />
-                  Profesional
+                <TabsTrigger value="professional" className="mobile-text-base touch-target">
+                  <Crown className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                  <span className="hidden sm:inline">Profesional</span>
+                  <span className="sm:hidden">Pro</span>
                 </TabsTrigger>
               </TabsList>
 

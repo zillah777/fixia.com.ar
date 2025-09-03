@@ -93,21 +93,21 @@ function Navigation() {
       animate={{ y: 0 }}
       className="sticky top-0 z-50 w-full glass border-b border-white/10"
     >
-      <div className="container mx-auto flex h-20 items-center justify-between px-6">
+      <div className="container mx-auto flex h-16 sm:h-20 items-center justify-between px-4 sm:px-6">
         {/* Logo */}
-        <Link to="/" className="flex items-center space-x-3">
+        <Link to="/" className="flex items-center space-x-2 sm:space-x-3">
           <motion.div 
             className="relative"
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 400, damping: 10 }}
           >
-            <div className="h-10 w-10 liquid-gradient rounded-xl flex items-center justify-center shadow-lg">
-              <span className="text-white font-bold text-lg">F</span>
+            <div className="h-8 w-8 sm:h-10 sm:w-10 liquid-gradient rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg">
+              <span className="text-white font-bold text-base sm:text-lg">F</span>
             </div>
-            <div className="absolute -inset-1 liquid-gradient rounded-xl blur opacity-20 animate-pulse-slow"></div>
+            <div className="absolute -inset-1 liquid-gradient rounded-lg sm:rounded-xl blur opacity-20 animate-pulse-slow"></div>
           </motion.div>
-          <div className="flex flex-col">
-            <span className="text-xl font-semibold tracking-tight text-foreground">Fixia</span>
+          <div className="hidden sm:flex flex-col">
+            <span className="text-lg sm:text-xl font-semibold tracking-tight text-foreground">Fixia</span>
             <span className="text-xs text-muted-foreground -mt-1">Conecta. Confía. Resuelve.</span>
           </div>
         </Link>
@@ -126,16 +126,18 @@ function Navigation() {
         </nav>
 
         {/* Actions */}
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-2 sm:space-x-4">
           <Link to="/login">
-            <Button variant="ghost" className="hover:glass-medium transition-all duration-300">
-              Iniciar Sesión
+            <Button variant="ghost" className="hover:glass-medium transition-all duration-300 text-sm sm:text-base">
+              <span className="hidden sm:inline">Iniciar Sesión</span>
+              <span className="sm:hidden">Entrar</span>
             </Button>
           </Link>
           <Link to="/register">
-            <Button className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg">
-              <Gift className="h-4 w-4 mr-2" />
-              Únete Gratis
+            <Button className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg text-sm">
+              <Gift className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Únete Gratis</span>
+              <span className="sm:hidden">Únete</span>
             </Button>
           </Link>
         </div>
@@ -146,20 +148,21 @@ function Navigation() {
 
 function HeroSection() {
   return (
-    <section className="relative py-24 lg:py-32 overflow-hidden">
-      <div className="container mx-auto px-6">
+    <section className="relative mobile-section overflow-hidden">
+      <div className="container mx-auto mobile-container">
         <div className="max-w-4xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1 }}
           >
-            <Badge className="mb-6 bg-success/20 text-success border-success/30 px-4 py-2">
-              <MapPin className="h-4 w-4 mr-2" />
-              Chubut, Argentina • +500 profesionales activos
+            <Badge className="mb-4 sm:mb-6 bg-success/20 text-success border-success/30 px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm">
+              <MapPin className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Chubut, Argentina • +500 profesionales activos</span>
+              <span className="sm:hidden">+500 profesionales</span>
             </Badge>
             
-            <h1 className="text-5xl lg:text-7xl font-bold mb-6 tracking-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold mb-4 sm:mb-6 tracking-tight leading-tight">
               <span className="bg-gradient-to-r from-white via-white to-white/70 bg-clip-text text-transparent">
                 Conecta.
               </span>{" "}
@@ -171,60 +174,63 @@ function HeroSection() {
               </span>
             </h1>
             
-            <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-base sm:text-lg md:text-xl text-muted-foreground mb-6 sm:mb-8 max-w-2xl mx-auto leading-relaxed">
               El primer marketplace de microservicios de la Provincia del Chubut. 
               Conecta con profesionales locales verificados o promociona tus servicios.
             </p>
             
             {/* Launch Promotion Alert */}
-            <Card className="glass border-warning/30 bg-warning/5 mb-8 max-w-2xl mx-auto">
-              <CardContent className="p-4">
+            <Card className="glass border-warning/30 bg-warning/5 mb-6 sm:mb-8 max-w-2xl mx-auto mobile-card">
+              <CardContent className="p-3 sm:p-4">
                 <div className="flex items-center justify-center space-x-2">
-                  <Gift className="h-5 w-5 text-warning" />
-                  <span className="font-semibold text-warning">¡Promoción de Lanzamiento!</span>
+                  <Gift className="h-4 w-4 sm:h-5 sm:w-5 text-warning" />
+                  <span className="font-semibold text-warning mobile-text-base">¡Promoción de Lanzamiento!</span>
                 </div>
-                <p className="text-sm text-muted-foreground mt-1">
+                <p className="text-xs sm:text-sm text-muted-foreground mt-1">
                   Primeros 200 usuarios obtienen 2 meses gratis de funcionalidades premium
                 </p>
               </CardContent>
             </Card>
             
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-8 sm:mb-12">
               <Link to="/services">
-                <Button size="lg" className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-xl px-8 py-6 text-lg">
-                  <Search className="mr-2 h-5 w-5" />
+                <Button size="lg" className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-xl px-6 py-3 sm:px-8 sm:py-6 mobile-text-lg w-full sm:w-auto touch-target">
+                  <Search className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                   Buscar Profesionales
-                  <ArrowRight className="ml-2 h-5 w-5" />
+                  <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
                 </Button>
               </Link>
               <Link to="/register?type=professional">
-                <Button size="lg" variant="outline" className="glass border-white/20 hover:glass-medium px-8 py-6 text-lg">
-                  <Crown className="mr-2 h-5 w-5" />
+                <Button size="lg" variant="outline" className="glass border-white/20 hover:glass-medium px-6 py-3 sm:px-8 sm:py-6 mobile-text-lg w-full sm:w-auto touch-target">
+                  <Crown className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                   Ser Profesional
                 </Button>
               </Link>
             </div>
             
-            <div className="flex items-center justify-center space-x-8 text-sm text-muted-foreground mb-6">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 text-xs sm:text-sm text-muted-foreground mb-6">
               <div className="flex items-center">
-                <Shield className="h-4 w-4 mr-2 text-success" />
+                <Shield className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 text-success" />
                 Sin comisiones
               </div>
               <div className="flex items-center">
-                <CheckCircle className="h-4 w-4 mr-2 text-success" />
-                Profesionales verificados
+                <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 text-success" />
+                <span className="hidden sm:inline">Profesionales verificados</span>
+                <span className="sm:hidden">Verificados</span>
               </div>
               <div className="flex items-center">
-                <Phone className="h-4 w-4 mr-2 text-success" />
-                Contacto directo WhatsApp
+                <Phone className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 text-success" />
+                <span className="hidden sm:inline">Contacto directo WhatsApp</span>
+                <span className="sm:hidden">WhatsApp directo</span>
               </div>
             </div>
             
             <Link to="/pricing">
-              <Button variant="outline" className="glass border-white/20 hover:glass-medium">
-                <CreditCard className="h-4 w-4 mr-2" />
-                Ver Planes y Precios
-                <ChevronRight className="ml-2 h-4 w-4" />
+              <Button variant="outline" className="glass border-white/20 hover:glass-medium mobile-text-base touch-target">
+                <CreditCard className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
+                <span className="hidden sm:inline">Ver Planes y Precios</span>
+                <span className="sm:hidden">Ver Precios</span>
+                <ChevronRight className="ml-2 h-3 w-3 sm:h-4 sm:w-4" />
               </Button>
             </Link>
           </motion.div>
@@ -278,22 +284,22 @@ function CategoriesSection() {
   }
 
   return (
-    <section className="py-20">
-      <div className="container mx-auto px-6">
+    <section className="mobile-section">
+      <div className="container mx-auto mobile-container">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-16"
+          className="text-center mb-8 sm:mb-12 lg:mb-16"
         >
-          <h2 className="text-4xl font-bold mb-4 text-foreground">Servicios Más Solicitados</h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <h2 className="mobile-text-3xl font-bold mb-3 sm:mb-4 text-foreground">Servicios Más Solicitados</h2>
+          <p className="mobile-text-lg text-muted-foreground max-w-2xl mx-auto">
             Descubre los profesionales más valorados en cada categoría de Chubut
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mobile-gap">
           {displayCategories.map((category, index) => {
             const Icon = category.icon;
             return (
@@ -306,18 +312,18 @@ function CategoriesSection() {
                 whileHover={{ y: -4 }}
               >
                 <Link to={`/services?category=${encodeURIComponent(category.name)}`}>
-                  <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 cursor-pointer group h-full relative bg-card/50 backdrop-blur-xl">
+                  <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 cursor-pointer group h-full relative bg-card/50 backdrop-blur-xl mobile-card touch-target">
                     {category.popular && (
-                      <Badge className="absolute top-3 right-3 bg-blue-500/20 text-blue-400 border-blue-400/30 text-xs px-2 py-1 font-medium">
+                      <Badge className="absolute top-2 right-2 bg-blue-500/20 text-blue-400 border-blue-400/30 text-xs px-2 py-0.5 font-medium">
                         Popular
                       </Badge>
                     )}
-                    <CardContent className="p-6 text-center">
-                      <div className="h-16 w-16 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:from-blue-500/30 group-hover:to-purple-500/30 transition-all duration-300 border border-blue-400/20">
-                        <Icon className="h-8 w-8 text-blue-400 group-hover:text-blue-300 transition-colors" />
+                    <CardContent className="p-3 sm:p-4 md:p-6 text-center">
+                      <div className="h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-xl md:rounded-2xl flex items-center justify-center mx-auto mb-3 sm:mb-4 group-hover:from-blue-500/30 group-hover:to-purple-500/30 transition-all duration-300 border border-blue-400/20">
+                        <Icon className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 text-blue-400 group-hover:text-blue-300 transition-colors" />
                       </div>
-                      <h3 className="font-semibold mb-2 text-white">{category.name}</h3>
-                      <p className="text-sm text-gray-400">{category.count}</p>
+                      <h3 className="font-semibold mb-1 sm:mb-2 text-white text-xs sm:text-sm md:text-base leading-tight">{category.name}</h3>
+                      <p className="text-xs text-gray-400">{category.count}</p>
                     </CardContent>
                   </Card>
                 </Link>

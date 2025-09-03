@@ -97,7 +97,7 @@ export const MobileBottomNavigation = memo<MobileBottomNavigationProps>(({ class
         className
       )}
     >
-      <div className="flex items-center justify-around px-2 py-2">
+      <div className="flex items-center justify-around px-2 py-3 pb-safe">
         {navItems.map((item, index) => (
           <MobileNavItem
             key={item.href}
@@ -122,7 +122,7 @@ const MobileNavItem = memo<MobileNavItemProps>(({ item, isActive, index }) => {
     <Link
       to={item.href}
       className={cn(
-        "relative flex flex-col items-center justify-center min-w-0 flex-1 px-2 py-2 rounded-lg transition-all duration-200",
+        "relative flex flex-col items-center justify-center min-w-0 flex-1 px-2 py-2 rounded-lg transition-all duration-200 touch-target",
         isActive
           ? "text-primary"
           : "text-muted-foreground hover:text-foreground"

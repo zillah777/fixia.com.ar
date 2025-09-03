@@ -115,14 +115,14 @@ export default function LoginPage() {
     <div className="min-h-screen bg-background">
       <FixiaNavigation />
       
-      <div className="flex items-center justify-center p-6 pt-24">
+      <div className="flex items-center justify-center mobile-container mobile-section min-h-[calc(100vh-4rem)] sm:min-h-[calc(100vh-5rem)]">
         {/* Background */}
-        <div className="absolute inset-0 bg-background">
+        <div className="fixed inset-0 bg-background -z-10">
           <div className="absolute top-1/4 -left-32 w-64 h-64 liquid-gradient rounded-full blur-3xl opacity-20 animate-float"></div>
           <div className="absolute bottom-1/4 -right-32 w-64 h-64 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full blur-3xl opacity-20 animate-float" style={{ animationDelay: '2s' }}></div>
         </div>
 
-        <div className="relative w-full max-w-md z-10">
+        <div className="relative w-full max-w-sm sm:max-w-md z-10">
 
         {/* Login Form */}
         <motion.div
@@ -130,10 +130,10 @@ export default function LoginPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
         >
-          <Card className="glass border-white/10 shadow-2xl">
-            <CardHeader className="text-center">
-              <CardTitle className="text-2xl text-foreground">Iniciar Sesión</CardTitle>
-              <CardDescription>
+          <Card className="glass border-white/10 shadow-2xl mobile-card">
+            <CardHeader className="text-center space-y-2 sm:space-y-3">
+              <CardTitle className="mobile-text-2xl text-foreground">Iniciar Sesión</CardTitle>
+              <CardDescription className="mobile-text-base">
                 Bienvenido de vuelta. Ingresa tus credenciales para continuar.
               </CardDescription>
             </CardHeader>
@@ -156,10 +156,10 @@ export default function LoginPage() {
                 </motion.div>
               )}
 
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleSubmit} className="mobile-space-y">
                 {/* Email Field */}
                 <div className="space-y-2">
-                  <Label htmlFor="email">Correo Electrónico</Label>
+                  <Label htmlFor="email" className="mobile-text-base">Correo Electrónico</Label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
                     <Input
@@ -168,7 +168,7 @@ export default function LoginPage() {
                       placeholder="tu@email.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="pl-10 glass border-white/20 focus:border-primary/50 focus:ring-primary/30"
+                      className="pl-10 glass border-white/20 focus:border-primary/50 focus:ring-primary/30 h-12 touch-target text-base"
                       maxLength={200}
                       required
                     />
@@ -184,27 +184,28 @@ export default function LoginPage() {
                     placeholder="Tu contraseña"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="pl-10 glass border-white/20 focus:border-primary/50 focus:ring-primary/30"
+                    className="pl-10 glass border-white/20 focus:border-primary/50 focus:ring-primary/30 h-12 touch-target text-base"
                     showToggle={true}
                     required
                   />
                 </div>
 
                 {/* Options */}
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col space-y-3 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
                   <div className="flex items-center space-x-2">
                     <Checkbox
                       id="remember"
                       checked={rememberMe}
                       onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+                      className="touch-target"
                     />
-                    <Label htmlFor="remember" className="text-sm text-muted-foreground">
+                    <Label htmlFor="remember" className="mobile-text-base text-muted-foreground">
                       Recordarme
                     </Label>
                   </div>
                   <Link
                     to="/forgot-password"
-                    className="text-sm text-primary hover:text-primary/80 transition-colors"
+                    className="mobile-text-base text-primary hover:text-primary/80 transition-colors touch-target"
                   >
                     ¿Olvidaste tu contraseña?
                   </Link>
@@ -224,13 +225,13 @@ export default function LoginPage() {
                           <strong>Email no verificado</strong><br />
                           Necesitas verificar tu dirección de email antes de iniciar sesión.
                         </AlertDescription>
-                        <div className="flex flex-col sm:flex-row gap-2">
+                        <div className="flex flex-col gap-3 sm:flex-row sm:gap-2">
                           <Button
                             onClick={handleResendVerification}
                             disabled={isResendingVerification}
                             variant="outline"
                             size="sm"
-                            className="flex-1 border-warning/50 text-warning hover:bg-warning/10"
+                            className="flex-1 border-warning/50 text-warning hover:bg-warning/10 h-10 touch-target"
                           >
                             {isResendingVerification ? (
                               <>
@@ -248,7 +249,7 @@ export default function LoginPage() {
                             onClick={() => navigate(`/verify-email?email=${encodeURIComponent(email)}`)}
                             variant="outline"
                             size="sm"
-                            className="flex-1 border-primary/50 text-primary hover:bg-primary/10"
+                            className="flex-1 border-primary/50 text-primary hover:bg-primary/10 h-10 touch-target"
                           >
                             <Mail className="h-4 w-4 mr-2" />
                             Ir a Verificación
@@ -262,7 +263,7 @@ export default function LoginPage() {
                 {/* Submit Button */}
                 <Button
                   type="submit"
-                  className="w-full liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg"
+                  className="w-full liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg h-12 touch-target text-base font-medium"
                   disabled={loading}
                 >
                   {loading ? (
@@ -276,9 +277,9 @@ export default function LoginPage() {
                 </Button>
 
                 {/* Demo Credentials */}
-                <div className="glass-medium rounded-lg p-4 space-y-2">
-                  <p className="text-xs text-muted-foreground font-medium">Credenciales de demostración:</p>
-                  <div className="text-xs text-muted-foreground space-y-1">
+                <div className="glass-medium mobile-card p-3 sm:p-4 mobile-space-y">
+                  <p className="text-xs sm:text-sm text-muted-foreground font-medium">Credenciales de demostración:</p>
+                  <div className="text-xs sm:text-sm text-muted-foreground mobile-space-y">
                     <p>Email: demo@fixia.com</p>
                     <p>Contraseña: cualquier_texto</p>
                   </div>
@@ -293,11 +294,11 @@ export default function LoginPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="text-center mt-6"
+          className="text-center mt-4 sm:mt-6"
         >
-          <p className="text-muted-foreground">
+          <p className="mobile-text-base text-muted-foreground">
             ¿No tienes una cuenta?{" "}
-            <Link to="/register" className="text-primary hover:text-primary/80 transition-colors font-medium">
+            <Link to="/register" className="text-primary hover:text-primary/80 transition-colors font-medium touch-target">
               Únete gratis
             </Link>
           </p>
@@ -308,11 +309,11 @@ export default function LoginPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
-          className="text-center mt-4"
+          className="text-center mt-3 sm:mt-4"
         >
           <Link
             to="/"
-            className="inline-flex items-center text-sm text-muted-foreground hover:text-primary transition-colors"
+            className="inline-flex items-center mobile-text-base text-muted-foreground hover:text-primary transition-colors touch-target"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Volver al inicio
