@@ -46,23 +46,14 @@ export const ERROR_CODES = {
 
 export type ErrorCode = typeof ERROR_CODES[keyof typeof ERROR_CODES]['code'];
 
-export class AppError extends Error {
-  constructor(
-    public readonly errorCode: typeof ERROR_CODES[keyof typeof ERROR_CODES],
-    public readonly statusCode: number = 400,
-    public readonly details?: any
-  ) {
-    super(errorCode.message);
-    this.name = 'AppError';
-  }
-
-  toJSON() {
-    return {
-      error: {
-        code: this.errorCode.code,
-        message: this.errorCode.message,
-        details: this.details,
-      },
-    };
-  }
+// Helper function to create NestJS compatible errors with custom codes
+export function createSecureError(
+  errorCode: typeof ERROR_CODES[keyof typeof ERROR_CODES],
+  ExceptionClass: any,
+  details?: any
+) {
+  const error = new ExceptionClass(errorCode.message);
+  (error as any).errorCode = errorCode.code;
+  (error as any).details = details;
+  return error;
 }

@@ -29,10 +29,14 @@ async function bootstrap() {
         : ['error', 'warn', 'log', 'debug', 'verbose']
     });
 
-    // Security Headers with Helmet
+    // Security Headers with Helmet - Production-compatible configuration
     app.use(helmet({
       crossOriginEmbedderPolicy: false,
-      contentSecurityPolicy: {
+      crossOriginOpenerPolicy: false,
+      crossOriginResourcePolicy: { 
+        policy: process.env.NODE_ENV === 'production' ? "cross-origin" : "same-site" 
+      },
+      contentSecurityPolicy: process.env.NODE_ENV === 'production' ? false : {
         directives: {
           defaultSrc: ["'self'"],
           styleSrc: ["'self'", "'unsafe-inline'"],
@@ -45,7 +49,6 @@ async function bootstrap() {
           frameSrc: ["'none'"],
         },
       },
-      crossOriginResourcePolicy: { policy: "cross-origin" }
     }));
 
     // Health check endpoint - Simple and reliable
