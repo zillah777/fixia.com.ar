@@ -61,9 +61,13 @@ class SecureTokenManager {
       const response = await api.post('/auth/login', credentials);
       const data = response.data;
 
+      // Handle both legacy format and new secured response format
+      const userData = data?.data?.user || data?.user;
+      const expiresAt = data?.data?.expires_in || data?.expires_in || data?.expiresAt;
+
       this.tokenInfo = {
         isAuthenticated: true,
-        expiresAt: data.expiresAt,
+        expiresAt: expiresAt,
         lastRefresh: Date.now(),
       };
 
@@ -72,7 +76,7 @@ class SecureTokenManager {
 
       return {
         success: true,
-        user: data.user,
+        user: userData,
       };
     } catch (error: any) {
       console.error('Error en login:', error);

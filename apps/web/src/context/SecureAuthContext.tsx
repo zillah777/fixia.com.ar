@@ -494,8 +494,12 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
 
       console.log('Registration response:', result);
 
-      if (result && result.user) {
-        const transformedUser = transformBackendUserSecurely(result.user);
+      // Handle both legacy format and new secured response format
+      const userData = result?.data?.user || result?.user;
+      const accessToken = result?.data?.access_token || result?.access_token;
+      
+      if (result && result.success && userData) {
+        const transformedUser = transformBackendUserSecurely(userData);
         setUser(transformedUser);
         setIsAuthenticated(true);
         
@@ -505,7 +509,7 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
         console.log('Registration successful, verification email sent');
       } else {
         console.error('Unexpected registration response:', result);
-        throw new Error(result?.message || result?.error || 'Error en el registro');
+        throw new Error(result?.data?.message || result?.message || result?.error || 'Error en el registro');
       }
     } catch (error: any) {
       console.error('Error en registro:', error);
