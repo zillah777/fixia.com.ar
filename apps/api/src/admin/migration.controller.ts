@@ -67,7 +67,7 @@ export class MigrationController {
         `;
 
         // Step 3: Create password_history table
-        this.logger.log('📝 Creating password_history table...');
+        this.logger.log('📝 Creating password_history table with correct TEXT types...');
         await tx.$executeRaw`
           CREATE TABLE IF NOT EXISTS "password_history" (
               "id" TEXT NOT NULL,
