@@ -1154,7 +1154,7 @@ export default function RegisterPage() {
       
       // Registration successful - show enhanced success message and redirect to email verification
       toast.success(
-        "Su cuenta ha sido creada exitosamente, enviamos un correo electrónico para que verifiques tu cuenta",
+        "Se ha enviado un correo electrónico para verificar la cuenta",
         {
           description: `Revisa tu bandeja de entrada en ${formData.email}`,
           duration: 6000,

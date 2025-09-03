@@ -5,6 +5,7 @@ import * as bcrypt from 'bcryptjs';
 import { PrismaService } from '../common/prisma.service';
 import { EmailService } from '../modules/email/email.service';
 import { LoginCredentials, RegisterData, AuthResponse } from '@fixia/types';
+import { ERROR_CODES, AppError } from '../common/constants/error-codes';
 
 @Injectable()
 export class AuthService {
@@ -26,12 +27,31 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new AppError(ERROR_CODES.AUTH_INVALID_CREDENTIALS, 401);
+    }
+
+    // Check if account is locked
+    if (user.locked_until && user.locked_until > new Date()) {
+      const remainingTime = Math.ceil((user.locked_until.getTime() - Date.now()) / 1000 / 60);
+      throw new AppError(ERROR_CODES.AUTH_ACCOUNT_LOCKED, 423, { remainingMinutes: remainingTime });
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password_hash);
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid credentials');
+      // Increment failed login attempts
+      await this.handleFailedLogin(user.id);
+      throw new AppError(ERROR_CODES.AUTH_INVALID_CREDENTIALS, 401);
+    }
+
+    // Reset failed login attempts on successful login
+    if (user.failed_login_attempts > 0 || user.locked_until) {
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: {
+          failed_login_attempts: 0,
+          locked_until: null,
+        },
+      });
     }
 
     // Remove password from return object and ensure location is never undefined
@@ -42,12 +62,41 @@ export class AuthService {
     };
   }
 
+  private async handleFailedLogin(userId: string): Promise<void> {
+    const MAX_ATTEMPTS = 5;
+    const LOCKOUT_DURATION_MINUTES = 30;
+
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { failed_login_attempts: true, email: true },
+    });
+
+    if (!user) return;
+
+    const newAttempts = user.failed_login_attempts + 1;
+    const shouldLock = newAttempts >= MAX_ATTEMPTS;
+
+    const updateData: any = {
+      failed_login_attempts: newAttempts,
+    };
+
+    if (shouldLock) {
+      updateData.locked_until = new Date(Date.now() + LOCKOUT_DURATION_MINUTES * 60 * 1000);
+      this.logger.warn(`Account locked due to failed login attempts: ${user.email}`);
+    }
+
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: updateData,
+    });
+  }
+
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
     const user = await this.validateUser(credentials.email, credentials.password);
     
     // Check if email is verified - required for login security
     if (!user.email_verified) {
-      throw new UnauthorizedException('Please verify your email address before logging in. Check your email for the verification link, or request a new verification email.');
+      throw new AppError(ERROR_CODES.AUTH_EMAIL_NOT_VERIFIED, 401, { email: user.email });
     }
     
     const payload = { 
@@ -86,7 +135,7 @@ export class AuthService {
     });
 
     if (existingUser) {
-      throw new ConflictException('Ya existe un usuario registrado con este correo electrónico');
+      throw new AppError(ERROR_CODES.REG_EMAIL_EXISTS, 409, { email: registerData.email });
     }
 
     // Hash password
@@ -427,7 +476,7 @@ export class AuthService {
     }
 
     return {
-      message: 'Se ha enviado un enlace de verificación a tu email',
+      message: 'Se ha enviado un correo electrónico para verificar la cuenta',
       success: true
     };
   }
@@ -505,9 +554,15 @@ export class AuthService {
   }
 
   async changePassword(userId: string, currentPassword: string, newPassword: string): Promise<{ message: string; success: boolean }> {
-    // Get user with current password
+    // Get user with current password and history
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
+      include: {
+        password_history: {
+          orderBy: { created_at: 'desc' },
+          take: 5, // Check last 5 passwords
+        },
+      },
     });
 
     if (!user) {
@@ -520,14 +575,50 @@ export class AuthService {
       throw new UnauthorizedException('La contraseña actual es incorrecta');
     }
 
+    // Check if new password is same as current
+    const isSameAsCurrent = await bcrypt.compare(newPassword, user.password_hash);
+    if (isSameAsCurrent) {
+      throw new AppError(ERROR_CODES.PWD_SAME_AS_CURRENT, 400);
+    }
+
+    // Check against password history (prevent reuse of last 5 passwords)
+    for (const historyEntry of user.password_history) {
+      const isSameAsHistory = await bcrypt.compare(newPassword, historyEntry.password_hash);
+      if (isSameAsHistory) {
+        throw new AppError(ERROR_CODES.PWD_RECENTLY_USED, 400, { historyCount: 5 });
+      }
+    }
+
     // Hash new password
     const hashedNewPassword = await bcrypt.hash(newPassword, 12);
 
-    // Update password and invalidate all sessions
+    // Update password, save to history, and invalidate all sessions
     await this.prisma.$transaction([
+      // Save current password to history before changing
+      this.prisma.passwordHistory.create({
+        data: {
+          user_id: userId,
+          password_hash: user.password_hash,
+        },
+      }),
+      // Update to new password
       this.prisma.user.update({
         where: { id: userId },
         data: { password_hash: hashedNewPassword }
+      }),
+      // Clean up old history (keep only last 5)
+      this.prisma.passwordHistory.deleteMany({
+        where: {
+          user_id: userId,
+          id: {
+            notIn: (await this.prisma.passwordHistory.findMany({
+              where: { user_id: userId },
+              orderBy: { created_at: 'desc' },
+              take: 5,
+              select: { id: true },
+            })).map(p => p.id),
+          },
+        },
       }),
       // Invalidate all user sessions (force re-login on all devices)
       this.prisma.userSession.deleteMany({

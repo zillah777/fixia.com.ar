@@ -206,9 +206,13 @@ export class AuthController {
   }
 
   @Post('admin/verify-user')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Verificar usuario manualmente (temporal)' })
-  async adminVerifyUser(@Body() body: { userId: string }) {
+  async adminVerifyUser(@Request() req, @Body() body: { userId: string }) {
+    // TODO: Add proper admin role verification
+    this.logger.warn(`Admin verification performed by user ${req.user.sub} on user ${body.userId}`);
     return this.authService.adminVerifyUser(body.userId);
   }
 

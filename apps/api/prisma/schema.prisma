@@ -65,6 +65,8 @@ model User {
   email_verified   Boolean   @default(false)
   phone            String?
   whatsapp_number  String?
+  failed_login_attempts Int    @default(0)
+  locked_until     DateTime?
   created_at       DateTime  @default(now())
   updated_at       DateTime  @updatedAt
   deleted_at       DateTime?
@@ -84,6 +86,7 @@ model User {
   user_activity      UserActivity[]
   password_reset_tokens PasswordResetToken[]
   email_verification_tokens EmailVerificationToken[]
+  password_history      PasswordHistory[]
 
   @@index([email])
   @@index([user_type])
@@ -340,4 +343,18 @@ model EmailVerificationToken {
   user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@map("email_verification_tokens")
+}
+
+model PasswordHistory {
+  id            String   @id @default(uuid())
+  user_id       String
+  password_hash String
+  created_at    DateTime @default(now())
+
+  // Relations
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([created_at])
+  @@map("password_history")
 }
