@@ -493,36 +493,33 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
         throw new Error(`Contraseña no válida: ${passwordValidation.errors[0]}`);
       }
 
-      const response = await api.post('/auth/register', sanitizedData);
-      const result = response.data;
+      const result = await api.post('/auth/register', sanitizedData);
 
       console.log('Registration response:', result);
 
-      // Handle both legacy format and new secured response format
+      // Handle API wrapper format - result is already extracted from response.data.data
       // Fix for TDZ error - declare and initialize in one step with unique names
       let responseUserData = null;
       let responseAccessToken = null;
       
-      if (result?.data?.user) {
-        responseUserData = result.data.user;
-        responseAccessToken = result.data.access_token;
-      } else if (result?.user) {
+      if (result?.user) {
+        // API wrapper already extracted data, so result.user contains the user directly
         responseUserData = result.user;
         responseAccessToken = result.access_token;
       }
       
-      if (result && result.success && responseUserData) {
+      if (result && responseUserData) {
         const transformedUser = transformBackendUserSecurely(responseUserData);
         setUser(transformedUser);
         setIsAuthenticated(true);
         
         // Success message is handled by the calling component (RegisterPage)
-      } else if (result && result.success) {
+      } else if (result) {
         // Registration successful but no user object returned (email verification required)
         console.log('Registration successful, verification email sent');
       } else {
         console.error('Unexpected registration response:', result);
-        throw new Error(result?.data?.message || result?.message || result?.error || 'Error en el registro');
+        throw new Error('Error en el registro');
       }
     } catch (error: any) {
       console.error('Error en registro:', error);
