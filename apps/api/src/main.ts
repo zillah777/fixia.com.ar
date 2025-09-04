@@ -186,6 +186,16 @@ async function bootstrap() {
     }
 
 
+    // Handle common bot/crawler requests for JS files to prevent 404 errors
+    app.getHttpAdapter().get('/js/:filename', (req, res) => {
+      const filename = req.params.filename;
+      logger.warn(`🤖 Bot/crawler requesting JS file: /js/${filename} - returning empty response`);
+      
+      // Return empty JavaScript file to prevent 404 errors
+      res.set('Content-Type', 'application/javascript');
+      res.send('// File not found - empty response to prevent 404 errors');
+    });
+
     // Root endpoint
     app.getHttpAdapter().get('/', (req, res) => {
       res.json({
