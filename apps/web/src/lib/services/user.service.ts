@@ -2,26 +2,14 @@ import { api } from '../api';
 import { User } from '../../context/SecureAuthContext';
 
 export interface DashboardStats {
-  totalServices: number;
-  completedServices: number;
-  activeProjects: number;
-  totalRevenue: number;
-  averageRating: number;
-  totalReviews: number;
-  profileViews: number;
-  contactRequests: number;
-  responseRate: number;
-  completionRate: number;
-  monthlyRevenue: Array<{
-    month: string;
-    revenue: number;
-  }>;
-  recentActivity: Array<{
-    id: string;
-    type: 'service_created' | 'service_completed' | 'review_received' | 'contact_request';
-    description: string;
-    date: string;
-  }>;
+  total_services: number;
+  active_projects: number;
+  total_earnings: number;
+  average_rating: number;
+  review_count: number;
+  profile_views: number;
+  messages_count: number;
+  pending_proposals: number;
 }
 
 export interface ContactRequest {

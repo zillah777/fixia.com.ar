@@ -200,17 +200,8 @@ function RecentActivity({ dashboardData, loading }: { dashboardData: DashboardSt
     }
   ];
 
-  // Transform API data to activities format, show empty if no real data
-  const activities = dashboardData?.recentActivity?.map(activity => ({
-    id: activity.id,
-    type: activity.type,
-    title: getActivityTitle(activity.type),
-    description: activity.description,
-    time: formatDate(activity.date),
-    status: activity.type === 'contact_request' ? 'new' : 'completed',
-    icon: getActivityIcon(activity.type),
-    color: getActivityColor(activity.type)
-  })) || [];
+  // Show empty activities for now since backend doesn't provide recentActivity yet
+  const activities: any[] = [];
 
   function getActivityTitle(type: string): string {
     const titles: { [key: string]: string } = {
@@ -358,36 +349,36 @@ function StatCards({ dashboardData, loading }: { dashboardData: DashboardStats |
 
   const stats = [
     {
-      title: "Ingresos del Mes",
-      value: dashboardData?.totalRevenue ? `$${dashboardData.totalRevenue.toLocaleString()}` : "$0",
-      change: "+12.3%", // Could be calculated from monthlyRevenue data
+      title: "Ingresos Totales",
+      value: dashboardData?.total_earnings ? `$${dashboardData.total_earnings.toLocaleString()}` : "$0",
+      change: "+12.3%",
       changeType: "positive",
       icon: TrendingUp,
-      description: "vs. mes anterior"
+      description: "acumulados"
     },
     {
-      title: "Servicios Activos",
-      value: dashboardData?.totalServices?.toString() || "0",
+      title: "Servicios Totales",
+      value: dashboardData?.total_services?.toString() || "0",
       change: "+2",
       changeType: "positive", 
       icon: Briefcase,
-      description: "servicios publicados"
+      description: "servicios creados"
     },
     {
-      title: "Clientes Satisfechos",
-      value: dashboardData?.completedServices?.toString() || "0",
+      title: "Proyectos Activos",
+      value: dashboardData?.active_projects?.toString() || "0",
       change: "+8",
       changeType: "positive",
       icon: Users,
-      description: "proyectos completados"
+      description: "en progreso"
     },
     {
       title: "Rating Promedio",
-      value: dashboardData?.averageRating?.toFixed(1) || "0.0",
+      value: dashboardData?.average_rating?.toFixed(1) || "0.0",
       change: "+0.2",
       changeType: "positive",
       icon: Award,
-      description: `de ${dashboardData?.totalReviews || 0} reseñas`
+      description: `de ${dashboardData?.review_count || 0} reseñas`
     }
   ];
 
