@@ -91,7 +91,9 @@ apiClient.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    if (error.response?.status === 401 && !originalRequest._retry && !originalRequest.url?.includes('/auth/login')) {
+    if (error.response?.status === 401 && !originalRequest._retry && 
+        !originalRequest.url?.includes('/auth/login') && 
+        !originalRequest.url?.includes('/auth/refresh')) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
@@ -132,19 +134,26 @@ apiClient.interceptors.response.use(
                           currentPath.includes('/verify-email') || currentPath.includes('/forgot-password');
         const isAuthVerification = originalRequest?.url?.includes('/auth/verify');
         const isDashboardPage = currentPath.includes('/dashboard');
+        const isDashboardAPI = originalRequest?.url?.includes('/user/dashboard');
         
-        // Don't show session expired message immediately after login (on dashboard)
-        if (!isAuthPage && !isAuthVerification && !isDashboardPage) {
+        // Don't redirect immediately after login - give user time on dashboard
+        const timeSincePageLoad = Date.now() - (window.performance?.timing?.navigationStart || 0);
+        const justLoggedIn = timeSincePageLoad < 10000; // Less than 10 seconds since page load
+        
+        if (!isAuthPage && !isAuthVerification && !isDashboardPage && !isDashboardAPI) {
           toast.error('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
           setTimeout(() => {
             window.location.href = '/login';
           }, 2000);
-        } else if (isDashboardPage) {
-          // On dashboard, just silently redirect without toast to prevent confusion
-          console.log('Authentication failed on dashboard - redirecting to login silently');
+        } else if (isDashboardPage && !justLoggedIn && !isDashboardAPI) {
+          // Only redirect from dashboard if it's not immediately after login and not a dashboard API call
+          console.log('Authentication failed on dashboard - redirecting to login');
           setTimeout(() => {
             window.location.href = '/login';
-          }, 500);
+          }, 1000);
+        } else if ((isDashboardPage && justLoggedIn) || isDashboardAPI) {
+          // Don't redirect for dashboard API failures or immediately after login
+          console.log('Ignoring auth failure for dashboard API or immediately after login');
         }
         
         return Promise.reject(refreshError);

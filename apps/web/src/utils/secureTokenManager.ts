@@ -14,16 +14,16 @@ interface TokenInfo {
 class SecureTokenManager {
   private tokenInfo: TokenInfo = { isAuthenticated: false };
   private refreshPromise: Promise<void> | null = null;
-  private skipNextVerification = false; // Flag to skip verification after successful login
+  private skipVerificationUntil = 0; // Timestamp until which to skip verification after login
 
   /**
    * Verifica si el usuario está autenticado
    * Se basa en la presencia de cookies httpOnly que solo el servidor puede leer
    */
   async isAuthenticated(skipVerification: boolean = false): Promise<boolean> {
-    // If login just succeeded, skip the verification call and trust the login state
-    if (this.skipNextVerification || skipVerification) {
-      this.skipNextVerification = false;
+    // If login recently succeeded, skip verification to prevent race conditions
+    const now = Date.now();
+    if ((now < this.skipVerificationUntil) || skipVerification) {
       return this.tokenInfo.isAuthenticated;
     }
 
@@ -94,8 +94,8 @@ class SecureTokenManager {
         lastRefresh: Date.now(),
       };
 
-      // Set flag to skip next verification call since login just succeeded
-      this.skipNextVerification = true;
+      // Set timestamp to skip verification for the next 5 seconds after login
+      this.skipVerificationUntil = Date.now() + 5000;
 
       return {
         success: true,
