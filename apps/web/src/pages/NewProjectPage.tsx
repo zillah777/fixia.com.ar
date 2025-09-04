@@ -25,20 +25,35 @@ import { toast } from "sonner";
 import { servicesService, ServiceCategory } from "../lib/services/services.service";
 
 // Icon mapping for categories
-const iconMap = {
-  Globe,
-  Camera, 
-  Image,
-  Star,
-  FileText,
-  Eye,
-  Briefcase,
-  Shield,
-  Palette: Star, // fallback
-  Users: Star, // fallback
-  HeadphonesIcon: Star, // fallback
-  PenTool: FileText, // fallback
-  TrendingUp: Star // fallback
+const getIconComponent = (iconName: string) => {
+  if (!iconName || typeof iconName !== 'string') {
+    return Star; // Safe fallback
+  }
+  
+  const iconMap: Record<string, any> = {
+    Globe,
+    Camera, 
+    Image,
+    Star,
+    FileText,
+    Eye,
+    Briefcase,
+    Shield,
+    Palette: Image, // fallback for design
+    Users: Briefcase, // fallback for team services
+    HeadphonesIcon: Star, // fallback for support
+    PenTool: FileText, // fallback for writing
+    TrendingUp: Star, // fallback for marketing
+  };
+  
+  const IconComponent = iconMap[iconName];
+  
+  // Ensure we always return a valid React component
+  if (!IconComponent || typeof IconComponent !== 'function') {
+    return Star;
+  }
+  
+  return IconComponent;
 };
 
 const skillSuggestions = {
@@ -311,8 +326,11 @@ function CategoryStep({
             ) : (
               <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {categories.map((category) => {
-                  const IconName = category.icon as keyof typeof iconMap;
-                  const Icon = iconMap[IconName] || Star;
+                  if (!category || !category.id || !category.name) {
+                    return null; // Skip invalid categories
+                  }
+                  
+                  const Icon = getIconComponent(category.icon);
                   return (
                     <Card
                       key={category.id}
@@ -1046,9 +1064,21 @@ export default function NewProjectPage() {
     const loadCategories = async () => {
       try {
         const backendCategories = await servicesService.getCategories();
-        setCategories(backendCategories);
+        
+        // Validate categories data
+        if (Array.isArray(backendCategories)) {
+          const validCategories = backendCategories.filter(cat => 
+            cat && typeof cat === 'object' && cat.id && cat.name
+          );
+          setCategories(validCategories);
+        } else {
+          console.error('Invalid categories data received:', backendCategories);
+          setCategories([]);
+          toast.error('Error al cargar las categorías - formato inválido');
+        }
       } catch (error) {
         console.error('Error loading categories:', error);
+        setCategories([]);
         toast.error('Error al cargar las categorías');
       } finally {
         setLoadingCategories(false);
