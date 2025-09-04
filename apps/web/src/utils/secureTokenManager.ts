@@ -42,8 +42,14 @@ class SecureTokenManager {
         this.tokenInfo = { isAuthenticated: false };
         return false;
       }
-    } catch (error) {
-      console.error('Error verificando autenticación:', error);
+    } catch (error: any) {
+      // Don't log 401 errors as they're expected when user is not authenticated
+      if (error?.response?.status !== 401) {
+        console.error('Error verificando autenticación:', error);
+      } else {
+        // Silent handling for expected 401 responses (user not logged in)
+        console.debug('No authenticated session found - this is normal on first visit');
+      }
       this.tokenInfo = { isAuthenticated: false };
       return false;
     }
@@ -87,10 +93,17 @@ class SecureTokenManager {
         user: userData,
       };
     } catch (error: any) {
-      console.error('Error en login:', error);
+      // Enhanced error logging to debug cryptic errors
+      console.error('Error en login - Details:', {
+        message: error?.message || 'Unknown error',
+        response: error?.response?.data || 'No response data',
+        status: error?.response?.status || 'No status',
+        stack: error?.stack?.substring(0, 200) + '...' || 'No stack trace'
+      });
+      
       return {
         success: false,
-        error: 'Error de conexión',
+        error: error?.response?.data?.message || error?.message || 'Error de conexión',
       };
     }
   }
@@ -140,8 +153,13 @@ class SecureTokenManager {
         expiresAt: data.expiresAt,
         lastRefresh: Date.now(),
       };
-    } catch (error) {
-      console.error('Error refrescando token:', error);
+    } catch (error: any) {
+      // Only log unexpected errors, not 401s which are normal when refresh token expired
+      if (error?.response?.status !== 401) {
+        console.error('Error refrescando token:', error);
+      } else {
+        console.debug('Refresh token expired or invalid - user needs to login again');
+      }
       this.tokenInfo = { isAuthenticated: false };
       this.clearLocalData();
     }

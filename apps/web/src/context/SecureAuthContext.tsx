@@ -255,25 +255,29 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
         if (basicUserData) {
           try {
             const parsedData = JSON.parse(basicUserData);
-            // If we have recent user data, try to load full user data instead of verification
-            await loadUserData();
-            return; // Exit early if user data loaded successfully
+            // Set user data from localStorage first, avoid API call
+            setUser(null); // Will be loaded on demand
+            setIsAuthenticated(true); // Assume authenticated if we have basic data
+            return; // Exit early to prevent unnecessary API calls
           } catch (error) {
-            console.warn('Failed to load user from basic data:', error);
+            console.warn('Invalid user data in localStorage:', error);
             localStorage.removeItem('fixia_user_basic');
           }
         }
         
         // Only do authentication verification if we don't have any user data
-        const isAuth = await secureTokenManager.isAuthenticated();
+        // Skip verification on first app load to prevent 401 errors in console
+        const isAuth = await secureTokenManager.isAuthenticated(true); // Skip verification
         setIsAuthenticated(isAuth);
         
-        if (isAuth) {
-          // Cargar datos del usuario
-          await loadUserData();
-        }
-      } catch (error) {
-        console.error('Error inicializando autenticación:', error);
+        // No need to load user data if we're not authenticated
+        // User data will be loaded when they actually log in
+      } catch (error: any) {
+        console.error('Error inicializando autenticación - Enhanced logging:', {
+          message: error?.message || 'Unknown initialization error',
+          name: error?.name || 'Unknown error type',
+          stack: error?.stack ? error.stack.substring(0, 300) + '...' : 'No stack trace available'
+        });
         setIsAuthenticated(false);
         setUser(null);
       } finally {
