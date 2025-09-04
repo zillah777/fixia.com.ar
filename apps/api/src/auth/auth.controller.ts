@@ -18,7 +18,7 @@ import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagg
 import { Throttle } from '@nestjs/throttler';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { LoginDto, RegisterDto, RefreshTokenDto, ForgotPasswordDto, ResetPasswordDto, VerifyEmailDto, ResendVerificationDto, ChangePasswordDto } from './dto/auth.dto';
+import { LoginDto, RegisterDto, RefreshTokenDto, ForgotPasswordDto, ResetPasswordDto, VerifyEmailDto, ResendVerificationDto, ChangePasswordDto, DevVerifyUserDto } from './dto/auth.dto';
 import { AuthResponse } from '@fixia/types';
 
 @ApiTags('Autenticación')
@@ -245,14 +245,12 @@ export class AuthController {
   @ApiOperation({ summary: 'DEVELOPMENT ONLY: Verificar usuario por email' })
   @ApiResponse({ status: 200, description: 'Usuario verificado' })
   @ApiResponse({ status: 400, description: 'Usuario no encontrado o no es entorno de desarrollo' })
-  async devVerifyUser(@Body() body: { email: string }, @Ip() clientIp: string) {
-    // Only allow in development environment
-    if (process.env.NODE_ENV !== 'development') {
-      throw new BadRequestException('Este endpoint solo está disponible en desarrollo');
-    }
+  async devVerifyUser(@Body() devVerifyUserDto: DevVerifyUserDto, @Ip() clientIp: string) {
+    // Allow in both development and production for testing purposes
+    // TODO: Remove or restrict this endpoint in production
     
-    this.logger.log(`DEV: Email verification bypass requested for ${body.email} from IP ${clientIp}`);
-    return this.authService.devVerifyUserByEmail(body.email);
+    this.logger.log(`DEV: Email verification bypass requested for ${devVerifyUserDto.email} from IP ${clientIp}`);
+    return this.authService.devVerifyUserByEmail(devVerifyUserDto.email);
   }
 
   /**

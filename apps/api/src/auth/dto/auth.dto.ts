@@ -227,3 +227,12 @@ export class ChangePasswordDto {
   @MinLength(8)
   new_password: string;
 }
+
+export class DevVerifyUserDto {
+  @ApiProperty({ 
+    example: 'usuario@fixia.com.ar',
+    description: 'Email del usuario a verificar (solo desarrollo)'
+  })
+  @IsEmail()
+  email: string;
+}
