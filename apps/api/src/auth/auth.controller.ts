@@ -97,7 +97,7 @@ export class AuthController {
     res.cookie('access_token', result.access_token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' as const : 'lax' as const,
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
     
@@ -261,7 +261,7 @@ export class AuthController {
     const cookieOptions = {
       httpOnly: true,
       secure: isProduction,
-      sameSite: 'lax' as const,
+      sameSite: isProduction ? 'none' as const : 'lax' as const, // 'none' for cross-origin in production
       path: '/',
       // Don't set domain - let browser handle automatically
     };
@@ -283,7 +283,7 @@ export class AuthController {
       cookieConfig: {
         httpOnly: true,
         secure: isProduction,
-        sameSite: 'lax',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' as const : 'lax' as const,
         path: '/',
         domain: 'auto'
       },
@@ -299,13 +299,13 @@ export class AuthController {
     res.clearCookie('access_token', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' as const : 'lax' as const,
     });
     
     res.clearCookie('refresh_token', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' as const : 'lax' as const,
     });
   }
 }
