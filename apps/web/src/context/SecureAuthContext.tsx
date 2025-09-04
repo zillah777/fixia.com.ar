@@ -291,45 +291,34 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
   // Cargar datos del usuario desde el servidor
   const loadUserData = async () => {
     try {
-      const response = await fetch('/api/user/profile', {
-        method: 'GET',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (response.ok) {
-        const userData = await response.json();
-        const transformedUser = transformBackendUserSecurely(userData);
-        setUser(transformedUser);
-        setIsAuthenticated(true); // Set authenticated state when user data loads successfully
-        
-        // Almacenamiento local seguro (solo datos no sensibles)
-        const safeUserData = {
-          id: transformedUser.id,
-          name: transformedUser.name,
-          email: transformedUser.email,
-          userType: transformedUser.userType,
-          avatar: transformedUser.avatar,
-          // NO almacenar tokens o datos sensibles
-        };
-        localStorage.setItem('fixia_user_basic', JSON.stringify(safeUserData));
-      } else if (response.status === 401) {
+      const userData = await api.get('/user/profile');
+      const transformedUser = transformBackendUserSecurely(userData);
+      setUser(transformedUser);
+      setIsAuthenticated(true);
+      
+      // Almacenamiento local seguro (solo datos no sensibles)
+      const safeUserData = {
+        id: transformedUser.id,
+        name: transformedUser.name,
+        email: transformedUser.email,
+        userType: transformedUser.userType,
+        avatar: transformedUser.avatar,
+        // NO almacenar tokens o datos sensibles
+      };
+      localStorage.setItem('fixia_user_basic', JSON.stringify(safeUserData));
+    } catch (error: any) {
+      console.error('Error cargando datos del usuario:', error);
+      
+      if (error?.response?.status === 401) {
         // User is not authenticated - don't throw error, just set state
         console.log('User not authenticated - clearing state');
         setUser(null);
         setIsAuthenticated(false);
         localStorage.removeItem('fixia_user_basic');
-      } else {
-        throw new Error('Error cargando datos del usuario');
-      }
-    } catch (error) {
-      console.error('Error cargando datos del usuario:', error);
-      // Only clear state if it's not a network error
-      if (error.message?.includes('fetch')) {
+      } else if (error?.code === 'ERR_NETWORK') {
         console.warn('Network error loading user data - keeping current state');
       } else {
+        // For other errors, clear state
         setUser(null);
         setIsAuthenticated(false);
         localStorage.removeItem('fixia_user_basic');
@@ -575,24 +564,11 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
         sanitizedData.phone = sanitizeInput(userData.phone, 'phone');
       }
 
-      const response = await fetch('/api/user/profile', {
-        method: 'PUT',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(sanitizedData),
-      });
-
-      if (response.ok) {
-        const updatedUserData = await response.json();
-        const transformedUser = transformBackendUserSecurely(updatedUserData);
-        setUser(transformedUser);
-        
-        toast.success('Perfil actualizado correctamente');
-      } else {
-        throw new Error('Error actualizando el perfil');
-      }
+      const updatedUserData = await api.put('/user/profile', sanitizedData);
+      const transformedUser = transformBackendUserSecurely(updatedUserData);
+      setUser(transformedUser);
+      
+      toast.success('Perfil actualizado correctamente');
     } catch (error: any) {
       console.error('Error actualizando perfil:', error);
       toast.error(error.message || 'Error al actualizar el perfil');
@@ -612,24 +588,12 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
     if (!user) throw new Error('Usuario no autenticado');
 
     try {
-      const response = await fetch('/api/user/availability', {
-        method: 'PUT',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ status }),
-      });
-
-      if (response.ok) {
-        setUser(prev => prev ? { ...prev, availability: status } : null);
-        
-        const statusText = status === 'available' ? 'disponible' : 
-                          status === 'busy' ? 'ocupado' : 'desconectado';
-        toast.success(`Estado actualizado a ${statusText}`);
-      } else {
-        throw new Error('Error actualizando el estado');
-      }
+      await api.put('/user/availability', { status });
+      setUser(prev => prev ? { ...prev, availability: status } : null);
+      
+      const statusText = status === 'available' ? 'disponible' : 
+                        status === 'busy' ? 'ocupado' : 'desconectado';
+      toast.success(`Estado actualizado a ${statusText}`);
     } catch (error: any) {
       console.error('Error actualizando disponibilidad:', error);
       toast.error(error.message || 'Error al actualizar el estado');
@@ -640,18 +604,8 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
   // Legacy compatibility methods (implement as needed)
   const requestContactProfessional = async (professionalId: string, message?: string) => {
     try {
-      const response = await fetch('/api/contact/request', {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ professionalId, message }),
-      });
-      
-      if (response.ok) {
-        toast.success('Solicitud de contacto enviada');
-      } else {
-        throw new Error('Error al enviar solicitud');
-      }
+      await api.post('/contact/request', { professionalId, message });
+      toast.success('Solicitud de contacto enviada');
     } catch (error: any) {
       toast.error(error.message || 'Error al enviar solicitud');
       throw error;
@@ -660,19 +614,9 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
 
   const respondToContactRequest = async (requestId: string, accept: boolean, message?: string) => {
     try {
-      const response = await fetch('/api/contact/respond', {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ requestId, accept, message }),
-      });
-      
-      if (response.ok) {
-        const action = accept ? 'aceptada' : 'rechazada';
-        toast.success(`Solicitud ${action}`);
-      } else {
-        throw new Error('Error al responder solicitud');
-      }
+      await api.post('/contact/respond', { requestId, accept, message });
+      const action = accept ? 'aceptada' : 'rechazada';
+      toast.success(`Solicitud ${action}`);
     } catch (error: any) {
       toast.error(error.message || 'Error al responder solicitud');
       throw error;
@@ -681,21 +625,11 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
 
   const upgradeToPremium = async () => {
     try {
-      const response = await fetch('/api/user/upgrade', {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-      });
-      
-      if (response.ok) {
-        const result = await response.json();
-        if (result.paymentUrl) {
-          window.open(result.paymentUrl, '_blank');
-        }
-        toast.success('Procesando actualización...');
-      } else {
-        throw new Error('Error al procesar actualización');
+      const result = await api.post('/user/upgrade');
+      if (result.paymentUrl) {
+        window.open(result.paymentUrl, '_blank');
       }
+      toast.success('Procesando actualización...');
     } catch (error: any) {
       toast.error(error.message || 'Error al procesar actualización');
       throw error;

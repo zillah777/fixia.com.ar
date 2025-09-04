@@ -131,12 +131,20 @@ apiClient.interceptors.response.use(
         const isAuthPage = currentPath.includes('/login') || currentPath.includes('/register') || 
                           currentPath.includes('/verify-email') || currentPath.includes('/forgot-password');
         const isAuthVerification = originalRequest?.url?.includes('/auth/verify');
+        const isDashboardPage = currentPath.includes('/dashboard');
         
-        if (!isAuthPage && !isAuthVerification) {
+        // Don't show session expired message immediately after login (on dashboard)
+        if (!isAuthPage && !isAuthVerification && !isDashboardPage) {
           toast.error('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
           setTimeout(() => {
             window.location.href = '/login';
           }, 2000);
+        } else if (isDashboardPage) {
+          // On dashboard, just silently redirect without toast to prevent confusion
+          console.log('Authentication failed on dashboard - redirecting to login silently');
+          setTimeout(() => {
+            window.location.href = '/login';
+          }, 500);
         }
         
         return Promise.reject(refreshError);
