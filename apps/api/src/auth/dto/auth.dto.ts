@@ -4,7 +4,6 @@ import {
   MinLength, 
   IsEnum, 
   IsOptional,
-  IsPhoneNumber,
   IsDateString,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
@@ -52,7 +51,7 @@ export class RegisterDto {
   })
   @IsString()
   @MinLength(2)
-  fullName: string;
+  name: string;
 
   @ApiProperty({ 
     example: 'professional',
@@ -60,7 +59,7 @@ export class RegisterDto {
     enum: ['client', 'professional']
   })
   @IsEnum(['client', 'professional'])
-  userType: 'client' | 'professional';
+  user_type: 'client' | 'professional';
 
   @ApiProperty({ 
     example: 'Rawson',
