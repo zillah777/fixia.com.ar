@@ -64,25 +64,19 @@ class SecureTokenManager {
     error?: string;
   }> {
     try {
-      const response = await api.post('/auth/login', credentials);
-      const data = response.data;
-
-      // Handle response format from new API structure
+      const data = await api.post('/auth/login', credentials);
+      
+      // API wrapper extracts the inner data automatically
+      // So data is now: { user: {...}, access_token: "...", expires_in: ... }
       let userData;
       let expiresAt;
       
-      // Check if we have the new API response format
-      if (data?.success && data?.data) {
-        userData = data.data.user;
-        expiresAt = data.data.expires_in;
-      } else if (data?.data?.user) {
-        // Fallback for double-wrapped data
-        userData = data.data.user;
-        expiresAt = data.data.expires_in;
-      } else if (data?.user) {
-        // Legacy format
+      if (data?.user) {
         userData = data.user;
-        expiresAt = data.expires_in || data.expiresAt;
+        expiresAt = data.expires_in;
+      } else {
+        // Log what we actually received for debugging
+        console.error('Unexpected login response format:', data);
       }
 
       // Verify we got user data
