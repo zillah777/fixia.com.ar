@@ -453,8 +453,8 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
       const sanitizedData = {
         email: sanitizeInput(userRegistrationData.email, 'email'),
         password: userRegistrationData.password, // No sanitizar password
-        fullName: sanitizeInput(userRegistrationData.fullName, 'plainText'),
-        userType: ['client', 'professional'].includes(userRegistrationData.userType) 
+        name: sanitizeInput(userRegistrationData.fullName, 'plainText'), // Map fullName to name for backend
+        user_type: ['client', 'professional'].includes(userRegistrationData.userType) 
           ? userRegistrationData.userType 
           : 'client',
         location: sanitizeInput(userRegistrationData.location || '', 'plainText'),
@@ -473,7 +473,7 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
       };
 
       // Validaciones
-      if (!sanitizedData.email || !sanitizedData.fullName) {
+      if (!sanitizedData.email || !sanitizedData.name) {
         throw new Error('Email y nombre son requeridos');
       }
 
@@ -481,7 +481,7 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
       const credentialValidation = validateProductionCredentials(
         sanitizedData.email, 
         sanitizedData.password, 
-        sanitizedData.fullName
+        sanitizedData.name
       );
       if (!credentialValidation.isValid && credentialValidation.warnings.length > 0) {
         console.warn('Demo credentials detected in registration attempt:', credentialValidation.warnings);
