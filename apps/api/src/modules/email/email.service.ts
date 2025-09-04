@@ -191,6 +191,22 @@ export class EmailService {
         return await this.sendWithGmail(emailData, fromEmail, htmlContent);
       }
       
+      // Development fallback - log email content for testing
+      if (process.env.NODE_ENV === 'development') {
+        this.logger.warn(`📧 DEVELOPMENT FALLBACK: Email would be sent to ${emailData.to}`);
+        console.log('='.repeat(60));
+        console.log('📧 EMAIL FALLBACK (Development Mode)');
+        console.log('='.repeat(60));
+        console.log(`To: ${emailData.to}`);
+        console.log(`From: ${fromEmail}`);
+        console.log(`Subject: ${emailData.subject}`);
+        console.log(`Template: ${emailData.template}`);
+        console.log('Template Data:', JSON.stringify(emailData.templateData, null, 2));
+        console.log('='.repeat(60));
+        // Return true for development to not block the flow
+        return true;
+      }
+      
       this.logger.error(`❌ No email service available`);
       return false;
 

@@ -497,26 +497,26 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
 
       console.log('Registration response:', result);
 
-      // Handle API wrapper format - result is already extracted from response.data.data
-      // Fix for TDZ error - declare and initialize in one step with unique names
-      let responseUserData = null;
-      let responseAccessToken = null;
-      
-      if (result?.user) {
-        // API wrapper already extracted data, so result.user contains the user directly
-        responseUserData = result.user;
-        responseAccessToken = result.access_token;
-      }
-      
-      if (result && responseUserData) {
-        const transformedUser = transformBackendUserSecurely(responseUserData);
+      // New registration flow - user must verify email before login
+      if (result?.success && result?.requiresVerification) {
+        // Registration successful but requires email verification
+        // Don't log user in automatically
+        console.log('Registration successful, email verification required');
+        return {
+          success: true,
+          message: result.message,
+          requiresVerification: true
+        };
+      } else if (result?.user) {
+        // Legacy flow - user was logged in automatically (shouldn't happen with new flow)
+        const transformedUser = transformBackendUserSecurely(result.user);
         setUser(transformedUser);
         setIsAuthenticated(true);
-        
-        // Success message is handled by the calling component (RegisterPage)
-      } else if (result) {
-        // Registration successful but no user object returned (email verification required)
-        console.log('Registration successful, verification email sent');
+        return {
+          success: true,
+          message: 'Registro exitoso',
+          requiresVerification: false
+        };
       } else {
         console.error('Unexpected registration response:', result);
         throw new Error('Error en el registro');

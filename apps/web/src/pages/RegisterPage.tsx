@@ -1133,7 +1133,7 @@ export default function RegisterPage() {
       });
       
       console.log('About to call register function...');
-      await register({
+      const result = await register({
         email: sanitizedData.email,
         password: sanitizedData.password,
         fullName: sanitizedData.fullName,
@@ -1150,21 +1150,36 @@ export default function RegisterPage() {
         certifications: sanitizedData.certifications
       });
       
-      console.log('Registration completed successfully!');
+      console.log('Registration completed successfully!', result);
       
-      // Registration successful - show enhanced success message and redirect to email verification
-      toast.success(
-        "Se ha enviado un correo electrónico para verificar la cuenta",
-        {
-          description: `Revisa tu bandeja de entrada en ${formData.email}`,
-          duration: 6000,
-        }
-      );
-      
-      console.log(`About to navigate to: /verify-email?email=${encodeURIComponent(formData.email)}`);
-      
-      // Redirect to email verification page with email parameter
-      navigate(`/verify-email?email=${encodeURIComponent(formData.email)}`);
+      // Handle different registration outcomes
+      if (result?.requiresVerification) {
+        // New flow: Email verification required
+        toast.success(
+          "¡Cuenta creada exitosamente! 🎉",
+          {
+            description: result.message || `Revisa tu bandeja de entrada en ${formData.email} para verificar tu cuenta.`,
+            duration: 8000,
+          }
+        );
+        
+        console.log(`About to navigate to: /verify-email?email=${encodeURIComponent(formData.email)}`);
+        
+        // Redirect to email verification page
+        navigate(`/verify-email?email=${encodeURIComponent(formData.email)}`);
+      } else {
+        // Legacy flow: User was logged in automatically (shouldn't happen with new flow)
+        toast.success(
+          "¡Bienvenido a Fixia! 🎉",
+          {
+            description: "Tu cuenta ha sido creada exitosamente.",
+            duration: 6000,
+          }
+        );
+        
+        // Redirect to dashboard
+        navigate('/dashboard');
+      }
     } catch (error: any) {
       console.error('Registration error:', error);
       

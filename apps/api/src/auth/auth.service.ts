@@ -128,7 +128,7 @@ export class AuthService {
     };
   }
 
-  async register(registerData: any): Promise<AuthResponse> {
+  async register(registerData: any): Promise<{ message: string; success: boolean; requiresVerification: boolean }> {
     // Check if user already exists
     const existingUser = await this.prisma.user.findUnique({
       where: { email: registerData.email },
@@ -184,47 +184,16 @@ export class AuthService {
 
     // Generate and send verification email
     this.logger.log(`About to send verification email to: ${registerData.email}`);
-    await this.sendEmailVerification(registerData.email, user.id);
-    this.logger.log(`Verification email process completed for: ${registerData.email}`);
+    const emailResult = await this.sendEmailVerification(registerData.email, user.id);
+    this.logger.log(`Verification email process completed for: ${registerData.email}, success: ${emailResult.success}`);
 
-    // Generate tokens and return same as login
-    const payload = { 
-      sub: user.id, 
-      email: user.email, 
-      user_type: user.user_type 
-    };
-    
-    const access_token = this.jwtService.sign(payload);
-    const refresh_token = this.jwtService.sign(payload, {
-      expiresIn: this.configService.get<string>('JWT_REFRESH_EXPIRATION', '30d'),
-      secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
-    });
-
-    // Store refresh token
-    await this.prisma.userSession.create({
-      data: {
-        user_id: user.id,
-        refresh_token,
-        expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-      },
-    });
-
-    // Remove password from response and convert dates to strings
-    const { password_hash, ...userResponse } = user;
-    const userData = {
-      ...userResponse,
-      created_at: userResponse.created_at.toISOString(),
-      updated_at: userResponse.updated_at.toISOString(),
-      deleted_at: userResponse.deleted_at?.toISOString() || null,
-      // Ensure location is always a string to prevent frontend errors
-      location: userResponse.location || '',
-    };
-
+    // Return registration success without tokens - user must verify email first
     return {
-      user: userData,
-      access_token,
-      refresh_token,
-      expires_in: 7 * 24 * 60 * 60,
+      message: emailResult.success ? 
+        'Cuenta creada exitosamente. Revisa tu correo electrónico para verificar tu cuenta.' :
+        'Cuenta creada exitosamente. Sin embargo, hubo un problema enviando el correo de verificación. Puedes solicitar uno nuevo desde la página de login.',
+      success: true,
+      requiresVerification: true
     };
   }
 
@@ -694,6 +663,38 @@ export class AuthService {
     } catch (error) {
       this.logger.error(`❌ Admin verification failed for userId: ${userId}`, error);
       throw new BadRequestException('Error verificando usuario');
+    }
+  }
+
+  async devVerifyUserByEmail(email: string): Promise<{ message: string; success: boolean }> {
+    try {
+      // Find user by email
+      const user = await this.prisma.user.findUnique({
+        where: { email },
+      });
+
+      if (!user) {
+        throw new BadRequestException('Usuario no encontrado');
+      }
+
+      // Update user to verified
+      const updatedUser = await this.prisma.user.update({
+        where: { id: user.id },
+        data: { 
+          email_verified: true,
+          verified: true
+        }
+      });
+
+      this.logger.log(`✅ DEV: Email verification bypassed for user: ${updatedUser.email}`);
+      
+      return {
+        message: `Usuario ${updatedUser.email} verificado exitosamente (desarrollo)`,
+        success: true
+      };
+    } catch (error) {
+      this.logger.error(`❌ DEV: Email verification bypass failed for email: ${email}`, error);
+      throw error;
     }
   }
 }

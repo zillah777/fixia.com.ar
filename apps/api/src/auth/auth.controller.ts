@@ -12,6 +12,7 @@ import {
   Logger,
   Ip,
   UnauthorizedException,
+  BadRequestException,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
@@ -56,11 +57,12 @@ export class AuthController {
   @ApiResponse({ status: 201, description: 'Usuario registrado exitosamente' })
   @ApiResponse({ status: 400, description: 'Datos inválidos' })
   @ApiResponse({ status: 409, description: 'Email ya registrado' })
-  async register(@Body() registerDto: RegisterDto, @Res({ passthrough: true }) res): Promise<AuthResponse> {
+  async register(@Body() registerDto: RegisterDto, @Res({ passthrough: true }) res) {
     const result = await this.authService.register(registerDto);
     
-    // Set httpOnly cookies for secure token management
-    this.setAuthCookies(res, result.access_token, result.refresh_token);
+    // New registration flow - no automatic login, no cookies set
+    // User must verify email first before being able to log in
+    this.logger.log(`Registration completed for ${registerDto.email}, verification required: ${result.requiresVerification}`);
     
     return result;
   }
@@ -236,6 +238,21 @@ export class AuthController {
     // TODO: Add proper admin role verification
     this.logger.warn(`Admin verification performed by user ${req.user.sub} on user ${body.userId}`);
     return this.authService.adminVerifyUser(body.userId);
+  }
+
+  @Post('dev/verify-user')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'DEVELOPMENT ONLY: Verificar usuario por email' })
+  @ApiResponse({ status: 200, description: 'Usuario verificado' })
+  @ApiResponse({ status: 400, description: 'Usuario no encontrado o no es entorno de desarrollo' })
+  async devVerifyUser(@Body() body: { email: string }, @Ip() clientIp: string) {
+    // Only allow in development environment
+    if (process.env.NODE_ENV !== 'development') {
+      throw new BadRequestException('Este endpoint solo está disponible en desarrollo');
+    }
+    
+    this.logger.log(`DEV: Email verification bypass requested for ${body.email} from IP ${clientIp}`);
+    return this.authService.devVerifyUserByEmail(body.email);
   }
 
   /**
