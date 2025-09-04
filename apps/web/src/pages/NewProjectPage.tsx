@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
 import { 
@@ -22,17 +22,24 @@ import { Alert, AlertDescription } from "../components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { useSecureAuth } from "../context/SecureAuthContext";
 import { toast } from "sonner";
+import { servicesService, ServiceCategory } from "../lib/services/services.service";
 
-const categories = [
-  { value: "web-development", label: "Desarrollo Web", icon: Globe },
-  { value: "mobile-development", label: "Desarrollo Móvil", icon: Camera },
-  { value: "graphic-design", label: "Diseño Gráfico", icon: Image },
-  { value: "digital-marketing", label: "Marketing Digital", icon: Star },
-  { value: "writing", label: "Redacción y Contenido", icon: FileText },
-  { value: "video-animation", label: "Video y Animación", icon: Eye },
-  { value: "consulting", label: "Consultoría", icon: Briefcase },
-  { value: "cybersecurity", label: "Ciberseguridad", icon: Shield }
-];
+// Icon mapping for categories
+const iconMap = {
+  Globe,
+  Camera, 
+  Image,
+  Star,
+  FileText,
+  Eye,
+  Briefcase,
+  Shield,
+  Palette: Star, // fallback
+  Users: Star, // fallback
+  HeadphonesIcon: Star, // fallback
+  PenTool: FileText, // fallback
+  TrendingUp: Star // fallback
+};
 
 const skillSuggestions = {
   "web-development": ["React", "Vue.js", "Angular", "Node.js", "Python", "PHP", "WordPress", "Shopify"],
@@ -246,7 +253,17 @@ function BasicInfoStep({ data, setData }: { data: ProjectData; setData: (data: P
   );
 }
 
-function CategoryStep({ data, setData }: { data: ProjectData; setData: (data: ProjectData) => void }) {
+function CategoryStep({ 
+  data, 
+  setData, 
+  categories, 
+  loadingCategories 
+}: { 
+  data: ProjectData; 
+  setData: (data: ProjectData) => void;
+  categories: ServiceCategory[];
+  loadingCategories: boolean;
+}) {
   const [selectedSkills, setSelectedSkills] = useState<string[]>(data.tags);
   
   const handleSkillToggle = (skill: string) => {
@@ -280,27 +297,46 @@ function CategoryStep({ data, setData }: { data: ProjectData; setData: (data: Pr
           {/* Category Selection */}
           <div className="space-y-4">
             <Label>Categoría Principal *</Label>
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {categories.map((category) => {
-                const Icon = category.icon;
-                return (
-                  <Card
-                    key={category.value}
-                    className={`cursor-pointer transition-all ${
-                      data.category === category.value
-                        ? 'ring-2 ring-primary glass-medium'
-                        : 'glass hover:glass-medium border-white/10'
-                    }`}
-                    onClick={() => setData({ ...data, category: category.value })}
-                  >
+            {loadingCategories ? (
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {[...Array(4)].map((_, index) => (
+                  <Card key={index} className="glass border-white/10 animate-pulse">
                     <CardContent className="p-4 text-center">
-                      <Icon className="h-8 w-8 mx-auto mb-2 text-primary" />
-                      <div className="font-medium text-sm">{category.label}</div>
+                      <div className="h-8 w-8 bg-muted rounded mx-auto mb-2"></div>
+                      <div className="h-4 bg-muted rounded"></div>
                     </CardContent>
                   </Card>
-                );
-              })}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {categories.map((category) => {
+                  const IconName = category.icon as keyof typeof iconMap;
+                  const Icon = iconMap[IconName] || Star;
+                  return (
+                    <Card
+                      key={category.id}
+                      className={`cursor-pointer transition-all ${
+                        data.category === category.id
+                          ? 'ring-2 ring-primary glass-medium'
+                          : 'glass hover:glass-medium border-white/10'
+                      }`}
+                      onClick={() => setData({ ...data, category: category.id })}
+                    >
+                      <CardContent className="p-4 text-center">
+                        <Icon className="h-8 w-8 mx-auto mb-2 text-primary" />
+                        <div className="font-medium text-sm">{category.name}</div>
+                        {category.description && (
+                          <div className="text-xs text-muted-foreground mt-1">
+                            {category.description}
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            )}
           </div>
           
           {/* Skills/Tags */}
@@ -982,6 +1018,8 @@ export default function NewProjectPage() {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const totalSteps = 6;
+  const [categories, setCategories] = useState<ServiceCategory[]>([]);
+  const [loadingCategories, setLoadingCategories] = useState(true);
   
   const [projectData, setProjectData] = useState<ProjectData>({
     title: '',
@@ -1002,6 +1040,23 @@ export default function NewProjectPage() {
     allowRevisions: true,
     instantDelivery: false
   });
+
+  // Load categories from backend
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const backendCategories = await servicesService.getCategories();
+        setCategories(backendCategories);
+      } catch (error) {
+        console.error('Error loading categories:', error);
+        toast.error('Error al cargar las categorías');
+      } finally {
+        setLoadingCategories(false);
+      }
+    };
+
+    loadCategories();
+  }, []);
 
   const canProceed = () => {
     switch (currentStep) {
@@ -1036,24 +1091,61 @@ export default function NewProjectPage() {
 
   const handlePublish = async () => {
     try {
-      // Here you would typically send the data to your backend
-      console.log('Publishing project:', projectData);
+      // Transform frontend data to backend format
+      const serviceData = {
+        title: projectData.title,
+        description: projectData.description,
+        price: projectData.packages.standard.price, // Use standard package price
+        category_id: projectData.category, // Will need to map this to actual category ID
+        main_image: projectData.images[0] || undefined,
+        gallery: projectData.gallery,
+        tags: projectData.tags,
+        delivery_time_days: projectData.packages.standard.deliveryTime,
+        revisions_included: projectData.packages.standard.revisions,
+      };
+
+      console.log('Publishing service:', serviceData);
+      
+      const createdService = await servicesService.createService(serviceData);
       
       toast.success("¡Servicio publicado correctamente!");
       
       // Redirect to dashboard or service page
       navigate('/dashboard');
-    } catch (error) {
-      toast.error("Error al publicar el servicio");
+    } catch (error: any) {
+      console.error('Error publishing service:', error);
+      const errorMessage = error?.response?.data?.message || error?.message || "Error al publicar el servicio";
+      toast.error(errorMessage);
     }
   };
+
+  // Redirect if not authenticated
+  useEffect(() => {
+    if (!user) {
+      toast.error('Debes iniciar sesión para crear un servicio');
+      navigate('/login');
+    }
+  }, [user, navigate]);
+
+  // Redirect if not professional
+  useEffect(() => {
+    if (user && user.userType !== 'professional') {
+      toast.error('Solo los profesionales pueden crear servicios');
+      navigate('/dashboard');
+    }
+  }, [user, navigate]);
 
   const renderStep = () => {
     switch (currentStep) {
       case 1:
         return <BasicInfoStep data={projectData} setData={setProjectData} />;
       case 2:
-        return <CategoryStep data={projectData} setData={setProjectData} />;
+        return <CategoryStep 
+          data={projectData} 
+          setData={setProjectData} 
+          categories={categories}
+          loadingCategories={loadingCategories}
+        />;
       case 3:
         return <PricingStep data={projectData} setData={setProjectData} />;
       case 4:
@@ -1066,6 +1158,18 @@ export default function NewProjectPage() {
         return null;
     }
   };
+
+  // Show loading while checking authentication
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Verificando autenticación...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
