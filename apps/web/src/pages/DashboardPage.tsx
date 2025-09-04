@@ -83,22 +83,29 @@ function Navigation() {
   );
 }
 
-function QuickActions() {
+function QuickActions({ user }: { user: any }) {
+  const isProfessional = user?.userType === 'professional';
+  
   return (
     <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
       <motion.div
         whileHover={{ y: -2 }}
         transition={{ duration: 0.2 }}
       >
-        <Link to="/new-project">
+        <Link to={isProfessional ? "/new-project" : "/new-opportunity"}>
           <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 cursor-pointer group">
             <CardContent className="p-6 text-center">
               <div className="h-12 w-12 liquid-gradient rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
                 <Plus className="h-6 w-6 text-white" />
               </div>
-              <h3 className="font-semibold mb-2">Crear Servicio</h3>
+              <h3 className="font-semibold mb-2">
+                {isProfessional ? "Crear Servicio" : "Crear Anuncio"}
+              </h3>
               <p className="text-sm text-muted-foreground">
-                Publica un nuevo servicio y empieza a generar ingresos
+                {isProfessional 
+                  ? "Publica un nuevo servicio y empieza a generar ingresos"
+                  : "Publica lo que necesitas y conecta con profesionales"
+                }
               </p>
             </CardContent>
           </Card>
@@ -565,7 +572,7 @@ export default function DashboardPage() {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="mb-8"
         >
-          <QuickActions />
+          <QuickActions user={user} />
         </motion.div>
 
         {/* Stats Cards */}

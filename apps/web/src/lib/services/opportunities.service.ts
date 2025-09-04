@@ -52,6 +52,17 @@ export interface ApplicationData {
   portfolio: string[];
 }
 
+export interface CreateOpportunityData {
+  title: string;
+  description: string;
+  category_id?: string;
+  budget_min?: number;
+  budget_max?: number;
+  deadline?: string;
+  location?: string;
+  skills_required?: string[];
+}
+
 export const opportunitiesService = {
   async getOpportunities(filters?: OpportunityFilters): Promise<PaginatedResponse<Opportunity>> {
     const params = new URLSearchParams();
@@ -108,6 +119,23 @@ export const opportunitiesService = {
 
   async getSavedOpportunities(): Promise<Opportunity[]> {
     return api.get<Opportunity[]>('/opportunities/saved');
+  },
+
+  // Client methods for creating opportunities/projects
+  async createOpportunity(opportunityData: CreateOpportunityData): Promise<any> {
+    return api.post('/projects', opportunityData);
+  },
+
+  async getMyProjects(): Promise<any[]> {
+    return api.get('/projects');
+  },
+
+  async updateProject(projectId: string, projectData: Partial<CreateOpportunityData>): Promise<any> {
+    return api.put(`/projects/${projectId}`, projectData);
+  },
+
+  async deleteProject(projectId: string): Promise<void> {
+    return api.delete(`/projects/${projectId}`);
   },
 };
 

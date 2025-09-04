@@ -14,6 +14,7 @@ const ServiceDetailPage = lazy(() => import("./pages/ServiceDetailPage"));
 const ProfilePage = lazy(() => import("./pages/ProfilePage"));
 const PublicProfilePage = lazy(() => import("./pages/PublicProfilePage"));
 const NewProjectPage = lazy(() => import("./pages/NewProjectPage"));
+const NewOpportunityPage = lazy(() => import("./pages/NewOpportunityPage"));
 const OpportunitiesPage = lazy(() => import("./pages/OpportunitiesPage"));
 const TermsPage = lazy(() => import("./pages/TermsPage"));
 const PrivacyPage = lazy(() => import("./pages/PrivacyPage"));
@@ -281,6 +282,16 @@ function AppRoutes() {
                     <RouteErrorBoundary routeName="Nuevo Proyecto" fallbackRoute="/dashboard">
                       <ProtectedRoute>
                         <NewProjectPage />
+                      </ProtectedRoute>
+                    </RouteErrorBoundary>
+                  } 
+                />
+                <Route 
+                  path="/new-opportunity" 
+                  element={
+                    <RouteErrorBoundary routeName="Nuevo Anuncio" fallbackRoute="/dashboard">
+                      <ProtectedRoute>
+                        <NewOpportunityPage />
                       </ProtectedRoute>
                     </RouteErrorBoundary>
                   } 
