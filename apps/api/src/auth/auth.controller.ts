@@ -37,6 +37,14 @@ export class AuthController {
     const result = await this.authService.login(loginDto);
     
     // Set httpOnly cookies for secure token management
+    this.logger.log(`🔐 Login successful - Setting auth cookies for user: ${result.user?.email}`, {
+      hasAccessToken: !!result.access_token,
+      accessTokenPreview: result.access_token ? `${result.access_token.substring(0, 10)}...` : 'none',
+      hasRefreshToken: !!result.refresh_token,
+      refreshTokenPreview: result.refresh_token ? `${result.refresh_token.substring(0, 10)}...` : 'none',
+      isProduction: process.env.NODE_ENV === 'production'
+    });
+    
     this.setAuthCookies(res, result.access_token, result.refresh_token);
     
     return result;
@@ -68,22 +76,33 @@ export class AuthController {
     const cookieToken = req.cookies?.refresh_token;
     const refreshToken = bodyToken || cookieToken;
     
-    // Enhanced logging for debugging
-    this.logger.debug(`Refresh token request:`, {
+    // Enhanced logging for debugging - ALWAYS log for troubleshooting
+    this.logger.log(`🔄 Refresh token request analysis:`, {
       hasBodyToken: !!bodyToken,
-      bodyTokenPreview: bodyToken ? `${bodyToken.substring(0, 10)}...` : null,
+      bodyTokenPreview: bodyToken ? `${bodyToken.substring(0, 10)}...` : 'none',
       hasCookieToken: !!cookieToken,
-      cookieTokenPreview: cookieToken ? `${cookieToken.substring(0, 10)}...` : null,
+      cookieTokenPreview: cookieToken ? `${cookieToken.substring(0, 10)}...` : 'none',
       cookiesAvailable: !!req.cookies,
       allCookieKeys: req.cookies ? Object.keys(req.cookies) : [],
-      hasRefreshToken: !!refreshToken
+      cookieValuesPreview: req.cookies ? Object.entries(req.cookies).reduce((acc, [key, value]) => {
+        acc[key] = typeof value === 'string' && value.length > 10 ? `${value.substring(0, 10)}...` : value;
+        return acc;
+      }, {}) : {},
+      hasRefreshToken: !!refreshToken,
+      userAgent: req.headers['user-agent'],
+      origin: req.headers.origin,
+      referer: req.headers.referer
     });
     
     if (!refreshToken) {
-      this.logger.warn('Refresh token missing from both body and cookies', {
+      this.logger.error('❌ Refresh token missing - CRITICAL AUTH ERROR', {
         requestBody: refreshTokenDto,
         cookiesAvailable: !!req.cookies,
-        cookieKeys: req.cookies ? Object.keys(req.cookies) : []
+        cookieKeys: req.cookies ? Object.keys(req.cookies) : [],
+        allHeaders: req.headers,
+        method: req.method,
+        url: req.url,
+        timestamp: new Date().toISOString()
       });
       throw new UnauthorizedException('Refresh token is required');
     }
@@ -240,20 +259,38 @@ export class AuthController {
    * Set httpOnly cookies for secure authentication
    */
   private setAuthCookies(res: any, accessToken: string, refreshToken: string) {
+    const isProduction = process.env.NODE_ENV === 'production';
+    const cookieOptions = {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: 'lax' as const,
+      path: '/',
+      domain: isProduction ? '.fixiacomar-production.up.railway.app' : undefined
+    };
+
     // Set access token cookie (shorter expiration)
     res.cookie('access_token', accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      ...cookieOptions,
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
     // Set refresh token cookie (longer expiration)  
     res.cookie('refresh_token', refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      ...cookieOptions,
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+    });
+
+    this.logger.log(`🍪 Auth cookies set successfully`, {
+      isProduction,
+      cookieConfig: {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: 'lax',
+        path: '/',
+        domain: cookieOptions.domain || 'localhost'
+      },
+      accessTokenLength: accessToken?.length || 0,
+      refreshTokenLength: refreshToken?.length || 0
     });
   }
 
