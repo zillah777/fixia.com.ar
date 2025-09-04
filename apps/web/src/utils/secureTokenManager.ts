@@ -67,16 +67,31 @@ class SecureTokenManager {
       const response = await api.post('/auth/login', credentials);
       const data = response.data;
 
-      // Handle both legacy format and new secured response format - Fixed initialization  
+      // Handle response format from new API structure
       let userData;
       let expiresAt;
       
-      if (data?.data?.user) {
+      // Check if we have the new API response format
+      if (data?.success && data?.data) {
+        userData = data.data.user;
+        expiresAt = data.data.expires_in;
+      } else if (data?.data?.user) {
+        // Fallback for double-wrapped data
         userData = data.data.user;
         expiresAt = data.data.expires_in;
       } else if (data?.user) {
+        // Legacy format
         userData = data.user;
         expiresAt = data.expires_in || data.expiresAt;
+      }
+
+      // Verify we got user data
+      if (!userData) {
+        console.error('No user data received from login response:', data);
+        return {
+          success: false,
+          error: 'No se recibieron datos del usuario en la respuesta del login',
+        };
       }
 
       this.tokenInfo = {
