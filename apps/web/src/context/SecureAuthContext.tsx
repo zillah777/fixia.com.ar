@@ -446,30 +446,30 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   // Register con sanitización
-  const register = async (userData: RegisterRequest) => {
+  const register = async (userRegistrationData: RegisterRequest) => {
     setLoading(true);
     try {
       // Sanitizar todos los campos
       const sanitizedData = {
-        email: sanitizeInput(userData.email, 'email'),
-        password: userData.password, // No sanitizar password
-        fullName: sanitizeInput(userData.fullName, 'plainText'),
-        userType: ['client', 'professional'].includes(userData.userType) 
-          ? userData.userType 
+        email: sanitizeInput(userRegistrationData.email, 'email'),
+        password: userRegistrationData.password, // No sanitizar password
+        fullName: sanitizeInput(userRegistrationData.fullName, 'plainText'),
+        userType: ['client', 'professional'].includes(userRegistrationData.userType) 
+          ? userRegistrationData.userType 
           : 'client',
-        location: sanitizeInput(userData.location || '', 'plainText'),
-        phone: sanitizeInput(userData.phone || '', 'phone'),
-        birthdate: userData.birthdate,
+        location: sanitizeInput(userRegistrationData.location || '', 'plainText'),
+        phone: sanitizeInput(userRegistrationData.phone || '', 'phone'),
+        birthdate: userRegistrationData.birthdate,
         // Campos profesionales
-        serviceCategories: userData.serviceCategories?.map(cat => 
+        serviceCategories: userRegistrationData.serviceCategories?.map(cat => 
           sanitizeInput(cat, 'plainText')
         ).filter(Boolean),
-        description: sanitizeInput(userData.description || '', 'basicHTML'),
-        experience: sanitizeInput(userData.experience || '', 'plainText'),
-        pricing: sanitizeInput(userData.pricing || '', 'plainText'),
-        availability: sanitizeInput(userData.availability || '', 'plainText'),
-        portfolio: sanitizeInput(userData.portfolio || '', 'url'),
-        certifications: sanitizeInput(userData.certifications || '', 'basicHTML'),
+        description: sanitizeInput(userRegistrationData.description || '', 'basicHTML'),
+        experience: sanitizeInput(userRegistrationData.experience || '', 'plainText'),
+        pricing: sanitizeInput(userRegistrationData.pricing || '', 'plainText'),
+        availability: sanitizeInput(userRegistrationData.availability || '', 'plainText'),
+        portfolio: sanitizeInput(userRegistrationData.portfolio || '', 'url'),
+        certifications: sanitizeInput(userRegistrationData.certifications || '', 'basicHTML'),
       };
 
       // Validaciones
@@ -499,20 +499,20 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
       console.log('Registration response:', result);
 
       // Handle both legacy format and new secured response format
-      // Fix for "Cannot access before initialization" error - separate variable declarations
-      let userData;
-      let accessToken;
+      // Fix for TDZ error - declare and initialize in one step with unique names
+      let responseUserData = null;
+      let responseAccessToken = null;
       
       if (result?.data?.user) {
-        userData = result.data.user;
-        accessToken = result.data.access_token;
+        responseUserData = result.data.user;
+        responseAccessToken = result.data.access_token;
       } else if (result?.user) {
-        userData = result.user;
-        accessToken = result.access_token;
+        responseUserData = result.user;
+        responseAccessToken = result.access_token;
       }
       
-      if (result && result.success && userData) {
-        const transformedUser = transformBackendUserSecurely(userData);
+      if (result && result.success && responseUserData) {
+        const transformedUser = transformBackendUserSecurely(responseUserData);
         setUser(transformedUser);
         setIsAuthenticated(true);
         
