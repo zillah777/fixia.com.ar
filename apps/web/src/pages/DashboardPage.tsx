@@ -4,7 +4,7 @@ import { motion } from "motion/react";
 import { 
   Plus, TrendingUp, Users, Award, Star, Eye, MessageSquare,
   Calendar, Clock, DollarSign, ArrowRight, Briefcase, Target,
-  Zap, CheckCircle, AlertCircle, Search, Settings, Bell, LogOut
+  Zap, CheckCircle, AlertCircle, Search, Settings, Bell, LogOut, Heart, User
 } from "lucide-react";
 import { userService, DashboardStats } from "../lib/services";
 import { Skeleton } from "../components/ui/skeleton";
@@ -16,6 +16,7 @@ import { Progress } from "../components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { useSecureAuth } from "../context/SecureAuthContext";
 import { MobileBottomNavigation } from "../components/MobileBottomNavigation";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../components/ui/dropdown-menu";
 
 function Navigation() {
   const { user, logout } = useSecureAuth();
@@ -57,26 +58,69 @@ function Navigation() {
         </nav>
         
         <div className="flex items-center space-x-3">
-          <Button variant="ghost" size="icon" className="relative">
+          {/* Nuevo Anuncio Button */}
+          <Link to={user?.userType === 'professional' ? "/new-project" : "/new-opportunity"}>
+            <Button className="hidden sm:flex liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg">
+              <Plus className="h-4 w-4 mr-2" />
+              + Nuevo Anuncio
+            </Button>
+          </Link>
+          
+          {/* Notificaciones */}
+          <Button variant="ghost" size="icon" className="relative" title="Notificaciones">
             <Bell className="h-4 w-4" />
             <span className="absolute -top-1 -right-1 h-4 w-4 bg-primary rounded-full flex items-center justify-center text-xs text-white">
               3
             </span>
           </Button>
-          <Link to="/profile">
-            <Avatar className="h-8 w-8 cursor-pointer ring-2 ring-primary/20 hover:ring-primary/40 transition-all">
-              <AvatarImage src={user?.avatar} />
-              <AvatarFallback>{user?.name?.charAt(0)}</AvatarFallback>
-            </Avatar>
+          
+          {/* Favoritos */}
+          <Link to="/favorites">
+            <Button variant="ghost" size="icon" title="Favoritos">
+              <Heart className="h-4 w-4" />
+            </Button>
           </Link>
-          <Button 
-            variant="ghost"
-            size="icon"
-            onClick={logout}
-            className="text-muted-foreground hover:text-destructive"
-          >
-            <LogOut className="h-4 w-4" />
-          </Button>
+          
+          {/* Avatar con Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                <Avatar className="h-8 w-8 cursor-pointer ring-2 ring-primary/20 hover:ring-primary/40 transition-all">
+                  <AvatarImage src={user?.avatar} />
+                  <AvatarFallback>{user?.name?.charAt(0) || 'U'}</AvatarFallback>
+                </Avatar>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56" align="end">
+              <DropdownMenuLabel className="font-normal">
+                <div className="flex flex-col space-y-1">
+                  <p className="text-sm font-medium">{user?.name || 'Usuario'}</p>
+                  <p className="text-xs text-muted-foreground">{user?.email}</p>
+                  <p className="text-xs text-muted-foreground capitalize">
+                    {user?.userType === 'professional' ? 'Profesional' : 'Cliente'}
+                  </p>
+                </div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link to="/profile" className="flex items-center">
+                  <User className="mr-2 h-4 w-4" />
+                  Mi Perfil
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/settings" className="flex items-center">
+                  <Settings className="mr-2 h-4 w-4" />
+                  Configuración
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={logout} className="text-destructive focus:text-destructive">
+                <LogOut className="mr-2 h-4 w-4" />
+                Cerrar Sesión
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </motion.header>

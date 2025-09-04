@@ -255,23 +255,62 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
         if (basicUserData) {
           try {
             const parsedData = JSON.parse(basicUserData);
-            // Set user data from localStorage first, avoid API call
-            setUser(null); // Will be loaded on demand
-            setIsAuthenticated(true); // Assume authenticated if we have basic data
-            return; // Exit early to prevent unnecessary API calls
+            // Set basic user data from localStorage temporarily
+            setUser({
+              ...parsedData,
+              // Add default values for required fields
+              accountType: parsedData.userType,
+              availability: 'available',
+              badges: [],
+              totalServices: 0,
+              completedServices: 0,
+              averageRating: 0,
+              totalReviews: 0,
+              joinDate: new Date().toISOString(),
+              pendingContactRequests: 0,
+              maxContactRequests: 3,
+              province: 'Chubut',
+              city: '',
+              isLaunchPromotion: false,
+              planType: 'free',
+              isVerified: false,
+              emailVerified: false,
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString()
+            } as User);
+            setIsAuthenticated(true);
+            
+            // Verify session is still valid and load full user data
+            const isAuth = await secureTokenManager.isAuthenticated(false);
+            if (isAuth) {
+              // Load complete user data in background
+              loadUserData().catch((error) => {
+                console.warn('Failed to load complete user data:', error);
+                // Keep basic data if API call fails
+              });
+            } else {
+              // Session expired, clear state
+              setUser(null);
+              setIsAuthenticated(false);
+              localStorage.removeItem('fixia_user_basic');
+            }
+            return;
           } catch (error) {
             console.warn('Invalid user data in localStorage:', error);
             localStorage.removeItem('fixia_user_basic');
           }
         }
         
-        // Only do authentication verification if we don't have any user data
-        // Skip verification on first app load to prevent 401 errors in console
-        const isAuth = await secureTokenManager.isAuthenticated(true); // Skip verification
-        setIsAuthenticated(isAuth);
-        
-        // No need to load user data if we're not authenticated
-        // User data will be loaded when they actually log in
+        // No basic data, check authentication status
+        const isAuth = await secureTokenManager.isAuthenticated(false);
+        if (isAuth) {
+          setIsAuthenticated(true);
+          // Load user data if authenticated
+          await loadUserData();
+        } else {
+          setIsAuthenticated(false);
+          setUser(null);
+        }
       } catch (error: any) {
         console.error('Error inicializando autenticación - Enhanced logging:', {
           message: error?.message || 'Unknown initialization error',
