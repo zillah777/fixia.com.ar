@@ -330,35 +330,35 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
   const login = async (email: string, password: string) => {
     setLoading(true);
     try {
-      // Sanitizar credenciales
-      const sanitizedEmail = sanitizeInput(email, 'email');
-      const sanitizedPassword = password; // No sanitizar password, solo validar
+      // Validar credenciales sin sanitización agresiva
+      const cleanEmail = email.trim().toLowerCase();
+      const cleanPassword = password; // No modificar password para login
 
-      // Validar credenciales
-      if (!sanitizedEmail) {
+      // Validar que email no esté vacío
+      if (!cleanEmail || cleanEmail.length === 0) {
         throw new Error('Email inválido');
       }
 
       // Validar que no sean credenciales demo en producción
-      const credentialValidation = validateProductionCredentials(sanitizedEmail, sanitizedPassword);
+      const credentialValidation = validateProductionCredentials(cleanEmail, cleanPassword);
       if (!credentialValidation.isValid && credentialValidation.warnings.length > 0) {
         console.warn('Demo credentials detected in login attempt:', credentialValidation.warnings);
       }
 
-      // Enhanced password validation for login (more lenient for existing accounts)
-      if (!sanitizedPassword || sanitizedPassword.length < 6) {
-        throw new Error('Contraseña debe tener al menos 6 caracteres');
+      // Enhanced password validation for login (match backend requirement)
+      if (!cleanPassword || cleanPassword.length < 8) {
+        throw new Error('Contraseña debe tener al menos 8 caracteres');
       }
 
-      // Detectar contenido malicioso
-      const emailCheck = detectMaliciousContent(sanitizedEmail);
+      // Detectar contenido malicioso básico sin modificar el email
+      const emailCheck = detectMaliciousContent(cleanEmail);
       if (!emailCheck.isSafe) {
         throw new Error('Email contiene contenido no válido');
       }
 
       const result = await secureTokenManager.login({
-        email: sanitizedEmail,
-        password: sanitizedPassword
+        email: cleanEmail,
+        password: cleanPassword
       });
 
       if (result.success && result.user) {

@@ -162,6 +162,12 @@ apiClient.interceptors.response.use(
         case 400:
           toast.error('Solicitud inválida. Verifica los datos enviados.');
           break;
+        case 401:
+          // 401 errors are handled by interceptors - don't show toast for login attempts
+          if (!error.config?.url?.includes('/auth/login')) {
+            console.info('Authentication required - redirecting to login');
+          }
+          break;
         case 403:
           toast.error('No tienes permisos para realizar esta acción.');
           break;
