@@ -265,7 +265,7 @@ export class AuthController {
       secure: isProduction,
       sameSite: 'lax' as const,
       path: '/',
-      domain: isProduction ? '.fixiacomar-production.up.railway.app' : undefined
+      // Don't set domain - let browser handle automatically
     };
 
     // Set access token cookie (shorter expiration)
@@ -287,7 +287,7 @@ export class AuthController {
         secure: isProduction,
         sameSite: 'lax',
         path: '/',
-        domain: cookieOptions.domain || 'localhost'
+        domain: 'auto'
       },
       accessTokenLength: accessToken?.length || 0,
       refreshTokenLength: refreshToken?.length || 0
