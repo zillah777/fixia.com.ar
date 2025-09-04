@@ -71,40 +71,22 @@ export class AuthController {
   @ApiResponse({ status: 200, description: 'Token renovado exitosamente' })
   @ApiResponse({ status: 401, description: 'Refresh token inválido' })
   async refreshToken(@Body() refreshTokenDto: RefreshTokenDto, @Request() req, @Res({ passthrough: true }) res) {
-    // Support both body parameter and httpOnly cookie with detailed logging
+    // Support both body parameter and httpOnly cookie
     const bodyToken = refreshTokenDto?.refresh_token;
     const cookieToken = req.cookies?.refresh_token;
     const refreshToken = bodyToken || cookieToken;
     
-    // Enhanced logging for debugging - ALWAYS log for troubleshooting
-    this.logger.log(`🔄 Refresh token request analysis:`, {
+    // Reduced logging - only debug level for refresh attempts
+    this.logger.debug(`Token refresh attempt`, {
       hasBodyToken: !!bodyToken,
-      bodyTokenPreview: bodyToken ? `${bodyToken.substring(0, 10)}...` : 'none',
       hasCookieToken: !!cookieToken,
-      cookieTokenPreview: cookieToken ? `${cookieToken.substring(0, 10)}...` : 'none',
-      cookiesAvailable: !!req.cookies,
-      allCookieKeys: req.cookies ? Object.keys(req.cookies) : [],
-      cookieValuesPreview: req.cookies ? Object.entries(req.cookies).reduce((acc, [key, value]) => {
-        acc[key] = typeof value === 'string' && value.length > 10 ? `${value.substring(0, 10)}...` : value;
-        return acc;
-      }, {}) : {},
-      hasRefreshToken: !!refreshToken,
-      userAgent: req.headers['user-agent'],
-      origin: req.headers.origin,
-      referer: req.headers.referer
+      userAgent: req.headers['user-agent']?.substring(0, 50) + '...',
+      ip: req.ip,
     });
     
     if (!refreshToken) {
-      this.logger.error('❌ Refresh token missing - CRITICAL AUTH ERROR', {
-        requestBody: refreshTokenDto,
-        cookiesAvailable: !!req.cookies,
-        cookieKeys: req.cookies ? Object.keys(req.cookies) : [],
-        allHeaders: req.headers,
-        method: req.method,
-        url: req.url,
-        timestamp: new Date().toISOString()
-      });
-      throw new UnauthorizedException('Refresh token is required');
+      const { ERROR_CODES, createSecureError } = await import('../common/constants/error-codes');
+      throw createSecureError(ERROR_CODES.AUTH_TOKEN_MISSING, UnauthorizedException);
     }
     
     const result = await this.authService.refreshToken(refreshToken);
@@ -117,7 +99,7 @@ export class AuthController {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
     
-    this.logger.log(`Token refreshed successfully for token: ${refreshToken.substring(0, 10)}...`);
+    this.logger.debug(`Token refreshed successfully`);
     
     return result;
   }
@@ -167,6 +149,7 @@ export class AuthController {
   @ApiResponse({ status: 200, description: 'Usuario autenticado' })
   @ApiResponse({ status: 401, description: 'Usuario no autenticado' })
   async verifyAuth(@Request() req) {
+    // No logging for verify endpoint to prevent log flooding
     return { 
       isAuthenticated: true, 
       userId: req.user.sub,

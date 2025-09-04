@@ -1,11 +1,16 @@
 export const ERROR_CODES = {
   // Authentication Errors (1000-1999)
-  AUTH_INVALID_CREDENTIALS: { code: 'AUTH_1001', message: 'Credenciales inválidas' },
-  AUTH_EMAIL_NOT_VERIFIED: { code: 'AUTH_1002', message: 'Debes verificar tu email antes de iniciar sesión' },
-  AUTH_ACCOUNT_LOCKED: { code: 'AUTH_1003', message: 'Cuenta bloqueada por múltiples intentos fallidos' },
-  AUTH_TOKEN_EXPIRED: { code: 'AUTH_1004', message: 'Token expirado' },
-  AUTH_TOKEN_INVALID: { code: 'AUTH_1005', message: 'Token inválido' },
-  AUTH_UNAUTHORIZED: { code: 'AUTH_1006', message: 'No autorizado' },
+  AUTH_INVALID_CREDENTIALS: { code: 'AUTH_1001', message: 'Credenciales inválidas', action: 'CHECK_CREDENTIALS' },
+  AUTH_EMAIL_NOT_VERIFIED: { code: 'AUTH_1002', message: 'Debes verificar tu email antes de iniciar sesión', action: 'VERIFY_EMAIL' },
+  AUTH_ACCOUNT_LOCKED: { code: 'AUTH_1003', message: 'Cuenta bloqueada por múltiples intentos fallidos', action: 'WAIT_OR_CONTACT_SUPPORT' },
+  AUTH_TOKEN_EXPIRED: { code: 'AUTH_1004', message: 'Token expirado', action: 'REFRESH_TOKEN' },
+  AUTH_TOKEN_INVALID: { code: 'AUTH_1005', message: 'Token inválido', action: 'LOGIN_REQUIRED' },
+  AUTH_UNAUTHORIZED: { code: 'AUTH_1006', message: 'No autorizado', action: 'LOGIN_REQUIRED' },
+  AUTH_TOKEN_MISSING: { code: 'AUTH_1007', message: 'Token de autenticación requerido', action: 'LOGIN_REQUIRED' },
+  AUTH_USER_NOT_FOUND: { code: 'AUTH_1008', message: 'Usuario no encontrado', action: 'LOGIN_REQUIRED' },
+  AUTH_REFRESH_REQUIRED: { code: 'AUTH_1009', message: 'Token de acceso expirado', action: 'REFRESH_TOKEN' },
+  AUTH_REFRESH_FAILED: { code: 'AUTH_1010', message: 'Token de actualización inválido o expirado', action: 'LOGIN_REQUIRED' },
+  AUTH_SESSION_EXPIRED: { code: 'AUTH_1011', message: 'Sesión expirada', action: 'LOGIN_REQUIRED' },
   
   // Registration Errors (2000-2999)
   REG_EMAIL_EXISTS: { code: 'REG_2001', message: 'Ya existe una cuenta con este email' },
@@ -54,6 +59,7 @@ export function createSecureError(
 ) {
   const error = new ExceptionClass(errorCode.message);
   (error as any).errorCode = errorCode.code;
+  (error as any).action = (errorCode as any).action;
   (error as any).details = details;
   return error;
 }

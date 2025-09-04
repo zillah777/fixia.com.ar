@@ -21,10 +21,18 @@ export class HttpExceptionFilter implements ExceptionFilter {
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
     let message = 'Internal server error';
     let errors: any = null;
+    let errorCode: string | undefined;
+    let action: string | undefined;
+    let details: any = undefined;
 
     if (exception instanceof HttpException) {
       status = exception.getStatus();
       const errorResponse = exception.getResponse();
+      
+      // Extract custom error codes and actions if available
+      errorCode = (exception as any).errorCode;
+      action = (exception as any).action;
+      details = (exception as any).details;
       
       if (typeof errorResponse === 'string') {
         message = errorResponse;
@@ -56,11 +64,33 @@ export class HttpExceptionFilter implements ExceptionFilter {
       message = 'Invalid data provided';
     }
 
-    // Log error details
-    this.logger.error(
-      `${request.method} ${request.url}`,
-      exception instanceof Error ? exception.stack : exception,
+    // Smart logging: avoid flooding logs with common authentication errors
+    const isAuthError = status === HttpStatus.UNAUTHORIZED;
+    const isCommonAuthRoute = ['/auth/verify', '/auth/refresh'].some(route => 
+      request.url.includes(route)
     );
+    
+    if (isAuthError && isCommonAuthRoute && errorCode?.startsWith('AUTH_')) {
+      // Log auth errors at debug level to prevent log flooding
+      this.logger.debug(`Auth error ${errorCode}: ${request.method} ${request.url}`, {
+        errorCode,
+        userAgent: request.headers['user-agent']?.substring(0, 50) + '...',
+        ip: request.ip,
+      });
+    } else if (status >= 500) {
+      // Always log server errors
+      this.logger.error(
+        `${request.method} ${request.url}`,
+        exception instanceof Error ? exception.stack : exception,
+      );
+    } else {
+      // Log other client errors at warn level
+      this.logger.warn(`${request.method} ${request.url} - ${message}`, {
+        status,
+        errorCode,
+        ip: request.ip,
+      });
+    }
 
     const errorResponse = {
       success: false,
@@ -68,6 +98,9 @@ export class HttpExceptionFilter implements ExceptionFilter {
       status_code: status,
       timestamp: new Date().toISOString(),
       path: request.url,
+      ...(errorCode && { error_code: errorCode }),
+      ...(action && { action }),
+      ...(details && { details }),
       ...(errors && Array.isArray(errors) && { errors }),
     };
 

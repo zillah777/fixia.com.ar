@@ -230,21 +230,49 @@ export class AuthService {
 
   async refreshToken(refreshToken: string): Promise<{ access_token: string }> {
     try {
+      // Verify JWT signature and expiration
       const payload = this.jwtService.verify(refreshToken, {
         secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
       });
 
-      // Verify refresh token exists in database
+      // Verify refresh token exists in database and is not expired
       const session = await this.prisma.userSession.findFirst({
         where: {
           refresh_token: refreshToken,
           expires_at: { gt: new Date() },
         },
-        include: { user: true },
+        include: { 
+          user: {
+            select: {
+              id: true,
+              email: true,
+              user_type: true,
+              deleted_at: true,
+              locked_until: true,
+            }
+          }
+        },
       });
 
       if (!session) {
-        throw new UnauthorizedException('Invalid refresh token');
+        throw createSecureError(ERROR_CODES.AUTH_REFRESH_FAILED, UnauthorizedException);
+      }
+
+      // Check if user still exists and is not deleted
+      if (session.user.deleted_at) {
+        // Clean up sessions for deleted user
+        await this.prisma.userSession.deleteMany({
+          where: { user_id: session.user.id }
+        });
+        throw createSecureError(ERROR_CODES.AUTH_USER_NOT_FOUND, UnauthorizedException);
+      }
+
+      // Check if account is currently locked
+      if (session.user.locked_until && session.user.locked_until > new Date()) {
+        const remainingTime = Math.ceil((session.user.locked_until.getTime() - Date.now()) / 1000 / 60);
+        throw createSecureError(ERROR_CODES.AUTH_ACCOUNT_LOCKED, UnauthorizedException, { 
+          remainingMinutes: remainingTime 
+        });
       }
 
       // Generate new access token
@@ -256,9 +284,23 @@ export class AuthService {
 
       const access_token = this.jwtService.sign(newPayload);
 
+      this.logger.debug(`Token refreshed successfully for user: ${session.user.id}`);
+
       return { access_token };
     } catch (error) {
-      throw new UnauthorizedException('Invalid refresh token');
+      // Handle specific JWT errors
+      if (error.name === 'JsonWebTokenError') {
+        throw createSecureError(ERROR_CODES.AUTH_TOKEN_INVALID, UnauthorizedException);
+      } else if (error.name === 'TokenExpiredError') {
+        throw createSecureError(ERROR_CODES.AUTH_REFRESH_FAILED, UnauthorizedException);
+      } else if (error.errorCode) {
+        // Re-throw our custom errors
+        throw error;
+      } else {
+        // Log unexpected errors but don't expose details
+        this.logger.error('Unexpected error during token refresh', error);
+        throw createSecureError(ERROR_CODES.AUTH_REFRESH_FAILED, UnauthorizedException);
+      }
     }
   }
 
@@ -283,11 +325,11 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new UnauthorizedException('User not found');
+      throw createSecureError(ERROR_CODES.AUTH_USER_NOT_FOUND, UnauthorizedException);
     }
 
     // Remove sensitive data
-    const { password_hash, ...userProfile } = user;
+    const { password_hash, failed_login_attempts, locked_until, ...userProfile } = user;
     return userProfile;
   }
 
