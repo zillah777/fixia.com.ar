@@ -15,7 +15,7 @@ async function bootstrap() {
   const port = parseInt(process.env.PORT) || 3001;
   const host = '0.0.0.0';
   
-  logger.log(`🚀 Starting Fixia API on ${host}:${port} - With migration cleanup controller`);
+  logger.log(`🚀 Starting Fixia API on ${host}:${port} - With JS 404 fix`);
   logger.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
   
   if (process.env.RAILWAY_ENVIRONMENT) {
