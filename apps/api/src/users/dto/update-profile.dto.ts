@@ -68,4 +68,88 @@ export class UpdateProfileDto {
   @IsOptional()
   @IsString()
   whatsapp_number?: string;
+
+  // Social Networks
+  @ApiProperty({ 
+    example: 'https://linkedin.com/in/usuario',
+    description: 'Perfil de LinkedIn',
+    required: false
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(255)
+  social_linkedin?: string;
+
+  @ApiProperty({ 
+    example: 'https://twitter.com/usuario',
+    description: 'Perfil de Twitter',
+    required: false
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(255)
+  social_twitter?: string;
+
+  @ApiProperty({ 
+    example: 'https://github.com/usuario',
+    description: 'Perfil de GitHub',
+    required: false
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(255)
+  social_github?: string;
+
+  @ApiProperty({ 
+    example: 'https://instagram.com/usuario',
+    description: 'Perfil de Instagram',
+    required: false
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(255)
+  social_instagram?: string;
+
+  // Notification Preferences
+  @ApiProperty({ 
+    example: true,
+    description: 'Recibir notificaciones de mensajes',
+    required: false
+  })
+  @IsOptional()
+  notifications_messages?: boolean;
+
+  @ApiProperty({ 
+    example: true,
+    description: 'Recibir notificaciones de pedidos',
+    required: false
+  })
+  @IsOptional()
+  notifications_orders?: boolean;
+
+  @ApiProperty({ 
+    example: true,
+    description: 'Recibir notificaciones de proyectos',
+    required: false
+  })
+  @IsOptional()
+  notifications_projects?: boolean;
+
+  @ApiProperty({ 
+    example: false,
+    description: 'Recibir newsletter semanal',
+    required: false
+  })
+  @IsOptional()
+  notifications_newsletter?: boolean;
+
+  // Timezone
+  @ApiProperty({ 
+    example: 'buenos-aires',
+    description: 'Zona horaria del usuario',
+    required: false
+  })
+  @IsOptional()
+  @IsString()
+  timezone?: string;
 }
