@@ -57,14 +57,33 @@ export class AuthController {
   @ApiResponse({ status: 201, description: 'Usuario registrado exitosamente' })
   @ApiResponse({ status: 400, description: 'Datos inválidos' })
   @ApiResponse({ status: 409, description: 'Email ya registrado' })
-  async register(@Body() registerDto: RegisterDto, @Res({ passthrough: true }) res) {
-    const result = await this.authService.register(registerDto);
+  async register(@Body() registerDto: any, @Res({ passthrough: true }) res, @Ip() clientIp: string) {
+    this.logger.log(`Registration attempt from IP ${clientIp} for email: ${registerDto.email}`);
+    this.logger.debug(`Registration data received:`, JSON.stringify(registerDto, null, 2));
     
-    // New registration flow - no automatic login, no cookies set
-    // User must verify email first before being able to log in
-    this.logger.log(`Registration completed for ${registerDto.email}, verification required: ${result.requiresVerification}`);
-    
-    return result;
+    try {
+      // Ensure required fields are present
+      if (!registerDto.email) {
+        throw new BadRequestException('Email es requerido');
+      }
+      if (!registerDto.password) {
+        throw new BadRequestException('Contraseña es requerida');
+      }
+      if (!registerDto.name && !registerDto.fullName) {
+        throw new BadRequestException('Nombre es requerido');
+      }
+
+      const result = await this.authService.register(registerDto);
+      
+      // New registration flow - no automatic login, no cookies set
+      // User must verify email first before being able to log in
+      this.logger.log(`Registration completed for ${registerDto.email}, verification required: ${result.requiresVerification}`);
+      
+      return result;
+    } catch (error) {
+      this.logger.error(`Registration failed for ${registerDto.email}:`, error);
+      throw error;
+    }
   }
 
   @Post('refresh')
@@ -251,6 +270,50 @@ export class AuthController {
     
     this.logger.log(`DEV: Email verification bypass requested for ${devVerifyUserDto.email} from IP ${clientIp}`);
     return this.authService.devVerifyUserByEmail(devVerifyUserDto.email);
+  }
+
+  @Post('debug/registration')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'DEBUG: Test registration data parsing' })
+  async debugRegistration(@Body() body: any, @Ip() clientIp: string) {
+    this.logger.log(`DEBUG: Registration debug from IP ${clientIp} with body:`, JSON.stringify(body, null, 2));
+    
+    try {
+      // Test the exact same logic but without database creation
+      const registerData = body;
+      
+      // Map frontend fields to backend fields with better error handling
+      const userCreateData = {
+        email: registerData.email,
+        password_hash: '[WOULD_BE_HASHED]',
+        name: registerData.fullName || registerData.name,
+        user_type: registerData.userType || registerData.user_type || 'client',
+        location: registerData.location || '',
+        phone: registerData.phone || null,
+        whatsapp_number: registerData.phone || null,
+        birthdate: registerData.birthdate ? new Date(registerData.birthdate) : null,
+        email_verified: false,
+      };
+
+      this.logger.log(`DEBUG: Mapped data would be:`, JSON.stringify(userCreateData, null, 2));
+
+      return {
+        success: true,
+        message: 'Debug successful - data mapping works',
+        originalData: body,
+        mappedData: userCreateData,
+        issues: []
+      };
+    } catch (error) {
+      this.logger.error(`DEBUG: Registration debug failed:`, error);
+      return {
+        success: false,
+        message: 'Debug failed',
+        originalData: body,
+        error: error.message,
+        stack: error.stack
+      };
+    }
   }
 
   /**
