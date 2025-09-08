@@ -316,6 +316,52 @@ export class AuthController {
     }
   }
 
+  @Post('temp/register')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'TEMP: Simplified registration for debugging' })
+  async tempRegister(@Body() body: any, @Ip() clientIp: string) {
+    this.logger.log(`TEMP: Registration attempt from IP ${clientIp}`);
+    
+    try {
+      // Simplified registration with minimal fields
+      const userData = {
+        email: body.email,
+        password_hash: await require('bcryptjs').hash(body.password, 12),
+        name: body.fullName || body.name || 'Usuario Sin Nombre',
+        user_type: body.userType || 'client',
+        location: body.location || null,
+        phone: body.phone || null,
+        whatsapp_number: body.phone || null,
+        birthdate: body.birthdate ? new Date(body.birthdate) : null,
+        email_verified: false,
+        verified: false
+      };
+
+      this.logger.log(`TEMP: Creating user with data:`, { ...userData, password_hash: '[REDACTED]' });
+
+      const user = await this.authService['prisma'].user.create({
+        data: userData,
+      });
+
+      this.logger.log(`TEMP: User created successfully: ${user.id}`);
+
+      return {
+        success: true,
+        message: 'Usuario creado exitosamente (temporal)',
+        userId: user.id,
+        email: user.email
+      };
+    } catch (error) {
+      this.logger.error(`TEMP: Registration failed:`, error);
+      return {
+        success: false,
+        message: error.message || 'Error creating user',
+        code: error.code,
+        details: error
+      };
+    }
+  }
+
   /**
    * Set httpOnly cookies for secure authentication
    */
