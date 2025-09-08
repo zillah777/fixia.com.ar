@@ -53,6 +53,16 @@ export class RegisterDto {
   @MinLength(2)
   name: string;
 
+  // Support both name and fullName from frontend
+  @ApiProperty({ 
+    example: 'Juan Carlos Pérez',
+    description: 'Nombre completo del usuario (alias de name)',
+    required: false
+  })
+  @IsOptional()
+  @IsString()
+  fullName?: string;
+
   @ApiProperty({ 
     example: 'professional',
     description: 'Tipo de usuario',

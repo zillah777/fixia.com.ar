@@ -129,35 +129,44 @@ export class AuthService {
   }
 
   async register(registerData: any): Promise<{ message: string; success: boolean; requiresVerification: boolean }> {
-    // Check if user already exists
-    const existingUser = await this.prisma.user.findUnique({
-      where: { email: registerData.email },
-    });
+    try {
+      this.logger.log(`Registration attempt for email: ${registerData.email}`);
+      
+      // Check if user already exists
+      const existingUser = await this.prisma.user.findUnique({
+        where: { email: registerData.email },
+      });
 
-    if (existingUser) {
-      throw new ConflictException('Ya existe un usuario registrado con este correo electrónico');
-    }
+      if (existingUser) {
+        this.logger.warn(`Registration attempt for existing email: ${registerData.email}`);
+        throw new ConflictException('Ya existe un usuario registrado con este correo electrónico');
+      }
 
     // Hash password
     const hashedPassword = await bcrypt.hash(registerData.password, 12);
 
-    // Map frontend fields to backend fields
+    // Map frontend fields to backend fields with better error handling
     const userCreateData = {
       email: registerData.email,
       password_hash: hashedPassword,
       name: registerData.fullName || registerData.name,
-      user_type: registerData.userType || registerData.user_type,
-      location: registerData.location,
-      phone: registerData.phone,
-      whatsapp_number: registerData.phone, // Use phone as WhatsApp number
+      user_type: registerData.userType || registerData.user_type || 'client',
+      location: registerData.location || '',
+      phone: registerData.phone || null,
+      whatsapp_number: registerData.phone || null, // Use phone as WhatsApp number
       birthdate: registerData.birthdate ? new Date(registerData.birthdate) : null,
       email_verified: false, // Require email verification
     };
 
-    // Create user
-    const user = await this.prisma.user.create({
-      data: userCreateData,
-    });
+      // Create user with better error handling
+      this.logger.log(`Creating user with data: ${JSON.stringify({ 
+        ...userCreateData, 
+        password_hash: '[REDACTED]' 
+      })}`);
+      
+      const user = await this.prisma.user.create({
+        data: userCreateData,
+      });
 
     // Create professional profile if user is professional
     if (userCreateData.user_type === 'professional') {
@@ -187,14 +196,36 @@ export class AuthService {
     const emailResult = await this.sendEmailVerification(registerData.email, user.id);
     this.logger.log(`Verification email process completed for: ${registerData.email}, success: ${emailResult.success}`);
 
-    // Return registration success without tokens - user must verify email first
-    return {
-      message: emailResult.success ? 
-        'Cuenta creada exitosamente. Revisa tu correo electrónico para verificar tu cuenta.' :
-        'Cuenta creada exitosamente. Sin embargo, hubo un problema enviando el correo de verificación. Puedes solicitar uno nuevo desde la página de login.',
-      success: true,
-      requiresVerification: true
-    };
+      // Return registration success without tokens - user must verify email first
+      return {
+        message: emailResult.success ? 
+          'Cuenta creada exitosamente. Revisa tu correo electrónico para verificar tu cuenta.' :
+          'Cuenta creada exitosamente. Sin embargo, hubo un problema enviando el correo de verificación. Puedes solicitar uno nuevo desde la página de login.',
+        success: true,
+        requiresVerification: true
+      };
+    } catch (error) {
+      this.logger.error(`Registration failed for ${registerData.email}:`, error);
+      
+      if (error instanceof ConflictException) {
+        throw error;
+      }
+      
+      // Handle Prisma/Database specific errors
+      if (error.code) {
+        switch (error.code) {
+          case 'P2002':
+            throw new ConflictException('Ya existe un usuario con este email o datos únicos');
+          case 'P2025':
+            throw new BadRequestException('Error de referencia en los datos');
+          default:
+            this.logger.error(`Database error during registration: ${error.code} - ${error.message}`);
+            throw new BadRequestException('Database error occurred');
+        }
+      }
+      
+      throw new BadRequestException('Error creando cuenta de usuario');
+    }
   }
 
   async refreshToken(refreshToken: string): Promise<{ access_token: string }> {

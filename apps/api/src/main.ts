@@ -210,24 +210,26 @@ async function bootstrap() {
       });
     });
 
-    // Enable CORS with production-ready configuration - Updated for fixia.app domain
+    // Enable CORS with production-ready configuration - Updated for actual deployment URLs
     app.enableCors({
       origin: process.env.NODE_ENV === 'production' 
         ? [
-            // Primary domain
-            'https://fixia.app', 
-            'https://www.fixia.app',
+            // Primary domain (actual Vercel deployment)
+            'https://fixiaweb.vercel.app',
+            'https://fixia.vercel.app',
             // Legacy domain support
             'https://fixia.com.ar', 
             'https://www.fixia.com.ar',
-            // Vercel deployments
-            'https://fixia.vercel.app',
-            'https://fixiaweb.vercel.app'
+            'https://fixia.app', 
+            'https://www.fixia.app',
+            // Allow all Vercel preview deployments
+            /https:\/\/.*\.vercel\.app$/
           ]
         : process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000', 'http://localhost:5173'],
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-      allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
+      allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With', 'X-CSRF-Token'],
       credentials: true,
+      optionsSuccessStatus: 200 // Para browsers legacy
     });
 
     // Global error handling and interceptors
