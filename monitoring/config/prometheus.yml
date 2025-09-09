@@ -1,0 +1,120 @@
+# Prometheus Configuration for Fixia Monitoring
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'fixia-production'
+    environment: 'production'
+
+# Rules for alerting
+rule_files:
+  - "alert.rules.yml"
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+# Scrape configurations
+scrape_configs:
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    scrape_interval: 30s
+    metrics_path: /metrics
+    
+  # Railway API Monitoring (External)
+  - job_name: 'fixia-api-production'
+    static_configs:
+      - targets: ['api.fixia.com.ar']
+    scheme: https
+    metrics_path: /metrics
+    scrape_interval: 30s
+    scrape_timeout: 10s
+    
+  # Vercel Frontend Monitoring (Custom endpoint)
+  - job_name: 'fixia-web-vitals'
+    static_configs:
+      - targets: ['fixia.com.ar']
+    scheme: https  
+    metrics_path: /api/metrics
+    scrape_interval: 60s
+    
+  # Node Exporter - System Metrics
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+    scrape_interval: 30s
+    
+  # cAdvisor - Container Metrics
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080']
+    scrape_interval: 30s
+    
+  # PostgreSQL Metrics (if postgres_exporter is available)
+  - job_name: 'postgres-exporter'
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+    scrape_interval: 30s
+    
+  # Redis Metrics
+  - job_name: 'redis-exporter'
+    static_configs:
+      - targets: ['redis-exporter:9121']
+    scrape_interval: 30s
+    
+  # Nginx Metrics
+  - job_name: 'nginx-exporter'
+    static_configs:
+      - targets: ['nginx-exporter:9113']
+    scrape_interval: 30s
+
+  # Blackbox Exporter for URL monitoring
+  - job_name: 'blackbox-http'
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    static_configs:
+      - targets:
+        - https://fixia.com.ar
+        - https://api.fixia.com.ar/health
+        - https://api.fixia.com.ar/auth/check
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox-exporter:9115
+
+  # Blackbox Exporter for SSL certificate monitoring
+  - job_name: 'blackbox-ssl'
+    metrics_path: /probe
+    params:
+      module: [tcp_connect]
+    static_configs:
+      - targets:
+        - fixia.com.ar:443
+        - api.fixia.com.ar:443
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox-exporter:9115
+
+# Remote write configuration for long-term storage (optional)
+remote_write:
+  - url: "https://prometheus-us-central1.grafana.net/api/prom/push"
+    basic_auth:
+      username: "${GRAFANA_CLOUD_PROMETHEUS_USER}"
+      password: "${GRAFANA_CLOUD_PROMETHEUS_PASSWORD}"
+    write_relabel_configs:
+      - source_labels: [__name__]
+        regex: 'fixia_.*|up|prometheus_.*'
+        action: keep

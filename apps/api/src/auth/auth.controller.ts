@@ -347,18 +347,19 @@ export class AuthController {
 
       return {
         success: true,
-        message: 'Usuario creado exitosamente (temporal)',
+        message: 'Cuenta creada exitosamente. Revisa tu correo electrónico para verificar tu cuenta.',
+        requiresVerification: true,
         userId: user.id,
         email: user.email
       };
     } catch (error) {
       this.logger.error(`TEMP: Registration failed:`, error);
-      return {
-        success: false,
-        message: error.message || 'Error creating user',
-        code: error.code,
-        details: error
-      };
+      
+      if (error.code === 'P2002') {
+        throw new ConflictException('Ya existe un usuario registrado con este correo electrónico');
+      }
+      
+      throw new BadRequestException(error.message || 'Error creating user');
     }
   }
 

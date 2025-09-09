@@ -1,0 +1,203 @@
+# Prometheus Alerting Rules for Fixia
+groups:
+  # Application Health Alerts
+  - name: fixia.application.health
+    rules:
+      - alert: FixiaAPIDown
+        expr: up{job="fixia-api-production"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          service: api
+        annotations:
+          summary: "Fixia API is down"
+          description: "Fixia API has been down for more than 2 minutes"
+          runbook_url: "https://wiki.fixia.com.ar/runbooks/api-down"
+
+      - alert: FixiaWebsiteDown
+        expr: probe_success{job="blackbox-http", instance="https://fixia.com.ar"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: frontend
+        annotations:
+          summary: "Fixia website is unreachable"
+          description: "Main website has been unreachable for more than 1 minute"
+
+  # Performance Alerts
+  - name: fixia.performance
+    rules:
+      - alert: HighAPIResponseTime
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job="fixia-api-production"}[5m])) > 2
+        for: 5m
+        labels:
+          severity: warning
+          service: api
+        annotations:
+          summary: "High API response time"
+          description: "95th percentile API response time is {{ $value }}s"
+
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{job="fixia-api-production", status=~"5.."}[5m]) > 0.1
+        for: 3m
+        labels:
+          severity: critical
+          service: api
+        annotations:
+          summary: "High error rate detected"
+          description: "Error rate is {{ $value }} errors per second"
+
+      - alert: DatabaseSlowQueries
+        expr: rate(postgresql_slow_queries_total[5m]) > 10
+        for: 5m
+        labels:
+          severity: warning
+          service: database
+        annotations:
+          summary: "High number of slow database queries"
+          description: "{{ $value }} slow queries per second detected"
+
+  # Resource Utilization Alerts
+  - name: fixia.resources
+    rules:
+      - alert: HighMemoryUsage
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+          service: system
+        annotations:
+          summary: "High memory usage"
+          description: "Memory usage is above 85% ({{ $value }}%)"
+
+      - alert: HighCPUUsage
+        expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 10m
+        labels:
+          severity: warning
+          service: system
+        annotations:
+          summary: "High CPU usage"
+          description: "CPU usage is above 80% ({{ $value }}%)"
+
+      - alert: DiskSpaceLow
+        expr: (1 - (node_filesystem_avail_bytes{fstype!="tmpfs"} / node_filesystem_size_bytes{fstype!="tmpfs"})) * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+          service: system
+        annotations:
+          summary: "Disk space running low"
+          description: "Disk usage is above 85% on {{ $labels.device }}"
+
+  # Database Alerts
+  - name: fixia.database
+    rules:
+      - alert: PostgreSQLDown
+        expr: up{job="postgres-exporter"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          service: database
+        annotations:
+          summary: "PostgreSQL is down"
+          description: "PostgreSQL has been down for more than 2 minutes"
+
+      - alert: PostgreSQLTooManyConnections
+        expr: postgresql_connections{state="active"} > 80
+        for: 5m
+        labels:
+          severity: warning
+          service: database
+        annotations:
+          summary: "Too many PostgreSQL connections"
+          description: "PostgreSQL has {{ $value }} active connections"
+
+      - alert: PostgreSQLDeadLocks
+        expr: increase(postgresql_deadlocks_total[1m]) > 0
+        for: 0m
+        labels:
+          severity: warning
+          service: database
+        annotations:
+          summary: "PostgreSQL deadlocks detected"
+          description: "{{ $value }} deadlocks in the last minute"
+
+  # SSL Certificate Alerts
+  - name: fixia.ssl
+    rules:
+      - alert: SSLCertificateExpiring
+        expr: probe_ssl_earliest_cert_expiry - time() < 86400 * 30
+        for: 0m
+        labels:
+          severity: warning
+          service: ssl
+        annotations:
+          summary: "SSL certificate expiring soon"
+          description: "SSL certificate for {{ $labels.instance }} expires in {{ $value | humanizeDuration }}"
+
+      - alert: SSLCertificateExpired
+        expr: probe_ssl_earliest_cert_expiry - time() <= 0
+        for: 0m
+        labels:
+          severity: critical
+          service: ssl
+        annotations:
+          summary: "SSL certificate has expired"
+          description: "SSL certificate for {{ $labels.instance }} has expired"
+
+  # Business Logic Alerts
+  - name: fixia.business
+    rules:
+      - alert: LowUserRegistrations
+        expr: increase(fixia_user_registrations_total[1h]) < 1
+        for: 2h
+        labels:
+          severity: info
+          service: business
+        annotations:
+          summary: "Low user registration rate"
+          description: "Only {{ $value }} user registrations in the last hour"
+
+      - alert: HighAuthenticationFailures
+        expr: rate(fixia_auth_failures_total[5m]) > 0.5
+        for: 5m
+        labels:
+          severity: warning
+          service: security
+        annotations:
+          summary: "High authentication failure rate"
+          description: "{{ $value }} authentication failures per second"
+
+      - alert: NoActiveUsers
+        expr: fixia_active_users_current < 1
+        for: 30m
+        labels:
+          severity: info
+          service: business
+        annotations:
+          summary: "No active users"
+          description: "No active users for the last 30 minutes"
+
+  # Deployment Alerts
+  - name: fixia.deployment
+    rules:
+      - alert: DeploymentFailed
+        expr: increase(fixia_deployment_failures_total[10m]) > 0
+        for: 0m
+        labels:
+          severity: critical
+          service: deployment
+        annotations:
+          summary: "Deployment failure detected"
+          description: "{{ $value }} deployment failures in the last 10 minutes"
+
+      - alert: RollbackExecuted
+        expr: increase(fixia_rollbacks_total[5m]) > 0
+        for: 0m
+        labels:
+          severity: warning
+          service: deployment
+        annotations:
+          summary: "Rollback executed"
+          description: "{{ $value }} rollbacks executed in the last 5 minutes"

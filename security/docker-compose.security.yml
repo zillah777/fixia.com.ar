@@ -1,0 +1,183 @@
+version: '3.8'
+
+# Security Services for Fixia Infrastructure
+services:
+  # Falco - Runtime Security Monitoring
+  falco:
+    image: falcosecurity/falco:0.35.0
+    container_name: fixia-falco
+    privileged: true
+    volumes:
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      - /dev:/host/dev
+      - /proc:/host/proc:ro
+      - /boot:/host/boot:ro
+      - /lib/modules:/host/lib/modules:ro
+      - /usr:/host/usr:ro
+      - /etc:/host/etc:ro
+      - ./config/falco/falco.yaml:/etc/falco/falco.yaml
+      - ./config/falco/rules:/etc/falco/rules.d
+    networks:
+      - security
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "3"
+
+  # OWASP ZAP - Security Testing
+  zap:
+    image: owasp/zap2docker-stable:2.12.0
+    container_name: fixia-zap
+    ports:
+      - "8090:8080"
+    volumes:
+      - ./config/zap:/zap/wrk/
+    command: zap.sh -daemon -host 0.0.0.0 -port 8080 -config api.addrs.addr.name=.* -config api.addrs.addr.regex=true
+    networks:
+      - security
+    restart: unless-stopped
+
+  # Clair - Container Vulnerability Scanner
+  clair:
+    image: quay.io/coreos/clair:v4.7.1
+    container_name: fixia-clair
+    ports:
+      - "6060:6060"
+      - "6061:6061"
+    volumes:
+      - ./config/clair/config.yaml:/etc/clair/config.yaml
+    environment:
+      - CLAIR_CONF=/etc/clair/config.yaml
+      - CLAIR_MODE=combo
+    networks:
+      - security
+    depends_on:
+      - clair-postgres
+    restart: unless-stopped
+
+  # Clair Database
+  clair-postgres:
+    image: postgres:15
+    container_name: fixia-clair-postgres
+    environment:
+      - POSTGRES_DB=clair
+      - POSTGRES_USER=clair
+      - POSTGRES_PASSWORD=clair_secure_password_2024
+    volumes:
+      - clair_postgres_data:/var/lib/postgresql/data
+    networks:
+      - security
+    restart: unless-stopped
+
+  # Trivy - Vulnerability Scanner
+  trivy:
+    image: aquasec/trivy:0.43.0
+    container_name: fixia-trivy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - trivy_cache:/root/.cache/trivy
+      - ./scripts:/scripts
+    command: server --listen 0.0.0.0:8080 --debug
+    ports:
+      - "8082:8080"
+    networks:
+      - security
+    restart: unless-stopped
+
+  # ModSecurity WAF
+  modsecurity:
+    image: owasp/modsecurity:3.0-apache
+    container_name: fixia-modsecurity
+    ports:
+      - "8083:80"
+    volumes:
+      - ./config/modsecurity/httpd.conf:/usr/local/apache2/conf/httpd.conf
+      - ./config/modsecurity/modsecurity.conf:/etc/modsecurity/modsecurity.conf
+      - ./config/modsecurity/crs:/etc/modsecurity/crs
+    networks:
+      - security
+    restart: unless-stopped
+
+  # Vault - Secret Management
+  vault:
+    image: hashicorp/vault:1.14.0
+    container_name: fixia-vault
+    ports:
+      - "8200:8200"
+    volumes:
+      - ./config/vault:/vault/config
+      - vault_data:/vault/data
+    cap_add:
+      - IPC_LOCK
+    environment:
+      - VAULT_DEV_ROOT_TOKEN_ID=fixia-dev-root-token
+      - VAULT_DEV_LISTEN_ADDRESS=0.0.0.0:8200
+    command: vault server -config=/vault/config/vault.json
+    networks:
+      - security
+    restart: unless-stopped
+
+  # Suricata - Network IDS/IPS
+  suricata:
+    image: jasonish/suricata:7.0
+    container_name: fixia-suricata
+    volumes:
+      - ./config/suricata/suricata.yaml:/etc/suricata/suricata.yaml
+      - ./config/suricata/rules:/var/lib/suricata/rules
+      - suricata_logs:/var/log/suricata
+    network_mode: "host"
+    cap_add:
+      - NET_ADMIN
+      - SYS_NICE
+    restart: unless-stopped
+
+  # OSSEC HIDS - Host Intrusion Detection
+  ossec:
+    image: wazuh/wazuh-odfe:4.5.0
+    container_name: fixia-ossec
+    ports:
+      - "1514:1514/udp"
+      - "1515:1515"
+      - "55000:55000"
+    volumes:
+      - ./config/ossec/ossec.conf:/var/ossec/etc/ossec.conf
+      - ossec_data:/var/ossec/data
+      - ossec_logs:/var/ossec/logs
+    networks:
+      - security
+    restart: unless-stopped
+
+  # Security Dashboard
+  security-dashboard:
+    build: ./docker/security-dashboard
+    container_name: fixia-security-dashboard
+    ports:
+      - "3001:3000"
+    environment:
+      - FALCO_ENDPOINT=http://falco:8765
+      - ZAP_ENDPOINT=http://zap:8080
+      - TRIVY_ENDPOINT=http://trivy:8080
+      - VAULT_ENDPOINT=http://vault:8200
+    networks:
+      - security
+    depends_on:
+      - falco
+      - zap
+      - trivy
+      - vault
+    restart: unless-stopped
+
+volumes:
+  clair_postgres_data:
+  trivy_cache:
+  vault_data:
+  suricata_logs:
+  ossec_data:
+  ossec_logs:
+
+networks:
+  security:
+    driver: bridge
+    name: fixia-security

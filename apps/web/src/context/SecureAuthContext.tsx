@@ -526,15 +526,14 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
 
       console.log('Registration response:', result);
 
-      // New registration flow - user must verify email before login
-      if (result?.success && result?.requiresVerification) {
-        // Registration successful but requires email verification
-        // Don't log user in automatically
+      // Handle different response formats (temp endpoint and main endpoint)
+      if (result?.success === true) {
+        // New registration flow - user must verify email before login
         console.log('Registration successful, email verification required');
         return {
           success: true,
-          message: result.message,
-          requiresVerification: true
+          message: result.message || 'Cuenta creada exitosamente. Revisa tu correo electrónico para verificar tu cuenta.',
+          requiresVerification: result.requiresVerification !== false // Default to true unless explicitly false
         };
       } else if (result?.user) {
         // Legacy flow - user was logged in automatically (shouldn't happen with new flow)
