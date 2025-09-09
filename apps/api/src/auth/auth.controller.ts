@@ -316,6 +316,51 @@ export class AuthController {
     }
   }
 
+  @Post('migrate/database')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'ADMIN: Execute database migration for missing columns' })
+  async migrateDatabase(@Ip() clientIp: string) {
+    this.logger.log(`DATABASE MIGRATION: Attempt from IP ${clientIp}`);
+    
+    try {
+      const prisma = this.authService['prisma'];
+      
+      // Execute raw SQL to add missing columns
+      const migrations = [
+        `ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "notifications_messages" BOOLEAN NOT NULL DEFAULT true;`,
+        `ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "notifications_orders" BOOLEAN NOT NULL DEFAULT true;`,
+        `ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "notifications_projects" BOOLEAN NOT NULL DEFAULT true;`,
+        `ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "notifications_newsletter" BOOLEAN NOT NULL DEFAULT false;`,
+        `ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "timezone" TEXT DEFAULT 'buenos-aires';`,
+        `ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "social_linkedin" TEXT;`,
+        `ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "social_twitter" TEXT;`,
+        `ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "social_github" TEXT;`,
+        `ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "social_instagram" TEXT;`
+      ];
+
+      const results = [];
+      for (const migration of migrations) {
+        try {
+          await prisma.$executeRawUnsafe(migration);
+          results.push({ sql: migration, status: 'success' });
+          this.logger.log(`Migration executed: ${migration}`);
+        } catch (error) {
+          results.push({ sql: migration, status: 'error', error: error.message });
+          this.logger.error(`Migration failed: ${migration}`, error);
+        }
+      }
+
+      return {
+        success: true,
+        message: 'Database migration completed',
+        results
+      };
+    } catch (error) {
+      this.logger.error(`DATABASE MIGRATION failed:`, error);
+      throw new BadRequestException(`Migration failed: ${error.message}`);
+    }
+  }
+
   @Post('temp/register')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'TEMP: Simplified registration for debugging' })
