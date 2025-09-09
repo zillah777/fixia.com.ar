@@ -400,27 +400,35 @@ export class AuthController {
 
   @Post('emergency/register')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'EMERGENCY: Basic registration with core fields only' })
+  @ApiOperation({ summary: 'EMERGENCY: Raw SQL registration bypass' })
   async emergencyRegister(@Body() body: any, @Ip() clientIp: string) {
-    this.logger.log(`EMERGENCY: Registration from IP ${clientIp} for ${body.email}`);
+    this.logger.log(`EMERGENCY: Raw SQL registration from IP ${clientIp} for ${body.email}`);
     
     try {
-      // Use only the absolute minimum required fields that definitely exist
-      const userData = {
-        email: body.email,
-        password_hash: await require('bcryptjs').hash(body.password, 12),
-        name: body.fullName || body.name || 'Usuario',
-        user_type: body.userType || 'client'
-        // Only include fields that exist in the original database schema
-      };
+      const prisma = this.authService['prisma'];
+      const bcrypt = require('bcryptjs');
+      
+      // Check if user exists first
+      const existingUser = await prisma.$queryRaw`
+        SELECT id FROM "User" WHERE email = ${body.email}
+      `;
+      
+      if (Array.isArray(existingUser) && existingUser.length > 0) {
+        throw new ConflictException('Ya existe un usuario registrado con este correo electrónico');
+      }
 
-      this.logger.log(`EMERGENCY: Creating user with minimal data for ${body.email}`);
+      // Hash password
+      const passwordHash = await bcrypt.hash(body.password, 12);
+      
+      // Use raw SQL to insert only the core fields that definitely exist
+      const result = await prisma.$queryRaw`
+        INSERT INTO "User" (id, email, password_hash, name, user_type, created_at, updated_at)
+        VALUES (gen_random_uuid(), ${body.email}, ${passwordHash}, ${body.fullName || body.name || 'Usuario'}, ${body.userType || 'client'}::user_type, NOW(), NOW())
+        RETURNING id, email, name
+      `;
 
-      const user = await this.authService['prisma'].user.create({
-        data: userData,
-      });
-
-      this.logger.log(`EMERGENCY: User ${user.id} created successfully`);
+      const user = Array.isArray(result) ? result[0] : result;
+      this.logger.log(`EMERGENCY: User created via raw SQL: ${user.id}`);
 
       return {
         success: true,
@@ -430,13 +438,13 @@ export class AuthController {
         email: user.email
       };
     } catch (error) {
-      this.logger.error(`EMERGENCY: Registration failed for ${body.email}:`, error);
+      this.logger.error(`EMERGENCY: Raw SQL registration failed for ${body.email}:`, error);
       
-      if (error.code === 'P2002') {
+      if (error.message?.includes('duplicate') || error.code === 'P2002' || error.code === '23505') {
         throw new ConflictException('Ya existe un usuario registrado con este correo electrónico');
       }
       
-      throw new BadRequestException(error.message || 'Error creando cuenta');
+      throw new BadRequestException(`Error creando cuenta: ${error.message}`);
     }
   }
 
