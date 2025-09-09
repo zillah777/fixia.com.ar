@@ -398,6 +398,48 @@ export class AuthController {
     }
   }
 
+  @Post('emergency/register')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'EMERGENCY: Basic registration with core fields only' })
+  async emergencyRegister(@Body() body: any, @Ip() clientIp: string) {
+    this.logger.log(`EMERGENCY: Registration from IP ${clientIp} for ${body.email}`);
+    
+    try {
+      // Use only the absolute minimum required fields that definitely exist
+      const userData = {
+        email: body.email,
+        password_hash: await require('bcryptjs').hash(body.password, 12),
+        name: body.fullName || body.name || 'Usuario',
+        user_type: body.userType || 'client'
+        // Only include fields that exist in the original database schema
+      };
+
+      this.logger.log(`EMERGENCY: Creating user with minimal data for ${body.email}`);
+
+      const user = await this.authService['prisma'].user.create({
+        data: userData,
+      });
+
+      this.logger.log(`EMERGENCY: User ${user.id} created successfully`);
+
+      return {
+        success: true,
+        message: 'Cuenta creada exitosamente. Tu registro ha sido completado.',
+        requiresVerification: true,
+        userId: user.id,
+        email: user.email
+      };
+    } catch (error) {
+      this.logger.error(`EMERGENCY: Registration failed for ${body.email}:`, error);
+      
+      if (error.code === 'P2002') {
+        throw new ConflictException('Ya existe un usuario registrado con este correo electrónico');
+      }
+      
+      throw new BadRequestException(error.message || 'Error creando cuenta');
+    }
+  }
+
   @Post('temp/register')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'TEMP: Simplified registration for debugging' })

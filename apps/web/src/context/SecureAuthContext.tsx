@@ -521,8 +521,8 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
         throw new Error(`Contraseña no válida: ${passwordValidation.errors[0]}`);
       }
 
-      // HOTFIX: Use temporary endpoint while main registration is fixed
-      const result = await api.post('/auth/temp/register', sanitizedData);
+      // EMERGENCY FIX: Use manual user creation until DB is migrated
+      const result = await api.post('/auth/emergency/register', sanitizedData);
 
       console.log('Registration response:', result);
 
