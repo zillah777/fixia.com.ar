@@ -272,6 +272,43 @@ export class AuthController {
     return this.authService.devVerifyUserByEmail(devVerifyUserDto.email);
   }
 
+  @Post('dev/migrate-db')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'DEV: Execute database migration' })
+  async devMigrateDb(@Ip() clientIp: string) {
+    this.logger.log(`DEV: Database migration from IP ${clientIp}`);
+    
+    try {
+      const prisma = this.authService['prisma'];
+      
+      const migrations = [
+        `ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "notifications_messages" BOOLEAN NOT NULL DEFAULT true;`,
+        `ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "notifications_orders" BOOLEAN NOT NULL DEFAULT true;`,
+        `ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "notifications_projects" BOOLEAN NOT NULL DEFAULT true;`,
+        `ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "notifications_newsletter" BOOLEAN NOT NULL DEFAULT false;`,
+        `ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "timezone" TEXT DEFAULT 'buenos-aires';`,
+        `ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "social_linkedin" TEXT;`,
+        `ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "social_twitter" TEXT;`,
+        `ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "social_github" TEXT;`,
+        `ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "social_instagram" TEXT;`
+      ];
+
+      const results = [];
+      for (const sql of migrations) {
+        try {
+          await prisma.$executeRawUnsafe(sql);
+          results.push({ sql, status: 'success' });
+        } catch (error) {
+          results.push({ sql, status: 'error', error: error.message });
+        }
+      }
+
+      return { success: true, message: 'Migration completed', results };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  }
+
   @Post('debug/registration')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'DEBUG: Test registration data parsing' })
