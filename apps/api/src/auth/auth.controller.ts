@@ -400,51 +400,41 @@ export class AuthController {
 
   @Post('emergency/register')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'EMERGENCY: Raw SQL registration bypass' })
+  @ApiOperation({ summary: 'EMERGENCY: Database exploration and registration' })
   async emergencyRegister(@Body() body: any, @Ip() clientIp: string) {
-    this.logger.log(`EMERGENCY: Raw SQL registration from IP ${clientIp} for ${body.email}`);
+    this.logger.log(`EMERGENCY: Database exploration from IP ${clientIp}`);
     
     try {
       const prisma = this.authService['prisma'];
-      const bcrypt = require('bcryptjs');
       
-      // Check if user exists first
-      const existingUser = await prisma.$queryRaw`
-        SELECT id FROM "User" WHERE email = ${body.email}
-      `;
-      
-      if (Array.isArray(existingUser) && existingUser.length > 0) {
-        throw new ConflictException('Ya existe un usuario registrado con este correo electrónico');
+      // First, let's explore the actual table structure
+      let tableInfo;
+      try {
+        // Try different possible table names
+        const tables = await prisma.$queryRaw`
+          SELECT tablename FROM pg_tables WHERE schemaname = 'public';
+        `;
+        this.logger.log('Available tables:', tables);
+        
+        // Try to find user-related tables
+        const userTables = await prisma.$queryRaw`
+          SELECT tablename FROM pg_tables WHERE schemaname = 'public' AND tablename ILIKE '%user%';
+        `;
+        this.logger.log('User tables found:', userTables);
+        
+        return {
+          success: false,
+          message: 'Database exploration completed - check logs for table structure',
+          tables: tables,
+          userTables: userTables
+        };
+      } catch (error) {
+        this.logger.error('Database exploration failed:', error);
+        throw new BadRequestException(`Database exploration failed: ${error.message}`);
       }
-
-      // Hash password
-      const passwordHash = await bcrypt.hash(body.password, 12);
-      
-      // Use raw SQL to insert only the core fields that definitely exist
-      const result = await prisma.$queryRaw`
-        INSERT INTO "User" (id, email, password_hash, name, user_type, created_at, updated_at)
-        VALUES (gen_random_uuid(), ${body.email}, ${passwordHash}, ${body.fullName || body.name || 'Usuario'}, ${body.userType || 'client'}::user_type, NOW(), NOW())
-        RETURNING id, email, name
-      `;
-
-      const user = Array.isArray(result) ? result[0] : result;
-      this.logger.log(`EMERGENCY: User created via raw SQL: ${user.id}`);
-
-      return {
-        success: true,
-        message: 'Cuenta creada exitosamente. Tu registro ha sido completado.',
-        requiresVerification: true,
-        userId: user.id,
-        email: user.email
-      };
     } catch (error) {
-      this.logger.error(`EMERGENCY: Raw SQL registration failed for ${body.email}:`, error);
-      
-      if (error.message?.includes('duplicate') || error.code === 'P2002' || error.code === '23505') {
-        throw new ConflictException('Ya existe un usuario registrado con este correo electrónico');
-      }
-      
-      throw new BadRequestException(`Error creando cuenta: ${error.message}`);
+      this.logger.error(`EMERGENCY: Failed:`, error);
+      throw new BadRequestException(`Error: ${error.message}`);
     }
   }
 
