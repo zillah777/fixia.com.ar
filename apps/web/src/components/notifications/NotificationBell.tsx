@@ -6,7 +6,7 @@ import { Badge } from '../ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { ScrollArea } from '../ui/scroll-area';
 import { Separator } from '../ui/separator';
-import { cn } from '../../lib/utils';
+import { cn } from '../ui/utils';
 import { useToast } from '../ui/use-toast';
 
 interface Notification {
