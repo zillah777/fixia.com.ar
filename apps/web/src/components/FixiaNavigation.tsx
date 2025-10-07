@@ -1,5 +1,5 @@
 import React, { memo, useCallback } from "react";
-import { Search, Plus, Bell, User, Briefcase, Heart, Shield, Gift, Settings, HelpCircle, LogOut } from "lucide-react";
+import { Search, Plus, Bell, User, Briefcase, Heart, Shield, Gift, Settings, HelpCircle, LogOut, Star } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -9,6 +9,7 @@ import { Badge } from "./ui/badge";
 import { motion } from "motion/react";
 import { useSecureAuth } from "../context/SecureAuthContext";
 import { MobileNavigation } from "./MobileNavigation";
+import { NotificationBell } from "./notifications/NotificationBell";
 
 export const FixiaNavigation = memo(function FixiaNavigation() {
   const { user, isAuthenticated, logout } = useSecureAuth();
@@ -92,14 +93,7 @@ export const FixiaNavigation = memo(function FixiaNavigation() {
                 </Link>
 
                 {/* Notifications */}
-                <Link to="/notifications">
-                  <Button variant="ghost" size="icon" className="relative hover:bg-white/10 transition-all duration-300 h-9 w-9 sm:h-10 sm:w-10">
-                    <Bell className="h-4 w-4" />
-                    <Badge className="absolute -top-1 -right-1 h-4 w-4 sm:h-5 sm:w-5 p-0 bg-destructive text-xs flex items-center justify-center">
-                      3
-                    </Badge>
-                  </Button>
-                </Link>
+                <NotificationBell className="hover:bg-white/10 transition-all duration-300" />
 
                 {/* Favorites - Hidden on small screens */}
                 <Link to="/favorites" className="hidden sm:block">
@@ -172,6 +166,24 @@ export const FixiaNavigation = memo(function FixiaNavigation() {
                     <DropdownMenuItem className="hover:bg-white/10 cursor-pointer">
                       <Briefcase className="mr-3 h-4 w-4" />
                       Oportunidades
+                    </DropdownMenuItem>
+                  </Link>
+                  <Link to="/jobs">
+                    <DropdownMenuItem className="hover:bg-white/10 cursor-pointer">
+                      <Shield className="mr-3 h-4 w-4" />
+                      Mis Trabajos
+                    </DropdownMenuItem>
+                  </Link>
+                  <Link to="/reviews">
+                    <DropdownMenuItem className="hover:bg-white/10 cursor-pointer">
+                      <Star className="mr-3 h-4 w-4" />
+                      Mis Reseñas
+                    </DropdownMenuItem>
+                  </Link>
+                  <Link to="/verification">
+                    <DropdownMenuItem className="hover:bg-white/10 cursor-pointer">
+                      <Shield className="mr-3 h-4 w-4" />
+                      Verificación
                     </DropdownMenuItem>
                   </Link>
                   <DropdownMenuSeparator className="bg-white/10" />

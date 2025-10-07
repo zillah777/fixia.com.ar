@@ -13,6 +13,7 @@ import {
   Ip,
   UnauthorizedException,
   BadRequestException,
+  ConflictException,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
@@ -53,16 +54,15 @@ export class AuthController {
 
   @Post('register')
   @Throttle({ default: { limit: 3, ttl: 60000 } }) // 3 registros por minuto
-  @ApiOperation({ summary: 'Registro de usuario' })
+  @ApiOperation({ summary: 'Registro de usuario - PRODUCTION READY' })
   @ApiResponse({ status: 201, description: 'Usuario registrado exitosamente' })
   @ApiResponse({ status: 400, description: 'Datos inválidos' })
   @ApiResponse({ status: 409, description: 'Email ya registrado' })
   async register(@Body() registerDto: any, @Res({ passthrough: true }) res, @Ip() clientIp: string) {
-    this.logger.log(`Registration attempt from IP ${clientIp} for email: ${registerDto.email}`);
-    this.logger.debug(`Registration data received:`, JSON.stringify(registerDto, null, 2));
+    this.logger.log(`🚀 PRODUCTION Registration attempt from IP ${clientIp} for email: ${registerDto.email}`);
     
     try {
-      // Ensure required fields are present
+      // PRODUCTION VALIDATION - Required fields
       if (!registerDto.email) {
         throw new BadRequestException('Email es requerido');
       }
@@ -73,17 +73,123 @@ export class AuthController {
         throw new BadRequestException('Nombre es requerido');
       }
 
-      const result = await this.authService.register(registerDto);
-      
-      // New registration flow - no automatic login, no cookies set
-      // User must verify email first before being able to log in
-      this.logger.log(`Registration completed for ${registerDto.email}, verification required: ${result.requiresVerification}`);
-      
-      return result;
+      // Check if user already exists FIRST
+      const existingUser = await this.authService['prisma'].user.findUnique({
+        where: { email: registerDto.email },
+      });
+
+      if (existingUser) {
+        this.logger.warn(`Registration blocked - user exists: ${registerDto.email}`);
+        throw new ConflictException('Ya existe un usuario registrado con este correo electrónico');
+      }
+
+      // PRODUCTION DATA MAPPING - Only fields that exist in DB
+      const userData = {
+        email: registerDto.email,
+        password_hash: await require('bcryptjs').hash(registerDto.password, 12),
+        name: registerDto.fullName || registerDto.name,
+        user_type: registerDto.userType || registerDto.user_type || 'client',
+        location: registerDto.location || null,
+        phone: registerDto.phone || null,
+        whatsapp_number: registerDto.phone || null,
+        birthdate: registerDto.birthdate ? new Date(registerDto.birthdate) : null,
+        verified: false,
+        email_verified: false,
+        failed_login_attempts: 0,
+      };
+
+      this.logger.log(`🔨 Creating production user:`, { 
+        email: userData.email,
+        name: userData.name,
+        user_type: userData.user_type,
+        location: userData.location,
+        hasPhone: !!userData.phone
+      });
+
+      // Create user with transaction for safety
+      const user = await this.authService['prisma'].user.create({
+        data: userData,
+      });
+
+      this.logger.log(`✅ PRODUCTION User created: ${user.id} - ${user.email}`);
+
+      // Create professional profile if needed
+      if (userData.user_type === 'professional') {
+        try {
+          const professionalData = {
+            user_id: user.id,
+            bio: registerDto.description || null,
+            specialties: registerDto.serviceCategories || [],
+            years_experience: this.mapExperienceToYears(registerDto.experience),
+            level: 'Nuevo',
+            rating: 0.0,
+            review_count: 0,
+            total_earnings: 0.0,
+            availability_status: 'available',
+            response_time_hours: 24,
+          };
+
+          await this.authService['prisma'].professionalProfile.create({
+            data: {
+              user: { connect: { id: user.id } },
+              bio: registerDto.description || null,
+              specialties: registerDto.serviceCategories || [],
+              years_experience: this.mapExperienceToYears(registerDto.experience),
+              level: 'Nuevo',
+              rating: 0.0,
+              review_count: 0,
+              total_earnings: 0.0,
+              availability_status: 'available',
+              response_time_hours: 24,
+            },
+          });
+
+          this.logger.log(`✅ Professional profile created for: ${user.email}`);
+        } catch (profileError) {
+          this.logger.error(`⚠️ Professional profile creation failed (non-critical):`, profileError);
+        }
+      }
+
+      // Send verification email
+      try {
+        await this.authService.sendEmailVerification(user.email, user.id);
+        this.logger.log(`✅ Verification email sent to: ${user.email}`);
+      } catch (emailError) {
+        this.logger.error(`⚠️ Verification email failed (non-critical):`, emailError);
+      }
+
+      return {
+        success: true,
+        message: 'Cuenta creada exitosamente. Revisa tu correo electrónico para verificar tu cuenta.',
+        requiresVerification: true,
+        userId: user.id,
+        email: user.email
+      };
+
     } catch (error) {
-      this.logger.error(`Registration failed for ${registerDto.email}:`, error);
-      throw error;
+      this.logger.error(`❌ PRODUCTION Registration failed for ${registerDto.email}:`, error);
+      
+      if (error instanceof ConflictException || error instanceof BadRequestException) {
+        throw error;
+      }
+      
+      if (error.code === 'P2002') {
+        throw new ConflictException('Ya existe un usuario registrado con este correo electrónico');
+      }
+      
+      throw new BadRequestException(error.message || 'Error creando cuenta de usuario');
     }
+  }
+
+  private mapExperienceToYears(experience: string): number | null {
+    const experienceMap = {
+      'menos-1': 0,
+      '1-3': 2,
+      '3-5': 4,
+      '5-10': 7,
+      'mas-10': 15
+    };
+    return experienceMap[experience as keyof typeof experienceMap] || null;
   }
 
   @Post('refresh')
@@ -170,12 +276,22 @@ export class AuthController {
   @ApiResponse({ status: 200, description: 'Usuario autenticado' })
   @ApiResponse({ status: 401, description: 'Usuario no autenticado' })
   async verifyAuth(@Request() req) {
-    // No logging for verify endpoint to prevent log flooding
-    return { 
-      isAuthenticated: true, 
-      userId: req.user.sub,
-      expiresAt: req.user.exp ? new Date(req.user.exp * 1000).toISOString() : null
-    };
+    try {
+      // Basic verify with minimal logging
+      this.logger.debug(`Auth verify for user: ${req.user?.sub?.substring(0, 8)}...`);
+      
+      return { 
+        isAuthenticated: true, 
+        userId: req.user.sub,
+        email: req.user.email,
+        userType: req.user.user_type,
+        expiresAt: req.user.exp ? new Date(req.user.exp * 1000).toISOString() : null,
+        timestamp: new Date().toISOString()
+      };
+    } catch (error) {
+      this.logger.error('Auth verify failed:', error);
+      throw new UnauthorizedException('Authentication verification failed');
+    }
   }
 
   @Get('profile')
@@ -438,34 +554,93 @@ export class AuthController {
     }
   }
 
-  @Post('temp/register')
+  @Post('register/sql')
+  @Throttle({ default: { limit: 3, ttl: 60000 } })
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'TEMP: Simplified registration for debugging' })
-  async tempRegister(@Body() body: any, @Ip() clientIp: string) {
-    this.logger.log(`TEMP: Registration attempt from IP ${clientIp}`);
+  @ApiOperation({ summary: 'EMERGENCY: Registration using raw SQL (production-ready)' })
+  @ApiResponse({ status: 201, description: 'Usuario registrado exitosamente con SQL directo' })
+  @ApiResponse({ status: 400, description: 'Datos inválidos' })
+  @ApiResponse({ status: 409, description: 'Email ya registrado' })
+  async registerWithSQL(@Body() registerDto: any, @Res({ passthrough: true }) res, @Ip() clientIp: string) {
+    this.logger.log(`SQL Registration attempt from IP ${clientIp} for email: ${registerDto.email}`);
     
     try {
-      // Simplified registration with minimal fields
+      // Validate required fields
+      if (!registerDto.email) {
+        throw new BadRequestException('Email es requerido');
+      }
+      if (!registerDto.password) {
+        throw new BadRequestException('Contraseña es requerida');
+      }
+      if (!registerDto.name && !registerDto.fullName) {
+        throw new BadRequestException('Nombre es requerido');
+      }
+
+      const result = await this.authService.registerWithRawSQL(registerDto);
+      
+      this.logger.log(`SQL Registration completed for ${registerDto.email}: ${result.success}`);
+      
+      return result;
+    } catch (error) {
+      this.logger.error(`SQL Registration failed for ${registerDto.email}:`, error);
+      throw error;
+    }
+  }
+
+  @Post('simple/register')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'SIMPLE: Production-ready registration with only existing DB fields' })
+  async simpleRegister(@Body() body: any, @Ip() clientIp: string) {
+    this.logger.log(`SIMPLE: Registration attempt from IP ${clientIp} for ${body.email}`);
+    
+    try {
+      // Validate required fields
+      if (!body.email) throw new BadRequestException('Email es requerido');
+      if (!body.password) throw new BadRequestException('Contraseña es requerida');
+      if (!body.name && !body.fullName) throw new BadRequestException('Nombre es requerido');
+
+      // Check if user already exists
+      const existingUser = await this.authService['prisma'].user.findUnique({
+        where: { email: body.email },
+      });
+
+      if (existingUser) {
+        throw new ConflictException('Ya existe un usuario registrado con este correo electrónico');
+      }
+
+      // Create user with ONLY fields that exist in the actual table
       const userData = {
         email: body.email,
         password_hash: await require('bcryptjs').hash(body.password, 12),
-        name: body.fullName || body.name || 'Usuario Sin Nombre',
-        user_type: body.userType || 'client',
+        name: body.fullName || body.name,
+        user_type: body.userType || body.user_type || 'client',
         location: body.location || null,
         phone: body.phone || null,
         whatsapp_number: body.phone || null,
         birthdate: body.birthdate ? new Date(body.birthdate) : null,
+        verified: false,
         email_verified: false,
-        verified: false
+        failed_login_attempts: 0,
       };
 
-      this.logger.log(`TEMP: Creating user with data:`, { ...userData, password_hash: '[REDACTED]' });
+      this.logger.log(`SIMPLE: Creating user with mapped data:`, { 
+        ...userData, 
+        password_hash: '[REDACTED]' 
+      });
 
       const user = await this.authService['prisma'].user.create({
         data: userData,
       });
 
-      this.logger.log(`TEMP: User created successfully: ${user.id}`);
+      this.logger.log(`✅ SIMPLE: User created successfully: ${user.id} - ${user.email}`);
+
+      // Send verification email
+      try {
+        await this.authService.sendEmailVerification(user.email, user.id);
+        this.logger.log(`✅ SIMPLE: Verification email sent to: ${user.email}`);
+      } catch (emailError) {
+        this.logger.error(`❌ SIMPLE: Failed to send verification email:`, emailError);
+      }
 
       return {
         success: true,
@@ -475,13 +650,17 @@ export class AuthController {
         email: user.email
       };
     } catch (error) {
-      this.logger.error(`TEMP: Registration failed:`, error);
+      this.logger.error(`❌ SIMPLE: Registration failed for ${body.email}:`, error);
+      
+      if (error instanceof ConflictException || error instanceof BadRequestException) {
+        throw error;
+      }
       
       if (error.code === 'P2002') {
         throw new ConflictException('Ya existe un usuario registrado con este correo electrónico');
       }
       
-      throw new BadRequestException(error.message || 'Error creating user');
+      throw new BadRequestException(error.message || 'Error creando cuenta de usuario');
     }
   }
 

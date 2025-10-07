@@ -27,6 +27,10 @@ const FavoritesPage = lazy(() => import("./pages/FavoritesPage"));
 const HelpPage = lazy(() => import("./pages/HelpPage"));
 const NotificationsPage = lazy(() => import("./pages/NotificationsPage"));
 const SettingsPage = lazy(() => import("./pages/SettingsPage"));
+const JobsPage = lazy(() => import("./pages/JobsPage"));
+const ReviewsPage = lazy(() => import("./pages/ReviewsPage"));
+const VerificationPage = lazy(() => import("./pages/VerificationPage"));
+const VerificationAdminPage = lazy(() => import("./pages/admin/VerificationAdminPage"));
 
 // Context
 import { SecureAuthProvider, useSecureAuth } from "./context/SecureAuthContext";
@@ -337,6 +341,54 @@ function AppRoutes() {
                       <ProtectedRoute>
                         <AsyncErrorBoundary>
                           <SettingsPage />
+                        </AsyncErrorBoundary>
+                      </ProtectedRoute>
+                    </RouteErrorBoundary>
+                  } 
+                />
+                <Route 
+                  path="/jobs" 
+                  element={
+                    <RouteErrorBoundary routeName="Mis Trabajos" fallbackRoute="/dashboard">
+                      <ProtectedRoute>
+                        <AsyncErrorBoundary>
+                          <JobsPage />
+                        </AsyncErrorBoundary>
+                      </ProtectedRoute>
+                    </RouteErrorBoundary>
+                  } 
+                />
+                <Route 
+                  path="/reviews" 
+                  element={
+                    <RouteErrorBoundary routeName="Mis Reseñas" fallbackRoute="/dashboard">
+                      <ProtectedRoute>
+                        <AsyncErrorBoundary>
+                          <ReviewsPage />
+                        </AsyncErrorBoundary>
+                      </ProtectedRoute>
+                    </RouteErrorBoundary>
+                  } 
+                />
+                <Route 
+                  path="/verification" 
+                  element={
+                    <RouteErrorBoundary routeName="Verificación" fallbackRoute="/dashboard">
+                      <ProtectedRoute>
+                        <AsyncErrorBoundary>
+                          <VerificationPage />
+                        </AsyncErrorBoundary>
+                      </ProtectedRoute>
+                    </RouteErrorBoundary>
+                  } 
+                />
+                <Route 
+                  path="/admin/verification" 
+                  element={
+                    <RouteErrorBoundary routeName="Admin Verificación" fallbackRoute="/dashboard">
+                      <ProtectedRoute>
+                        <AsyncErrorBoundary>
+                          <VerificationAdminPage />
                         </AsyncErrorBoundary>
                       </ProtectedRoute>
                     </RouteErrorBoundary>

@@ -78,6 +78,27 @@ export const MobileNavigation = memo<MobileNavigationProps>(({ className }) => {
       userType: 'professional' 
     },
     { 
+      label: 'Mis Trabajos', 
+      href: '/jobs', 
+      icon: <Shield className="h-5 w-5" />,
+      requiresAuth: true,
+      userType: 'both' 
+    },
+    { 
+      label: 'Mis Reseñas', 
+      href: '/reviews', 
+      icon: <Star className="h-5 w-5" />,
+      requiresAuth: true,
+      userType: 'professional' 
+    },
+    { 
+      label: 'Verificación', 
+      href: '/verification', 
+      icon: <Shield className="h-5 w-5" />,
+      requiresAuth: true,
+      userType: 'professional' 
+    },
+    { 
       label: 'Nuevo Proyecto', 
       href: '/new-project', 
       icon: <Plus className="h-5 w-5" />,

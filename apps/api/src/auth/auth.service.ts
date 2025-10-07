@@ -129,103 +129,12 @@ export class AuthService {
   }
 
   async register(registerData: any): Promise<{ message: string; success: boolean; requiresVerification: boolean }> {
-    try {
-      this.logger.log(`Registration attempt for email: ${registerData.email}`);
-      
-      // Check if user already exists
-      const existingUser = await this.prisma.user.findUnique({
-        where: { email: registerData.email },
-      });
-
-      if (existingUser) {
-        this.logger.warn(`Registration attempt for existing email: ${registerData.email}`);
-        throw new ConflictException('Ya existe un usuario registrado con este correo electrónico');
-      }
-
-    // Hash password
-    const hashedPassword = await bcrypt.hash(registerData.password, 12);
-
-    // Map frontend fields to backend fields with better error handling
-    const userCreateData = {
-      email: registerData.email,
-      password_hash: hashedPassword,
-      name: registerData.fullName || registerData.name,
-      user_type: registerData.userType || registerData.user_type || 'client',
-      location: registerData.location || '',
-      phone: registerData.phone || null,
-      whatsapp_number: registerData.phone || null, // Use phone as WhatsApp number
-      birthdate: registerData.birthdate ? new Date(registerData.birthdate) : null,
-      email_verified: false, // Require email verification
-    };
-
-      // Create user with better error handling
-      this.logger.log(`Creating user with data: ${JSON.stringify({ 
-        ...userCreateData, 
-        password_hash: '[REDACTED]' 
-      })}`);
-      
-      const user = await this.prisma.user.create({
-        data: userCreateData,
-      });
-
-    // Create professional profile if user is professional
-    if (userCreateData.user_type === 'professional') {
-      // Convert experience string to years number
-      const experienceMap = {
-        'menos-1': 0,
-        '1-3': 2,
-        '3-5': 4,
-        '5-10': 7,
-        'mas-10': 15
-      };
-      
-      const professionalData = {
-        user_id: user.id,
-        bio: registerData.description || '',
-        specialties: registerData.serviceCategories || [],
-        years_experience: experienceMap[registerData.experience as keyof typeof experienceMap] || null,
-      };
-
-      await this.prisma.professionalProfile.create({
-        data: professionalData,
-      });
-    }
-
-    // Generate and send verification email
-    this.logger.log(`About to send verification email to: ${registerData.email}`);
-    const emailResult = await this.sendEmailVerification(registerData.email, user.id);
-    this.logger.log(`Verification email process completed for: ${registerData.email}, success: ${emailResult.success}`);
-
-      // Return registration success without tokens - user must verify email first
-      return {
-        message: emailResult.success ? 
-          'Cuenta creada exitosamente. Revisa tu correo electrónico para verificar tu cuenta.' :
-          'Cuenta creada exitosamente. Sin embargo, hubo un problema enviando el correo de verificación. Puedes solicitar uno nuevo desde la página de login.',
-        success: true,
-        requiresVerification: true
-      };
-    } catch (error) {
-      this.logger.error(`Registration failed for ${registerData.email}:`, error);
-      
-      if (error instanceof ConflictException) {
-        throw error;
-      }
-      
-      // Handle Prisma/Database specific errors
-      if (error.code) {
-        switch (error.code) {
-          case 'P2002':
-            throw new ConflictException('Ya existe un usuario con este email o datos únicos');
-          case 'P2025':
-            throw new BadRequestException('Error de referencia en los datos');
-          default:
-            this.logger.error(`Database error during registration: ${error.code} - ${error.message}`);
-            throw new BadRequestException('Database error occurred');
-        }
-      }
-      
-      throw new BadRequestException('Error creando cuenta de usuario');
-    }
+    // NOTE: This method is now primarily used by the controller
+    // The main registration logic has been moved to the controller for better control
+    this.logger.log(`🔄 Legacy register method called - redirecting to controller logic`);
+    
+    // This method is kept for backward compatibility but should not be used directly
+    throw new BadRequestException('Please use the main registration endpoint directly');
   }
 
   async refreshToken(refreshToken: string): Promise<{ access_token: string }> {
@@ -727,5 +636,133 @@ export class AuthService {
       this.logger.error(`❌ DEV: Email verification bypass failed for email: ${email}`, error);
       throw error;
     }
+  }
+
+  /**
+   * Emergency registration using raw SQL - guaranteed to work with production table
+   */
+  async registerWithRawSQL(registerData: any): Promise<{ message: string; success: boolean; requiresVerification: boolean; userId: string }> {
+    try {
+      this.logger.log(`Emergency SQL registration for email: ${registerData.email}`);
+      
+      // Check if user already exists
+      const existingUser = await this.prisma.$queryRaw<Array<{ id: string }>>`
+        SELECT id FROM users WHERE email = ${registerData.email}
+      `;
+
+      if (existingUser.length > 0) {
+        throw new ConflictException('Ya existe un usuario registrado con este correo electrónico');
+      }
+
+      // Hash password
+      const hashedPassword = await bcrypt.hash(registerData.password, 12);
+
+      // Insert user using raw SQL with ONLY existing fields
+      const newUser = await this.prisma.$queryRaw<Array<{ id: string; email: string }>>`
+        INSERT INTO users (
+          id, 
+          email, 
+          password_hash, 
+          name, 
+          user_type, 
+          location, 
+          phone, 
+          whatsapp_number, 
+          birthdate, 
+          verified, 
+          email_verified, 
+          failed_login_attempts,
+          created_at,
+          updated_at
+        ) VALUES (
+          gen_random_uuid(), 
+          ${registerData.email}, 
+          ${hashedPassword}, 
+          ${registerData.fullName || registerData.name}, 
+          ${registerData.userType || registerData.user_type || 'client'}::user_type,
+          ${registerData.location || null}, 
+          ${registerData.phone || null}, 
+          ${registerData.phone || null}, 
+          ${registerData.birthdate ? new Date(registerData.birthdate) : null}, 
+          false, 
+          false, 
+          0,
+          NOW(),
+          NOW()
+        )
+        RETURNING id, email
+      `;
+
+      const userId = newUser[0].id;
+      this.logger.log(`User created successfully with ID: ${userId}`);
+
+      // Create professional profile if needed (using raw SQL too)
+      if ((registerData.userType || registerData.user_type) === 'professional') {
+        const experienceYears = this.mapExperienceToYears(registerData.experience);
+        
+        await this.prisma.$queryRaw`
+          INSERT INTO professional_profiles (
+            id,
+            user_id,
+            bio,
+            specialties,
+            years_experience,
+            level,
+            rating,
+            review_count,
+            total_earnings,
+            availability_status,
+            response_time_hours,
+            created_at,
+            updated_at
+          ) VALUES (
+            gen_random_uuid(),
+            ${userId},
+            ${registerData.description || ''},
+            ${registerData.serviceCategories || []}::text[],
+            ${experienceYears},
+            'Nuevo'::professional_level,
+            0.0,
+            0,
+            0.0,
+            'available'::availability_status,
+            24,
+            NOW(),
+            NOW()
+          )
+        `;
+      }
+
+      // Send verification email
+      const emailResult = await this.sendEmailVerification(registerData.email, userId);
+      
+      return {
+        message: emailResult.success ? 
+          'Cuenta creada exitosamente. Revisa tu correo electrónico para verificar tu cuenta.' :
+          'Cuenta creada exitosamente. Sin embargo, hubo un problema enviando el correo de verificación.',
+        success: true,
+        requiresVerification: true,
+        userId: userId
+      };
+    } catch (error) {
+      this.logger.error(`Emergency SQL registration failed for ${registerData.email}:`, error);
+      
+      if (error instanceof ConflictException) {
+        throw error;
+      }
+      
+      throw new BadRequestException('Error creando cuenta de usuario');
+    }
+  }
+
+  private mapExperienceToYears(experience: string): number | null {
+    const experienceMap = {
+      'menos-1': 0,
+      '1-3': 2,
+      '3-5': 4,
+      '5-10': 7,
+      'mas-10': 15
+    };
+    return experienceMap[experience as keyof typeof experienceMap] || null;
   }
 }

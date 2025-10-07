@@ -9,6 +9,11 @@ import { ContactModule } from './contact/contact.module';
 import { CommonModule } from './common/common.module';
 import { EmailModule } from './modules/email/email.module';
 import { AdminModule } from './admin/admin.module';
+import { JobsModule } from './jobs/jobs.module';
+import { ReviewsModule } from './reviews/reviews.module';
+import { TrustModule } from './trust/trust.module';
+import { VerificationModule } from './verification/verification.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -32,6 +37,11 @@ import { AdminModule } from './admin/admin.module';
     ContactModule,
     EmailModule,
     AdminModule,
+    JobsModule,
+    ReviewsModule,
+    TrustModule,
+    VerificationModule,
+    NotificationsModule,
   ],
   controllers: [],
   providers: [],

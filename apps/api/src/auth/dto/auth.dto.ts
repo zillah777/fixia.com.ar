@@ -69,7 +69,7 @@ export class RegisterDto {
     enum: ['client', 'professional']
   })
   @IsEnum(['client', 'professional'])
-  user_type: 'client' | 'professional';
+  userType: 'client' | 'professional';
 
   @ApiProperty({ 
     example: 'Rawson',
