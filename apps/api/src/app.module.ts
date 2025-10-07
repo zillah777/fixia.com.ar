@@ -14,6 +14,7 @@ import { ReviewsModule } from './reviews/reviews.module';
 import { TrustModule } from './trust/trust.module';
 import { VerificationModule } from './verification/verification.module';
 import { NotificationsModule } from './notifications/notifications.module';
+import { PaymentsModule } from './payments/payments.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { NotificationsModule } from './notifications/notifications.module';
     TrustModule,
     VerificationModule,
     NotificationsModule,
+    PaymentsModule,
   ],
   controllers: [],
   providers: [],

@@ -31,6 +31,7 @@ const JobsPage = lazy(() => import("./pages/JobsPage"));
 const ReviewsPage = lazy(() => import("./pages/ReviewsPage"));
 const VerificationPage = lazy(() => import("./pages/VerificationPage"));
 const VerificationAdminPage = lazy(() => import("./pages/admin/VerificationAdminPage"));
+const PaymentTestPage = lazy(() => import("./pages/PaymentTestPage"));
 
 // Context
 import { SecureAuthProvider, useSecureAuth } from "./context/SecureAuthContext";
@@ -378,6 +379,16 @@ function AppRoutes() {
                         <AsyncErrorBoundary>
                           <VerificationPage />
                         </AsyncErrorBoundary>
+                      </ProtectedRoute>
+                    </RouteErrorBoundary>
+                  } 
+                />
+                <Route 
+                  path="/payment-test" 
+                  element={
+                    <RouteErrorBoundary routeName="Payment Test" fallbackRoute="/dashboard">
+                      <ProtectedRoute>
+                        <PaymentTestPage />
                       </ProtectedRoute>
                     </RouteErrorBoundary>
                   } 
