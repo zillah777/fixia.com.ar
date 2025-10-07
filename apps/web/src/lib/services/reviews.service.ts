@@ -1,4 +1,4 @@
-import { apiClient } from './api.service';
+import { api } from '../api';
 
 export interface CreateReviewDto {
   professionalId: string;
@@ -105,7 +105,7 @@ export interface PaginatedReviews {
 
 class ReviewsService {
   async createReview(reviewData: CreateReviewDto): Promise<Review> {
-    const response = await apiClient.post('/reviews', reviewData);
+    const response = await api.post('/reviews', reviewData);
     return response.data;
   }
 
@@ -120,7 +120,7 @@ class ReviewsService {
     if (filters?.page) params.append('page', filters.page.toString());
     if (filters?.limit) params.append('limit', filters.limit.toString());
 
-    const response = await apiClient.get(
+    const response = await api.get(
       `/reviews/professional/${professionalId}?${params.toString()}`
     );
     return response.data;
@@ -132,35 +132,35 @@ class ReviewsService {
     if (filters?.page) params.append('page', filters.page.toString());
     if (filters?.limit) params.append('limit', filters.limit.toString());
 
-    const response = await apiClient.get(`/reviews/my-reviews?${params.toString()}`);
+    const response = await api.get(`/reviews/my-reviews?${params.toString()}`);
     return response.data;
   }
 
   async updateReview(reviewId: string, updateData: UpdateReviewDto): Promise<Review> {
-    const response = await apiClient.put(`/reviews/${reviewId}`, updateData);
+    const response = await api.put(`/reviews/${reviewId}`, updateData);
     return response.data;
   }
 
   async deleteReview(reviewId: string): Promise<void> {
-    await apiClient.delete(`/reviews/${reviewId}`);
+    await api.delete(`/reviews/${reviewId}`);
   }
 
   async flagReview(reviewId: string, flagData: FlagReviewDto): Promise<void> {
-    await apiClient.post(`/reviews/${reviewId}/flag`, flagData);
+    await api.post(`/reviews/${reviewId}/flag`, flagData);
   }
 
   async voteHelpful(reviewId: string, voteData: HelpfulVoteDto): Promise<void> {
-    await apiClient.post(`/reviews/${reviewId}/helpful`, voteData);
+    await api.post(`/reviews/${reviewId}/helpful`, voteData);
   }
 
   async getProfessionalReviewStats(professionalId: string): Promise<ReviewStats> {
-    const response = await apiClient.get(`/reviews/professional/${professionalId}/stats`);
+    const response = await api.get(`/reviews/professional/${professionalId}/stats`);
     return response.data;
   }
 
   // Admin endpoints
   async getReviewsForModeration(page = 1, limit = 20): Promise<PaginatedReviews> {
-    const response = await apiClient.get(
+    const response = await api.get(
       `/reviews/admin/moderation?page=${page}&limit=${limit}`
     );
     return response.data;
@@ -171,7 +171,7 @@ class ReviewsService {
     status: 'approved' | 'rejected' | 'flagged' | 'spam',
     notes?: string
   ): Promise<Review> {
-    const response = await apiClient.post(`/reviews/admin/${reviewId}/moderate`, {
+    const response = await api.post(`/reviews/admin/${reviewId}/moderate`, {
       status,
       notes
     });
@@ -179,7 +179,7 @@ class ReviewsService {
   }
 
   async resolveFlag(flagId: string, notes?: string): Promise<void> {
-    await apiClient.post(`/reviews/admin/flags/${flagId}/resolve`, { notes });
+    await api.post(`/reviews/admin/flags/${flagId}/resolve`, { notes });
   }
 }
 

@@ -1,4 +1,4 @@
-import { apiClient } from './api.service';
+import { api } from '../api';
 
 export interface VerificationRequest {
   id: string;
@@ -115,7 +115,7 @@ class VerificationService {
       });
     }
 
-    const response = await apiClient.post('/verification/request', formData, {
+    const response = await api.post('/verification/request', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -124,22 +124,22 @@ class VerificationService {
   }
 
   async getMyVerificationRequests(): Promise<VerificationRequest[]> {
-    const response = await apiClient.get('/verification/my-requests');
+    const response = await api.get('/verification/my-requests');
     return response.data.requests;
   }
 
   async getMyVerificationStatus(): Promise<VerificationStatus> {
-    const response = await apiClient.get('/verification/status');
+    const response = await api.get('/verification/status');
     return response.data;
   }
 
   async getVerificationGuide(type: VerificationType): Promise<VerificationGuide> {
-    const response = await apiClient.get(`/verification/guide/${type}`);
+    const response = await api.get(`/verification/guide/${type}`);
     return response.data;
   }
 
   async getVerificationRequest(id: string): Promise<VerificationRequest> {
-    const response = await apiClient.get(`/verification/request/${id}`);
+    const response = await api.get(`/verification/request/${id}`);
     return response.data.request;
   }
 
@@ -166,7 +166,7 @@ class VerificationService {
       });
     }
 
-    const response = await apiClient.put(`/verification/request/${id}`, formData, {
+    const response = await api.put(`/verification/request/${id}`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -175,17 +175,17 @@ class VerificationService {
   }
 
   async cancelVerificationRequest(id: string): Promise<void> {
-    await apiClient.delete(`/verification/request/${id}`);
+    await api.delete(`/verification/request/${id}`);
   }
 
   // Instant verification methods
   async initiatePhoneVerification(phoneNumber: string): Promise<{ message: string; verificationCode?: string }> {
-    const response = await apiClient.post('/verification/phone', { phoneNumber });
+    const response = await api.post('/verification/phone', { phoneNumber });
     return response.data;
   }
 
   async verifyPhone(phoneNumber: string, verificationCode: string): Promise<{ message: string; verified: boolean }> {
-    const response = await apiClient.post('/verification/phone/verify', {
+    const response = await api.post('/verification/phone/verify', {
       phoneNumber,
       verificationCode
     });
@@ -193,12 +193,12 @@ class VerificationService {
   }
 
   async sendEmailVerification(): Promise<{ message: string; verificationToken?: string }> {
-    const response = await apiClient.post('/verification/email/send');
+    const response = await api.post('/verification/email/send');
     return response.data;
   }
 
   async verifyEmail(verificationToken: string): Promise<{ message: string; verified: boolean }> {
-    const response = await apiClient.post('/verification/email/verify', { verificationToken });
+    const response = await api.post('/verification/email/verify', { verificationToken });
     return response.data;
   }
 
@@ -210,7 +210,7 @@ class VerificationService {
     country: string;
     documents?: string[];
   }): Promise<VerificationRequest> {
-    const response = await apiClient.post('/verification/address', address);
+    const response = await api.post('/verification/address', address);
     return response.data.request;
   }
 
@@ -233,7 +233,7 @@ class VerificationService {
     params.append('limit', limit.toString());
     if (verificationType) params.append('verificationType', verificationType);
 
-    const response = await apiClient.get(`/verification/admin/pending?${params.toString()}`);
+    const response = await api.get(`/verification/admin/pending?${params.toString()}`);
     return response.data;
   }
 
@@ -243,7 +243,7 @@ class VerificationService {
     rejectionReason?: string,
     notes?: string
   ): Promise<VerificationRequest> {
-    const response = await apiClient.post(`/verification/admin/review/${id}`, {
+    const response = await api.post(`/verification/admin/review/${id}`, {
       status,
       rejectionReason,
       notes
@@ -252,7 +252,7 @@ class VerificationService {
   }
 
   async getVerificationStats(): Promise<VerificationStats> {
-    const response = await apiClient.get('/verification/admin/stats');
+    const response = await api.get('/verification/admin/stats');
     return response.data;
   }
 

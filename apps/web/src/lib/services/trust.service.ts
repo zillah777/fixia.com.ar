@@ -1,4 +1,4 @@
-import { apiClient } from './api.service';
+import { api } from '../api';
 
 export interface TrustScore {
   id: string;
@@ -51,23 +51,23 @@ export interface TrustBadgesResponse {
 
 class TrustService {
   async getTrustScore(userId: string): Promise<TrustScore> {
-    const response = await apiClient.get(`/trust/score/${userId}`);
+    const response = await api.get(`/trust/score/${userId}`);
     return response.data;
   }
 
   async getMyTrustScore(): Promise<TrustScore> {
-    const response = await apiClient.get('/trust/my-score');
+    const response = await api.get('/trust/my-score');
     return response.data;
   }
 
   async calculateTrustScore(userId?: string): Promise<TrustScore> {
     const endpoint = userId ? `/trust/calculate/${userId}` : '/trust/calculate/me';
-    const response = await apiClient.post(endpoint);
+    const response = await api.post(endpoint);
     return response.data;
   }
 
   async recalculateAllTrustScores(): Promise<{ message: string }> {
-    const response = await apiClient.post('/trust/recalculate-all');
+    const response = await api.post('/trust/recalculate-all');
     return response.data;
   }
 
@@ -83,12 +83,12 @@ class TrustService {
     params.append('limit', limit.toString());
     if (userType) params.append('userType', userType);
 
-    const response = await apiClient.get(`/trust/leaderboard?${params.toString()}`);
+    const response = await api.get(`/trust/leaderboard?${params.toString()}`);
     return response.data;
   }
 
   async getBadgeInformation(): Promise<TrustBadgesResponse> {
-    const response = await apiClient.get('/trust/badges');
+    const response = await api.get('/trust/badges');
     return response.data;
   }
 
