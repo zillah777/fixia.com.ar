@@ -245,6 +245,32 @@ export class PaymentsController {
     };
   }
 
+  /**
+   * Test MercadoPago configuration
+   */
+  @Get('test')
+  @Public()
+  async testConfiguration() {
+    this.logger.log('🧪 Testing MercadoPago configuration');
+    
+    try {
+      const result = await this.paymentsService.testConfiguration();
+      
+      return {
+        success: true,
+        message: 'MercadoPago configuration test completed',
+        data: result,
+      };
+    } catch (error) {
+      this.logger.error('❌ MercadoPago configuration test failed:', error);
+      return {
+        success: false,
+        message: 'MercadoPago configuration test failed',
+        error: error.message,
+      };
+    }
+  }
+
   // TODO: Implement webhook signature verification
   // private verifyWebhookSignature(data: any, signature: string): boolean {
   //   const webhookSecret = this.configService.get<string>('MERCADOPAGO_WEBHOOK_SECRET');

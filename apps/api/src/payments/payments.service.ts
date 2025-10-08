@@ -456,4 +456,27 @@ export class PaymentsService {
       this.logger.error('❌ Failed to update payment record:', error);
     }
   }
+
+  async testConfiguration(): Promise<any> {
+    this.logger.log('🧪 Testing MercadoPago configuration...');
+    
+    const accessToken = this.configService.get<string>('MERCADOPAGO_ACCESS_TOKEN');
+    const publicKey = this.configService.get<string>('MERCADOPAGO_PUBLIC_KEY');
+    const webhookSecret = this.configService.get<string>('MERCADOPAGO_WEBHOOK_SECRET');
+    
+    const result = {
+      hasAccessToken: !!accessToken,
+      hasPublicKey: !!publicKey,
+      hasWebhookSecret: !!webhookSecret,
+      accessTokenPrefix: accessToken ? accessToken.substring(0, 15) + '...' : null,
+      publicKeyPrefix: publicKey ? publicKey.substring(0, 15) + '...' : null,
+      mercadoPagoInitialized: !!this.mp,
+      environment: process.env.NODE_ENV,
+      timestamp: new Date().toISOString()
+    };
+    
+    this.logger.log('🔍 Configuration test results:', result);
+    
+    return result;
+  }
 }
