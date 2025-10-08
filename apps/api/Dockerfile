@@ -1,10 +1,10 @@
-# Railway Dockerfile for NestJS API
+# Railway Dockerfile for NestJS API (from monorepo root)
 FROM node:18-slim
 
 WORKDIR /app
 
-# Copy package files for better layer caching
-COPY package*.json ./
+# Copy API package files for better layer caching
+COPY apps/api/package*.json ./
 
 # Install dependencies
 RUN npm ci --omit=dev --silent
@@ -12,8 +12,8 @@ RUN npm ci --omit=dev --silent
 # Install build dependencies
 RUN npm install --save-dev @nestjs/cli prisma --silent
 
-# Copy all source files
-COPY . .
+# Copy all API source files
+COPY apps/api/ .
 
 # Generate Prisma client
 RUN npx prisma generate
