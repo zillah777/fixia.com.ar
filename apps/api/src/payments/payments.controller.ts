@@ -272,6 +272,48 @@ export class PaymentsController {
   }
 
   /**
+   * Simulate a webhook notification for testing
+   */
+  @Post('simulate-webhook')
+  @Public()
+  async simulateWebhook() {
+    this.logger.log('🧪 Simulating webhook notification');
+    
+    try {
+      const simulatedWebhookData = {
+        action: 'payment.updated',
+        api_version: 'v1',
+        data: {
+          id: 'test-payment-12345'
+        },
+        date_created: new Date().toISOString(),
+        id: '12345678',
+        live_mode: false,
+        type: 'payment',
+        user_id: '169925973'
+      };
+
+      this.logger.log('📨 Simulated webhook data:', simulatedWebhookData);
+      
+      // Process the webhook without validation for testing
+      const result = await this.paymentsService.handleSimulatedWebhook(simulatedWebhookData);
+      
+      return {
+        success: true,
+        message: 'Webhook simulation completed successfully',
+        data: result,
+      };
+    } catch (error) {
+      this.logger.error('❌ Webhook simulation failed:', error);
+      return {
+        success: false,
+        message: 'Webhook simulation failed',
+        error: error.message,
+      };
+    }
+  }
+
+  /**
    * Create a test payment preference (public for testing)
    */
   @Post('test-preference')

@@ -569,4 +569,46 @@ export class PaymentsService {
       );
     }
   }
+
+  async handleSimulatedWebhook(webhookData: any): Promise<any> {
+    this.logger.log('🧪 Processing simulated webhook...');
+    this.logger.log(`📨 Webhook Type: ${webhookData.type}, Action: ${webhookData.action}`);
+    
+    if (webhookData.type === 'payment' && webhookData.action === 'payment.updated') {
+      const paymentId = webhookData.data?.id;
+      
+      if (paymentId) {
+        this.logger.log(`🔍 Processing payment update for: ${paymentId}`);
+        
+        // Simulate payment status check (normally would call MercadoPago API)
+        const simulatedPaymentStatus = {
+          id: paymentId,
+          status: 'approved',
+          statusDetail: 'approved_test',
+          amount: 1000,
+          currency: 'ARS',
+          paymentMethod: 'visa',
+          payerEmail: 'test@fixia.app',
+          externalReference: 'SRV_test-service-123_test-user_1728422127369',
+          createdAt: new Date(),
+        };
+        
+        this.logger.log('✅ Simulated payment approved:', simulatedPaymentStatus);
+        
+        // Trigger business logic for approved payment
+        await this.handleApprovedPayment(simulatedPaymentStatus);
+        
+        return {
+          processed: true,
+          paymentStatus: simulatedPaymentStatus,
+          message: 'Simulated webhook processed successfully'
+        };
+      }
+    }
+    
+    return {
+      processed: false,
+      message: 'Webhook simulation completed but no action taken'
+    };
+  }
 }
