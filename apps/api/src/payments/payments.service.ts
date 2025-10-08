@@ -479,4 +479,94 @@ export class PaymentsService {
     
     return result;
   }
+
+  async createTestPreference(testData: any): Promise<PreferenceResult> {
+    this.logger.log('🧪 Creating test preference with MercadoPago...');
+    
+    if (!this.preference) {
+      throw new InternalServerErrorException('MercadoPago not initialized');
+    }
+
+    const externalReference = this.generateExternalReference('test-user', testData.serviceId);
+    
+    const preferenceBody = {
+      items: [
+        {
+          id: testData.serviceId || 'test-service',
+          title: testData.title,
+          description: testData.description,
+          quantity: 1,
+          currency_id: 'ARS',
+          unit_price: testData.amount,
+        },
+      ],
+      payer: {
+        email: testData.payerEmail,
+      },
+      back_urls: {
+        success: testData.successUrl,
+        failure: testData.failureUrl,
+        pending: testData.pendingUrl,
+      },
+      auto_return: 'approved',
+      external_reference: externalReference,
+      notification_url: `${process.env.APP_URL || 'https://api.fixia.app'}/payments/webhook`,
+      expires: false,
+      // Test environment settings
+      payment_methods: {
+        excluded_payment_methods: [],
+        excluded_payment_types: [],
+        installments: 12,
+        default_installments: 1,
+      },
+    };
+
+    try {
+      this.logger.log('📝 Preference request body:', JSON.stringify(preferenceBody, null, 2));
+      
+      const preference = await this.preference.create({ body: preferenceBody });
+      
+      this.logger.log('✅ Preference created successfully:', preference.id);
+      
+      const result: PreferenceResult = {
+        id: preference.id!,
+        sandboxInitPoint: preference.sandbox_init_point || undefined,
+        initPoint: preference.init_point || undefined,
+        clientId: preference.client_id || '',
+        collectorId: preference.collector_id || 0,
+      };
+
+      // Save preference record for tracking
+      await this.savePreferenceRecord({
+        mpPreferenceId: preference.id!,
+        externalReference,
+        amount: testData.amount,
+        title: testData.title,
+        description: testData.description,
+        payerEmail: testData.payerEmail,
+        userId: 'test-user',
+        serviceId: testData.serviceId,
+        successUrl: testData.successUrl,
+        failureUrl: testData.failureUrl,
+        pendingUrl: testData.pendingUrl,
+        initPoint: result.initPoint,
+        sandboxInitPoint: result.sandboxInitPoint,
+        clientId: result.clientId,
+        collectorId: result.collectorId,
+      });
+
+      return result;
+      
+    } catch (error) {
+      this.logger.error('❌ MercadoPago preference creation failed:', error);
+      
+      if (error.cause) {
+        this.logger.error('📋 Error details:', JSON.stringify(error.cause, null, 2));
+      }
+      
+      throw new InternalServerErrorException(
+        `Failed to create payment preference: ${error.message}`
+      );
+    }
+  }
 }

@@ -271,6 +271,56 @@ export class PaymentsController {
     }
   }
 
+  /**
+   * Create a test payment preference (public for testing)
+   */
+  @Post('test-preference')
+  @Public()
+  async createTestPreference() {
+    this.logger.log('🧪 Creating test payment preference');
+    
+    try {
+      const testPreferenceData = {
+        amount: 1000,
+        title: 'Servicio de Prueba - Fixia',
+        description: 'Test de integración MercadoPago para la plataforma Fixia',
+        payerEmail: 'test@fixia.app',
+        serviceId: 'test-service-123',
+        successUrl: 'https://api.fixia.app/payments/success',
+        failureUrl: 'https://api.fixia.app/payments/failure',
+        pendingUrl: 'https://api.fixia.app/payments/pending'
+      };
+
+      const result = await this.paymentsService.createTestPreference(testPreferenceData);
+      
+      return {
+        success: true,
+        message: 'Test preference created successfully',
+        data: result,
+        instructions: {
+          checkout_url: result.sandboxInitPoint || result.initPoint,
+          preference_id: result.id,
+          test_cards: {
+            approved: '4170068810108020',
+            rejected: '4000000000000002',
+            pending: '4000000000000044'
+          },
+          test_users: {
+            buyer: 'TESTUSER123456789',
+            seller: 'TESTUSER987654321'
+          }
+        }
+      };
+    } catch (error) {
+      this.logger.error('❌ Test preference creation failed:', error);
+      return {
+        success: false,
+        message: 'Test preference creation failed',
+        error: error.message,
+      };
+    }
+  }
+
   // TODO: Implement webhook signature verification
   // private verifyWebhookSignature(data: any, signature: string): boolean {
   //   const webhookSecret = this.configService.get<string>('MERCADOPAGO_WEBHOOK_SECRET');
