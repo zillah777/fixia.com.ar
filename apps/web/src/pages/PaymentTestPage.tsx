@@ -37,63 +37,61 @@ export default function PaymentTestPage() {
   };
 
   return (
-    <div className=\"min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8\">
-      <div className=\"container mx-auto px-4 max-w-6xl\">
-        {/* Header */}
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8">
+      <div className="container mx-auto px-4 max-w-6xl">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className=\"text-center mb-8\"
+          className="text-center mb-8"
         >
-          <h1 className=\"text-4xl font-bold text-gray-800 mb-4\">
-            <CreditCard className=\"inline-block mr-3 h-10 w-10 text-blue-600\" />
+          <h1 className="text-4xl font-bold text-gray-800 mb-4">
+            <CreditCard className="inline-block mr-3 h-10 w-10 text-blue-600" />
             Sistema de Pagos - Test
           </h1>
-          <p className=\"text-lg text-gray-600\">
+          <p className="text-lg text-gray-600">
             Prueba la integración con MercadoPago
           </p>
         </motion.div>
 
-        {/* Mode Selection */}
-        <Card className=\"mb-8\">
+        <Card className="mb-8">
           <CardHeader>
-            <CardTitle className=\"flex items-center\">
-              <DollarSign className=\"mr-2 h-5 w-5\" />
+            <CardTitle className="flex items-center">
+              <DollarSign className="mr-2 h-5 w-5" />
               Configuración de Prueba
             </CardTitle>
           </CardHeader>
-          <CardContent className=\"space-y-4\">
-            <div className=\"grid grid-cols-1 md:grid-cols-3 gap-4\">
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <Label htmlFor=\"mode\">Modo de Prueba</Label>
+                <Label htmlFor="mode">Modo de Prueba</Label>
                 <Select value={testMode} onValueChange={(value: any) => setTestMode(value)}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value=\"button\">PaymentButton</SelectItem>
-                    <SelectItem value=\"card\">PaymentCard</SelectItem>
-                    <SelectItem value=\"custom\">Custom</SelectItem>
+                    <SelectItem value="button">PaymentButton</SelectItem>
+                    <SelectItem value="card">PaymentCard</SelectItem>
+                    <SelectItem value="custom">Custom</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               <div>
-                <Label htmlFor=\"amount\">Monto (ARS)</Label>
+                <Label htmlFor="amount">Monto (ARS)</Label>
                 <Input
-                  id=\"amount\"
-                  type=\"number\"
+                  id="amount"
+                  type="number"
                   value={amount}
                   onChange={(e) => setAmount(Number(e.target.value))}
-                  min=\"100\"
-                  step=\"100\"
+                  min="100"
+                  step="100"
                 />
               </div>
 
               <div>
-                <Label htmlFor=\"title\">Título del Servicio</Label>
+                <Label htmlFor="title">Título del Servicio</Label>
                 <Input
-                  id=\"title\"
+                  id="title"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                 />
@@ -101,9 +99,9 @@ export default function PaymentTestPage() {
             </div>
 
             <div>
-              <Label htmlFor=\"description\">Descripción</Label>
+              <Label htmlFor="description">Descripción</Label>
               <Input
-                id=\"description\"
+                id="description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
               />
@@ -111,17 +109,15 @@ export default function PaymentTestPage() {
 
             <Button
               onClick={testPaymentMethods}
-              variant=\"outline\"
-              className=\"w-full md:w-auto\"
+              variant="outline"
+              className="w-full md:w-auto"
             >
               Probar Métodos de Pago Disponibles
             </Button>
           </CardContent>
         </Card>
 
-        {/* Payment Components */}
-        <div className=\"grid grid-cols-1 lg:grid-cols-2 gap-8\">
-          {/* Payment Button Test */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {testMode === 'button' && (
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
@@ -130,19 +126,19 @@ export default function PaymentTestPage() {
             >
               <Card>
                 <CardHeader>
-                  <CardTitle className=\"flex items-center\">
-                    <CheckCircle2 className=\"mr-2 h-5 w-5 text-green-600\" />
+                  <CardTitle className="flex items-center">
+                    <CheckCircle2 className="mr-2 h-5 w-5 text-green-600" />
                     PaymentButton Component
                   </CardTitle>
                 </CardHeader>
-                <CardContent className=\"space-y-4\">
-                  <p className=\"text-sm text-gray-600\">
+                <CardContent className="space-y-4">
+                  <p className="text-sm text-gray-600">
                     Botón de pago simple que redirige a MercadoPago Checkout Pro
                   </p>
-                  
-                  <div className=\"bg-gray-50 p-4 rounded-lg\">
-                    <p className=\"text-sm font-medium mb-2\">Detalles del Pago:</p>
-                    <ul className=\"text-sm text-gray-600 space-y-1\">
+
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <p className="text-sm font-medium mb-2">Detalles del Pago:</p>
+                    <ul className="text-sm text-gray-600 space-y-1">
                       <li>• Monto: {paymentsService.formatAmount(amount)}</li>
                       <li>• Servicio: {title}</li>
                       <li>• ID: {serviceId}</li>
@@ -157,20 +153,19 @@ export default function PaymentTestPage() {
                     professionalId={professionalId}
                     onSuccess={handlePaymentSuccess}
                     onError={handlePaymentError}
-                    size=\"lg\"
+                    size="lg"
                   />
                 </CardContent>
               </Card>
             </motion.div>
           )}
 
-          {/* Payment Card Test */}
           {testMode === 'card' && (
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.1 }}
-              className=\"lg:col-span-2 flex justify-center\"
+              className="lg:col-span-2 flex justify-center"
             >
               <PaymentCard
                 amount={amount}
@@ -190,27 +185,26 @@ export default function PaymentTestPage() {
             </motion.div>
           )}
 
-          {/* Custom Test */}
           {testMode === 'custom' && (
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.1 }}
-              className=\"lg:col-span-2\"
+              className="lg:col-span-2"
             >
               <Card>
                 <CardHeader>
-                  <CardTitle className=\"flex items-center\">
-                    <AlertCircle className=\"mr-2 h-5 w-5 text-orange-600\" />
+                  <CardTitle className="flex items-center">
+                    <AlertCircle className="mr-2 h-5 w-5 text-orange-600" />
                     Prueba Personalizada
                   </CardTitle>
                 </CardHeader>
-                <CardContent className=\"space-y-4\">
-                  <p className=\"text-sm text-gray-600\">
+                <CardContent className="space-y-4">
+                  <p className="text-sm text-gray-600">
                     Prueba la integración directa con el servicio de pagos
                   </p>
 
-                  <div className=\"grid grid-cols-1 md:grid-cols-2 gap-4\">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <Button
                       onClick={async () => {
                         try {
@@ -229,23 +223,23 @@ export default function PaymentTestPage() {
                           alert('Error creando preference');
                         }
                       }}
-                      className=\"w-full\"
+                      className="w-full"
                     >
                       Crear Preference
                     </Button>
 
                     <Button
                       onClick={testPaymentMethods}
-                      variant=\"outline\"
-                      className=\"w-full\"
+                      variant="outline"
+                      className="w-full"
                     >
                       Listar Métodos de Pago
                     </Button>
                   </div>
 
-                  <div className=\"bg-yellow-50 border border-yellow-200 rounded-lg p-4\">
-                    <h4 className=\"font-medium text-yellow-800 mb-2\">Nota de Desarrollo:</h4>
-                    <p className=\"text-sm text-yellow-700\">
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <h4 className="font-medium text-yellow-800 mb-2">Nota de Desarrollo:</h4>
+                    <p className="text-sm text-yellow-700">
                       Para probar pagos reales, necesitas configurar las credenciales de MercadoPago
                       en las variables de entorno del backend.
                     </p>
@@ -256,38 +250,37 @@ export default function PaymentTestPage() {
           )}
         </div>
 
-        {/* Status Information */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className=\"mt-8\"
+          className="mt-8"
         >
           <Card>
             <CardHeader>
               <CardTitle>Estado del Sistema de Pagos</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className=\"grid grid-cols-1 md:grid-cols-3 gap-4\">
-                <div className=\"flex items-center space-x-2\">
-                  <CheckCircle2 className=\"h-5 w-5 text-green-600\" />
-                  <span className=\"text-sm\">Frontend Integrado</span>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="flex items-center space-x-2">
+                  <CheckCircle2 className="h-5 w-5 text-green-600" />
+                  <span className="text-sm">Frontend Integrado</span>
                 </div>
-                <div className=\"flex items-center space-x-2\">
-                  <CheckCircle2 className=\"h-5 w-5 text-green-600\" />
-                  <span className=\"text-sm\">Backend Configurado</span>
+                <div className="flex items-center space-x-2">
+                  <CheckCircle2 className="h-5 w-5 text-green-600" />
+                  <span className="text-sm">Backend Configurado</span>
                 </div>
-                <div className=\"flex items-center space-x-2\">
-                  <AlertCircle className=\"h-5 w-5 text-orange-600\" />
-                  <span className=\"text-sm\">Credenciales Pendientes</span>
+                <div className="flex items-center space-x-2">
+                  <AlertCircle className="h-5 w-5 text-orange-600" />
+                  <span className="text-sm">Credenciales Pendientes</span>
                 </div>
               </div>
 
-              <div className=\"mt-4 text-sm text-gray-600\">
-                <p className=\"mb-2\">
+              <div className="mt-4 text-sm text-gray-600">
+                <p className="mb-2">
                   <strong>Próximos pasos para producción:</strong>
                 </p>
-                <ul className=\"list-disc list-inside space-y-1\">
+                <ul className="list-disc list-inside space-y-1">
                   <li>Configurar credenciales de MercadoPago en variables de entorno</li>
                   <li>Ejecutar migración de base de datos para modelos de Payment</li>
                   <li>Configurar webhook de MercadoPago para notificaciones</li>
