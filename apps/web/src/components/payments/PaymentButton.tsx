@@ -47,9 +47,8 @@ export function PaymentButton({
       setIsLoading(true);
       setPaymentStatus('processing');
 
-      // Get user email from auth context or localStorage
-      const userEmail = getUserEmail(); // You'll need to implement this
-      
+      const userEmail = getUserEmail();
+
       if (!userEmail) {
         throw new Error('Email de usuario requerido para procesar el pago');
       }
@@ -67,18 +66,14 @@ export function PaymentButton({
         pendingUrl: `${window.location.origin}/payments/pending`,
       };
 
-      // Validate payment data
       const validationErrors = paymentsService.validatePreferenceData(preferenceData);
       if (validationErrors.length > 0) {
         throw new Error(validationErrors.join(', '));
       }
 
-      // Create payment preference
       const preference = await paymentsService.createPreference(preferenceData);
-      
-      // Redirect to MercadoPago checkout
+
       if (preference.initPoint) {
-        // Save payment context for when user returns
         localStorage.setItem('fixia_payment_context', JSON.stringify({
           preferenceId: preference.id,
           serviceId,
@@ -88,7 +83,6 @@ export function PaymentButton({
           title,
         }));
 
-        // Redirect to MercadoPago
         window.location.href = preference.initPoint;
       } else {
         throw new Error('No se pudo generar el enlace de pago');
@@ -97,14 +91,14 @@ export function PaymentButton({
     } catch (error) {
       console.error('Payment error:', error);
       const errorMessage = error instanceof Error ? error.message : 'Error al procesar el pago';
-      
+
       setPaymentStatus('error');
       toast({
         title: 'Error en el pago',
         description: errorMessage,
         variant: 'destructive',
       });
-      
+
       onError?.(errorMessage);
     } finally {
       setIsLoading(false);
@@ -112,8 +106,6 @@ export function PaymentButton({
   };
 
   const getUserEmail = (): string | null => {
-    // Get from auth context or localStorage
-    // This is a placeholder - implement based on your auth system
     const userStr = localStorage.getItem('fixia_user_basic');
     if (userStr) {
       try {
@@ -142,13 +134,13 @@ export function PaymentButton({
   const getButtonIcon = () => {
     switch (paymentStatus) {
       case 'processing':
-        return <Loader2 className=\"h-4 w-4 animate-spin\" />;
+        return <Loader2 className="h-4 w-4 animate-spin" />;
       case 'success':
-        return <CheckCircle className=\"h-4 w-4\" />;
+        return <CheckCircle className="h-4 w-4" />;
       case 'error':
-        return <XCircle className=\"h-4 w-4\" />;
+        return <XCircle className="h-4 w-4" />;
       default:
-        return <CreditCard className=\"h-4 w-4\" />;
+        return <CreditCard className="h-4 w-4" />;
     }
   };
 
@@ -170,10 +162,10 @@ export function PaymentButton({
         disabled={disabled || isLoading || paymentStatus === 'success'}
         variant={getButtonVariant()}
         size={size}
-        className=\"w-full font-semibold\"
+        className="w-full font-semibold"
       >
         {getButtonIcon()}
-        <span className=\"ml-2\">{getButtonText()}</span>
+        <span className="ml-2">{getButtonText()}</span>
       </Button>
     </motion.div>
   );
@@ -207,36 +199,36 @@ export function PaymentCard({
   return (
     <Card className={`w-full max-w-md mx-auto ${className}`}>
       <CardHeader>
-        <CardTitle className=\"text-center\">{title}</CardTitle>
-        <div className=\"text-center\">
-          <div className=\"text-3xl font-bold text-primary\">
+        <CardTitle className="text-center">{title}</CardTitle>
+        <div className="text-center">
+          <div className="text-3xl font-bold text-primary">
             {paymentsService.formatAmount(amount)}
           </div>
-          <Badge variant=\"secondary\" className=\"mt-2\">
+          <Badge variant="secondary" className="mt-2">
             Pago seguro con MercadoPago
           </Badge>
         </div>
       </CardHeader>
-      
-      <CardContent className=\"space-y-4\">
-        <p className=\"text-sm text-muted-foreground text-center\">
+
+      <CardContent className="space-y-4">
+        <p className="text-sm text-muted-foreground text-center">
           {description}
         </p>
-        
+
         {features.length > 0 && (
-          <div className=\"space-y-2\">
-            <h4 className=\"font-medium text-sm\">Incluye:</h4>
-            <ul className=\"space-y-1\">
+          <div className="space-y-2">
+            <h4 className="font-medium text-sm">Incluye:</h4>
+            <ul className="space-y-1">
               {features.map((feature, index) => (
-                <li key={index} className=\"text-sm text-muted-foreground flex items-center\">
-                  <CheckCircle className=\"h-3 w-3 text-green-500 mr-2 flex-shrink-0\" />
+                <li key={index} className="text-sm text-muted-foreground flex items-center">
+                  <CheckCircle className="h-3 w-3 text-green-500 mr-2 flex-shrink-0" />
                   {feature}
                 </li>
               ))}
             </ul>
           </div>
         )}
-        
+
         <PaymentButton
           amount={amount}
           title={title}
@@ -246,10 +238,10 @@ export function PaymentCard({
           professionalId={professionalId}
           onSuccess={onSuccess}
           onError={onError}
-          size=\"lg\"
+          size="lg"
         />
-        
-        <div className=\"text-xs text-muted-foreground text-center\">
+
+        <div className="text-xs text-muted-foreground text-center">
           <p>🔒 Transacción segura y encriptada</p>
           <p>💳 Aceptamos todas las tarjetas</p>
         </div>
