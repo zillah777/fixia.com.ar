@@ -26,7 +26,6 @@
     "db:deploy": "prisma migrate deploy",
     "db:test": "node test-database.js",
     "db:setup": "./setup-database.sh",
-    "postinstall": "prisma generate",
     "railway:build": "npm ci && npx prisma generate && npx nest build",
     "railway:start": "npx prisma migrate deploy && node dist/main.js",
     "db:seed:prod": "node -r ts-node/register prisma/seed.ts",
