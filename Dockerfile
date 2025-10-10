@@ -1,32 +1,38 @@
-# Railway Dockerfile for NestJS Backend Only with OpenSSL fix
-FROM node:18-alpine
+# Multi-stage build for NestJS API
+FROM node:18-alpine AS builder
 
-# Install OpenSSL for Prisma compatibility
 RUN apk add --no-cache openssl openssl-dev
 
 WORKDIR /app
-
-# Copy packages/types (required by API)
 COPY packages ./packages
+COPY apps/api/package*.json ./apps/api/
 
-# Copy API directory with package files
-COPY apps/api ./apps/api
+WORKDIR /app/apps/api
+RUN npm ci --include=dev
 
-# Install all dependencies (including dev for build)
-RUN cd apps/api && npm ci --include=dev
+COPY apps/api/prisma ./prisma
+RUN npx prisma generate
 
-# Generate Prisma client and build NestJS with detailed logging
-RUN cd apps/api && npx prisma generate
-RUN cd apps/api && echo "About to run NestJS build..." && npm run build && echo "Build completed" || echo "Build failed"
+COPY apps/api/src ./src
+COPY apps/api/tsconfig*.json ./
+COPY apps/api/nest-cli.json ./
 
-# Verify build output exists and show detailed file listing
-RUN echo "=== CHECKING BUILD OUTPUT ===" && cd apps/api && ls -la && echo "=== DIST DIRECTORY ===" && ls -la dist/ 2>/dev/null || echo "DIST DIRECTORY NOT FOUND"
+RUN npm run build
 
-# Remove dev dependencies to reduce image size
-RUN cd apps/api && npm prune --production
+FROM node:18-alpine
+RUN apk add --no-cache openssl
 
-# Expose port
+WORKDIR /app
+COPY packages ./packages
+COPY apps/api/package*.json ./
+
+RUN npm ci --omit=dev
+
+COPY apps/api/prisma ./prisma
+RUN npx prisma generate
+
+COPY --from=builder /app/apps/api/dist ./dist
+
 EXPOSE 3001
 
-# Start command with correct path to main.js
-CMD ["sh", "-c", "cd apps/api && echo 'Starting from:' && pwd && echo 'Files in dist:' && ls -la dist/ && echo 'Looking for main.js in:' && find dist/ -name 'main.js' && (npx prisma migrate deploy || echo 'Migration failed, continuing...') && node dist/apps/api/src/main.js"]
+CMD npx prisma migrate deploy && node dist/main.js
