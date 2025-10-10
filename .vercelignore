@@ -1,0 +1,8 @@
+# Ignore root level files that shouldn't be deployed
+node_modules/
+.git/
+*.md
+*.sql
+railway/
+apps/api/
+packages/
