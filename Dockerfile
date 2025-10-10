@@ -5,7 +5,7 @@ RUN apk add --no-cache openssl openssl-dev
 
 WORKDIR /app
 COPY packages ./packages
-COPY apps/api/package*.json ./apps/api/
+COPY apps/api/package*.json apps/api/package-lock.json ./apps/api/
 
 WORKDIR /app/apps/api
 RUN npm ci --include=dev
@@ -24,7 +24,7 @@ RUN apk add --no-cache openssl
 
 WORKDIR /app
 COPY packages ./packages
-COPY apps/api/package*.json ./
+COPY apps/api/package*.json apps/api/package-lock.json ./
 
 RUN npm ci --omit=dev
 
