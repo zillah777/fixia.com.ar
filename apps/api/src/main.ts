@@ -212,15 +212,15 @@ async function bootstrap() {
 
     // Enable CORS with production-ready configuration - Updated for actual deployment URLs
     app.enableCors({
-      origin: process.env.NODE_ENV === 'production' 
+      origin: process.env.NODE_ENV === 'production'
         ? [
-            // Primary domain (actual Vercel deployment)
+            // Primary Vercel deployments
             'https://fixiaweb.vercel.app',
             'https://fixia.vercel.app',
-            // Legacy domain support
-            'https://fixia.com.ar', 
+            // Custom domains
+            'https://fixia.com.ar',
             'https://www.fixia.com.ar',
-            'https://fixia.app', 
+            'https://fixia.app',
             'https://www.fixia.app',
             // Allow all Vercel preview deployments
             /https:\/\/.*\.vercel\.app$/
