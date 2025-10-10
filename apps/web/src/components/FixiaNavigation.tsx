@@ -1,6 +1,5 @@
 import React, { memo, useCallback } from "react";
-import { Search, Plus, Bell, User, Briefcase, Heart, Shield, Gift, Settings, HelpCircle, LogOut } from "lucide-react";
-import { Star } from "lucide-react";
+import { Search, Plus, Bell, User, Briefcase, Heart, Shield, Gift, Settings, HelpCircle, LogOut, Star } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
