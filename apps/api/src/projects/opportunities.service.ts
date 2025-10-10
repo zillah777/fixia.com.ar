@@ -279,7 +279,6 @@ export class OpportunitiesService {
             name: true,
             email: true,
             avatar: true,
-            average_rating: true,
           },
         },
       },

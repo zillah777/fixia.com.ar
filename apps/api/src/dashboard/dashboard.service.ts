@@ -23,7 +23,7 @@ export class DashboardService {
     // Get services count (for professionals)
     const total_services = isProfessional
       ? await this.prisma.service.count({
-          where: { user_id: userId, is_active: true },
+          where: { professional_id: userId, is_active: true },
         })
       : 0;
 
@@ -52,7 +52,7 @@ export class DashboardService {
           agreed_price: true,
         },
       });
-      total_earnings = earningsQuery._sum.agreed_price || 0;
+      total_earnings = Number(earningsQuery._sum.agreed_price) || 0;
     }
 
     // Get average rating (for professionals)
