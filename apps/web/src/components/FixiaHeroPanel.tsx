@@ -1,5 +1,4 @@
-import { TrendingUp, Users, Zap, Target, DollarSign, CheckCircle, Clock } from "lucide-react";
-import { Star } from "lucide-react";
+import { TrendingUp, Users, Star, Zap, Target, DollarSign, CheckCircle, Clock } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";

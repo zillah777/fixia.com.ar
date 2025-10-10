@@ -1,6 +1,5 @@
 import React, { useState, memo } from 'react';
-import { ThumbsUp, Flag, Shield, TrendingUp, Award } from 'lucide-react';
-import { Star } from "lucide-react";
+import { ThumbsUp, Flag, Shield, TrendingUp, Award, Star } from 'lucide-react';
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';

@@ -1,6 +1,5 @@
 import React, { memo } from 'react';
-import { Shield, Award, TrendingUp, CheckCircle} from 'lucide-react';
-import { Star } from "lucide-react";
+import { Shield, Award, TrendingUp, CheckCircle, Star } from 'lucide-react';
 import { Badge } from '../ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
 import { cn } from '../ui/utils';

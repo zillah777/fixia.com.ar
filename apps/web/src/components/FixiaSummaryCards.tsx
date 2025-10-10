@@ -1,6 +1,5 @@
 import React, { memo } from "react";
-import { Calendar, Clock, TrendingUp, Users, MessageSquare, Shield, Zap } from "lucide-react";
-import { Star } from "lucide-react";
+import { Calendar, Clock, Star, TrendingUp, Users, MessageSquare, Shield, Zap } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Progress } from "./ui/progress";
 import { Badge } from "./ui/badge";
