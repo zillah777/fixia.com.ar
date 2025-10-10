@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "description": "Fixia Marketplace API - Backend para el marketplace de microservicios de Chubut",
+  "prisma": {
+    "schema": "prisma/schema.prisma"
+  },
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
