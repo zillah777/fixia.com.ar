@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install)",
+      "Bash(npm run dev:*)",
+      "Bash(rm:*)",
+      "Bash(npm run build:*)",
+      "Bash(ls:*)",
+      "Bash(find:*)",
+      "Bash(mkdir:*)",
+      "Bash(ln:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npm run type-check:*)",
+      "Bash(git add apps/api/src/main.ts)",
+      "Bash(env)",
+      "Bash(railway status:*)",
+      "Bash(chmod:*)",
+      "Bash(railway login:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "WebFetch(domain:fixiacomar-production.up.railway.app)",
+      "WebFetch(domain:fixiaweb.vercel.app)",
+      "Bash(npm test:*)",
+      "Bash(node:*)"
+    ],
+    "deny": []
+  }
+}
