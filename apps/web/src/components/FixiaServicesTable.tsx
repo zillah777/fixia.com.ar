@@ -1,4 +1,5 @@
-import { MoreHorizontal, ArrowUpDown, Eye, MessageSquare, Calendar, Clock, Star, DollarSign } from "lucide-react";
+import { MoreHorizontal, ArrowUpDown, Eye, MessageSquare, Calendar, Clock, DollarSign } from "lucide-react";
+import { Star } from "lucide-react";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";

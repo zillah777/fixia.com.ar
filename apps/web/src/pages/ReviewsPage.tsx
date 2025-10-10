@@ -1,6 +1,7 @@
 import React, { useState, useEffect, memo } from 'react';
-import { Star, Filter, TrendingUp, Users, MessageSquare, Shield, Award } from 'lucide-react';
-import { motion } from 'motion/react';
+import { Filter, TrendingUp, Users, MessageSquare, Shield, Award } from 'lucide-react';
+import { Star } from "lucide-react";
+import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
