@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { MercadoPagoConfig, Payment, Preference } from 'mercadopago';
 import { PrismaService } from '../common/prisma.service';
 import { CreatePaymentDto, CreatePreferenceDto, WebhookDto } from './dto/payment.dto';
+import { PaymentStatus } from '@prisma/client';
 
 export interface PaymentResult {
   id: string;
@@ -116,9 +117,7 @@ export class PaymentsService {
         statusDetail: result.status_detail,
         paymentMethodId: paymentData.paymentMethodId,
         payerEmail: paymentData.payerEmail,
-        payerName: paymentData.payer?.first_name && paymentData.payer?.last_name 
-          ? `${paymentData.payer.first_name} ${paymentData.payer.last_name}` 
-          : null,
+        payerName: paymentData.payerName || null,
         externalReference,
         userId,
         serviceId: paymentData.serviceId,
@@ -344,20 +343,20 @@ export class PaymentsService {
     return `fixia_${Date.now()}_${Math.random().toString(36).substring(7)}`;
   }
 
-  private mapMPStatusToPaymentStatus(mpStatus: string): string {
-    const statusMap: Record<string, string> = {
-      'pending': 'pending',
-      'approved': 'approved',
-      'authorized': 'authorized',
-      'in_process': 'in_process',
-      'in_mediation': 'in_mediation',
-      'rejected': 'rejected',
-      'cancelled': 'cancelled',
-      'refunded': 'refunded',
-      'charged_back': 'charged_back'
+  private mapMPStatusToPaymentStatus(mpStatus: string): PaymentStatus {
+    const statusMap: Record<string, PaymentStatus> = {
+      'pending': PaymentStatus.pending,
+      'approved': PaymentStatus.approved,
+      'authorized': PaymentStatus.authorized,
+      'in_process': PaymentStatus.in_process,
+      'in_mediation': PaymentStatus.in_mediation,
+      'rejected': PaymentStatus.rejected,
+      'cancelled': PaymentStatus.cancelled,
+      'refunded': PaymentStatus.refunded,
+      'charged_back': PaymentStatus.charged_back
     };
-    
-    return statusMap[mpStatus] || 'pending';
+
+    return statusMap[mpStatus] || PaymentStatus.pending;
   }
 
   private async savePaymentRecord(data: any): Promise<void> {

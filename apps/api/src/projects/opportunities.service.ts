@@ -268,7 +268,7 @@ export class OpportunitiesService {
       data: {
         project_id: opportunityId,
         professional_id: professionalId,
-        cover_letter: applicationData.message,
+        message: applicationData.message,
         quoted_price: applicationData.proposedBudget,
         delivery_time_days: this.parseDurationToDays(applicationData.estimatedDuration),
         status: 'pending',
