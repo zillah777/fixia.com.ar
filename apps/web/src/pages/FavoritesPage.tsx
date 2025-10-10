@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import { Link } from "react-router-dom";
-import { 
-  Heart, Search, Filter, Star, MapPin, 
+import {
+  Heart, Search, Filter, Star, MapPin,
   Crown, CheckCircle, Trash2, Grid, List, SortAsc,
   Clock, Users, Briefcase, MoreHorizontal, Share2,
-  MessageSquare, Phone, Mail
+  MessageSquare, Phone, Mail, Loader2, AlertCircle
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -15,8 +15,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
+import { Skeleton } from "../components/ui/skeleton";
 import { FixiaNavigation } from "../components/FixiaNavigation";
 import { useSecureAuth } from "../context/SecureAuthContext";
+import { favoritesService, FavoriteService, FavoriteProfessional } from "../lib/services/favorites.service";
+import { toast } from "sonner";
 
 interface FavoriteService {
   id: string;
@@ -370,6 +373,66 @@ export default function FavoritesPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("dateAdded");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [favoriteServices, setFavoriteServices] = useState<FavoriteService[]>([]);
+  const [favoriteProfessionals, setFavoriteProfessionals] = useState<FavoriteProfessional[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [removingId, setRemovingId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (user) {
+      loadFavorites();
+    }
+  }, [user]);
+
+  const loadFavorites = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const data = await favoritesService.getAllFavorites();
+
+      setFavoriteServices(data.services);
+      setFavoriteProfessionals(data.professionals);
+    } catch (err: any) {
+      console.error('Error loading favorites:', err);
+      setError('Error al cargar favoritos');
+      setFavoriteServices([]);
+      setFavoriteProfessionals([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRemoveService = async (serviceId: string) => {
+    try {
+      setRemovingId(serviceId);
+      await favoritesService.removeServiceFromFavorites(serviceId);
+
+      setFavoriteServices(prev => prev.filter(fav => fav.service.id !== serviceId));
+      toast.success('Servicio eliminado de favoritos');
+    } catch (err: any) {
+      console.error('Error removing service:', err);
+      toast.error('Error al eliminar servicio de favoritos');
+    } finally {
+      setRemovingId(null);
+    }
+  };
+
+  const handleRemoveProfessional = async (professionalId: string) => {
+    try {
+      setRemovingId(professionalId);
+      await favoritesService.removeProfessionalFromFavorites(professionalId);
+
+      setFavoriteProfessionals(prev => prev.filter(fav => fav.professional.id !== professionalId));
+      toast.success('Profesional eliminado de favoritos');
+    } catch (err: any) {
+      console.error('Error removing professional:', err);
+      toast.error('Error al eliminar profesional de favoritos');
+    } finally {
+      setRemovingId(null);
+    }
+  };
 
   if (!user) {
     return (

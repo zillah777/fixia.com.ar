@@ -6,14 +6,17 @@ FROM node:18-slim
 
 WORKDIR /app
 
-# Copy ONLY the API directory
-COPY apps/api/ ./
+# Copy package files first for better layer caching
+COPY apps/api/package*.json ./
 
 # Install dependencies
 RUN npm ci --omit=dev --silent
 
 # Install build dependencies  
 RUN npm install --save-dev @nestjs/cli prisma --silent
+
+# Copy source code
+COPY apps/api/ ./
 
 # Generate Prisma client
 RUN npx prisma generate

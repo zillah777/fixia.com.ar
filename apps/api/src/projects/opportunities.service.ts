@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../common/prisma.service';
 
 interface OpportunityMatch {
@@ -211,5 +211,103 @@ export class OpportunitiesService {
       accepted_proposals: acceptedProposals,
       success_rate: myProposals > 0 ? Math.round((acceptedProposals / myProposals) * 100) : 0,
     };
+  }
+
+  async applyToOpportunity(
+    professionalId: string,
+    opportunityId: string,
+    applicationData: {
+      message: string;
+      proposedBudget: number;
+      estimatedDuration: string;
+      portfolio?: string[];
+    },
+  ) {
+    // Verify user is professional
+    const user = await this.prisma.user.findUnique({
+      where: { id: professionalId },
+      select: { user_type: true, name: true, email: true },
+    });
+
+    if (!user || user.user_type !== 'professional') {
+      throw new ForbiddenException('Only professionals can apply to opportunities');
+    }
+
+    // Verify project exists and is open
+    const project = await this.prisma.project.findUnique({
+      where: { id: opportunityId },
+      include: {
+        client: {
+          select: { name: true, email: true },
+        },
+      },
+    });
+
+    if (!project) {
+      throw new NotFoundException('Opportunity not found');
+    }
+
+    if (project.status !== 'open') {
+      throw new BadRequestException('This opportunity is no longer accepting proposals');
+    }
+
+    // Check if professional already applied
+    const existingProposal = await this.prisma.proposal.findFirst({
+      where: {
+        project_id: opportunityId,
+        professional_id: professionalId,
+      },
+    });
+
+    if (existingProposal) {
+      throw new BadRequestException('You have already applied to this opportunity');
+    }
+
+    // Create proposal
+    const proposal = await this.prisma.proposal.create({
+      data: {
+        project_id: opportunityId,
+        professional_id: professionalId,
+        cover_letter: applicationData.message,
+        quoted_price: applicationData.proposedBudget,
+        delivery_time_days: this.parseDurationToDays(applicationData.estimatedDuration),
+        status: 'pending',
+      },
+      include: {
+        professional: {
+          select: {
+            name: true,
+            email: true,
+            avatar: true,
+            average_rating: true,
+          },
+        },
+      },
+    });
+
+    // TODO: Send notification to client
+    // TODO: Send email to client
+
+    return {
+      success: true,
+      proposal: {
+        id: proposal.id,
+        status: proposal.status,
+        submitted_at: proposal.created_at,
+      },
+      message: 'Proposal submitted successfully',
+    };
+  }
+
+  private parseDurationToDays(duration: string): number {
+    const durationMap: { [key: string]: number } = {
+      '1 semana': 7,
+      '2 semanas': 14,
+      '1 mes': 30,
+      '2 meses': 60,
+      '3+ meses': 90,
+    };
+
+    return durationMap[duration] || 30;
   }
 }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useSecureAuth } from '../context/SecureAuthContext';
 import { jobsService, Job, JobStats, ConversionAnalytics } from '../lib/services/jobs.service';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 
 const JobsPage: React.FC = () => {
-  const { user } = useAuth();
+  const { user } = useSecureAuth();
   const [jobs, setJobs] = useState<Job[]>([]);
   const [stats, setStats] = useState<JobStats | null>(null);
   const [analytics, setAnalytics] = useState<ConversionAnalytics | null>(null);
@@ -46,7 +46,7 @@ const JobsPage: React.FC = () => {
       setStats(statsData);
 
       // Load analytics for professionals
-      if (user?.user_type === 'professional') {
+      if (user?.userType === 'professional') {
         const analyticsData = await jobsService.getConversionAnalytics();
         setAnalytics(analyticsData);
       }
@@ -102,7 +102,7 @@ const JobsPage: React.FC = () => {
     );
   }
 
-  const isProfessional = user?.user_type === 'professional';
+  const isProfessional = user?.userType === 'professional';
 
   return (
     <div className="container mx-auto px-4 py-8">

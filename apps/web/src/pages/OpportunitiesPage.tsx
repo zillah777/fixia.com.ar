@@ -24,9 +24,11 @@ import { Label } from "../components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { useSecureAuth } from "../context/SecureAuthContext";
 import { toast } from "sonner";
+import { opportunitiesService, Opportunity as OpportunityType } from "../lib/services/opportunities.service";
+import { Skeleton } from "../components/ui/skeleton";
 
-// Mock data for opportunities
-const mockOpportunities = [
+// Mock data as fallback
+const mockOpportunitiesOld = [
   {
     id: "opp_001",
     title: "Desarrollo de App Móvil para Delivery",
@@ -763,23 +765,34 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
   );
 }
 
-function ProposalForm({ opportunity, onClose }: { opportunity: any, onClose: () => void }) {
+function ProposalForm({ opportunity, onClose, onSuccess }: { opportunity: OpportunityType, onClose: () => void, onSuccess?: () => void }) {
   const [proposalData, setProposalData] = useState({
-    coverLetter: '',
-    proposedBudget: opportunity.budget.min,
-    deliveryTime: '',
-    questions: ''
+    message: '',
+    proposedBudget: opportunity.budget || 0,
+    estimatedDuration: '',
+    portfolio: [] as string[]
   });
+  const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async () => {
+    if (!proposalData.message || !proposalData.estimatedDuration) {
+      toast.error("Por favor completa todos los campos requeridos");
+      return;
+    }
+
     try {
-      // Here you would send the proposal to your backend
-      console.log('Sending proposal:', proposalData);
-      
+      setSubmitting(true);
+
+      await opportunitiesService.applyToOpportunity(opportunity.id, proposalData);
+
       toast.success("¡Propuesta enviada correctamente!");
       onClose();
-    } catch (error) {
-      toast.error("Error al enviar la propuesta");
+      if (onSuccess) onSuccess();
+    } catch (error: any) {
+      console.error('Error sending proposal:', error);
+      toast.error(error?.response?.data?.message || "Error al enviar la propuesta");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -792,7 +805,7 @@ function ProposalForm({ opportunity, onClose }: { opportunity: any, onClose: () 
             <div>
               <h4 className="font-medium">{opportunity.title}</h4>
               <p className="text-sm text-muted-foreground">
-                Presupuesto: ${opportunity.budget.min} - ${opportunity.budget.max}
+                Presupuesto: ${opportunity.budget || 0}
               </p>
             </div>
             <Badge variant="outline" className="glass border-white/20">
@@ -801,81 +814,70 @@ function ProposalForm({ opportunity, onClose }: { opportunity: any, onClose: () 
           </div>
         </CardContent>
       </Card>
-      
+
       {/* Proposal Form */}
       <div className="space-y-4">
         <div className="space-y-2">
           <Label>Carta de Presentación *</Label>
           <Textarea
             placeholder="Explica por qué eres el candidato ideal para este proyecto..."
-            value={proposalData.coverLetter}
-            onChange={(e) => setProposalData({ ...proposalData, coverLetter: e.target.value })}
+            value={proposalData.message}
+            onChange={(e) => setProposalData({ ...proposalData, message: e.target.value })}
             className="glass border-white/20 min-h-32"
             rows={6}
           />
           <div className="text-sm text-muted-foreground">
-            {proposalData.coverLetter.length}/1000 caracteres
+            {proposalData.message.length}/1000 caracteres
           </div>
         </div>
-        
+
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label>Presupuesto Propuesto (USD) *</Label>
             <Input
               type="number"
               value={proposalData.proposedBudget}
-              onChange={(e) => setProposalData({ ...proposalData, proposedBudget: parseInt(e.target.value) })}
+              onChange={(e) => setProposalData({ ...proposalData, proposedBudget: parseInt(e.target.value) || 0 })}
               className="glass border-white/20"
             />
           </div>
-          
+
           <div className="space-y-2">
             <Label>Tiempo de Entrega *</Label>
             <Select
-              value={proposalData.deliveryTime}
-              onValueChange={(value) => setProposalData({ ...proposalData, deliveryTime: value })}
+              value={proposalData.estimatedDuration}
+              onValueChange={(value) => setProposalData({ ...proposalData, estimatedDuration: value })}
             >
               <SelectTrigger className="glass border-white/20">
                 <SelectValue placeholder="Seleccionar tiempo" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="1-week">1 semana</SelectItem>
-                <SelectItem value="2-weeks">2 semanas</SelectItem>
-                <SelectItem value="1-month">1 mes</SelectItem>
-                <SelectItem value="2-months">2 meses</SelectItem>
-                <SelectItem value="3-months">3+ meses</SelectItem>
+                <SelectItem value="1 semana">1 semana</SelectItem>
+                <SelectItem value="2 semanas">2 semanas</SelectItem>
+                <SelectItem value="1 mes">1 mes</SelectItem>
+                <SelectItem value="2 meses">2 meses</SelectItem>
+                <SelectItem value="3+ meses">3+ meses</SelectItem>
               </SelectContent>
             </Select>
           </div>
         </div>
-        
-        <div className="space-y-2">
-          <Label>Preguntas para el Cliente (Opcional)</Label>
-          <Textarea
-            placeholder="¿Tienes alguna pregunta específica sobre el proyecto?"
-            value={proposalData.questions}
-            onChange={(e) => setProposalData({ ...proposalData, questions: e.target.value })}
-            className="glass border-white/20"
-            rows={3}
-          />
-        </div>
       </div>
-      
+
       <div className="flex items-center justify-between">
-        <div className="text-sm text-muted-foregoing">
+        <div className="text-sm text-muted-foreground">
           Al enviar esta propuesta, aceptas los términos de servicio de Fixia
         </div>
         <div className="flex items-center space-x-3">
-          <Button variant="outline" onClick={onClose} className="glass border-white/20">
+          <Button variant="outline" onClick={onClose} className="glass border-white/20" disabled={submitting}>
             Cancelar
           </Button>
-          <Button 
+          <Button
             onClick={handleSubmit}
             className="liquid-gradient hover:opacity-90"
-            disabled={!proposalData.coverLetter || !proposalData.deliveryTime}
+            disabled={!proposalData.message || !proposalData.estimatedDuration || submitting}
           >
             <Send className="h-4 w-4 mr-2" />
-            Enviar Propuesta
+            {submitting ? 'Enviando...' : 'Enviar Propuesta'}
           </Button>
         </div>
       </div>
@@ -891,60 +893,60 @@ export default function OpportunitiesPage() {
   const [viewMode, setViewMode] = useState("grid");
   const [urgencyFilter, setUrgencyFilter] = useState(["all"]);
   const [locationFilter, setLocationFilter] = useState("all");
-  const [filteredOpportunities, setFilteredOpportunities] = useState(mockOpportunities);
+  const [opportunities, setOpportunities] = useState<OpportunityType[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
+  // Fetch opportunities from API
   useEffect(() => {
-    // Filter and sort opportunities
-    let filtered = mockOpportunities;
-    
-    if (selectedCategory !== "Todos") {
-      filtered = filtered.filter(opp => opp.category === selectedCategory);
-    }
-    
-    if (searchQuery) {
-      filtered = filtered.filter(opp => 
-        opp.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        opp.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        opp.skills.some(skill => skill.toLowerCase().includes(searchQuery.toLowerCase()))
-      );
-    }
-    
-    filtered = filtered.filter(opp => 
-      opp.budget.min >= budgetRange[0] && opp.budget.max <= budgetRange[1]
-    );
-    
-    if (locationFilter !== "all") {
-      if (locationFilter === "remote") {
-        filtered = filtered.filter(opp => opp.location === "Remoto");
+    const fetchOpportunities = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const filters: any = {
+          page: currentPage,
+          limit: 12,
+          sortBy: sortBy,
+        };
+
+        if (selectedCategory !== "Todos") {
+          filters.category = selectedCategory;
+        }
+
+        if (searchQuery) {
+          filters.search = searchQuery;
+        }
+
+        if (budgetRange[0] > 100) {
+          filters.budgetMin = budgetRange[0];
+        }
+
+        if (budgetRange[1] < 10000) {
+          filters.budgetMax = budgetRange[1];
+        }
+
+        if (locationFilter === "remote") {
+          filters.remote = true;
+        }
+
+        const response = await opportunitiesService.getOpportunities(filters);
+
+        setOpportunities(response.data || []);
+        setTotalPages(response.meta?.totalPages || 1);
+      } catch (err: any) {
+        console.error('Error fetching opportunities:', err);
+        setError('Error al cargar oportunidades. Intenta nuevamente.');
+        setOpportunities([]);
+      } finally {
+        setLoading(false);
       }
-    }
-    
-    // Sort opportunities
-    switch (sortBy) {
-      case "budget_desc":
-        filtered.sort((a, b) => b.budget.max - a.budget.max);
-        break;
-      case "proposals_asc":
-        filtered.sort((a, b) => a.proposals - b.proposals);
-        break;
-      case "deadline":
-        // Sort by urgency and deadline
-        filtered.sort((a, b) => {
-          if (a.urgency === 'urgent' && b.urgency !== 'urgent') return -1;
-          if (b.urgency === 'urgent' && a.urgency !== 'urgent') return 1;
-          return 0;
-        });
-        break;
-      case "client_rating":
-        filtered.sort((a, b) => b.client.rating - a.client.rating);
-        break;
-      default:
-        // Keep original order for newest
-        break;
-    }
-    
-    setFilteredOpportunities(filtered);
-  }, [selectedCategory, searchQuery, budgetRange, sortBy, urgencyFilter, locationFilter]);
+    };
+
+    fetchOpportunities();
+  }, [selectedCategory, searchQuery, budgetRange, sortBy, urgencyFilter, locationFilter, currentPage]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -1034,44 +1036,96 @@ export default function OpportunitiesPage() {
         </motion.div>
 
         {/* Opportunities Grid/List */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className={viewMode === "grid" 
-            ? "grid md:grid-cols-2 lg:grid-cols-3 gap-6" 
-            : "space-y-6"
-          }
-        >
-          {filteredOpportunities.map((opportunity, index) => (
-            <motion.div
-              key={opportunity.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 * index }}
-            >
-              <OpportunityCard opportunity={opportunity} viewMode={viewMode} />
-            </motion.div>
-          ))}
-        </motion.div>
+        {/* Loading State */}
+        {loading && (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <Card key={index} className="glass border-white/10">
+                <CardHeader>
+                  <Skeleton className="h-6 w-3/4 mb-2" />
+                  <Skeleton className="h-4 w-1/2" />
+                </CardHeader>
+                <CardContent>
+                  <Skeleton className="h-20 w-full mb-4" />
+                  <div className="flex gap-2">
+                    <Skeleton className="h-6 w-16" />
+                    <Skeleton className="h-6 w-16" />
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
 
-        {/* Load More */}
-        {filteredOpportunities.length > 0 && (
+        {/* Error State */}
+        {error && (
+          <Card className="glass border-white/10 p-8 text-center">
+            <AlertCircle className="h-12 w-12 mx-auto mb-4 text-destructive" />
+            <h3 className="text-lg font-medium mb-2">Error al cargar oportunidades</h3>
+            <p className="text-muted-foreground mb-4">{error}</p>
+            <Button onClick={() => window.location.reload()} variant="outline">
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Reintentar
+            </Button>
+          </Card>
+        )}
+
+        {/* Opportunities Grid */}
+        {!loading && !error && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className={viewMode === "grid"
+              ? "grid md:grid-cols-2 lg:grid-cols-3 gap-6"
+              : "space-y-6"
+            }
+          >
+            {opportunities.map((opportunity, index) => (
+              <motion.div
+                key={opportunity.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.1 * index }}
+              >
+                <OpportunityCard opportunity={opportunity} viewMode={viewMode} />
+              </motion.div>
+            ))}
+          </motion.div>
+        )}
+
+        {/* Pagination */}
+        {!loading && !error && opportunities.length > 0 && totalPages > 1 && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.6 }}
-            className="text-center mt-12"
+            className="flex items-center justify-center gap-2 mt-12"
           >
-            <Button variant="outline" className="glass border-white/20 hover:glass-medium">
-              Cargar Más Oportunidades
-              <ArrowRight className="ml-2 h-4 w-4" />
+            <Button
+              variant="outline"
+              className="glass border-white/20"
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+            >
+              Anterior
+            </Button>
+            <span className="text-sm text-muted-foreground">
+              Página {currentPage} de {totalPages}
+            </span>
+            <Button
+              variant="outline"
+              className="glass border-white/20"
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+            >
+              Siguiente
             </Button>
           </motion.div>
         )}
 
         {/* Empty State */}
-        {filteredOpportunities.length === 0 && (
+        {!loading && !error && opportunities.length === 0 && (
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}

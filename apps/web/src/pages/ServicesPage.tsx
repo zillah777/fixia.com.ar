@@ -1,12 +1,16 @@
 import { useState, useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { motion } from "motion/react";
-import { 
-  Search, Filter, MapPin, Star, Heart, Share2, Clock, DollarSign, 
-  Users, Award, Zap, ChevronDown, SlidersHorizontal, Grid3X3, 
-  List, Map, ArrowRight, CheckCircle, Briefcase, Loader2
+import {
+  Search, Filter, MapPin, Star, Heart, Share2, Clock, DollarSign,
+  Users, Award, Zap, ChevronDown, SlidersHorizontal, Grid3X3,
+  List, Map, ArrowRight, CheckCircle, Briefcase, Loader2, MessageCircle, X, Send
 } from "lucide-react";
 import { servicesService, type Service, type ServiceFilters } from "../lib/services/services.service";
+import { favoritesService } from "../lib/services/favorites.service";
+import { contactService } from "../lib/services/contact.service";
+import { toast } from "sonner";
+import { useSecureAuth } from "../context/SecureAuthContext";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Card, CardContent, CardHeader } from "../components/ui/card";
@@ -17,6 +21,8 @@ import { Checkbox } from "../components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import { Separator } from "../components/ui/separator";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "../components/ui/sheet";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../components/ui/dialog";
+import { Textarea } from "../components/ui/textarea";
 import { FixiaNavigation } from "../components/FixiaNavigation";
 import { MobileBottomNavigation } from "../components/MobileBottomNavigation";
 import { SkipNavigation } from "../components/SkipNavigation";
@@ -209,18 +215,189 @@ function SearchAndFilters({
   );
 }
 
+function ContactProfessionalModal({
+  service,
+  open,
+  onClose
+}: {
+  service: Service;
+  open: boolean;
+  onClose: () => void;
+}) {
+  const [message, setMessage] = useState('');
+  const [contactMethod, setContactMethod] = useState<'platform' | 'whatsapp' | 'email' | 'phone'>('platform');
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmit = async () => {
+    if (!message.trim()) {
+      toast.error('Por favor escribe un mensaje');
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+      await contactService.contactProfessional({
+        professionalId: service.professional.id,
+        serviceId: service.id,
+        contactMethod,
+        message,
+      });
+      toast.success('¡Mensaje enviado correctamente!', {
+        description: 'El profesional recibirá tu mensaje pronto'
+      });
+      setMessage('');
+      onClose();
+    } catch (error: any) {
+      if (error?.response?.status === 401) {
+        toast.error('Debes iniciar sesión para contactar profesionales');
+      } else {
+        toast.error('Error al enviar el mensaje');
+      }
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent className="glass border-white/10 sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Contactar a {service.professional.name}</DialogTitle>
+          <DialogDescription>
+            Envía un mensaje sobre: {service.title}
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-4 mt-4">
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Método de contacto preferido</label>
+            <Select value={contactMethod} onValueChange={(value: any) => setContactMethod(value)}>
+              <SelectTrigger className="glass border-white/20">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="platform">Plataforma Fixia</SelectItem>
+                <SelectItem value="whatsapp">WhatsApp</SelectItem>
+                <SelectItem value="email">Email</SelectItem>
+                <SelectItem value="phone">Teléfono</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Mensaje</label>
+            <Textarea
+              placeholder="Hola, me interesa tu servicio..."
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              className="glass border-white/20 min-h-[120px]"
+            />
+          </div>
+
+          <div className="flex justify-end space-x-3 pt-4">
+            <Button
+              variant="outline"
+              onClick={onClose}
+              disabled={submitting}
+              className="glass border-white/20"
+            >
+              <X className="h-4 w-4 mr-2" />
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleSubmit}
+              disabled={submitting || !message.trim()}
+              className="liquid-gradient hover:opacity-90"
+            >
+              {submitting ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Enviando...
+                </>
+              ) : (
+                <>
+                  <Send className="h-4 w-4 mr-2" />
+                  Enviar Mensaje
+                </>
+              )}
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 function ServiceCard({ service, viewMode }: { service: Service, viewMode: string }) {
   const [isFavorite, setIsFavorite] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [showContactModal, setShowContactModal] = useState(false);
+
+  useEffect(() => {
+    checkFavoriteStatus();
+  }, [service.id]);
+
+  const checkFavoriteStatus = async () => {
+    try {
+      const result = await favoritesService.isServiceFavorite(service.id);
+      setIsFavorite(result.is_favorite);
+    } catch (error) {
+      // Silently fail - user might not be logged in
+      setIsFavorite(false);
+    }
+  };
+
+  const toggleFavorite = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (loading) return;
+
+    try {
+      setLoading(true);
+
+      if (isFavorite) {
+        await favoritesService.removeServiceFromFavorites(service.id);
+        setIsFavorite(false);
+        toast.success('Servicio eliminado de favoritos');
+      } else {
+        await favoritesService.addServiceToFavorites(service.id);
+        setIsFavorite(true);
+        toast.success('Servicio agregado a favoritos');
+      }
+    } catch (error: any) {
+      console.error('Error toggling favorite:', error);
+      if (error?.response?.status === 401) {
+        toast.error('Debes iniciar sesión para agregar favoritos');
+      } else {
+        toast.error('Error al actualizar favoritos');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleContactClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setShowContactModal(true);
+  };
 
   if (viewMode === "list") {
     return (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        whileHover={{ y: -2 }}
-        transition={{ duration: 0.3 }}
-      >
-        <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 overflow-hidden">
+      <>
+        <ContactProfessionalModal
+          service={service}
+          open={showContactModal}
+          onClose={() => setShowContactModal(false)}
+        />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          whileHover={{ y: -2 }}
+          transition={{ duration: 0.3 }}
+        >
+          <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 overflow-hidden">
           <div className="flex">
             {/* Image */}
             <div className="relative w-48 h-36 flex-shrink-0">
@@ -239,9 +416,14 @@ function ServiceCard({ service, viewMode }: { service: Service, viewMode: string
                 variant="ghost"
                 size="icon"
                 className="absolute top-2 right-2 h-8 w-8 glass"
-                onClick={() => setIsFavorite(!isFavorite)}
+                onClick={toggleFavorite}
+                disabled={loading}
               >
-                <Heart className={`h-4 w-4 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-white'}`} />
+                {loading ? (
+                  <Loader2 className="h-4 w-4 animate-spin text-white" />
+                ) : (
+                  <Heart className={`h-4 w-4 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-white'}`} />
+                )}
               </Button>
             </div>
             
@@ -308,8 +490,17 @@ function ServiceCard({ service, viewMode }: { service: Service, viewMode: string
                     </Badge>
                   ))}
                 </div>
-                
+
                 <div className="flex items-center space-x-4 text-xs text-muted-foreground">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="glass border-white/20 hover:glass-medium"
+                    onClick={handleContactClick}
+                  >
+                    <MessageCircle className="h-3 w-3 mr-1" />
+                    Contactar
+                  </Button>
                   <span className="flex items-center">
                     <Briefcase className="h-3 w-3 mr-1" />
                     Profesional verificado
@@ -323,17 +514,24 @@ function ServiceCard({ service, viewMode }: { service: Service, viewMode: string
           </div>
         </Card>
       </motion.div>
+      </>
     );
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -4 }}
-      transition={{ duration: 0.3 }}
-    >
-      <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 overflow-hidden group">
+    <>
+      <ContactProfessionalModal
+        service={service}
+        open={showContactModal}
+        onClose={() => setShowContactModal(false)}
+      />
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        whileHover={{ y: -4 }}
+        transition={{ duration: 0.3 }}
+      >
+        <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 overflow-hidden group">
         {/* Image */}
         <div className="relative aspect-[4/3] overflow-hidden">
           <img 
@@ -351,9 +549,14 @@ function ServiceCard({ service, viewMode }: { service: Service, viewMode: string
             variant="ghost"
             size="icon"
             className="absolute top-3 right-3 h-8 w-8 glass opacity-0 group-hover:opacity-100 transition-opacity"
-            onClick={() => setIsFavorite(!isFavorite)}
+            onClick={toggleFavorite}
+            disabled={loading}
           >
-            <Heart className={`h-4 w-4 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-white'}`} />
+            {loading ? (
+              <Loader2 className="h-4 w-4 animate-spin text-white" />
+            ) : (
+              <Heart className={`h-4 w-4 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-white'}`} />
+            )}
           </Button>
           <div className="absolute bottom-3 right-3">
             <Badge className="bg-background/80 backdrop-blur-sm text-xs">
@@ -424,21 +627,36 @@ function ServiceCard({ service, viewMode }: { service: Service, viewMode: string
             </span>
           </div>
           
-          {/* Price */}
-          <div className="flex items-center justify-between pt-2 border-t border-white/10">
-            <div className="flex items-center space-x-2">
+          {/* Price and Actions */}
+          <div className="pt-2 border-t border-white/10 space-y-2">
+            <div className="flex items-center justify-between">
               <span className="text-xl font-bold text-primary">${service.price}</span>
+              <span className="text-xs text-muted-foreground">
+                {service.priceType === 'hourly' ? 'Por hora' : service.priceType === 'fixed' ? 'Precio fijo' : 'Negociable'}
+              </span>
             </div>
-            <Link to={`/services/${service.id}`}>
-              <Button size="sm" className="liquid-gradient hover:opacity-90 transition-all duration-300">
-                Ver Detalles
-                <ArrowRight className="ml-2 h-4 w-4" />
+            <div className="flex gap-2">
+              <Button
+                size="sm"
+                variant="outline"
+                className="glass border-white/20 hover:glass-medium flex-1"
+                onClick={handleContactClick}
+              >
+                <MessageCircle className="h-3 w-3 mr-1" />
+                Contactar
               </Button>
-            </Link>
+              <Link to={`/services/${service.id}`} className="flex-1">
+                <Button size="sm" className="liquid-gradient hover:opacity-90 transition-all duration-300 w-full">
+                  Ver Detalles
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
+            </div>
           </div>
         </CardContent>
       </Card>
     </motion.div>
+    </>
   );
 }
 

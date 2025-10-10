@@ -15,6 +15,8 @@ import { TrustModule } from './trust/trust.module';
 import { VerificationModule } from './verification/verification.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { PaymentsModule } from './payments/payments.module';
+import { DashboardModule } from './dashboard/dashboard.module';
+import { FavoritesModule } from './favorites/favorites.module';
 
 @Module({
   imports: [
@@ -44,6 +46,8 @@ import { PaymentsModule } from './payments/payments.module';
     VerificationModule,
     NotificationsModule,
     PaymentsModule,
+    DashboardModule,
+    FavoritesModule,
   ],
   controllers: [],
   providers: [],

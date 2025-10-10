@@ -26,6 +26,8 @@ import { Alert, AlertDescription } from "../components/ui/alert";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "../components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../components/ui/dropdown-menu";
 import { useSecureAuth } from "../context/SecureAuthContext";
+import { useDebouncedCallback } from "../hooks/useDebounce";
+import { uploadService } from "../lib/services/upload.service";
 import { toast } from "sonner";
 import { api } from "../lib/api";
 
@@ -183,33 +185,26 @@ function ProfileHeader({ user, onUserUpdate }: any) {
     }
 
     setIsUploading(true);
-    
+
     try {
-      // For now, create a data URL - in production you'd upload to a service
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-        const avatarUrl = e.target?.result as string;
-        
-        try {
-          const updatedUser = await api.put('/user/profile', {
-            avatar: avatarUrl // In production, this would be the uploaded file URL
-          });
-          
-          onUserUpdate(updatedUser);
-          
-          toast.success('📸 Foto actualizada', {
-            description: "Tu nueva foto de perfil se guardó correctamente"
-          });
-        } catch (error: any) {
-          toast.error('❌ Error al actualizar foto', {
-            description: error.response?.data?.message || 'No se pudo guardar tu nueva foto'
-          });
-        }
-      };
-      
-      reader.readAsDataURL(file);
-    } catch (error) {
-      toast.error('Error al procesar la imagen');
+      // Upload and optimize image
+      const uploadResult = await uploadService.uploadImage(file);
+
+      // Update user profile with new avatar
+      const updatedUser = await api.put('/user/profile', {
+        avatar: uploadResult.url
+      });
+
+      onUserUpdate(updatedUser);
+
+      toast.success('📸 Foto actualizada', {
+        description: `Imagen optimizada (${Math.round(uploadResult.size! / 1024)}KB)`
+      });
+    } catch (error: any) {
+      console.error('Avatar upload error:', error);
+      toast.error('❌ Error al actualizar foto', {
+        description: error.message || 'No se pudo guardar tu nueva foto'
+      });
     } finally {
       setIsUploading(false);
     }
@@ -406,15 +401,22 @@ function SettingsSection() {
   });
   const [isSaving, setIsSaving] = useState(false);
 
-  // Auto-save function
-  const autoSave = async (field: string, value: any) => {
+  // Auto-save function with debounce
+  const autoSaveImplementation = async (field: string, value: any) => {
     try {
       await api.put('/user/profile', { [field]: value });
-      // toast.success('Cambio guardado automáticamente');
-    } catch (error) {
+      toast.success('✓ Cambio guardado', {
+        description: 'Se guardó automáticamente',
+        duration: 2000,
+      });
+    } catch (error: any) {
+      console.error('Error auto-saving:', error);
       toast.error('Error al guardar el cambio');
     }
   };
+
+  // Debounced version - waits 800ms after user stops typing
+  const autoSave = useDebouncedCallback(autoSaveImplementation, 800);
 
   // Handle password change
   const handlePasswordChange = async () => {

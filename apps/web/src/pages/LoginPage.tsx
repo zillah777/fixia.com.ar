@@ -275,15 +275,6 @@ export default function LoginPage() {
                     "Iniciar Sesión"
                   )}
                 </Button>
-
-                {/* Demo Credentials */}
-                <div className="glass-medium mobile-card p-3 sm:p-4 mobile-space-y">
-                  <p className="text-xs sm:text-sm text-muted-foreground font-medium">Credenciales de demostración:</p>
-                  <div className="text-xs sm:text-sm text-muted-foreground mobile-space-y">
-                    <p>Email: demo@fixia.com</p>
-                    <p>Contraseña: cualquier_texto</p>
-                  </div>
-                </div>
               </form>
             </CardContent>
           </Card>

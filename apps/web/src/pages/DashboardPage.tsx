@@ -7,6 +7,8 @@ import {
   Zap, CheckCircle, AlertCircle, Search, Settings, Bell, LogOut, Heart, User
 } from "lucide-react";
 import { userService, DashboardStats } from "../lib/services";
+import { dashboardService } from "../lib/services/dashboard.service";
+import type { RecentActivity, CurrentProject } from "../lib/services/dashboard.service";
 import { Skeleton } from "../components/ui/skeleton";
 import { Button } from "../components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
@@ -216,43 +218,38 @@ function QuickActions({ user }: { user: any }) {
   );
 }
 
-function RecentActivity({ dashboardData, loading }: { dashboardData: DashboardStats | null; loading: boolean }) {
-  // Default activities as fallback
-  const defaultActivities = [
-    {
-      id: 1,
-      type: 'order',
-      title: 'Nuevo pedido recibido',
-      description: 'Desarrollo E-commerce - Cliente: TechStart',
-      time: 'Hace 2 horas',
-      status: 'new',
-      icon: DollarSign,
-      color: 'text-success'
-    },
-    {
-      id: 2,
-      type: 'message',
-      title: 'Mensaje de cliente',
-      description: 'Carlos Mendoza envió una consulta',
-      time: 'Hace 5 horas',
-      status: 'unread',
-      icon: MessageSquare,
-      color: 'text-primary'
-    },
-    {
-      id: 3,
-      type: 'review',
-      title: 'Nueva reseña recibida',
-      description: '5 estrellas - "Excelente trabajo"',
-      time: 'Ayer',
-      status: 'completed',
-      icon: Star,
-      color: 'text-warning'
-    }
-  ];
+function RecentActivity({
+  activities,
+  loading
+}: {
+  activities: RecentActivity[];
+  loading: boolean;
+}) {
+  const getActivityIcon = (type: RecentActivity['type']) => {
+    const icons = {
+      order: DollarSign,
+      message: MessageSquare,
+      review: Star,
+      proposal: Target,
+      payment: DollarSign,
+      service_created: Plus,
+      profile_view: Users
+    };
+    return icons[type] || Bell;
+  };
 
-  // Show empty activities for now since backend doesn't provide recentActivity yet
-  const activities: any[] = [];
+  const getActivityColor = (type: RecentActivity['type']): string => {
+    const colors = {
+      order: 'text-success',
+      message: 'text-primary',
+      review: 'text-warning',
+      proposal: 'text-info',
+      payment: 'text-success',
+      service_created: 'text-primary',
+      profile_view: 'text-muted-foreground'
+    };
+    return colors[type] || 'text-muted-foreground';
+  };
 
   function getActivityTitle(type: string): string {
     const titles: { [key: string]: string } = {
@@ -262,39 +259,6 @@ function RecentActivity({ dashboardData, loading }: { dashboardData: DashboardSt
       contact_request: 'Nueva solicitud de contacto'
     };
     return titles[type] || 'Actividad reciente';
-  }
-
-  function getActivityIcon(type: string) {
-    const icons: { [key: string]: any } = {
-      service_created: Plus,
-      service_completed: CheckCircle,
-      review_received: Star,
-      contact_request: MessageSquare
-    };
-    return icons[type] || DollarSign;
-  }
-
-  function getActivityColor(type: string): string {
-    const colors: { [key: string]: string } = {
-      service_created: 'text-primary',
-      service_completed: 'text-success',
-      review_received: 'text-warning',
-      contact_request: 'text-blue-400'
-    };
-    return colors[type] || 'text-success';
-  }
-
-  function formatDate(dateString: string): string {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-    const diffDays = Math.floor(diffHours / 24);
-
-    if (diffHours < 1) return 'Hace unos minutos';
-    if (diffHours < 24) return `Hace ${diffHours} hora${diffHours > 1 ? 's' : ''}`;
-    if (diffDays < 7) return `Hace ${diffDays} día${diffDays > 1 ? 's' : ''}`;
-    return date.toLocaleDateString();
   }
 
   return (
@@ -329,16 +293,19 @@ function RecentActivity({ dashboardData, loading }: { dashboardData: DashboardSt
         ) : (
           <div className="space-y-4">
             {activities.slice(0, 3).map((activity) => {
-              const Icon = activity.icon;
+              const Icon = getActivityIcon(activity.type);
+              const color = getActivityColor(activity.type);
+              const timeFormatted = dashboardService.formatActivityTime(activity.created_at);
+
               return (
                 <div key={activity.id} className="flex items-start space-x-4 p-3 glass-medium rounded-lg hover:glass-strong transition-all cursor-pointer">
-                  <div className={`h-10 w-10 rounded-full bg-muted flex items-center justify-center ${activity.color}`}>
+                  <div className={`h-10 w-10 rounded-full bg-muted flex items-center justify-center ${color}`}>
                     <Icon className="h-5 w-5" />
                   </div>
                   <div className="flex-1">
                     <h4 className="font-medium">{activity.title}</h4>
                     <p className="text-sm text-muted-foreground">{activity.description}</p>
-                    <span className="text-xs text-muted-foreground">{activity.time}</span>
+                    <span className="text-xs text-muted-foreground">{timeFormatted}</span>
                   </div>
                   {activity.status === 'new' && (
                     <Badge className="bg-success/20 text-success border-success/30">Nuevo</Badge>
@@ -472,22 +439,42 @@ function StatCards({ dashboardData, loading }: { dashboardData: DashboardStats |
   );
 }
 
-function CurrentProjects() {
-  // TODO: Replace with real projects from API when implemented
-  const projects: any[] = [];
-
+function CurrentProjects({
+  projects,
+  loading
+}: {
+  projects: CurrentProject[];
+  loading: boolean;
+}) {
   return (
     <Card className="glass border-white/10">
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle>Proyectos Actuales</CardTitle>
-          <Button variant="outline" size="sm" className="glass border-white/20" disabled>
-            Ver Todos
-          </Button>
+          <Link to="/jobs">
+            <Button variant="outline" size="sm" className="glass border-white/20 hover:glass-medium">
+              Ver Todos
+            </Button>
+          </Link>
         </div>
       </CardHeader>
       <CardContent>
-        {projects.length === 0 ? (
+        {loading ? (
+          <div className="space-y-4">
+            {Array.from({ length: 3 }).map((_, index) => (
+              <div key={index} className="p-4 glass-medium rounded-lg">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex-1 space-y-2">
+                    <Skeleton className="h-4 w-3/4" />
+                    <Skeleton className="h-3 w-1/2" />
+                  </div>
+                  <Skeleton className="h-6 w-20" />
+                </div>
+                <Skeleton className="h-2 w-full" />
+              </div>
+            ))}
+          </div>
+        ) : projects.length === 0 ? (
           <div className="text-center py-12">
             <div className="h-16 w-16 liquid-gradient rounded-xl flex items-center justify-center mx-auto mb-4 opacity-50">
               <Briefcase className="h-8 w-8 text-white" />
@@ -506,24 +493,21 @@ function CurrentProjects() {
         ) : (
           <div className="space-y-4">
             {projects.map((project) => (
-              <div key={project.id} className="p-4 glass-medium rounded-lg">
+              <div key={project.id} className="p-4 glass-medium rounded-lg hover:glass-strong transition-all cursor-pointer">
                 <div className="flex items-center justify-between mb-3">
                   <div>
                     <h4 className="font-medium">{project.title}</h4>
-                    <p className="text-sm text-muted-foreground">Cliente: {project.client}</p>
+                    <p className="text-sm text-muted-foreground">Cliente: {project.client_name}</p>
                   </div>
                   <div className="text-right">
-                    <Badge 
-                      className={
-                        project.status === 'in_progress' ? 'bg-blue-500/20 text-blue-400 border-blue-500/30' :
-                        project.status === 'review' ? 'bg-warning/20 text-warning border-warning/30' :
-                        'bg-success/20 text-success border-success/30'
-                      }
+                    <Badge
+                      className={`${dashboardService.getProjectStatusColor(project.status)} text-white`}
                     >
-                      {project.status === 'in_progress' ? 'En Progreso' :
-                       project.status === 'review' ? 'En Revisión' : 'Completado'}
+                      {dashboardService.getProjectStatusLabel(project.status)}
                     </Badge>
-                    <p className="text-xs text-muted-foreground mt-1">{project.deadline}</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {new Date(project.deadline).toLocaleDateString('es-AR')}
+                    </p>
                   </div>
                 </div>
                 <div className="space-y-2">
@@ -532,6 +516,9 @@ function CurrentProjects() {
                     <span>{project.progress}%</span>
                   </div>
                   <Progress value={project.progress} className="h-2" />
+                </div>
+                <div className="mt-2 text-sm text-muted-foreground">
+                  {dashboardService.formatCurrency(project.price, project.currency)}
                 </div>
               </div>
             ))}
@@ -545,35 +532,31 @@ function CurrentProjects() {
 export default function DashboardPage() {
   const { user } = useSecureAuth();
   const [dashboardData, setDashboardData] = useState<DashboardStats | null>(null);
+  const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
+  const [currentProjects, setCurrentProjects] = useState<CurrentProject[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [activityLoading, setActivityLoading] = useState(true);
+  const [projectsLoading, setProjectsLoading] = useState(true);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       if (!user) return;
-      
+
       try {
         setLoading(true);
-        setError(null);
-        
+
         // Add delay to ensure authentication is fully established after login
         await new Promise(resolve => setTimeout(resolve, 1000));
-        
+
         const data = await userService.getDashboard();
         setDashboardData(data);
       } catch (error: any) {
-        console.warn('Dashboard data fetch failed, using defaults:', error?.message);
-        
-        // Don't treat dashboard API failures as critical errors
-        // Show dashboard with default/empty data instead
-        if (error?.response?.status === 401) {
-          console.log('Dashboard API returned 401 - this might be expected immediately after login');
-        }
-        
+        console.warn('Dashboard stats fetch failed, using defaults:', error?.message);
+
         // Set fallback data instead of error
         setDashboardData({
           total_services: 0,
-          active_projects: 0, 
+          active_projects: 0,
           total_earnings: 0,
           average_rating: 0,
           review_count: 0,
@@ -586,7 +569,39 @@ export default function DashboardPage() {
       }
     };
 
+    const fetchRecentActivity = async () => {
+      if (!user) return;
+
+      try {
+        setActivityLoading(true);
+        const activities = await dashboardService.getRecentActivity(10);
+        setRecentActivity(activities);
+      } catch (error) {
+        console.warn('Recent activity fetch failed:', error);
+        setRecentActivity([]);
+      } finally {
+        setActivityLoading(false);
+      }
+    };
+
+    const fetchCurrentProjects = async () => {
+      if (!user) return;
+
+      try {
+        setProjectsLoading(true);
+        const projects = await dashboardService.getCurrentProjects(5);
+        setCurrentProjects(projects);
+      } catch (error) {
+        console.warn('Current projects fetch failed:', error);
+        setCurrentProjects([]);
+      } finally {
+        setProjectsLoading(false);
+      }
+    };
+
     fetchDashboardData();
+    fetchRecentActivity();
+    fetchCurrentProjects();
   }, [user]);
 
   return (
@@ -638,12 +653,12 @@ export default function DashboardPage() {
         >
           {/* Current Projects */}
           <div className="lg:col-span-2">
-            <CurrentProjects />
+            <CurrentProjects projects={currentProjects} loading={projectsLoading} />
           </div>
 
           {/* Recent Activity */}
           <div>
-            <RecentActivity dashboardData={dashboardData} loading={loading} />
+            <RecentActivity activities={recentActivity} loading={activityLoading} />
           </div>
         </motion.div>
 
