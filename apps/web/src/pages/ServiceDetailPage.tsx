@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
-import { motion } from "motion/react";
+import { motion } from "framer-motion";
 import { 
   ArrowLeft, Star, Heart, Share2, Clock, DollarSign, Users, Award, 
   MessageSquare, Shield, CheckCircle, MapPin, Calendar, Zap, 

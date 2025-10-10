@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { motion } from "motion/react";
+import { motion } from "framer-motion";
 import {
   Search, Filter, MapPin, Star, Heart, Share2, Clock, DollarSign,
   Users, Award, Zap, ChevronDown, SlidersHorizontal, Grid3X3,

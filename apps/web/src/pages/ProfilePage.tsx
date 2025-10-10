@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { motion } from "motion/react";
+import { motion } from "framer-motion";
 import { 
   User, Mail, Phone, MapPin, Calendar, Settings, Shield, 
   Edit3, Save, X, Plus, Star, Award, Briefcase, Eye, Heart, 

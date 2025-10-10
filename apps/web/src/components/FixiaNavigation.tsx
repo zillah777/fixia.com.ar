@@ -6,7 +6,7 @@ import { Input } from "./ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
 import { Badge } from "./ui/badge";
-import { motion } from "motion/react";
+import { motion } from "framer-motion";
 import { useSecureAuth } from "../context/SecureAuthContext";
 import { MobileNavigation } from "./MobileNavigation";
 import { NotificationBell } from "./notifications/NotificationBell";

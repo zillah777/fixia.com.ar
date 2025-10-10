@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { motion } from "motion/react";
+import { motion } from "framer-motion";
 import { 
   ArrowLeft, Send, DollarSign, Calendar, MapPin, Target, 
   Clock, Star, Tag, AlertCircle, CheckCircle2, Users

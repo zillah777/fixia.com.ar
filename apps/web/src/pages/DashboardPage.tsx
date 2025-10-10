@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "motion/react";
+import { motion } from "framer-motion";
 import { 
   Plus, TrendingUp, Users, Award, Star, Eye, MessageSquare,
   Calendar, Clock, DollarSign, ArrowRight, Briefcase, Target,

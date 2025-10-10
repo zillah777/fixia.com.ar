@@ -4,7 +4,7 @@ import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "./ui/chart";
 import { Bar, BarChart, Line, LineChart, ResponsiveContainer, XAxis, YAxis, Area, AreaChart } from "recharts";
-import { motion } from "motion/react";
+import { motion } from "framer-motion";
 
 const serviceData = [
   { month: "Ene", servicios: 156, ingresos: 12400, satisfaccion: 4.8 },
