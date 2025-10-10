@@ -3,7 +3,7 @@ import { Button } from '../ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
-import { motion } from 'motion/react';
+import { motion } from "framer-motion";
 
 // Memoized Service Card for service listings
 interface ServiceCardProps {

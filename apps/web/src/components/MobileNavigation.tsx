@@ -1,6 +1,6 @@
 import React, { memo, useState, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence } from "framer-motion";
 import { 
   Menu, X, Home, Search, Briefcase, User, Bell, Settings, 
   LogOut, Heart, Gift, Shield, HelpCircle, Plus, Crown,

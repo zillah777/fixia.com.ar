@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence } from "framer-motion";
 import { WifiOff, Wifi, RefreshCw } from 'lucide-react';
 import { usePWA } from '../hooks/usePWA';
 import { Button } from './ui/button';

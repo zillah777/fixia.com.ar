@@ -1,6 +1,6 @@
 import React, { useState, useEffect, memo } from 'react';
 import { X, Upload, FileText, AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Textarea } from '../ui/textarea';

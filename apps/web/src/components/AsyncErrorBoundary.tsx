@@ -1,5 +1,5 @@
 import React, { Component, ReactNode } from 'react';
-import { motion } from 'motion/react';
+import { motion } from "framer-motion";
 import { AlertTriangle, RefreshCcw, Wifi, WifiOff } from 'lucide-react';
 
 interface Props {

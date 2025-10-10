@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence } from "framer-motion";
 import { Download, X, Smartphone, Zap, Bell, Wifi } from 'lucide-react';
 import { usePWA } from '../hooks/usePWA';
 import { Button } from './ui/button';

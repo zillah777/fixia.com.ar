@@ -1,6 +1,6 @@
 import React, { memo, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { motion } from 'motion/react';
+import { motion } from "framer-motion";
 import { 
   Home, Search, Plus, User, Bell, Briefcase, Heart, TrendingUp 
 } from 'lucide-react';

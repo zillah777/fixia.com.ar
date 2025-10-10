@@ -1,5 +1,5 @@
 import React, { Component, ReactNode } from 'react';
-import { motion } from 'motion/react';
+import { motion } from "framer-motion";
 import { Home, RefreshCcw, ArrowLeft, Bug } from 'lucide-react';
 
 interface Props {
