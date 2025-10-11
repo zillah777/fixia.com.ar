@@ -39,7 +39,7 @@ if (import.meta.env.DEV) {
 // Create axios instance with secure httpOnly cookie configuration
 export const apiClient: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
-  timeout: import.meta.env.PROD ? 10000 : 30000, // Shorter timeout in production
+  timeout: 60000, // 60 seconds - Render.com free tier needs ~50s to wake up
   headers: {
     'Content-Type': 'application/json',
   },
