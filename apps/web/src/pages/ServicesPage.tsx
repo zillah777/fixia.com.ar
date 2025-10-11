@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
-  Search, Filter, MapPin, Award, Heart, Share2, Clock, DollarSign,
-  Users, Award, Zap, ChevronDown, SlidersHorizontal, Grid3X3,
+  Search, Filter, MapPin, Heart, Heart, Share2, Clock, DollarSign,
+  Users, Heart, Zap, ChevronDown, SlidersHorizontal, Grid3X3,
   List, Map, ArrowRight, CheckCircle, Briefcase, Loader2, MessageCircle, X, Send
 } from "lucide-react";
 import { servicesService, type Service, type ServiceFilters } from "../lib/services/services.service";
@@ -408,7 +408,7 @@ function ServiceCard({ service, viewMode }: { service: Service, viewMode: string
               />
               {service.featured && (
                 <Badge className="absolute top-2 left-2 bg-warning/20 text-warning border-warning/30">
-                  <Award className="h-3 w-3 mr-1" />
+                  <Heart className="h-3 w-3 mr-1" />
                   Destacado
                 </Badge>
               )}
@@ -470,7 +470,7 @@ function ServiceCard({ service, viewMode }: { service: Service, viewMode: string
                 {/* Price and Rating */}
                 <div className="text-right">
                   <div className="flex items-center space-x-1 mb-2">
-                    <Award className="h-4 w-4 text-warning fill-current" />
+                    <Heart className="h-4 w-4 text-warning fill-current" />
                     <span className="font-medium">{service.averageRating}</span>
                     <span className="text-muted-foreground text-sm">({service.totalReviews})</span>
                   </div>
@@ -541,7 +541,7 @@ function ServiceCard({ service, viewMode }: { service: Service, viewMode: string
           />
           {service.featured && (
             <Badge className="absolute top-3 left-3 bg-warning/20 text-warning border-warning/30">
-              <Award className="h-3 w-3 mr-1" />
+              <Heart className="h-3 w-3 mr-1" />
               Destacado
             </Badge>
           )}
@@ -613,7 +613,7 @@ function ServiceCard({ service, viewMode }: { service: Service, viewMode: string
           <div className="flex items-center justify-between text-xs text-muted-foreground">
             <div className="flex items-center space-x-3">
               <span className="flex items-center">
-                <Award className="h-3 w-3 mr-1 text-warning fill-current" />
+                <Heart className="h-3 w-3 mr-1 text-warning fill-current" />
                 {service.averageRating} ({service.totalReviews})
               </span>
               <span className="flex items-center">

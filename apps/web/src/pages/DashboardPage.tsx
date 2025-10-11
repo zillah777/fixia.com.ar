@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { 
-  Plus, TrendingUp, Users, Award, Award, Eye, MessageSquare,
+  Plus, TrendingUp, Users, Heart, Heart, Eye, MessageSquare,
   Calendar, Clock, DollarSign, ArrowRight, Briefcase, Target,
   Zap, CheckCircle, AlertCircle, Search, Settings, Bell, LogOut, Heart, User
 } from "lucide-react";
@@ -229,7 +229,7 @@ function RecentActivity({
     const icons = {
       order: DollarSign,
       message: MessageSquare,
-      review: Award,
+      review: Heart,
       proposal: Target,
       payment: DollarSign,
       service_created: Plus,
@@ -395,7 +395,7 @@ function StatCards({ dashboardData, loading }: { dashboardData: DashboardStats |
       value: dashboardData?.average_rating?.toFixed(1) || "0.0",
       change: "+0.2",
       changeType: "positive",
-      icon: Award,
+      icon: Heart,
       description: `de ${dashboardData?.review_count || 0} reseñas`
     }
   ];

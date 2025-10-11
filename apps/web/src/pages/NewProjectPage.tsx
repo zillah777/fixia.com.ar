@@ -4,8 +4,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   ArrowLeft, ArrowRight, Check, Upload, X, Plus, Minus, 
   Image, FileText, DollarSign, Clock, Tag, Settings, 
-  Eye, Save, AlertCircle, Info, Award, Briefcase, Globe,
-  Camera, Trash2, Edit3, Zap, Shield, Award
+  Eye, Save, AlertCircle, Info, Heart, Briefcase, Globe,
+  Camera, Trash2, Edit3, Zap, Shield, Heart
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -27,30 +27,30 @@ import { servicesService, ServiceCategory } from "../lib/services/services.servi
 // Icon mapping for categories
 const getIconComponent = (iconName: string) => {
   if (!iconName || typeof iconName !== 'string') {
-    return Award; // Safe fallback
+    return Heart; // Safe fallback
   }
   
   const iconMap: Record<string, any> = {
     Globe,
     Camera, 
     Image,
-    Award,
+    Heart,
     FileText,
     Eye,
     Briefcase,
     Shield,
     Palette: Image, // fallback for design
     Users: Briefcase, // fallback for team services
-    HeadphonesIcon: Award, // fallback for support
+    HeadphonesIcon: Heart, // fallback for support
     PenTool: FileText, // fallback for writing
-    TrendingUp: Award, // fallback for marketing
+    TrendingUp: Heart, // fallback for marketing
   };
   
   const IconComponent = iconMap[iconName];
   
   // Ensure we always return a valid React component
   if (!IconComponent || typeof IconComponent !== 'function') {
-    return Award;
+    return Heart;
   }
   
   return IconComponent;

@@ -5,7 +5,7 @@ import {
   Search, HelpCircle, MessageSquare, Phone, 
   Mail, FileText, Users, Crown, ChevronDown, ChevronRight,
   ExternalLink, BookOpen, Play, Lightbulb, AlertCircle,
-  CheckCircle, Clock, Award, Shield, CreditCard
+  CheckCircle, Clock, Heart, Shield, CreditCard
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";

@@ -1,8 +1,8 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { 
-  ArrowLeft, Search, Users, MessageSquare, Award,
-  Crown, UserPlus, FileText, Award, Shield, Clock,
+  ArrowLeft, Search, Users, MessageSquare, Heart,
+  Crown, UserPlus, FileText, Heart, Shield, Clock,
   CheckCircle, Zap, HeadphonesIcon, Heart, Phone, Mail, Bell
 } from "lucide-react";
 import { Button } from "../components/ui/button";
@@ -67,7 +67,7 @@ function ClientProcessSection() {
       step: "Paso 4",
       title: "Evalúa la Experiencia",
       description: "Recibe tu servicio completado, califica al profesional y contribuye a la comunidad de confianza.",
-      icon: Award,
+      icon: Heart,
       color: "text-purple-400"
     }
   ];
@@ -170,7 +170,7 @@ function ProfessionalProcessSection() {
       step: "Paso 4", 
       title: "Construye Reputación",
       description: "Completa el trabajo, recibe reseñas positivas y construye tu reputación profesional verificada.",
-      icon: Award,
+      icon: Heart,
       color: "text-purple-400"
     }
   ];

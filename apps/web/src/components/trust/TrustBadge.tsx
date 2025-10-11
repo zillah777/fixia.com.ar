@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { Shield, Award, TrendingUp, CheckCircle, Award } from 'lucide-react';
+import { Shield, Heart, TrendingUp, CheckCircle } from 'lucide-react';
 import { Badge } from '../ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
 import { cn } from '../ui/utils';
@@ -35,7 +35,7 @@ export const TrustBadge = memo<TrustBadgeProps>(({
   const getBadgeIcon = (badgeName: string) => {
     switch (badgeName) {
       case 'Top Rated Plus':
-        return <Award className={cn(
+        return <Heart className={cn(
           size === 'sm' ? 'h-3 w-3' : size === 'lg' ? 'h-5 w-5' : 'h-4 w-4',
           'mr-1'
         )} />;
@@ -50,7 +50,7 @@ export const TrustBadge = memo<TrustBadgeProps>(({
           'mr-1'
         )} />;
       case 'Verified Professional':
-        return <Award className={cn(
+        return <Heart className={cn(
           size === 'sm' ? 'h-3 w-3' : size === 'lg' ? 'h-5 w-5' : 'h-4 w-4',
           'mr-1'
         )} />;
@@ -93,7 +93,7 @@ export const TrustBadge = memo<TrustBadgeProps>(({
             )}
             {verificationBadges.verifiedSkills && (
               <div className="flex items-center gap-1">
-                <Award className="h-3 w-3 text-blue-500" />
+                <Heart className="h-3 w-3 text-blue-500" />
                 Habilidades verificadas
               </div>
             )}
@@ -143,7 +143,7 @@ export const TrustBadge = memo<TrustBadgeProps>(({
           )}
           {verificationBadges.verifiedSkills && (
             <div className="flex items-center justify-center w-5 h-5 bg-blue-100 rounded-full">
-              <Award className="h-3 w-3 text-blue-600" />
+              <Heart className="h-3 w-3 text-blue-600" />
             </div>
           )}
           {verificationBadges.verifiedBusiness && (

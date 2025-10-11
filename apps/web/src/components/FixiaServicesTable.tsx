@@ -1,4 +1,4 @@
-import { MoreHorizontal, ArrowUpDown, Eye, MessageSquare, Calendar, Clock, Award, DollarSign } from "lucide-react";
+import { MoreHorizontal, ArrowUpDown, Eye, MessageSquare, Calendar, Clock, Heart, DollarSign } from "lucide-react";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
@@ -220,7 +220,7 @@ export function FixiaServicesTable() {
                       <div>
                         <div className="font-medium text-sm">{service.client.name}</div>
                         <div className="flex items-center space-x-1">
-                          <Award className="h-3 w-3 text-warning fill-current" />
+                          <Heart className="h-3 w-3 text-warning fill-current" />
                           <span className="text-xs text-muted-foreground">{service.client.rating}</span>
                         </div>
                       </div>

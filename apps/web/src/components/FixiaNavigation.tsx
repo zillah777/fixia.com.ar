@@ -11,7 +11,7 @@ import { useSecureAuth } from "../context/SecureAuthContext";
 import { MobileNavigation } from "./MobileNavigation";
 import { NotificationBell } from "./notifications/NotificationBell";
 
-// Navigation component - Award icon removed to fix bundling issue
+// Navigation component - Heart icon removed to fix bundling issue
 export const FixiaNavigation = memo(function FixiaNavigation() {
   const { user, isAuthenticated, logout } = useSecureAuth();
   const navigate = useNavigate();

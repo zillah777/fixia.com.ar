@@ -111,7 +111,7 @@ class DashboardService {
     const meta: Record<RecentActivity['type'], { icon: string; color: string }> = {
       order: { icon: 'DollarSign', color: 'text-success' },
       message: { icon: 'MessageSquare', color: 'text-primary' },
-      review: { icon: 'Award', color: 'text-warning' },
+      review: { icon: 'Heart', color: 'text-warning' },
       proposal: { icon: 'FileText', color: 'text-info' },
       payment: { icon: 'CreditCard', color: 'text-success' },
       service_created: { icon: 'Plus', color: 'text-primary' },

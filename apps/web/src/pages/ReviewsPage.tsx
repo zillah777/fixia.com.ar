@@ -1,5 +1,5 @@
 import React, { useState, useEffect, memo } from 'react';
-import { Filter, TrendingUp, Users, MessageSquare, Shield, Award, Award } from 'lucide-react';
+import { Filter, TrendingUp, Users, MessageSquare, Shield, Heart } from 'lucide-react';
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
@@ -128,7 +128,7 @@ export const ReviewsPage = memo(() => {
           <CardContent className="p-6">
             <div className="flex items-center space-x-3">
               <div className="p-2 bg-blue-100 rounded-lg">
-                <Award className="h-6 w-6 text-blue-600" />
+                <Heart className="h-6 w-6 text-blue-600" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Calificación Promedio</p>
@@ -255,7 +255,7 @@ export const ReviewsPage = memo(() => {
                   </div>
                 ) : (
                   <div className="text-center p-4 bg-gradient-to-r from-purple-100 to-gold-100 rounded-lg">
-                    <Award className="h-8 w-8 mx-auto mb-2 text-purple-600" />
+                    <Heart className="h-8 w-8 mx-auto mb-2 text-purple-600" />
                     <p className="font-medium text-purple-600">
                       ¡Felicitaciones! Has alcanzado el nivel más alto
                     </p>

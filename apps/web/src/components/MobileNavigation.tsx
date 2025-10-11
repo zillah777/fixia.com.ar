@@ -87,7 +87,7 @@ export const MobileNavigation = memo<MobileNavigationProps>(({ className }) => {
     { 
       label: 'Mis Reseñas', 
       href: '/reviews', 
-      icon: <Award className="h-5 w-5" />,
+      icon: <Heart className="h-5 w-5" />,
       requiresAuth: true,
       userType: 'professional' 
     },

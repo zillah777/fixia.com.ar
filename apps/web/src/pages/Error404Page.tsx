@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { 
   Home, Search, ArrowLeft, HelpCircle, MessageSquare,
-  Compass, Award, Lightbulb, RefreshCw
+  Compass, Heart, Lightbulb, RefreshCw
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
@@ -110,7 +110,7 @@ function SuggestionsSection() {
     {
       title: "Servicios Populares",
       description: "Explora los servicios más solicitados en Chubut",
-      icon: Award,
+      icon: Heart,
       action: "Ver Servicios",
       href: "/services",
       color: "primary"

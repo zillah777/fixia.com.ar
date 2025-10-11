@@ -2,9 +2,9 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { 
-  Search, Filter, MapPin, Clock, DollarSign, Users, Award, Zap,
+  Search, Filter, MapPin, Clock, DollarSign, Users, Heart, Zap,
   ChevronDown, SlidersHorizontal, Grid3X3, List, Eye, ArrowRight,
-  Calendar, CheckCircle, AlertCircle, Award, Briefcase, Globe,
+  Calendar, CheckCircle, AlertCircle, Heart, Briefcase, Globe,
   FileText, MessageSquare, Heart, Share2, TrendingUp, Target,
   Send, Bookmark, RefreshCw, Settings
 } from "lucide-react";
@@ -507,7 +507,7 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
                       </h3>
                       {opportunity.featured && (
                         <Badge className="bg-warning/20 text-warning border-warning/30">
-                          <Award className="h-3 w-3 mr-1" />
+                          <Heart className="h-3 w-3 mr-1" />
                           Destacado
                         </Badge>
                       )}
@@ -525,7 +525,7 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
                         <CheckCircle className="h-4 w-4 text-success" />
                       )}
                       <span className="flex items-center">
-                        <Award className="h-4 w-4 mr-1 text-warning" />
+                        <Heart className="h-4 w-4 mr-1 text-warning" />
                         {opportunity.client.rating}
                       </span>
                       <span className="flex items-center">
@@ -644,7 +644,7 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
                   )}
                 </div>
                 <div className="flex items-center space-x-2 text-xs text-muted-foreground">
-                  <Award className="h-3 w-3 text-warning" />
+                  <Heart className="h-3 w-3 text-warning" />
                   <span>{opportunity.client.rating}</span>
                   <span>•</span>
                   <span>{opportunity.client.projectsPosted} proyectos</span>
@@ -655,7 +655,7 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
             <div className="flex items-center space-x-2">
               {opportunity.featured && (
                 <Badge className="bg-warning/20 text-warning border-warning/30 text-xs">
-                  <Award className="h-3 w-3 mr-1" />
+                  <Heart className="h-3 w-3 mr-1" />
                   Destacado
                 </Badge>
               )}

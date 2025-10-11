@@ -1,5 +1,5 @@
 import React, { useState, useEffect, memo } from 'react';
-import { Shield, CheckCircle, Clock, XCircle, AlertCircle, Plus, FileText, Award, Building } from 'lucide-react';
+import { Shield, CheckCircle, Clock, XCircle, AlertCircle, Plus, FileText, Heart, Building } from 'lucide-react';
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
@@ -64,7 +64,7 @@ export const VerificationPage = memo(() => {
       case VerificationType.IDENTITY:
         return <Shield className={iconClass} />;
       case VerificationType.SKILLS:
-        return <Award className={iconClass} />;
+        return <Heart className={iconClass} />;
       case VerificationType.BUSINESS:
         return <Building className={iconClass} />;
       case VerificationType.BACKGROUND_CHECK:

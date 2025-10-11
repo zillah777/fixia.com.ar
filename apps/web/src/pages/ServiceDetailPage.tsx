@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { 
-  ArrowLeft, Award, Heart, Share2, Clock, DollarSign, Users, Award, 
+  ArrowLeft, Heart, Heart, Share2, Clock, DollarSign, Users, Heart, 
   MessageSquare, Shield, CheckCircle, MapPin, Calendar, Zap, 
   ThumbsUp, Eye, ArrowRight, Play, Download, Flag, MoreHorizontal, Loader2, AlertTriangle
 } from "lucide-react";
@@ -182,7 +182,7 @@ export default function ServiceDetailPage() {
                         Desarrollo Web
                       </Badge>
                       <Badge className="bg-warning/20 text-warning border-warning/30">
-                        <Award className="h-3 w-3 mr-1" />
+                        <Heart className="h-3 w-3 mr-1" />
                         Destacado
                       </Badge>
                     </div>
@@ -191,7 +191,7 @@ export default function ServiceDetailPage() {
                     
                     <div className="flex items-center space-x-6 text-sm text-muted-foreground">
                       <div className="flex items-center space-x-1">
-                        <Award className="h-4 w-4 text-warning fill-current" />
+                        <Heart className="h-4 w-4 text-warning fill-current" />
                         <span className="font-medium">{service.averageRating}</span>
                         <span>({service.totalReviews} reseñas)</span>
                       </div>
@@ -317,7 +317,7 @@ export default function ServiceDetailPage() {
                           <div className="text-3xl font-bold">{service.averageRating}</div>
                           <div className="flex items-center justify-center mt-1">
                             {[1,2,3,4,5].map((star) => (
-                              <Award 
+                              <Heart 
                                 key={star} 
                                 className={`h-4 w-4 ${
                                   star <= Math.round(service.averageRating)
@@ -394,7 +394,7 @@ export default function ServiceDetailPage() {
                         <div className="glass-medium rounded-lg p-4">
                           <h4 className="font-medium mb-2">Calificación Promedio</h4>
                           <div className="flex items-center space-x-2">
-                            <Award className="h-4 w-4 text-warning fill-current" />
+                            <Heart className="h-4 w-4 text-warning fill-current" />
                             <span className="font-bold">{service.professional.averageRating}</span>
                           </div>
                         </div>
@@ -413,7 +413,7 @@ export default function ServiceDetailPage() {
                               <div key={badge.id} className="glass-medium rounded-lg p-4">
                                 <div className="flex items-center space-x-3">
                                   <div className="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center">
-                                    <Award className="h-5 w-5 text-primary" />
+                                    <Heart className="h-5 w-5 text-primary" />
                                   </div>
                                   <div>
                                     <h5 className="font-medium">{badge.name}</h5>
@@ -564,7 +564,7 @@ export default function ServiceDetailPage() {
                     <div>
                       <div className="text-muted-foreground">Calificación</div>
                       <div className="font-medium flex items-center space-x-1">
-                        <Award className="h-3 w-3 text-warning fill-current" />
+                        <Heart className="h-3 w-3 text-warning fill-current" />
                         <span>{service.professional.averageRating}</span>
                       </div>
                     </div>

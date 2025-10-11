@@ -1,4 +1,4 @@
-import { TrendingUp, Users, Award, Zap, Target, DollarSign, CheckCircle, Clock } from "lucide-react";
+import { TrendingUp, Users, Heart, Zap, Target, DollarSign, CheckCircle, Clock } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
@@ -79,7 +79,7 @@ export function FixiaHeroPanel() {
             title: "Rating Promedio",
             value: "4.9",
             change: "Excelente reputación",
-            icon: Award,
+            icon: Heart,
             color: "text-warning",
             delay: 0.3
           },

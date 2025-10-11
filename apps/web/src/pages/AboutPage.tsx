@@ -2,8 +2,8 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { 
   ArrowLeft, Target, Zap, Shield, Clock, Users, 
-  CheckCircle, Search, Bell, Award, TrendingUp,
-  Globe, Heart, Award, Lightbulb, Compass, 
+  CheckCircle, Search, Bell, Heart, TrendingUp,
+  Globe, Heart, Heart, Lightbulb, Compass, 
   Crown, UserPlus, ArrowRight, MapPin, Sparkles,
   MessageSquare, Phone, Mail, Gift
 } from "lucide-react";
@@ -52,7 +52,7 @@ function HeroSection() {
               +500 profesionales
             </div>
             <div className="flex items-center">
-              <Award className="h-4 w-4 mr-2 text-warning" />
+              <Heart className="h-4 w-4 mr-2 text-warning" />
               Sin comisiones
             </div>
           </div>
