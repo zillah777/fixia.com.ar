@@ -1155,8 +1155,7 @@ export default function RegisterPage() {
           "¡Cuenta creada exitosamente! 🎉",
           {
             description: result.message || `Revisa tu bandeja de entrada en ${formData.email} para verificar tu cuenta.`,
-            duration: 8000,
-          }
+            duration: 8000}
         );
         
         console.log(`About to navigate to: /verify-email?email=${encodeURIComponent(formData.email)}`);
@@ -1169,8 +1168,7 @@ export default function RegisterPage() {
           "¡Bienvenido a Fixia! 🎉",
           {
             description: "Tu cuenta ha sido creada exitosamente.",
-            duration: 6000,
-          }
+            duration: 6000}
         );
         
         // Redirect to dashboard
@@ -1195,40 +1193,35 @@ export default function RegisterPage() {
               label: 'Iniciar Sesión',
               onClick: () => navigate('/login')
             },
-            duration: 6000,
-          }
+            duration: 6000}
         );
       } else if (statusCode === 400 && (errorMessage?.toLowerCase().includes('email') || errorMessage?.toLowerCase().includes('invalid'))) {
         toast.error(
           '✉️ Email inválido',
           {
             description: 'La dirección de email no es válida. Por favor verifica que esté correcta.',
-            duration: 5000,
-          }
+            duration: 5000}
         );
       } else if (statusCode === 400 && errorMessage?.toLowerCase().includes('password')) {
         toast.error(
           '🔒 Contraseña inválida',
           {
             description: 'La contraseña debe tener al menos 6 caracteres.',
-            duration: 5000,
-          }
+            duration: 5000}
         );
       } else if (statusCode === 429) {
         toast.error(
           '⏰ Demasiados intentos',
           {
             description: 'Has intentado registrarte muchas veces. Espera unos minutos e intenta de nuevo.',
-            duration: 8000,
-          }
+            duration: 8000}
         );
       } else if (statusCode >= 500) {
         toast.error(
           '🔧 Error del servidor',
           {
             description: 'Hay un problema temporal con nuestros servidores. Intenta de nuevo en unos minutos.',
-            duration: 6000,
-          }
+            duration: 6000}
         );
       } else {
         // Generic error fallback
@@ -1236,8 +1229,7 @@ export default function RegisterPage() {
           '❌ Error al crear la cuenta',
           {
             description: errorMessage || 'Por favor, verifica los datos ingresados e intenta de nuevo.',
-            duration: 5000,
-          }
+            duration: 5000}
         );
       }
     } finally {

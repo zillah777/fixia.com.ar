@@ -908,8 +908,7 @@ export default function OpportunitiesPage() {
         const filters: any = {
           page: currentPage,
           limit: 12,
-          sortBy: sortBy,
-        };
+          sortBy: sortBy};
 
         if (selectedCategory !== "Todos") {
           filters.category = selectedCategory;

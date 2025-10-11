@@ -171,7 +171,7 @@ export const InstantVerificationCard = memo<InstantVerificationCardProps>(({
               disabled={isLoading || !inputValue.trim()}
               className="w-full"
             >
-              {isLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              {isLoading && <div className="animate-spin rounded-full border-2 border-current border-t-transparent h-4 w-4 mr-2" />}
               {isPhone ? 'Enviar SMS' : 'Enviar Email'}
             </Button>
           </div>
@@ -203,7 +203,7 @@ export const InstantVerificationCard = memo<InstantVerificationCardProps>(({
                 disabled={isLoading || !verificationCode.trim()}
                 className="flex-1"
               >
-                {isLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                {isLoading && <div className="animate-spin rounded-full border-2 border-current border-t-transparent h-4 w-4 mr-2" />}
                 Verificar
               </Button>
               <Button 

@@ -278,8 +278,7 @@ function CategoriesSection() {
       'Consultoría': HeadphonesIcon,
       'Limpieza': Users,
       'Jardinería': Camera,
-      'Educación': PenTool,
-    };
+      'Educación': PenTool};
     return iconMap[categoryName] || Briefcase;
   }
 

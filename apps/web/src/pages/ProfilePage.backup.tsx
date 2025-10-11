@@ -7,7 +7,7 @@ import {
   MessageSquare, DollarSign, TrendingUp, Clock, CheckCircle, 
   Upload, FileText, Globe, Linkedin, Twitter, Instagram, Github,
   Bell, Lock, CreditCard, LogOut, Trash2, ExternalLink,
-  BarChart3, Users, Target, Zap, Loader2, AlertTriangle, Camera
+  BarChart3, Users, Target, Zap AlertTriangle, Camera
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -181,7 +181,7 @@ function ProfileHeader({ user, isEditing, setIsEditing }: any) {
 
     // Validar teléfono (formato básico)
     if (profileData.phone && profileData.phone.length > 0) {
-      const phoneRegex = /^[+]?[\d\s\-()]{10,}$/;
+      const phoneRegex = /^[+]?[\d\s\-()]{10}$/;
       if (!phoneRegex.test(profileData.phone)) {
         newErrors.phone = 'Formato de teléfono no válido';
       }
@@ -750,7 +750,7 @@ function SettingsSection() {
                 sanitizationType="phone"
                 customValidation={(value) => {
                   if (!value) return { isValid: true };
-                  const phoneRegex = /^[+]?[\d\s\-()]{10,}$/;
+                  const phoneRegex = /^[+]?[\d\s\-()]{10}$/;
                   return {
                     isValid: phoneRegex.test(value),
                     message: 'Formato de teléfono inválido'

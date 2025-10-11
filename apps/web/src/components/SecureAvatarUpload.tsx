@@ -206,7 +206,7 @@ export const SecureAvatarUpload = memo<SecureAvatarUploadProps>(({
             >
               {isUploading ? (
                 <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  <div className="animate-spin rounded-full border-2 border-current border-t-transparent h-4 w-4 mr-2" />
                   Subiendo...
                 </>
               ) : (

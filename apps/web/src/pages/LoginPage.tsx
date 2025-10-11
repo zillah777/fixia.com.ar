@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Eye, EyeOff, Mail, Lock, ArrowLeft, Loader2, AlertCircle, RefreshCw, CheckCircle2 } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, ArrowLeft AlertCircle, RefreshCw, CheckCircle2 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { SecureInput } from "../components/SecureInput";
@@ -80,8 +80,7 @@ export default function LoginPage() {
           '📧 Email no verificado - Acción requerida',
           {
             description: `Revisa tu bandeja de entrada en ${email} o usa el botón "Reenviar Email" que aparece abajo.`,
-            duration: 10000,
-          }
+            duration: 10000}
         );
       }
       // For other errors, AuthContext already handles the toast
@@ -282,7 +281,7 @@ export default function LoginPage() {
                 >
                   {loading ? (
                     <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      <div className="animate-spin rounded-full border-2 border-current border-t-transparent mr-2 h-4 w-4" />
                       Iniciando sesión...
                     </>
                   ) : (

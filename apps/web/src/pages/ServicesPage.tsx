@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import {
   Search, Filter, MapPin, Heart, Heart, Share2, Clock, DollarSign,
   Users, Heart, Zap, ChevronDown, SlidersHorizontal, Grid3X3,
-  List, Map, ArrowRight, CheckCircle, Briefcase, Loader2, MessageCircle, X, Send
+  List, Map, ArrowRight, CheckCircle, Briefcase MessageCircle, X, Send
 } from "lucide-react";
 import { servicesService, type Service, type ServiceFilters } from "../lib/services/services.service";
 import { favoritesService } from "../lib/services/favorites.service";
@@ -240,8 +240,7 @@ function ContactProfessionalModal({
         professionalId: service.professional.id,
         serviceId: service.id,
         contactMethod,
-        message,
-      });
+        message});
       toast.success('¡Mensaje enviado correctamente!', {
         description: 'El profesional recibirá tu mensaje pronto'
       });
@@ -311,7 +310,7 @@ function ContactProfessionalModal({
             >
               {submitting ? (
                 <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  <div className="animate-spin rounded-full border-2 border-current border-t-transparent h-4 w-4 mr-2" />
                   Enviando...
                 </>
               ) : (
@@ -419,7 +418,7 @@ function ServiceCard({ service, viewMode }: { service: Service, viewMode: string
                 disabled={loading}
               >
                 {loading ? (
-                  <Loader2 className="h-4 w-4 animate-spin text-white" />
+                  <div className="animate-spin rounded-full border-2 border-current border-t-transparent h-4 w-4  text-white" />
                 ) : (
                   <Heart className={`h-4 w-4 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-white'}`} />
                 )}
@@ -551,7 +550,7 @@ function ServiceCard({ service, viewMode }: { service: Service, viewMode: string
             disabled={loading}
           >
             {loading ? (
-              <Loader2 className="h-4 w-4 animate-spin text-white" />
+              <div className="animate-spin rounded-full border-2 border-current border-t-transparent h-4 w-4  text-white" />
             ) : (
               <Heart className={`h-4 w-4 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-white'}`} />
             )}
@@ -826,7 +825,7 @@ export default function ServicesPage() {
             className="flex items-center justify-center py-16"
           >
             <div className="glass rounded-2xl p-8 flex items-center space-x-4">
-              <Loader2 className="h-6 w-6 animate-spin text-primary" />
+              <div className="animate-spin rounded-full border-2 border-current border-t-transparent h-6 w-6  text-primary" />
               <span className="text-lg">Cargando servicios...</span>
             </div>
           </motion.div>
@@ -895,7 +894,7 @@ export default function ServicesPage() {
             >
               {loading ? (
                 <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  <div className="animate-spin rounded-full border-2 border-current border-t-transparent h-4 w-4 mr-2" />
                   Cargando...
                 </>
               ) : (

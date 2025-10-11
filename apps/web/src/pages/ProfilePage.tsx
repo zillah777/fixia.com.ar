@@ -7,7 +7,7 @@ import {
   MessageSquare, DollarSign, TrendingUp, Clock, CheckCircle, 
   Upload, FileText, Globe, Linkedin, Twitter, Instagram, Github,
   Bell, Lock, CreditCard, LogOut, Trash2, ExternalLink,
-  BarChart3, Users, Target, Zap, Loader2, AlertTriangle, Camera,
+  BarChart3, Users, Target, Zap AlertTriangle, Camera,
   Download, ArrowLeft
 } from "lucide-react";
 import { Button } from "../components/ui/button";
@@ -233,7 +233,7 @@ function ProfileHeader({ user, onUserUpdate }: any) {
               <label htmlFor="avatar-upload">
                 <Button size="sm" className="liquid-gradient rounded-full h-10 w-10 p-0 cursor-pointer">
                   {isUploading ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <div className="animate-spin rounded-full border-2 border-current border-t-transparent h-4 w-4" />
                   ) : (
                     <Camera className="h-4 w-4" />
                   )}
@@ -290,7 +290,7 @@ function ProfileHeader({ user, onUserUpdate }: any) {
                     <Button onClick={handleSave} disabled={isSaving} className="liquid-gradient">
                       {isSaving ? (
                         <>
-                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          <div className="animate-spin rounded-full border-2 border-current border-t-transparent h-4 w-4 mr-2" />
                           Guardando...
                         </>
                       ) : (
@@ -407,8 +407,7 @@ function SettingsSection() {
       await api.put('/user/profile', { [field]: value });
       toast.success('✓ Cambio guardado', {
         description: 'Se guardó automáticamente',
-        duration: 2000,
-      });
+        duration: 2000});
     } catch (error: any) {
       console.error('Error auto-saving:', error);
       toast.error('Error al guardar el cambio');
@@ -731,7 +730,7 @@ function SettingsSection() {
             >
               {isChangingPassword ? (
                 <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  <div className="animate-spin rounded-full border-2 border-current border-t-transparent h-4 w-4 mr-2" />
                   Cambiando...
                 </>
               ) : (

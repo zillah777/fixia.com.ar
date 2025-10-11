@@ -7,8 +7,7 @@ import {
   RefreshCw, 
   ArrowRight, 
   ArrowLeft, 
-  AlertCircle, 
-  Loader2,
+  AlertCircle
   Shield,
   Clock,
   Send
@@ -308,7 +307,7 @@ function EmailVerificationPage() {
                 {state.isVerifying ? (
                   <div className="flex flex-col items-center space-y-4">
                     <div className="relative">
-                      <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                      <div className="animate-spin rounded-full border-2 border-current border-t-transparent h-8 w-8  text-primary" />
                     </div>
                     <p className="text-sm text-muted-foreground text-center">
                       Verificando tu email, esto solo tomará un momento...

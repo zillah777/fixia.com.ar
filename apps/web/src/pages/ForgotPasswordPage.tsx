@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Mail, ArrowLeft, Loader2, Check, RefreshCw } from "lucide-react";
+import { Mail, ArrowLeft Check, RefreshCw } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
@@ -134,7 +134,7 @@ export default function ForgotPasswordPage() {
                   >
                     {loading ? (
                       <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        <div className="animate-spin rounded-full border-2 border-current border-t-transparent mr-2 h-4 w-4" />
                         Enviando...
                       </>
                     ) : (
@@ -180,7 +180,7 @@ export default function ForgotPasswordPage() {
                   >
                     {loading ? (
                       <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        <div className="animate-spin rounded-full border-2 border-current border-t-transparent mr-2 h-4 w-4" />
                         Reenviando...
                       </>
                     ) : (

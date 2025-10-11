@@ -10,8 +10,7 @@ import {
   DialogContent,
   DialogDescription,
   DialogHeader,
-  DialogTitle,
-} from "./dialog";
+  DialogTitle} from "./dialog";
 
 function Command({
   className,
@@ -173,5 +172,4 @@ export {
   CommandGroup,
   CommandItem,
   CommandShortcut,
-  CommandSeparator,
-};
+  CommandSeparator};

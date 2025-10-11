@@ -134,7 +134,7 @@ export function PaymentButton({
   const getButtonIcon = () => {
     switch (paymentStatus) {
       case 'processing':
-        return <Loader2 className="h-4 w-4 animate-spin" />;
+        return <div className="animate-spin rounded-full border-2 border-current border-t-transparent h-4 w-4" />;
       case 'success':
         return <CheckCircle className="h-4 w-4" />;
       case 'error':

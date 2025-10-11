@@ -1131,8 +1131,7 @@ export default function NewProjectPage() {
         gallery: projectData.gallery,
         tags: projectData.tags,
         delivery_time_days: projectData.packages.standard.deliveryTime,
-        revisions_included: projectData.packages.standard.revisions,
-      };
+        revisions_included: projectData.packages.standard.revisions};
 
       console.log('Publishing service:', serviceData);
       

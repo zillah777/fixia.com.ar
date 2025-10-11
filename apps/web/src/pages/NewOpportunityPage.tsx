@@ -224,8 +224,7 @@ export default function NewOpportunityPage() {
         budget_max: formData.budget_max > 0 ? formData.budget_max : undefined,
         deadline: formData.deadline || undefined,
         location: formData.location || undefined,
-        skills_required: formData.skills_required.length > 0 ? formData.skills_required : undefined,
-      };
+        skills_required: formData.skills_required.length > 0 ? formData.skills_required : undefined};
 
       await opportunitiesService.createOpportunity(opportunityData);
       

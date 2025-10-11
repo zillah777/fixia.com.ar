@@ -219,7 +219,7 @@ export const VerificationRequestForm = memo<VerificationRequestFormProps>(({
                   >
                     {isLoadingGuide ? (
                       <div className="flex items-center justify-center p-4">
-                        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                        <div className="animate-spin rounded-full border-2 border-current border-t-transparent h-6 w-6  text-primary" />
                       </div>
                     ) : guide ? (
                       <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
@@ -359,7 +359,7 @@ export const VerificationRequestForm = memo<VerificationRequestFormProps>(({
                     disabled={isLoading || !selectedType}
                     className="liquid-gradient"
                   >
-                    {isLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                    {isLoading && <div className="animate-spin rounded-full border-2 border-current border-t-transparent h-4 w-4 mr-2" />}
                     Enviar Solicitud
                   </Button>
                 </div>

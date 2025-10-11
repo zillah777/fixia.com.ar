@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { 
   ArrowLeft, Heart, Heart, Share2, Clock, DollarSign, Users, Heart, 
   MessageSquare, Shield, CheckCircle, MapPin, Calendar, Zap, 
-  ThumbsUp, Eye, ArrowRight, Play, Download, Flag, MoreHorizontal, Loader2, AlertTriangle
+  ThumbsUp, Eye, ArrowRight, Play, Download, Flag, MoreHorizontal AlertTriangle
 } from "lucide-react";
 import { servicesService, type Service } from "../lib/services/services.service";
 import { openWhatsAppChat } from "../lib/whatsapp";
@@ -88,7 +88,7 @@ export default function ServiceDetailPage() {
         <Navigation />
         <div className="container mx-auto px-6 py-8 flex items-center justify-center">
           <div className="glass rounded-2xl p-8 flex items-center space-x-4">
-            <Loader2 className="h-6 w-6 animate-spin text-primary" />
+            <div className="animate-spin rounded-full border-2 border-current border-t-transparent h-6 w-6  text-primary" />
             <span className="text-lg">Cargando servicio...</span>
           </div>
         </div>

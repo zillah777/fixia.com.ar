@@ -18,17 +18,13 @@ const serviceData = [
 const chartConfig = {
   servicios: {
     label: "Servicios",
-    color: "#667eea",
-  },
+    color: "#667eea"},
   ingresos: {
     label: "Ingresos",
-    color: "#764ba2",
-  },
+    color: "#764ba2"},
   satisfaccion: {
     label: "Satisfacción",
-    color: "#51cf66",
-  },
-};
+    color: "#51cf66"}};
 
 export function FixiaHeroPanel() {
   return (

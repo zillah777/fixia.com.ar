@@ -16,13 +16,10 @@ const chartData = [
 const chartConfig = {
   revenue: {
     label: "Revenue",
-    color: "hsl(var(--chart-1))",
-  },
+    color: "hsl(var(--chart-1))"},
   projects: {
     label: "Projects",
-    color: "hsl(var(--chart-2))",
-  },
-};
+    color: "hsl(var(--chart-2))"}};
 
 export function HeroPanel() {
   return (
