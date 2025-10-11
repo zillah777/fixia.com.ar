@@ -203,7 +203,7 @@ function ProfileTab() {
           <div className="flex items-center space-x-3">
             {user?.isVerified ? (
               <>
-                <div className="h-12 w-12 bg-green-500/20 rounded-full flex items-center justify-center">
+                <div className="h-11 w-12 bg-green-500/20 rounded-full flex items-center justify-center">
                   <Check className="h-6 w-6 text-green-500" />
                 </div>
                 <div>
@@ -216,7 +216,7 @@ function ProfileTab() {
               </>
             ) : (
               <>
-                <div className="h-12 w-12 bg-yellow-500/20 rounded-full flex items-center justify-center">
+                <div className="h-11 w-12 bg-yellow-500/20 rounded-full flex items-center justify-center">
                   <AlertCircle className="h-6 w-6 text-yellow-500" />
                 </div>
                 <div>
@@ -411,7 +411,7 @@ function NotificationsTab() {
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="flex items-center justify-between">
-            <div className="space-y-1">
+            <div className="space-y-2">
               <p className="font-medium">Nuevas oportunidades</p>
               <p className="text-sm text-muted-foreground">
                 Cuando hay trabajos que coinciden con tu perfil
@@ -428,7 +428,7 @@ function NotificationsTab() {
           <Separator className="bg-white/10" />
 
           <div className="flex items-center justify-between">
-            <div className="space-y-1">
+            <div className="space-y-2">
               <p className="font-medium">Mensajes y contactos</p>
               <p className="text-sm text-muted-foreground">
                 Cuando alguien te contacta o te envía un mensaje
@@ -445,7 +445,7 @@ function NotificationsTab() {
           <Separator className="bg-white/10" />
 
           <div className="flex items-center justify-between">
-            <div className="space-y-1">
+            <div className="space-y-2">
               <p className="font-medium">Noticias y ofertas</p>
               <p className="text-sm text-muted-foreground">
                 Promociones, noticias y tips de Fixia
@@ -462,7 +462,7 @@ function NotificationsTab() {
           <Separator className="bg-white/10" />
 
           <div className="flex items-center justify-between">
-            <div className="space-y-1">
+            <div className="space-y-2">
               <p className="font-medium">Alertas de seguridad</p>
               <p className="text-sm text-muted-foreground">
                 Inicios de sesión y cambios importantes en tu cuenta
@@ -490,7 +490,7 @@ function NotificationsTab() {
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="flex items-center justify-between">
-            <div className="space-y-1">
+            <div className="space-y-2">
               <p className="font-medium">Nuevas oportunidades</p>
               <p className="text-sm text-muted-foreground">
                 Notificación inmediata de trabajos relevantes
@@ -507,7 +507,7 @@ function NotificationsTab() {
           <Separator className="bg-white/10" />
 
           <div className="flex items-center justify-between">
-            <div className="space-y-1">
+            <div className="space-y-2">
               <p className="font-medium">Mensajes</p>
               <p className="text-sm text-muted-foreground">
                 Cuando recibes un mensaje directo
@@ -524,7 +524,7 @@ function NotificationsTab() {
           <Separator className="bg-white/10" />
 
           <div className="flex items-center justify-between">
-            <div className="space-y-1">
+            <div className="space-y-2">
               <p className="font-medium">Recordatorios</p>
               <p className="text-sm text-muted-foreground">
                 Recordatorios de trabajos pendientes y citas

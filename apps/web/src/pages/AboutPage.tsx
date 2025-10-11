@@ -306,7 +306,7 @@ function HowItWorksSection() {
                 <Card className="glass border-white/10 h-full">
                   <CardContent className="p-8">
                     <div className="flex items-center space-x-4 mb-6">
-                      <div className="h-12 w-12 liquid-gradient rounded-xl flex items-center justify-center">
+                      <div className="h-11 w-12 liquid-gradient rounded-xl flex items-center justify-center">
                         <Icon className="h-6 w-6 text-white" />
                       </div>
                       <h3 className="text-xl font-semibold">{step.title}</h3>
@@ -335,7 +335,7 @@ function HowItWorksSection() {
         >
           <Card className="glass border-primary/30 bg-primary/5">
             <CardContent className="p-8 text-center">
-              <Bell className="h-12 w-12 text-primary mx-auto mb-4" />
+              <Bell className="h-11 w-12 text-primary mx-auto mb-4" />
               <h4 className="text-xl font-semibold mb-4">Conexión Instantánea</h4>
               <p className="text-muted-foreground max-w-2xl mx-auto">
                 Nuestro algoritmo inteligente conecta automáticamente la demanda con la oferta más adecuada 
@@ -578,13 +578,13 @@ function CTASection() {
                 
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                   <Link to="/register">
-                    <Button size="lg" className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-xl px-8">
+                    <Button size="lg" className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-xl px-6">
                       <Users className="mr-2 h-5 w-5" />
                       Buscar Profesionales
                     </Button>
                   </Link>
                   <Link to="/register?type=professional">
-                    <Button size="lg" variant="outline" className="glass border-white/20 hover:glass-medium px-8">
+                    <Button size="lg" variant="outline" className="glass border-white/20 hover:glass-medium px-6">
                       <Crown className="mr-2 h-5 w-5" />
                       Ser Profesional
                     </Button>

@@ -60,7 +60,7 @@ export function PWAInstallPrompt() {
             <CardContent className="p-6">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <div className="h-12 w-12 liquid-gradient rounded-xl flex items-center justify-center">
+                  <div className="h-11 w-12 liquid-gradient rounded-xl flex items-center justify-center">
                     <span className="text-white font-bold text-xl">F</span>
                   </div>
                   <div>
@@ -72,8 +72,7 @@ export function PWAInstallPrompt() {
                 </div>
                 <Button
                   variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
+                  size="icon" className="h-9 w-9"
                   onClick={handleDismiss}
                 >
                   <X className="h-4 w-4" />

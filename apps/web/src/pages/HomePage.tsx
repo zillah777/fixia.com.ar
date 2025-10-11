@@ -194,14 +194,14 @@ function HeroSection() {
             
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-8 sm:mb-12">
               <Link to="/services">
-                <Button size="lg" className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-xl px-6 py-3 sm:px-8 sm:py-6 mobile-text-lg w-full sm:w-auto touch-target">
+                <Button size="lg" className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-xl px-6 py-3 sm:px-6 sm:py-6 mobile-text-lg w-full sm:w-auto ">
                   <Search className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                   Buscar Profesionales
                   <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
                 </Button>
               </Link>
               <Link to="/register?type=professional">
-                <Button size="lg" variant="outline" className="glass border-white/20 hover:glass-medium px-6 py-3 sm:px-8 sm:py-6 mobile-text-lg w-full sm:w-auto touch-target">
+                <Button size="lg" variant="outline" className="glass border-white/20 hover:glass-medium px-6 py-3 sm:px-6 sm:py-6 mobile-text-lg w-full sm:w-auto ">
                   <Crown className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                   Ser Profesional
                 </Button>
@@ -226,7 +226,7 @@ function HeroSection() {
             </div>
             
             <Link to="/pricing">
-              <Button variant="outline" className="glass border-white/20 hover:glass-medium mobile-text-base touch-target">
+              <Button variant="outline" className="glass border-white/20 hover:glass-medium mobile-text-base ">
                 <CreditCard className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
                 <span className="hidden sm:inline">Ver Planes y Precios</span>
                 <span className="sm:hidden">Ver Precios</span>
@@ -312,14 +312,14 @@ function CategoriesSection() {
                 whileHover={{ y: -4 }}
               >
                 <Link to={`/services?category=${encodeURIComponent(category.name)}`}>
-                  <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 cursor-pointer group h-full relative bg-card/50 backdrop-blur-xl mobile-card touch-target">
+                  <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 cursor-pointer group h-full relative bg-card/50 backdrop-blur-xl mobile-card ">
                     {category.popular && (
                       <Badge className="absolute top-2 right-2 bg-blue-500/20 text-blue-400 border-blue-400/30 text-xs px-2 py-0.5 font-medium">
                         Popular
                       </Badge>
                     )}
                     <CardContent className="p-3 sm:p-4 md:p-6 text-center">
-                      <div className="h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-xl md:rounded-2xl flex items-center justify-center mx-auto mb-3 sm:mb-4 group-hover:from-blue-500/30 group-hover:to-purple-500/30 transition-all duration-300 border border-blue-400/20">
+                      <div className="h-11 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-xl md:rounded-2xl flex items-center justify-center mx-auto mb-3 sm:mb-4 group-hover:from-blue-500/30 group-hover:to-purple-500/30 transition-all duration-300 border border-blue-400/20">
                         <Icon className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 text-blue-400 group-hover:text-blue-300 transition-colors" />
                       </div>
                       <h3 className="font-semibold mb-1 sm:mb-2 text-white text-xs sm:text-sm md:text-base leading-tight">{category.name}</h3>
@@ -340,7 +340,7 @@ function CategoriesSection() {
           className="text-center mt-12"
         >
           <Link to="/services">
-            <Button variant="outline" className="glass border-white/20 hover:glass-medium px-8">
+            <Button variant="outline" className="glass border-white/20 hover:glass-medium px-6">
               Ver Todas las Categorías
               <ChevronRight className="ml-2 h-4 w-4" />
             </Button>
@@ -459,7 +459,7 @@ function FeaturedServicesSection() {
                           </Badge>
                         </div>
                         <div className="absolute top-4 right-4">
-                          <Button variant="ghost" size="icon" className="h-8 w-8 glass">
+                          <Button variant="ghost" size="icon" className="h-9 w-9 glass">
                             <Heart className="h-4 w-4" />
                           </Button>
                         </div>
@@ -516,7 +516,7 @@ function FeaturedServicesSection() {
           className="text-center mt-12"
         >
           <Link to="/services">
-            <Button className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg px-8">
+            <Button className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg px-6">
               Ver Más Profesionales
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
@@ -603,13 +603,13 @@ function HowItWorksSection() {
           className="text-center mt-12"
         >
           <Link to="/how-it-works">
-            <Button size="lg" variant="outline" className="glass border-white/20 hover:glass-medium px-8 mr-4">
+            <Button size="lg" variant="outline" className="glass border-white/20 hover:glass-medium px-6 mr-4">
               Ver Proceso Completo
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </Link>
           <Link to="/register">
-            <Button size="lg" className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg px-8">
+            <Button size="lg" className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg px-6">
               Comenzar Ahora Gratis
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
@@ -642,13 +642,13 @@ function CTASection() {
                 </p>
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                   <Link to="/register">
-                    <Button size="lg" className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-xl px-8">
+                    <Button size="lg" className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-xl px-6">
                       <Users className="mr-2 h-5 w-5" />
                       Buscar Profesionales
                     </Button>
                   </Link>
                   <Link to="/register?type=professional">
-                    <Button size="lg" variant="outline" className="glass border-white/20 hover:glass-medium px-8">
+                    <Button size="lg" variant="outline" className="glass border-white/20 hover:glass-medium px-6">
                       <Crown className="mr-2 h-5 w-5" />
                       Ser Profesional
                     </Button>

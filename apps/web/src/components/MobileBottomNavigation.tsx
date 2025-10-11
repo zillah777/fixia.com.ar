@@ -122,7 +122,7 @@ const MobileNavItem = memo<MobileNavItemProps>(({ item, isActive, index }) => {
     <Link
       to={item.href}
       className={cn(
-        "relative flex flex-col items-center justify-center min-w-0 flex-1 px-2 py-2 rounded-lg transition-all duration-200 touch-target",
+        "relative flex flex-col items-center justify-center min-w-0 flex-1 px-2 py-2 rounded-lg transition-all duration-200 ",
         isActive
           ? "text-primary"
           : "text-muted-foreground hover:text-foreground"

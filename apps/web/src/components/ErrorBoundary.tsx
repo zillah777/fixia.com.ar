@@ -217,7 +217,7 @@ function PageErrorFallback({
         className="max-w-md w-full text-center"
       >
         <div className="mb-6">
-          <div className="mx-auto w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mb-4">
+          <div className="mx-auto w-12 h-11 bg-orange-100 rounded-full flex items-center justify-center mb-4">
             <Bug className="h-6 w-6 text-orange-600" />
           </div>
           <h2 className="text-lg font-semibold text-foreground mb-2">

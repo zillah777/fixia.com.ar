@@ -164,8 +164,7 @@ function ClientRegistrationForm({
                 <Button
                   type="button"
                   variant="ghost"
-                  size="icon"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8"
+                  size="icon" className="absolute right-2 top-1/2 -translate-y-1/2 h-9 w-9"
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -186,8 +185,7 @@ function ClientRegistrationForm({
                 <Button
                   type="button"
                   variant="ghost"
-                  size="icon"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8"
+                  size="icon" className="absolute right-2 top-1/2 -translate-y-1/2 h-9 w-9"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 >
                   {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -234,7 +232,7 @@ function ClientRegistrationForm({
                 <div className="space-y-2">
                   {/* Password errors */}
                   {passwordValidation.errors.length > 0 && (
-                    <div className="text-sm space-y-1">
+                    <div className="text-sm space-y-2">
                       <p className="text-red-500 font-medium">Errores:</p>
                       {passwordValidation.errors.map((error, index) => (
                         <div key={index} className="flex items-center space-x-2 text-red-500">
@@ -247,7 +245,7 @@ function ClientRegistrationForm({
                   
                   {/* Password warnings */}
                   {passwordValidation.warnings.length > 0 && (
-                    <div className="text-sm space-y-1">
+                    <div className="text-sm space-y-2">
                       <p className="text-orange-500 font-medium">Recomendaciones:</p>
                       {passwordValidation.warnings.map((warning, index) => (
                         <div key={index} className="flex items-center space-x-2 text-orange-500">
@@ -486,7 +484,7 @@ function TagsInput({
     <div className="space-y-3">
       <div className="relative">
         <div className="relative">
-          <Hash className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Hash className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
           <Input
             value={inputValue}
             onChange={handleInputChange}
@@ -557,7 +555,7 @@ function TagsInput({
       )}
 
       {/* Helper text */}
-      <div className="text-xs text-muted-foreground space-y-1">
+      <div className="text-xs text-muted-foreground space-y-2">
         <p>💡 Ejemplos: "Peluquería, Manicura" o "#Desarrollo #Web #WordPress"</p>
         <p>📝 Máximo 10 categorías, entre 2-30 caracteres cada una</p>
       </div>
@@ -673,8 +671,7 @@ function ProfessionalRegistrationForm({
                   <Button
                     type="button"
                     variant="ghost"
-                    size="icon"
-                    className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8"
+                    size="icon" className="absolute right-2 top-1/2 -translate-y-1/2 h-9 w-9"
                     onClick={() => setShowPassword(!showPassword)}
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -695,8 +692,7 @@ function ProfessionalRegistrationForm({
                   <Button
                     type="button"
                     variant="ghost"
-                    size="icon"
-                    className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8"
+                    size="icon" className="absolute right-2 top-1/2 -translate-y-1/2 h-9 w-9"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   >
                     {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -743,7 +739,7 @@ function ProfessionalRegistrationForm({
                   <div className="space-y-2">
                     {/* Password errors */}
                     {passwordValidation.errors.length > 0 && (
-                      <div className="text-sm space-y-1">
+                      <div className="text-sm space-y-2">
                         <p className="text-red-500 font-medium">Errores:</p>
                         {passwordValidation.errors.map((error, index) => (
                           <div key={index} className="flex items-center space-x-2 text-red-500">
@@ -756,7 +752,7 @@ function ProfessionalRegistrationForm({
                     
                     {/* Password warnings */}
                     {passwordValidation.warnings.length > 0 && (
-                      <div className="text-sm space-y-1">
+                      <div className="text-sm space-y-2">
                         <p className="text-orange-500 font-medium">Recomendaciones:</p>
                         {passwordValidation.warnings.map((warning, index) => (
                           <div key={index} className="flex items-center space-x-2 text-orange-500">
@@ -1279,12 +1275,12 @@ export default function RegisterPage() {
               className="max-w-6xl mx-auto"
             >
               <TabsList className="grid w-full grid-cols-2 glass border-white/10 p-1 max-w-sm sm:max-w-md mx-auto mb-6 sm:mb-8">
-                <TabsTrigger value="client" className="mobile-text-base touch-target">
+                <TabsTrigger value="client" className="mobile-text-base ">
                   <UserPlus className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                   <span className="hidden sm:inline">Cliente</span>
                   <span className="sm:hidden">Cliente</span>
                 </TabsTrigger>
-                <TabsTrigger value="professional" className="mobile-text-base touch-target">
+                <TabsTrigger value="professional" className="mobile-text-base ">
                   <Crown className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                   <span className="hidden sm:inline">Profesional</span>
                   <span className="sm:hidden">Pro</span>

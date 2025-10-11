@@ -143,7 +143,7 @@ export function NotificationBell({ className }: NotificationBellProps) {
                       </div>
                     ) : notifications.length === 0 ? (
                       <div className="flex flex-col items-center justify-center py-8 text-center">
-                        <Bell className="h-12 w-12 text-muted-foreground mb-2" />
+                        <Bell className="h-11 w-12 text-muted-foreground mb-2" />
                         <p className="text-muted-foreground">No hay notificaciones</p>
                       </div>
                     ) : (

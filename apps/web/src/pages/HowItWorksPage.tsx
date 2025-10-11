@@ -132,7 +132,7 @@ function ClientProcessSection() {
           className="text-center mt-12"
         >
           <Link to="/register">
-            <Button size="lg" className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg px-8">
+            <Button size="lg" className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg px-6">
               <UserPlus className="mr-2 h-5 w-5" />
               Registrarme como Cliente
             </Button>
@@ -235,7 +235,7 @@ function ProfessionalProcessSection() {
           className="text-center mt-12"
         >
           <Link to="/register?type=professional">
-            <Button size="lg" className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg px-8">
+            <Button size="lg" className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg px-6">
               <Crown className="mr-2 h-5 w-5" />
               Ser Profesional - $4500/mes
             </Button>
@@ -338,13 +338,13 @@ function CTASection() {
                 
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                   <Link to="/register">
-                    <Button size="lg" className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-xl px-8">
+                    <Button size="lg" className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-xl px-6">
                       <UserPlus className="mr-2 h-5 w-5" />
                       Buscar Profesionales
                     </Button>
                   </Link>
                   <Link to="/register?type=professional">
-                    <Button size="lg" variant="outline" className="glass border-white/20 hover:glass-medium px-8">
+                    <Button size="lg" variant="outline" className="glass border-white/20 hover:glass-medium px-6">
                       <Crown className="mr-2 h-5 w-5" />
                       Ser Profesional
                     </Button>

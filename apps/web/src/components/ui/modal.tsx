@@ -96,7 +96,7 @@ export function Modal({
                           <DialogPrimitive.Close asChild>
                             <button
                               onClick={onClose}
-                              className="rounded-lg sm:rounded-xl glass-medium hover:glass-strong opacity-70 hover:opacity-100 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 p-2 ml-4 touch-target"
+                              className="rounded-lg sm:rounded-xl glass-medium hover:glass-strong opacity-70 hover:opacity-100 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 p-2 ml-4 "
                             >
                               <X className="h-4 w-4" />
                               <span className="sr-only">Close</span>

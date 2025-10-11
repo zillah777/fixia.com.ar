@@ -138,8 +138,7 @@ function ServiceCard({ service }: { service: FavoriteService }) {
           <div className="absolute top-3 right-3">
             <Button
               variant="secondary"
-              size="icon"
-              className="h-8 w-8 bg-white/20 hover:bg-white/30 backdrop-blur-sm"
+              size="icon" className="h-9 w-9 bg-white/20 hover:bg-white/30 backdrop-blur-sm"
             >
               <Heart className="h-4 w-4 fill-red-500 text-red-500" />
             </Button>
@@ -164,7 +163,7 @@ function ServiceCard({ service }: { service: FavoriteService }) {
             
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
+                <Button variant="ghost" size="icon" className="h-9 w-9">
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
@@ -285,7 +284,7 @@ function ProfessionalCard({ professional }: { professional: FavoriteProfessional
             
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
+                <Button variant="ghost" size="icon" className="h-9 w-9">
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
@@ -481,7 +480,7 @@ export default function FavoritesPage() {
           className="flex flex-col lg:flex-row gap-4 mb-8"
         >
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
             <Input
               placeholder="Buscar en favoritos..."
               value={searchQuery}

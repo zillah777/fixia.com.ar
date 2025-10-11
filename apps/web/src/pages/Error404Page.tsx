@@ -66,7 +66,7 @@ function HeroSection() {
             className="max-w-2xl mx-auto mb-12"
           >
             <div className="relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none" />
               <Input
                 placeholder="¿Qué servicio estás buscando?"
                 className="pl-12 pr-4 py-6 text-lg glass border-white/20"
@@ -87,13 +87,13 @@ function HeroSection() {
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
             <Link to="/">
-              <Button size="lg" className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg px-8">
+              <Button size="lg" className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg px-6">
                 <Home className="mr-2 h-5 w-5" />
                 Ir al Inicio
               </Button>
             </Link>
             <Link to="/services">
-              <Button size="lg" variant="outline" className="glass border-white/20 hover:bg-white/10 px-8">
+              <Button size="lg" variant="outline" className="glass border-white/20 hover:bg-white/10 px-6">
                 <Compass className="mr-2 h-5 w-5" />
                 Explorar Servicios
               </Button>
@@ -290,13 +290,13 @@ function CTASection() {
                 
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                   <Link to="/help">
-                    <Button size="lg" className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-xl px-8">
+                    <Button size="lg" className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-xl px-6">
                       <HelpCircle className="mr-2 h-5 w-5" />
                       Centro de Ayuda
                     </Button>
                   </Link>
                   <Link to="/contact">
-                    <Button size="lg" variant="outline" className="glass border-white/20 hover:bg-white/10 px-8">
+                    <Button size="lg" variant="outline" className="glass border-white/20 hover:bg-white/10 px-6">
                       <MessageSquare className="mr-2 h-5 w-5" />
                       Contactar Soporte
                     </Button>

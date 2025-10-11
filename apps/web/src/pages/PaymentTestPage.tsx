@@ -138,7 +138,7 @@ export default function PaymentTestPage() {
 
                   <div className="bg-gray-50 p-4 rounded-lg">
                     <p className="text-sm font-medium mb-2">Detalles del Pago:</p>
-                    <ul className="text-sm text-gray-600 space-y-1">
+                    <ul className="text-sm text-gray-600 space-y-2">
                       <li>• Monto: {paymentsService.formatAmount(amount)}</li>
                       <li>• Servicio: {title}</li>
                       <li>• ID: {serviceId}</li>
@@ -280,7 +280,7 @@ export default function PaymentTestPage() {
                 <p className="mb-2">
                   <strong>Próximos pasos para producción:</strong>
                 </p>
-                <ul className="list-disc list-inside space-y-1">
+                <ul className="list-disc list-inside space-y-2">
                   <li>Configurar credenciales de MercadoPago en variables de entorno</li>
                   <li>Ejecutar migración de base de datos para modelos de Payment</li>
                   <li>Configurar webhook de MercadoPago para notificaciones</li>

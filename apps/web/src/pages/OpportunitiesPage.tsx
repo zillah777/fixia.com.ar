@@ -283,7 +283,7 @@ function SearchAndFilters({
               className="border-0 bg-transparent text-lg placeholder:text-muted-foreground focus-visible:ring-0"
             />
           </div>
-          <Button className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg px-8">
+          <Button className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg px-6">
             Buscar Oportunidades
           </Button>
         </div>
@@ -490,7 +490,7 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
             <div className="flex items-start space-x-6">
               {/* Client Avatar */}
               <div className="flex-shrink-0">
-                <Avatar className="h-12 w-12">
+                <Avatar className="h-11 w-12">
                   <AvatarImage src={opportunity.client.avatar} />
                   <AvatarFallback>{opportunity.client.name.charAt(0)}</AvatarFallback>
                 </Avatar>
@@ -661,8 +661,7 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
               )}
               <Button
                 variant="ghost"
-                size="icon"
-                className="h-8 w-8"
+                size="icon" className="h-9 w-9"
                 onClick={() => setIsBookmarked(!isBookmarked)}
               >
                 <Bookmark className={`h-4 w-4 ${isBookmarked ? 'fill-current text-warning' : ''}`} />
@@ -693,7 +692,7 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
           </p>
           
           {/* Skills */}
-          <div className="flex flex-wrap gap-1">
+          <div className="flex flex-wrap gap-2">
             {opportunity.skills.slice(0, 4).map((skill: string) => (
               <Badge key={skill} variant="outline" className="glass border-white/20 text-xs">
                 {skill}
@@ -1060,7 +1059,7 @@ export default function OpportunitiesPage() {
         {/* Error State */}
         {error && (
           <Card className="glass border-white/10 p-8 text-center">
-            <AlertCircle className="h-12 w-12 mx-auto mb-4 text-destructive" />
+            <AlertCircle className="h-11 w-12 mx-auto mb-4 text-destructive" />
             <h3 className="text-lg font-medium mb-2">Error al cargar oportunidades</h3>
             <p className="text-muted-foreground mb-4">{error}</p>
             <Button onClick={() => window.location.reload()} variant="outline">

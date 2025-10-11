@@ -283,21 +283,21 @@ function ProfileHeader() {
             <div className="flex space-x-3">
               {publicProfile.socialLinks.linkedin && (
                 <a href={publicProfile.socialLinks.linkedin} target="_blank" rel="noopener noreferrer">
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <Button variant="ghost" size="icon" className="h-9 w-9">
                     <Linkedin className="h-4 w-4 text-blue-500" />
                   </Button>
                 </a>
               )}
               {publicProfile.socialLinks.github && (
                 <a href={publicProfile.socialLinks.github} target="_blank" rel="noopener noreferrer">
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <Button variant="ghost" size="icon" className="h-9 w-9">
                     <Github className="h-4 w-4" />
                   </Button>
                 </a>
               )}
               {publicProfile.socialLinks.twitter && (
                 <a href={publicProfile.socialLinks.twitter} target="_blank" rel="noopener noreferrer">
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <Button variant="ghost" size="icon" className="h-9 w-9">
                     <Twitter className="h-4 w-4 text-blue-400" />
                   </Button>
                 </a>
@@ -451,7 +451,7 @@ function PortfolioSection() {
                   <h3 className="font-semibold line-clamp-1">{item.title}</h3>
                   <p className="text-sm text-muted-foreground line-clamp-2">{item.description}</p>
                   
-                  <div className="flex flex-wrap gap-1">
+                  <div className="flex flex-wrap gap-2">
                     {item.technologies.slice(0, 3).map((tech) => (
                       <Badge key={tech} variant="outline" className="glass border-white/20 text-xs">
                         {tech}

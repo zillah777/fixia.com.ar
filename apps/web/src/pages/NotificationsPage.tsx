@@ -610,7 +610,7 @@ export default function NotificationsPage() {
                   <div className="flex flex-col sm:flex-row gap-4">
                     <div className="flex-1">
                       <div className="relative">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                         <Input
                           placeholder="Buscar notificaciones..."
                           value={searchQuery}
@@ -754,7 +754,7 @@ export default function NotificationsPage() {
                     Anterior
                   </Button>
                   
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-2">
                     {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                       const pageNum = currentPage <= 3 ? i + 1 : currentPage - 2 + i;
                       if (pageNum > totalPages) return null;

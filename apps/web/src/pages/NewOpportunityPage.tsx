@@ -392,7 +392,7 @@ export default function NewOpportunityPage() {
               <div className="space-y-2">
                 <Label>Fecha Límite (Opcional)</Label>
                 <div className="relative">
-                  <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                   <Input
                     type="date"
                     value={formData.deadline}
@@ -406,7 +406,7 @@ export default function NewOpportunityPage() {
               <div className="space-y-2">
                 <Label>Ubicación</Label>
                 <div className="relative">
-                  <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                   <Input
                     placeholder="Ej: Trelew, Chubut, Buenos Aires, o 'Remoto'"
                     value={formData.location}
@@ -506,7 +506,7 @@ export default function NewOpportunityPage() {
                 <Button
                   onClick={handlePublish}
                   disabled={publishing}
-                  className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg px-8"
+                  className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg px-6"
                 >
                   {publishing ? (
                     <>

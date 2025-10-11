@@ -76,7 +76,7 @@ export const FixiaNavigation = memo(function FixiaNavigation() {
             <>
               {/* Search - Hidden on mobile */}
               <div className="relative hidden lg:block">
-                <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
                 <Input
                   placeholder="Buscar profesionales o servicios..."
                   className="w-64 xl:w-80 pl-12 glass border-white/20 focus:border-primary/50 focus:ring-primary/30 transition-all duration-300"
@@ -120,7 +120,7 @@ export const FixiaNavigation = memo(function FixiaNavigation() {
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-2">
                       <div className="flex items-center space-x-3">
-                        <Avatar className="h-12 w-12">
+                        <Avatar className="h-11 w-12">
                           <AvatarImage src={user?.avatar} alt={user?.name || 'Usuario'} />
                           <AvatarFallback>{user?.name?.charAt(0)?.toUpperCase() || 'U'}</AvatarFallback>
                         </Avatar>

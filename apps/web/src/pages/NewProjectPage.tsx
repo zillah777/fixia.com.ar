@@ -254,7 +254,7 @@ function BasicInfoStep({ data, setData }: { data: ProjectData; setData: (data: P
             <Info className="h-4 w-4" />
             <AlertDescription>
               <strong>Tips para una buena descripción:</strong>
-              <ul className="mt-2 space-y-1 text-sm">
+              <ul className="mt-2 space-y-2 text-sm">
                 <li>• Explica claramente qué incluye tu servicio</li>
                 <li>• Menciona tu experiencia y habilidades</li>
                 <li>• Describe tu proceso de trabajo</li>
@@ -669,7 +669,7 @@ function MediaStep({ data, setData }: { data: ProjectData; setData: (data: Proje
                 // Handle file drop
               }}
             >
-              <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+              <Upload className="h-11 w-12 mx-auto mb-4 text-muted-foreground" />
               <div className="space-y-2">
                 <div className="font-medium">Arrastra una imagen aquí o haz clic para seleccionar</div>
                 <div className="text-sm text-muted-foreground">
@@ -723,7 +723,7 @@ function MediaStep({ data, setData }: { data: ProjectData; setData: (data: Proje
             <Camera className="h-4 w-4" />
             <AlertDescription>
               <strong>Tips para mejores imágenes:</strong>
-              <ul className="mt-2 space-y-1 text-sm">
+              <ul className="mt-2 space-y-2 text-sm">
                 <li>• Usa imágenes de alta calidad y buena iluminación</li>
                 <li>• Muestra ejemplos reales de tu trabajo</li>
                 <li>• Incluye antes/después si es aplicable</li>
@@ -1261,7 +1261,7 @@ export default function NewProjectPage() {
             {currentStep === totalSteps ? (
               <Button
                 onClick={handlePublish}
-                className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg px-8"
+                className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg px-6"
                 disabled={!canProceed()}
               >
                 <Zap className="h-4 w-4 mr-2" />

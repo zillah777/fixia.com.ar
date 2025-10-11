@@ -570,13 +570,13 @@ function CTASection() {
                 
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                   <Link to="/register">
-                    <Button size="lg" className="bg-success hover:bg-success/90 text-white px-8">
+                    <Button size="lg" className="bg-success hover:bg-success/90 text-white px-6">
                       <Users className="mr-2 h-5 w-5" />
                       Comenzar Gratis
                     </Button>
                   </Link>
                   <Link to="/register?type=professional">
-                    <Button size="lg" className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-xl px-8">
+                    <Button size="lg" className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-xl px-6">
                       <Crown className="mr-2 h-5 w-5" />
                       Ser Profesional
                     </Button>

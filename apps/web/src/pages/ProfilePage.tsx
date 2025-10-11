@@ -87,7 +87,7 @@ function Navigation() {
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56" align="end">
             <DropdownMenuLabel className="font-normal">
-              <div className="flex flex-col space-y-1">
+              <div className="flex flex-col space-y-2">
                 <p className="text-sm font-medium">{user?.name || 'Usuario'}</p>
                 <p className="text-xs text-muted-foreground">{user?.email}</p>
                 <p className="text-xs text-muted-foreground capitalize">
@@ -488,7 +488,7 @@ function SettingsSection() {
             <div className="space-y-2">
               <Label>Email</Label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                 <Input 
                   value={user?.email || ""}
                   disabled
@@ -501,7 +501,7 @@ function SettingsSection() {
             <div className="space-y-2">
               <Label>Teléfono</Label>
               <div className="relative">
-                <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                 <Input 
                   value={user?.phone || user?.whatsapp_number || ""}
                   onChange={(e) => autoSave('whatsapp_number', e.target.value)}

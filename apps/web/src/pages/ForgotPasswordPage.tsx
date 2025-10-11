@@ -72,7 +72,7 @@ export default function ForgotPasswordPage() {
         >
           <Link to="/" className="inline-flex items-center space-x-3 mb-6">
             <div className="relative">
-              <div className="h-12 w-12 liquid-gradient rounded-2xl flex items-center justify-center shadow-lg">
+              <div className="h-11 w-12 liquid-gradient rounded-2xl flex items-center justify-center shadow-lg">
                 <span className="text-white font-bold text-xl">F</span>
               </div>
               <div className="absolute -inset-1 liquid-gradient rounded-2xl blur opacity-30"></div>
@@ -110,7 +110,7 @@ export default function ForgotPasswordPage() {
                   <div className="space-y-2">
                     <Label htmlFor="email">Correo Electrónico</Label>
                     <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                       <Input
                         id="email"
                         type="email"
@@ -162,7 +162,7 @@ export default function ForgotPasswordPage() {
                     
                     <div className="glass-medium rounded-lg p-4 space-y-2">
                       <h4 className="font-medium text-sm">Próximos pasos:</h4>
-                      <ol className="text-xs text-muted-foreground space-y-1 list-decimal list-inside">
+                      <ol className="text-xs text-muted-foreground space-y-2 list-decimal list-inside">
                         <li>Revisa tu bandeja de entrada y spam</li>
                         <li>Haz clic en el enlace del correo</li>
                         <li>Crea una nueva contraseña segura</li>

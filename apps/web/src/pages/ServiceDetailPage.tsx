@@ -538,7 +538,7 @@ export default function ServiceDetailPage() {
                 
                 <CardContent className="space-y-4">
                   <div className="flex items-center space-x-4">
-                    <Avatar className="h-12 w-12">
+                    <Avatar className="h-11 w-12">
                       <AvatarImage src={service.professional.avatar} />
                       <AvatarFallback>{service.professional.name.charAt(0)}</AvatarFallback>
                     </Avatar>
@@ -584,7 +584,7 @@ export default function ServiceDetailPage() {
                   
                   <div className="flex items-center space-x-2">
                     <span className="text-sm text-muted-foreground">Ubicación:</span>
-                    <div className="flex flex-wrap gap-1">
+                    <div className="flex flex-wrap gap-2">
                       <Badge variant="outline" className="glass border-white/20 text-xs">
                         {service.professional.location}
                       </Badge>

@@ -79,7 +79,7 @@ function SearchAndFilters({
               className="border-0 bg-transparent text-lg placeholder:text-muted-foreground focus-visible:ring-0"
             />
           </div>
-          <Button className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg px-8">
+          <Button className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg px-6">
             Buscar
           </Button>
         </div>
@@ -414,8 +414,7 @@ function ServiceCard({ service, viewMode }: { service: Service, viewMode: string
               )}
               <Button
                 variant="ghost"
-                size="icon"
-                className="absolute top-2 right-2 h-8 w-8 glass"
+                size="icon" className="absolute top-2 right-2 h-9 w-9 glass"
                 onClick={toggleFavorite}
                 disabled={loading}
               >
@@ -483,7 +482,7 @@ function ServiceCard({ service, viewMode }: { service: Service, viewMode: string
               
               {/* Tags and Stats */}
               <div className="flex items-center justify-between">
-                <div className="flex flex-wrap gap-1">
+                <div className="flex flex-wrap gap-2">
                   {service.tags.slice(0, 3).map((tag: string) => (
                     <Badge key={tag} variant="outline" className="glass border-white/20 text-xs">
                       {tag}
@@ -547,8 +546,7 @@ function ServiceCard({ service, viewMode }: { service: Service, viewMode: string
           )}
           <Button
             variant="ghost"
-            size="icon"
-            className="absolute top-3 right-3 h-8 w-8 glass opacity-0 group-hover:opacity-100 transition-opacity"
+            size="icon" className="absolute top-3 right-3 h-9 w-9 glass opacity-0 group-hover:opacity-100 transition-opacity"
             onClick={toggleFavorite}
             disabled={loading}
           >
@@ -584,7 +582,7 @@ function ServiceCard({ service, viewMode }: { service: Service, viewMode: string
                 {service.professional.level}
               </Badge>
             </div>
-            <Button variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity">
+            <Button variant="ghost" size="icon" className="h-9 w-9 opacity-0 group-hover:opacity-100 transition-opacity">
               <Share2 className="h-4 w-4" />
             </Button>
           </div>
@@ -601,7 +599,7 @@ function ServiceCard({ service, viewMode }: { service: Service, viewMode: string
           </p>
           
           {/* Tags */}
-          <div className="flex flex-wrap gap-1">
+          <div className="flex flex-wrap gap-2">
             {service.tags.slice(0, 3).map((tag: string) => (
               <Badge key={tag} variant="outline" className="glass border-white/20 text-xs">
                 {tag}
