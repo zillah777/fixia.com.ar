@@ -65,6 +65,40 @@ export class AdminController {
     }
   }
 
+  @Post('baseline-migration')
+  @ApiOperation({ summary: 'Mark migration as applied without executing (for production database recovery)' })
+  @ApiResponse({ status: 200, description: 'Migration baselined successfully' })
+  async baselineMigration() {
+    try {
+      // First, clear any failed migrations
+      await this.prisma.$executeRawUnsafe('DELETE FROM "_prisma_migrations"');
+
+      // Mark the init migration as applied without executing it
+      const migrationName = '20251011_000000_init';
+      const checksum = 'baseline'; // We use 'baseline' as checksum for manually applied migrations
+
+      await this.prisma.$executeRawUnsafe(`
+        INSERT INTO "_prisma_migrations" ("id", "checksum", "finished_at", "migration_name", "logs", "rolled_back_at", "started_at", "applied_steps_count")
+        VALUES (gen_random_uuid(), $1, NOW(), $2, NULL, NULL, NOW(), 1)
+      `, checksum, migrationName);
+
+      return {
+        status: 'success',
+        message: `Migration ${migrationName} marked as applied (baselined)`,
+        timestamp: new Date().toISOString(),
+      };
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: 'error',
+          message: 'Failed to baseline migration',
+          error: error.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
   @Post('seed-services')
   @ApiOperation({ summary: 'Populate missing services data (production-safe)' })
   @ApiResponse({ status: 200, description: 'Services seeded successfully' })
