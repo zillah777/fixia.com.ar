@@ -1,6 +1,5 @@
 import React, { memo, useCallback } from "react";
-import { Star } from "lucide-react";
-import { Search, Plus, Bell, User, Briefcase, Heart, Shield, Gift, Settings, HelpCircle, LogOut } from "lucide-react";
+import { Star, Search, Plus, Bell, User, Briefcase, Heart, Shield, Gift, Settings, HelpCircle, LogOut } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -13,9 +12,6 @@ import { MobileNavigation } from "./MobileNavigation";
 import { NotificationBell } from "./notifications/NotificationBell";
 
 export const FixiaNavigation = memo(function FixiaNavigation() {
-  // Force Star to be included in bundle - prevent tree-shaking
-  const _starIcon = Star;
-
   const { user, isAuthenticated, logout } = useSecureAuth();
   const navigate = useNavigate();
 

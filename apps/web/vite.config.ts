@@ -24,10 +24,15 @@ export default defineConfig({
           ui: ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu'],
         },
       },
+      treeshake: {
+        moduleSideEffects: 'no-external',
+        propertyReadSideEffects: false,
+        tryCatchDeoptimization: false,
+      },
     },
     assetsDir: 'assets',
     emptyOutDir: true,
-    minify: 'terser',
+    minify: 'esbuild',
     cssCodeSplit: true,
   },
   server: {
