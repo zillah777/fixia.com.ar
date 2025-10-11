@@ -1,5 +1,5 @@
 import React, { memo, useCallback } from "react";
-import { Star, Search, Plus, Bell, User, Briefcase, Heart, Shield, Gift, Settings, HelpCircle, LogOut } from "lucide-react";
+import { Search, Plus, Bell, User, Briefcase, Heart, Shield, Gift, Settings, HelpCircle, LogOut } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -176,7 +176,7 @@ export const FixiaNavigation = memo(function FixiaNavigation() {
                   </Link>
                   <Link to="/reviews">
                     <DropdownMenuItem className="hover:bg-white/10 cursor-pointer">
-                      <Star className="mr-3 h-4 w-4" />
+                      <Heart className="mr-3 h-4 w-4" />
                       Mis Reseñas
                     </DropdownMenuItem>
                   </Link>
