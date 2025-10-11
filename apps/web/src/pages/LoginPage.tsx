@@ -159,16 +159,16 @@ export default function LoginPage() {
               <form onSubmit={handleSubmit} className="mobile-space-y">
                 {/* Email Field */}
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="mobile-text-base">Correo Electrónico</Label>
+                  <Label htmlFor="email" className="text-sm font-medium">Correo Electrónico</Label>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                     <Input
                       id="email"
                       type="email"
                       placeholder="tu@email.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="pl-10 glass border-white/20 focus:border-primary/50 focus:ring-primary/30 h-12 touch-target text-base"
+                      className="pl-10 glass border-white/20 focus:border-primary/50 focus:ring-primary/30 h-11 text-base"
                       maxLength={200}
                       required
                     />
@@ -176,18 +176,33 @@ export default function LoginPage() {
                 </div>
 
                 {/* Password Field */}
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
-                  <PasswordInput
-                    id="password"
-                    label="Contraseña"
-                    placeholder="Tu contraseña"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="pl-10 glass border-white/20 focus:border-primary/50 focus:ring-primary/30 h-12 touch-target text-base"
-                    showToggle={true}
-                    required
-                  />
+                <div className="space-y-2">
+                  <Label htmlFor="password" className="text-sm font-medium">Contraseña</Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none z-10" />
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Tu contraseña"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="pl-10 pr-10 glass border-white/20 focus:border-primary/50 focus:ring-primary/30 h-11 text-base"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors p-1"
+                      aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                      tabIndex={-1}
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
+                    </button>
+                  </div>
                 </div>
 
                 {/* Options */}
@@ -197,15 +212,14 @@ export default function LoginPage() {
                       id="remember"
                       checked={rememberMe}
                       onCheckedChange={(checked) => setRememberMe(checked as boolean)}
-                      className="touch-target"
                     />
-                    <Label htmlFor="remember" className="mobile-text-base text-muted-foreground">
+                    <Label htmlFor="remember" className="text-sm text-muted-foreground cursor-pointer">
                       Recordarme
                     </Label>
                   </div>
                   <Link
                     to="/forgot-password"
-                    className="mobile-text-base text-primary hover:text-primary/80 transition-colors touch-target"
+                    className="text-sm text-primary hover:text-primary/80 transition-colors inline-block"
                   >
                     ¿Olvidaste tu contraseña?
                   </Link>
@@ -225,13 +239,13 @@ export default function LoginPage() {
                           <strong>Email no verificado</strong><br />
                           Necesitas verificar tu dirección de email antes de iniciar sesión.
                         </AlertDescription>
-                        <div className="flex flex-col gap-3 sm:flex-row sm:gap-2">
+                        <div className="flex flex-col gap-2 sm:flex-row">
                           <Button
                             onClick={handleResendVerification}
                             disabled={isResendingVerification}
                             variant="outline"
                             size="sm"
-                            className="flex-1 border-warning/50 text-warning hover:bg-warning/10 h-10 touch-target"
+                            className="flex-1 border-warning/50 text-warning hover:bg-warning/10 h-9"
                           >
                             {isResendingVerification ? (
                               <>
@@ -249,7 +263,7 @@ export default function LoginPage() {
                             onClick={() => navigate(`/verify-email?email=${encodeURIComponent(email)}`)}
                             variant="outline"
                             size="sm"
-                            className="flex-1 border-primary/50 text-primary hover:bg-primary/10 h-10 touch-target"
+                            className="flex-1 border-primary/50 text-primary hover:bg-primary/10 h-9"
                           >
                             <Mail className="h-4 w-4 mr-2" />
                             Ir a Verificación
@@ -263,7 +277,7 @@ export default function LoginPage() {
                 {/* Submit Button */}
                 <Button
                   type="submit"
-                  className="w-full liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg h-12 touch-target text-base font-medium"
+                  className="w-full liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg h-11 text-base font-medium"
                   disabled={loading}
                 >
                   {loading ? (
@@ -285,11 +299,11 @@ export default function LoginPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="text-center mt-4 sm:mt-6"
+          className="text-center mt-6"
         >
-          <p className="mobile-text-base text-muted-foreground">
+          <p className="text-sm text-muted-foreground">
             ¿No tienes una cuenta?{" "}
-            <Link to="/register" className="text-primary hover:text-primary/80 transition-colors font-medium touch-target">
+            <Link to="/register" className="text-primary hover:text-primary/80 transition-colors font-medium">
               Únete gratis
             </Link>
           </p>
@@ -300,11 +314,11 @@ export default function LoginPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
-          className="text-center mt-3 sm:mt-4"
+          className="text-center mt-4"
         >
           <Link
             to="/"
-            className="inline-flex items-center mobile-text-base text-muted-foreground hover:text-primary transition-colors touch-target"
+            className="inline-flex items-center text-sm text-muted-foreground hover:text-primary transition-colors"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Volver al inicio
