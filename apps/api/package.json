@@ -6,6 +6,7 @@
   "scripts": {
     "build": "nest build",
     "build:migrate": "npm run build && npx prisma migrate deploy",
+    "build:nomigrate": "npm run build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",

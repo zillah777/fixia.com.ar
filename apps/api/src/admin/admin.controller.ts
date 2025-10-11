@@ -40,6 +40,31 @@ export class AdminController {
     }
   }
 
+  @Post('reset-migrations')
+  @ApiOperation({ summary: 'Reset Prisma migrations table (DANGER: Production use only for fixing failed migrations)' })
+  @ApiResponse({ status: 200, description: 'Migrations table reset successfully' })
+  async resetMigrations() {
+    try {
+      // Delete all records from _prisma_migrations table
+      await this.prisma.$executeRawUnsafe('DELETE FROM "_prisma_migrations"');
+
+      return {
+        status: 'success',
+        message: 'Prisma migrations table cleared. Ready for fresh migration deployment.',
+        timestamp: new Date().toISOString(),
+      };
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: 'error',
+          message: 'Failed to reset migrations',
+          error: error.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
   @Post('seed-services')
   @ApiOperation({ summary: 'Populate missing services data (production-safe)' })
   @ApiResponse({ status: 200, description: 'Services seeded successfully' })
