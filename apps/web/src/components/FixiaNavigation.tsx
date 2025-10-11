@@ -13,9 +13,12 @@ import { MobileNavigation } from "./MobileNavigation";
 import { NotificationBell } from "./notifications/NotificationBell";
 
 export const FixiaNavigation = memo(function FixiaNavigation() {
+  // Force Star to be included in bundle - prevent tree-shaking
+  const _starIcon = Star;
+
   const { user, isAuthenticated, logout } = useSecureAuth();
   const navigate = useNavigate();
-  
+
   // Handle logout with navigation - memoized to prevent unnecessary re-renders
   const handleLogout = useCallback(async () => {
     try {
