@@ -21,7 +21,8 @@
       "WebFetch(domain:fixiacomar-production.up.railway.app)",
       "WebFetch(domain:fixiaweb.vercel.app)",
       "Bash(npm test:*)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(git push:*)"
     ],
     "deny": []
   }

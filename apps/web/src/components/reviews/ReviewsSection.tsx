@@ -1,5 +1,5 @@
 import React, { useState, memo } from 'react';
-import { ThumbsUp, Flag, Shield, TrendingUp, Award, Star } from 'lucide-react';
+import { ThumbsUp, Flag, Shield, TrendingUp, Award } from 'lucide-react';
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
@@ -91,7 +91,7 @@ export const ReviewsSection = memo<ReviewsSectionProps>(({
 
   const renderStars = (rating: number, size = 'sm') => {
     return Array.from({ length: 5 }, (_, i) => (
-      <Star
+      <Award
         key={i}
         className={cn(
           size === 'sm' ? 'h-4 w-4' : 'h-5 w-5',
@@ -116,7 +116,7 @@ export const ReviewsSection = memo<ReviewsSectionProps>(({
             onClick={() => onChange(i + 1)}
             className="transition-colors hover:scale-110"
           >
-            <Star
+            <Award
               className={cn(
                 'h-6 w-6',
                 i < value ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300 hover:text-yellow-400'

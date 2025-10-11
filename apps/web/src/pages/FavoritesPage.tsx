@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import {
-  Heart, Search, Filter, Star, MapPin,
+  Heart, Search, Filter, Award, MapPin,
   Crown, CheckCircle, Trash2, Grid, List, SortAsc,
   Clock, Users, Briefcase, MoreHorizontal, Share2,
   MessageSquare, Phone, Mail, Loader2, AlertCircle
@@ -202,7 +202,7 @@ function ServiceCard({ service }: { service: FavoriteService }) {
 
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-1">
-              <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+              <Award className="h-4 w-4 fill-yellow-400 text-yellow-400" />
               <span className="text-sm font-medium">{service.rating}</span>
               <span className="text-sm text-muted-foreground">({service.reviews})</span>
             </div>
@@ -314,7 +314,7 @@ function ProfessionalCard({ professional }: { professional: FavoriteProfessional
 
           <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
             <div className="flex items-center space-x-2">
-              <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+              <Award className="h-4 w-4 fill-yellow-400 text-yellow-400" />
               <span>{professional.rating} ({professional.reviewsCount} reseñas)</span>
             </div>
             <div className="flex items-center space-x-2">

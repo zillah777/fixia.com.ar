@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { Shield, Award, TrendingUp, CheckCircle, Star } from 'lucide-react';
+import { Shield, Award, TrendingUp, CheckCircle, Award } from 'lucide-react';
 import { Badge } from '../ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
 import { cn } from '../ui/utils';
@@ -50,7 +50,7 @@ export const TrustBadge = memo<TrustBadgeProps>(({
           'mr-1'
         )} />;
       case 'Verified Professional':
-        return <Star className={cn(
+        return <Award className={cn(
           size === 'sm' ? 'h-3 w-3' : size === 'lg' ? 'h-5 w-5' : 'h-4 w-4',
           'mr-1'
         )} />;

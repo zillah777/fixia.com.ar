@@ -1,5 +1,5 @@
 import React, { memo } from "react";
-import { Calendar, Clock, Star, TrendingUp, Users, MessageSquare, Shield, Zap } from "lucide-react";
+import { Calendar, Clock, Award, TrendingUp, Users, MessageSquare, Shield, Zap } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Progress } from "./ui/progress";
 import { Badge } from "./ui/badge";
@@ -69,7 +69,7 @@ export const FixiaSummaryCards = memo(function FixiaSummaryCards() {
           <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 group">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
               <CardTitle className="flex items-center space-x-2">
-                <Star className="h-4 w-4 text-warning group-hover:text-yellow-300 transition-colors duration-300" />
+                <Award className="h-4 w-4 text-warning group-hover:text-yellow-300 transition-colors duration-300" />
                 <span>Reputación</span>
               </CardTitle>
             </CardHeader>

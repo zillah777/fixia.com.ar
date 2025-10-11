@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { 
-  ArrowLeft, Search, Users, MessageSquare, Star,
+  ArrowLeft, Search, Users, MessageSquare, Award,
   Crown, UserPlus, FileText, Award, Shield, Clock,
   CheckCircle, Zap, HeadphonesIcon, Heart, Phone, Mail, Bell
 } from "lucide-react";
@@ -67,7 +67,7 @@ function ClientProcessSection() {
       step: "Paso 4",
       title: "Evalúa la Experiencia",
       description: "Recibe tu servicio completado, califica al profesional y contribuye a la comunidad de confianza.",
-      icon: Star,
+      icon: Award,
       color: "text-purple-400"
     }
   ];

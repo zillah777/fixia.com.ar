@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { 
   Search, Filter, MapPin, Clock, DollarSign, Users, Award, Zap,
   ChevronDown, SlidersHorizontal, Grid3X3, List, Eye, ArrowRight,
-  Calendar, CheckCircle, AlertCircle, Star, Briefcase, Globe,
+  Calendar, CheckCircle, AlertCircle, Award, Briefcase, Globe,
   FileText, MessageSquare, Heart, Share2, TrendingUp, Target,
   Send, Bookmark, RefreshCw, Settings
 } from "lucide-react";
@@ -525,7 +525,7 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
                         <CheckCircle className="h-4 w-4 text-success" />
                       )}
                       <span className="flex items-center">
-                        <Star className="h-4 w-4 mr-1 text-warning" />
+                        <Award className="h-4 w-4 mr-1 text-warning" />
                         {opportunity.client.rating}
                       </span>
                       <span className="flex items-center">
@@ -644,7 +644,7 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
                   )}
                 </div>
                 <div className="flex items-center space-x-2 text-xs text-muted-foreground">
-                  <Star className="h-3 w-3 text-warning" />
+                  <Award className="h-3 w-3 text-warning" />
                   <span>{opportunity.client.rating}</span>
                   <span>•</span>
                   <span>{opportunity.client.projectsPosted} proyectos</span>

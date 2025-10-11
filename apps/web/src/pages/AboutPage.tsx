@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { 
   ArrowLeft, Target, Zap, Shield, Clock, Users, 
-  CheckCircle, Search, Bell, Star, TrendingUp,
+  CheckCircle, Search, Bell, Award, TrendingUp,
   Globe, Heart, Award, Lightbulb, Compass, 
   Crown, UserPlus, ArrowRight, MapPin, Sparkles,
   MessageSquare, Phone, Mail, Gift

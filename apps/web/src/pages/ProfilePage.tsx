@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { 
   User, Mail, Phone, MapPin, Calendar, Settings, Shield, 
-  Edit3, Save, X, Plus, Star, Award, Briefcase, Eye, Heart, 
+  Edit3, Save, X, Plus, Award, Award, Briefcase, Eye, Heart, 
   MessageSquare, DollarSign, TrendingUp, Clock, CheckCircle, 
   Upload, FileText, Globe, Linkedin, Twitter, Instagram, Github,
   Bell, Lock, CreditCard, LogOut, Trash2, ExternalLink,
@@ -276,7 +276,7 @@ function ProfileHeader({ user, onUserUpdate }: any) {
                   
                   {user?.userType === 'professional' && user?.professionalProfile && (
                     <div className="flex items-center space-x-1">
-                      <Star className="h-4 w-4 text-warning fill-current" />
+                      <Award className="h-4 w-4 text-warning fill-current" />
                       <span className="font-medium">{user.professionalProfile.averageRating?.toFixed(1) || '0.0'}</span>
                       <span className="text-muted-foreground">({user.professionalProfile.totalReviews || 0} reseñas)</span>
                     </div>

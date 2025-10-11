@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { 
   ArrowLeft, Check, X, Crown, Users, Zap, Shield, 
-  Star, MessageSquare, Bell, Phone, Mail, Gift,
+  Award, MessageSquare, Bell, Phone, Mail, Gift,
   TrendingUp, Award, Clock, HeadphonesIcon, Search,
   FileText, ChevronRight, AlertCircle, CheckCircle
 } from "lucide-react";
@@ -440,7 +440,7 @@ function ComparisonTableSection() {
                           <div className="flex items-center space-x-2">
                             <span className={feature.highlight ? 'font-medium' : ''}>{feature.name}</span>
                             {feature.highlight && (
-                              <Star className="h-4 w-4 text-warning" />
+                              <Award className="h-4 w-4 text-warning" />
                             )}
                           </div>
                         </td>

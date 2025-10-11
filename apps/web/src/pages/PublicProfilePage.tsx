@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { 
-  Star, Award, MapPin, Calendar, Globe, MessageSquare, Heart, 
+  Award, Award, MapPin, Calendar, Globe, MessageSquare, Heart, 
   Share2, CheckCircle, Eye, ExternalLink, ArrowLeft, Flag,
   Clock, Users, TrendingUp, Shield, Briefcase, Mail, Phone,
   Linkedin, Twitter, Github, Instagram, ThumbsUp
@@ -220,7 +220,7 @@ function ProfileHeader() {
                     {publicProfile.level}
                   </Badge>
                   <div className="flex items-center space-x-1">
-                    <Star className="h-4 w-4 text-warning fill-current" />
+                    <Award className="h-4 w-4 text-warning fill-current" />
                     <span className="font-medium">{publicProfile.rating}</span>
                     <span className="text-muted-foreground">({publicProfile.reviews} reseñas)</span>
                   </div>
@@ -366,7 +366,7 @@ function ServicesSection() {
                   
                   <div className="flex items-center justify-between text-sm">
                     <div className="flex items-center space-x-1">
-                      <Star className="h-4 w-4 text-warning fill-current" />
+                      <Award className="h-4 w-4 text-warning fill-current" />
                       <span className="font-medium">{service.rating}</span>
                       <span className="text-muted-foreground">({service.orders})</span>
                     </div>
@@ -488,7 +488,7 @@ function ReviewsSection() {
         <div className="flex items-center justify-between">
           <div>
             <CardTitle className="flex items-center space-x-2">
-              <Star className="h-5 w-5 text-warning" />
+              <Award className="h-5 w-5 text-warning" />
               <span>Reseñas y Valoraciones</span>
             </CardTitle>
             <CardDescription>Lo que dicen los clientes</CardDescription>
@@ -507,7 +507,7 @@ function ReviewsSection() {
             <div className="text-3xl font-bold">{publicProfile.rating}</div>
             <div className="flex items-center justify-center mt-1">
               {[1,2,3,4,5].map((star) => (
-                <Star key={star} className="h-4 w-4 text-warning fill-current" />
+                <Award key={star} className="h-4 w-4 text-warning fill-current" />
               ))}
             </div>
             <div className="text-sm text-muted-foreground mt-1">{publicProfile.reviews} reseñas</div>
@@ -546,7 +546,7 @@ function ReviewsSection() {
                     <div className="text-right">
                       <div className="flex items-center space-x-1">
                         {[1,2,3,4,5].map((star) => (
-                          <Star 
+                          <Award 
                             key={star} 
                             className={`h-4 w-4 ${
                               star <= review.rating 

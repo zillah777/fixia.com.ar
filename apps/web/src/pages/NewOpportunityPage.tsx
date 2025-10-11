@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { 
   ArrowLeft, Send, DollarSign, Calendar, MapPin, Target, 
-  Clock, Star, Tag, AlertCircle, CheckCircle2, Users
+  Clock, Award, Tag, AlertCircle, CheckCircle2, Users
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";

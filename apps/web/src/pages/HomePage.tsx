@@ -7,7 +7,7 @@ import { Badge } from "../components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Skeleton } from "../components/ui/skeleton";
 import { 
-  ArrowRight, Star, Shield, Clock, Users, CheckCircle, 
+  ArrowRight, Award, Shield, Clock, Users, CheckCircle, 
   Search, Zap, Award, TrendingUp, Globe, Smartphone,
   Palette, Code, PenTool, Camera, Briefcase, HeadphonesIcon,
   Play, ChevronRight, MessageSquare, Heart, Bell, MapPin,
@@ -493,7 +493,7 @@ function FeaturedServicesSection() {
                         
                         <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-1">
-                            <Star className="h-4 w-4 text-warning fill-current" />
+                            <Award className="h-4 w-4 text-warning fill-current" />
                             <span className="font-medium">{service.averageRating}</span>
                             <span className="text-muted-foreground text-sm">({service.totalReviews})</span>
                           </div>

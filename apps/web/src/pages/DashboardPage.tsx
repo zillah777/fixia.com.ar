@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { 
-  Plus, TrendingUp, Users, Award, Star, Eye, MessageSquare,
+  Plus, TrendingUp, Users, Award, Award, Eye, MessageSquare,
   Calendar, Clock, DollarSign, ArrowRight, Briefcase, Target,
   Zap, CheckCircle, AlertCircle, Search, Settings, Bell, LogOut, Heart, User
 } from "lucide-react";
@@ -229,7 +229,7 @@ function RecentActivity({
     const icons = {
       order: DollarSign,
       message: MessageSquare,
-      review: Star,
+      review: Award,
       proposal: Target,
       payment: DollarSign,
       service_created: Plus,

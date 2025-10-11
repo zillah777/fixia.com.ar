@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import { 
   Bell, BellOff, Check, MoreHorizontal, Trash2, 
-  MessageSquare, Star, Crown, AlertCircle, CheckCircle, 
+  MessageSquare, Award, Crown, AlertCircle, CheckCircle, 
   Clock, User, Briefcase, Heart, Calendar, Settings,
   Search, Filter, CheckAll, Archive
 } from "lucide-react";
@@ -60,7 +60,7 @@ const notificationTypeConfig = {
 function NotificationIcon({ type }: { type: string }) {
   const iconMap = {
     message: MessageSquare,
-    review: Star,
+    review: Award,
     system: CheckCircle,
     project: Briefcase,
     payment: Crown,
