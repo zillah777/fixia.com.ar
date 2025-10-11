@@ -22,7 +22,7 @@
   
   /* Muted - Translucent */
   --muted: 240 3.7% 15.9%;
-  --muted-foreground: 240 5% 64.9%;
+  --muted-foreground: 240 5% 75%;
   
   /* Accent - Liquid Accent */
   --accent: 240 3.7% 15.9%;
@@ -40,7 +40,7 @@
   --border: 240 3.7% 15.9%;
   --input: 240 3.7% 15.9%;
   --input-background: rgba(255, 255, 255, 0.08);
-  --ring: 240 4.9% 83.9%;
+  --ring: 217 91% 60%;
   
   /* Glass Effects */
   --glass-light: rgba(255, 255, 255, 0.15);
@@ -87,7 +87,7 @@
   --border: rgba(10, 10, 11, 0.1);
   --input: rgba(10, 10, 11, 0.03);
   --input-background: rgba(10, 10, 11, 0.05);
-  --ring: rgba(102, 126, 234, 0.3);
+  --ring: 217 91% 60%;
 }
 
 @theme inline {

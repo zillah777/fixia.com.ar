@@ -538,7 +538,7 @@ export default function ServiceDetailPage() {
                 
                 <CardContent className="space-y-4">
                   <div className="flex items-center space-x-4">
-                    <Avatar className="h-11 w-12">
+                    <Avatar className="h-12 w-12">
                       <AvatarImage src={service.professional.avatar} />
                       <AvatarFallback>{service.professional.name.charAt(0)}</AvatarFallback>
                     </Avatar>

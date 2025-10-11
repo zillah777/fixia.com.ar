@@ -490,7 +490,7 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
             <div className="flex items-start space-x-6">
               {/* Client Avatar */}
               <div className="flex-shrink-0">
-                <Avatar className="h-11 w-12">
+                <Avatar className="h-12 w-12">
                   <AvatarImage src={opportunity.client.avatar} />
                   <AvatarFallback>{opportunity.client.name.charAt(0)}</AvatarFallback>
                 </Avatar>
@@ -1059,7 +1059,7 @@ export default function OpportunitiesPage() {
         {/* Error State */}
         {error && (
           <Card className="glass border-white/10 p-8 text-center">
-            <AlertCircle className="h-11 w-12 mx-auto mb-4 text-destructive" />
+            <AlertCircle className="h-12 w-12 mx-auto mb-4 text-destructive" />
             <h3 className="text-lg font-medium mb-2">Error al cargar oportunidades</h3>
             <p className="text-muted-foreground mb-4">{error}</p>
             <Button onClick={() => window.location.reload()} variant="outline">

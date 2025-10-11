@@ -120,7 +120,7 @@ export const FixiaNavigation = memo(function FixiaNavigation() {
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-2">
                       <div className="flex items-center space-x-3">
-                        <Avatar className="h-11 w-12">
+                        <Avatar className="h-12 w-12">
                           <AvatarImage src={user?.avatar} alt={user?.name || 'Usuario'} />
                           <AvatarFallback>{user?.name?.charAt(0)?.toUpperCase() || 'U'}</AvatarFallback>
                         </Avatar>

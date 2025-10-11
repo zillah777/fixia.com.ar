@@ -669,7 +669,7 @@ function MediaStep({ data, setData }: { data: ProjectData; setData: (data: Proje
                 // Handle file drop
               }}
             >
-              <Upload className="h-11 w-12 mx-auto mb-4 text-muted-foreground" />
+              <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
               <div className="space-y-2">
                 <div className="font-medium">Arrastra una imagen aquí o haz clic para seleccionar</div>
                 <div className="text-sm text-muted-foreground">

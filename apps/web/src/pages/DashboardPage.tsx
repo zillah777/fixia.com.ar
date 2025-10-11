@@ -141,7 +141,7 @@ function QuickActions({ user }: { user: any }) {
         <Link to={isProfessional ? "/new-project" : "/new-opportunity"}>
           <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 cursor-pointer group">
             <CardContent className="p-6 text-center">
-              <div className="h-11 w-12 liquid-gradient rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+              <div className="h-12 w-12 liquid-gradient rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
                 <Plus className="h-6 w-6 text-white" />
               </div>
               <h3 className="font-semibold mb-2">
@@ -165,7 +165,7 @@ function QuickActions({ user }: { user: any }) {
         <Link to="/opportunities">
           <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 cursor-pointer group">
             <CardContent className="p-6 text-center">
-              <div className="h-11 w-12 bg-success/20 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+              <div className="h-12 w-12 bg-success/20 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
                 <Target className="h-6 w-6 text-success" />
               </div>
               <h3 className="font-semibold mb-2">Ver Oportunidades</h3>
@@ -184,7 +184,7 @@ function QuickActions({ user }: { user: any }) {
         <Link to="/services">
           <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 cursor-pointer group">
             <CardContent className="p-6 text-center">
-              <div className="h-11 w-12 bg-warning/20 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+              <div className="h-12 w-12 bg-warning/20 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
                 <Search className="h-6 w-6 text-warning" />
               </div>
               <h3 className="font-semibold mb-2">Explorar</h3>
@@ -203,7 +203,7 @@ function QuickActions({ user }: { user: any }) {
         <Link to="/profile">
           <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 cursor-pointer group">
             <CardContent className="p-6 text-center">
-              <div className="h-11 w-12 bg-blue-500/20 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+              <div className="h-12 w-12 bg-blue-500/20 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
                 <Settings className="h-6 w-6 text-blue-400" />
               </div>
               <h3 className="font-semibold mb-2">Mi Perfil</h3>
@@ -282,7 +282,7 @@ function RecentActivity({
           </div>
         ) : activities.length === 0 ? (
           <div className="text-center py-8">
-            <div className="h-11 w-12 liquid-gradient rounded-xl flex items-center justify-center mx-auto mb-3 opacity-50">
+            <div className="h-12 w-12 liquid-gradient rounded-xl flex items-center justify-center mx-auto mb-3 opacity-50">
               <Clock className="h-6 w-6 text-white" />
             </div>
             <h3 className="font-medium mb-2">Sin actividad reciente</h3>
@@ -340,7 +340,7 @@ function StatCardSkeleton() {
               <Skeleton className="h-3 w-20" />
             </div>
           </div>
-          <Skeleton className="h-11 w-12 rounded-xl" />
+          <Skeleton className="h-12 w-12 rounded-xl" />
         </div>
       </CardContent>
     </Card>
@@ -426,7 +426,7 @@ function StatCards({ dashboardData, loading }: { dashboardData: DashboardStats |
                       <span className="text-xs text-muted-foreground">{stat.description}</span>
                     </div>
                   </div>
-                  <div className="h-11 w-12 bg-primary/20 rounded-xl flex items-center justify-center">
+                  <div className="h-12 w-12 bg-primary/20 rounded-xl flex items-center justify-center">
                     <Icon className="h-6 w-6 text-primary" />
                   </div>
                 </div>

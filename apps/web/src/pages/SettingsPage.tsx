@@ -203,7 +203,7 @@ function ProfileTab() {
           <div className="flex items-center space-x-3">
             {user?.isVerified ? (
               <>
-                <div className="h-11 w-12 bg-green-500/20 rounded-full flex items-center justify-center">
+                <div className="h-12 w-12 bg-green-500/20 rounded-full flex items-center justify-center">
                   <Check className="h-6 w-6 text-green-500" />
                 </div>
                 <div>
@@ -216,7 +216,7 @@ function ProfileTab() {
               </>
             ) : (
               <>
-                <div className="h-11 w-12 bg-yellow-500/20 rounded-full flex items-center justify-center">
+                <div className="h-12 w-12 bg-yellow-500/20 rounded-full flex items-center justify-center">
                   <AlertCircle className="h-6 w-6 text-yellow-500" />
                 </div>
                 <div>

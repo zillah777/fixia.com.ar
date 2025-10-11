@@ -306,7 +306,7 @@ function HowItWorksSection() {
                 <Card className="glass border-white/10 h-full">
                   <CardContent className="p-8">
                     <div className="flex items-center space-x-4 mb-6">
-                      <div className="h-11 w-12 liquid-gradient rounded-xl flex items-center justify-center">
+                      <div className="h-12 w-12 liquid-gradient rounded-xl flex items-center justify-center">
                         <Icon className="h-6 w-6 text-white" />
                       </div>
                       <h3 className="text-xl font-semibold">{step.title}</h3>
@@ -335,7 +335,7 @@ function HowItWorksSection() {
         >
           <Card className="glass border-primary/30 bg-primary/5">
             <CardContent className="p-8 text-center">
-              <Bell className="h-11 w-12 text-primary mx-auto mb-4" />
+              <Bell className="h-12 w-12 text-primary mx-auto mb-4" />
               <h4 className="text-xl font-semibold mb-4">Conexión Instantánea</h4>
               <p className="text-muted-foreground max-w-2xl mx-auto">
                 Nuestro algoritmo inteligente conecta automáticamente la demanda con la oferta más adecuada 

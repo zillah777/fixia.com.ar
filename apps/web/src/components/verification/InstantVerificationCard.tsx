@@ -223,7 +223,7 @@ export const InstantVerificationCard = memo<InstantVerificationCardProps>(({
             animate={{ opacity: 1, scale: 1 }}
             className="text-center space-y-3"
           >
-            <CheckCircle className="h-11 w-12 text-green-600 mx-auto" />
+            <CheckCircle className="h-12 w-12 text-green-600 mx-auto" />
             <div>
               <h4 className="font-medium text-foreground">¡Verificación Exitosa!</h4>
               <p className="text-sm text-muted-foreground">

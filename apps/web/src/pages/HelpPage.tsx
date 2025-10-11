@@ -278,7 +278,7 @@ function HelpArticles() {
                 <Card className="glass border-white/10 hover:bg-white/5 transition-all duration-300 cursor-pointer group h-full">
                   <CardContent className="p-6">
                     <div className="flex items-start space-x-4">
-                      <div className="h-11 w-12 rounded-lg bg-primary/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <div className="h-12 w-12 rounded-lg bg-primary/20 flex items-center justify-center group-hover:scale-110 transition-transform">
                         <Icon className="h-6 w-6 text-primary" />
                       </div>
                       <div className="flex-1">

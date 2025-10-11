@@ -184,7 +184,7 @@ export const MobileNavigation = memo<MobileNavigationProps>(({ className }) => {
           {isAuthenticated && user && (
             <div className="px-6 py-4 border-b border-border">
               <div className="flex items-center space-x-3">
-                <Avatar className="h-11 w-12">
+                <Avatar className="h-12 w-12">
                   <AvatarImage src={user.avatar} />
                   <AvatarFallback className="text-sm">
                     {user.name?.charAt(0)?.toUpperCase()}
