@@ -5,6 +5,7 @@
   "description": "Fixia Marketplace API - Backend para el marketplace de microservicios de Chubut",
   "scripts": {
     "build": "nest build",
+    "build:migrate": "npm run build && npx prisma migrate deploy",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
