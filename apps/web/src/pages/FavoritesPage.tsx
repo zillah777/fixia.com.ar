@@ -5,7 +5,7 @@ import {
   Heart, Search, Filter, Heart, MapPin,
   Crown, CheckCircle, Trash2, Grid, List, SortAsc,
   Clock, Users, Briefcase, MoreHorizontal, Share2,
-  MessageSquare, Phone, Mail AlertCircle
+  MessageSquare, Phone, Mail, AlertCircle
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";

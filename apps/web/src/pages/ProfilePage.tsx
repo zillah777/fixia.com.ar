@@ -7,7 +7,7 @@ import {
   MessageSquare, DollarSign, TrendingUp, Clock, CheckCircle, 
   Upload, FileText, Globe, Linkedin, Twitter, Instagram, Github,
   Bell, Lock, CreditCard, LogOut, Trash2, ExternalLink,
-  BarChart3, Users, Target, Zap AlertTriangle, Camera,
+  BarChart3, Users, Target, Zap, AlertTriangle, Camera,
   Download, ArrowLeft
 } from "lucide-react";
 import { Button } from "../components/ui/button";
