@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs"
 import { Checkbox } from "../components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import { Alert, AlertDescription } from "../components/ui/alert";
+import { PasswordStrength } from "../components/ui/password-strength";
 import { useSecureAuth } from "../context/SecureAuthContext";
 import { FixiaNavigation } from "../components/FixiaNavigation";
 import { toast } from "sonner";
@@ -194,39 +195,12 @@ function ClientRegistrationForm({
             </div>
           </div>
 
-          {/* Enhanced Password validation feedback */}
+          {/* Password strength indicator */}
+          <PasswordStrength password={formData.password} />
+
+          {/* Password validation feedback */}
           {(formData.password.length > 0 || (formData.confirmPassword && !passwordsMatch)) && (
             <div className="space-y-4">
-              {/* Password strength indicator */}
-              {formData.password.length > 0 && (
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-foreground">Fortaleza de contraseña</span>
-                    <span className={`text-sm font-medium ${passwordValidation.strengthColor}`}>
-                      {passwordValidation.strengthLabel} ({passwordValidation.score}/100)
-                    </span>
-                  </div>
-                  
-                  {/* Strength bars */}
-                  <div className="flex space-x-1">
-                    {[1, 2, 3, 4, 5].map((bar) => (
-                      <div 
-                        key={bar}
-                        className={`h-2 flex-1 rounded-sm ${
-                          bar <= passwordValidation.strengthBars
-                            ? passwordValidation.strength === 'very-strong' ? 'bg-green-600'
-                              : passwordValidation.strength === 'strong' ? 'bg-green-500'
-                              : passwordValidation.strength === 'good' ? 'bg-blue-500'
-                              : passwordValidation.strength === 'fair' ? 'bg-yellow-500'
-                              : passwordValidation.strength === 'weak' ? 'bg-orange-500'
-                              : 'bg-red-500'
-                            : 'bg-gray-200'
-                        }`}
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
 
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -701,39 +675,12 @@ function ProfessionalRegistrationForm({
               </div>
             </div>
 
+            {/* Password strength indicator */}
+            <PasswordStrength password={formData.password} />
+
             {/* Enhanced Password validation feedback */}
             {(formData.password.length > 0 || (formData.confirmPassword && !passwordsMatch)) && (
               <div className="space-y-4">
-                {/* Password strength indicator */}
-                {formData.password.length > 0 && (
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-foreground">Fortaleza de contraseña</span>
-                      <span className={`text-sm font-medium ${passwordValidation.strengthColor}`}>
-                        {passwordValidation.strengthLabel} ({passwordValidation.score}/100)
-                      </span>
-                    </div>
-                    
-                    {/* Strength bars */}
-                    <div className="flex space-x-1">
-                      {[1, 2, 3, 4, 5].map((bar) => (
-                        <div 
-                          key={bar}
-                          className={`h-2 flex-1 rounded-sm ${
-                            bar <= passwordValidation.strengthBars
-                              ? passwordValidation.strength === 'very-strong' ? 'bg-green-600'
-                                : passwordValidation.strength === 'strong' ? 'bg-green-500'
-                                : passwordValidation.strength === 'good' ? 'bg-blue-500'
-                                : passwordValidation.strength === 'fair' ? 'bg-yellow-500'
-                                : passwordValidation.strength === 'weak' ? 'bg-orange-500'
-                                : 'bg-red-500'
-                              : 'bg-gray-200'
-                          }`}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                )}
 
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="space-y-2">
