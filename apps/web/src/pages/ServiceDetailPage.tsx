@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { 
-  ArrowLeft, Heart, Heart, Share2, Clock, DollarSign, Users, Heart, 
-  MessageSquare, Shield, CheckCircle, MapPin, Calendar, Zap, 
-  ThumbsUp, Eye, ArrowRight, Play, Download, Flag, MoreHorizontal AlertTriangle
+import {
+  ArrowLeft, Heart, Heart, Share2, Clock, DollarSign, Users, Heart,
+  MessageSquare, Shield, CheckCircle, MapPin, Calendar, Zap,
+  ThumbsUp, Eye, ArrowRight, Play, Download, Flag, MoreHorizontal, AlertTriangle
 } from "lucide-react";
 import { servicesService, type Service } from "../lib/services/services.service";
 import { openWhatsAppChat } from "../lib/whatsapp";
