@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useSearchParams, useParams, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { 
-  Mail, 
-  CheckCircle2, 
-  RefreshCw, 
-  ArrowRight, 
-  ArrowLeft, 
-  AlertCircle
+import {
+  Mail,
+  CheckCircle2,
+  RefreshCw,
+  ArrowRight,
+  ArrowLeft,
+  AlertCircle,
   Shield,
   Clock,
   Send
