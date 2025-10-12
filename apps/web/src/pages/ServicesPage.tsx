@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import {
   Search, Filter, MapPin, Heart, Heart, Share2, Clock, DollarSign,
   Users, Heart, Zap, ChevronDown, SlidersHorizontal, Grid3X3,
-  List, Map, ArrowRight, CheckCircle, Briefcase MessageCircle, X, Send
+  List, Map, ArrowRight, CheckCircle, Briefcase, MessageCircle, X, Send
 } from "lucide-react";
 import { servicesService, type Service, type ServiceFilters } from "../lib/services/services.service";
 import { favoritesService } from "../lib/services/favorites.service";
