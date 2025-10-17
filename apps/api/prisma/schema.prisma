@@ -131,7 +131,23 @@ model User {
   email_verified   Boolean   @default(false)
   phone            String?
   whatsapp_number  String?
-  
+  bio              String?
+
+  // Social Networks
+  social_linkedin  String?
+  social_twitter   String?
+  social_github    String?
+  social_instagram String?
+
+  // Notification Preferences
+  notifications_messages  Boolean @default(true)
+  notifications_orders    Boolean @default(true)
+  notifications_projects  Boolean @default(true)
+  notifications_newsletter Boolean @default(false)
+
+  // Settings
+  timezone         String? @default("buenos-aires")
+
   // Security fields
   failed_login_attempts Int    @default(0)
   locked_until     DateTime?

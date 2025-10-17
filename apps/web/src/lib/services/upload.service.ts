@@ -9,9 +9,7 @@ export interface UploadResponse {
 
 class UploadService {
   /**
-   * Upload an image file
-   * In production, this should upload to Cloudinary/S3
-   * For now, it optimizes and converts to base64
+   * Upload an image file to Cloudinary via backend
    */
   async uploadImage(file: File): Promise<UploadResponse> {
     try {
@@ -25,27 +23,21 @@ class UploadService {
         throw new Error('La imagen no debe superar 5MB');
       }
 
-      // Resize and optimize image before upload
-      const optimizedImage = await this.optimizeImage(file);
+      // Create FormData for multipart upload
+      const formData = new FormData();
+      formData.append('file', file);
 
-      // Convert to base64
-      const base64 = await this.fileToBase64(optimizedImage);
+      // Upload to backend (which uploads to Cloudinary)
+      const response = await api.post<UploadResponse>('/upload/avatar', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
 
-      // In production, you would upload to a service:
-      // const formData = new FormData();
-      // formData.append('file', optimizedImage);
-      // const response = await api.post('/upload/image', formData);
-      // return response.data;
-
-      // For now, return the optimized base64
-      return {
-        url: base64,
-        format: file.type.split('/')[1],
-        size: optimizedImage.size,
-      };
+      return response;
     } catch (error: any) {
       console.error('Upload error:', error);
-      throw new Error(error.message || 'Error al subir la imagen');
+      throw new Error(error.response?.data?.message || error.message || 'Error al subir la imagen');
     }
   }
 

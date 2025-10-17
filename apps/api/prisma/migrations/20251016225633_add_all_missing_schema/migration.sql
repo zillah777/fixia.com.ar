@@ -1,0 +1,1 @@
+-- Migration created by Claude to sync production schema
