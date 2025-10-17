@@ -401,14 +401,13 @@ export class AuthService {
     
     this.logger.log(`New verification token created for user: ${user.id}, expires: ${expiresAt.toISOString()}`);
 
-    // Send email with verification link - use frontend verification page
-    const frontendUrl = this.configService.get('FRONTEND_URL') || this.configService.get('APP_URL') || 'https://fixia.app';
-    const verificationUrl = `${frontendUrl}/verify-email?token=${token}`;
+    // Send email with verification link - use backend GET endpoint that automatically redirects
+    const apiUrl = this.configService.get('API_URL') || 'https://fixia-api.onrender.com';
+    const verificationUrl = `${apiUrl}/auth/verify/${token}`;
     
     this.logger.log(`🔍 URL Generation Debug:`);
-    this.logger.log(`  FRONTEND_URL: ${this.configService.get('FRONTEND_URL')}`);
-    this.logger.log(`  APP_URL: ${this.configService.get('APP_URL')}`);
-    this.logger.log(`  Final Frontend URL: ${frontendUrl}`);
+    this.logger.log(`  API_URL: ${this.configService.get('API_URL')}`);
+    this.logger.log(`  Final API URL: ${apiUrl}`);
     this.logger.log(`  Verification URL: ${verificationUrl}`);
     this.logger.log(`Attempting to send verification email to ${email}`);
     
