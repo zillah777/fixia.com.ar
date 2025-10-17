@@ -76,12 +76,18 @@ export interface User {
   updatedAt: string;
 }
 
+interface RegisterResponse {
+  success: boolean;
+  message: string;
+  requiresVerification: boolean;
+}
+
 interface SecureAuthContextType {
   user: User | null;
   loading: boolean;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (userData: RegisterRequest) => Promise<void>;
+  register: (userData: RegisterRequest) => Promise<RegisterResponse>;
   logout: () => Promise<void>;
   updateProfile: (userData: Partial<User>) => Promise<void>;
   refreshUserData: () => Promise<void>;
@@ -521,8 +527,8 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
         throw new Error(`Contraseña no válida: ${passwordValidation.errors[0]}`);
       }
 
-      // EMERGENCY FIX: Use manual user creation until DB is migrated
-      const result = await api.post('/auth/emergency/register', sanitizedData);
+      // Use production-ready registration endpoint
+      const result = await api.post('/auth/register', sanitizedData);
 
       console.log('Registration response:', result);
 
@@ -677,8 +683,8 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
 
   const verifyEmail = async (token: string) => {
     try {
-      const response = await api.post('/auth/verify-email', { token });
-      
+      await api.post('/auth/verify-email', { token });
+
       toast.success('Email verificado exitosamente');
       await refreshUserData();
     } catch (error: any) {
@@ -689,8 +695,8 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
 
   const resendVerificationEmail = async (email?: string) => {
     try {
-      const response = await api.post('/auth/resend-verification', email ? { email } : {});
-      
+      await api.post('/auth/resend-verification', email ? { email } : {});
+
       toast.success('Email de verificación reenviado');
     } catch (error: any) {
       toast.error(error.message || 'Error al reenviar verificación');
