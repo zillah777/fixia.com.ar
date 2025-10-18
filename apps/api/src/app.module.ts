@@ -16,7 +16,7 @@ import { VerificationModule } from './verification/verification.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { PaymentsModule } from './payments/payments.module';
 import { UploadModule } from './upload/upload.module';
-// import { DashboardModule } from './dashboard/dashboard.module';
+import { DashboardModule } from './dashboard/dashboard.module';
 // import { FavoritesModule } from './favorites/favorites.module';
 
 @Module({
@@ -48,7 +48,7 @@ import { UploadModule } from './upload/upload.module';
     NotificationsModule,
     PaymentsModule,
     UploadModule,
-    // DashboardModule,
+    DashboardModule,
     // FavoritesModule,
   ],
   controllers: [],
