@@ -115,18 +115,37 @@ export class UsersService {
       throw new NotFoundException('User not found');
     }
 
-    // Update user basic info
-    const userUpdateData = {
+    // Build complete user update data with all supported fields
+    const userUpdateData: any = {
+      // Basic fields
       name: updateData.name,
       avatar: updateData.avatar,
       location: updateData.location,
+      bio: updateData.bio,
+      whatsapp_number: updateData.whatsapp_number,
+
+      // Social networks
+      social_linkedin: updateData.social_linkedin,
+      social_twitter: updateData.social_twitter,
+      social_github: updateData.social_github,
+      social_instagram: updateData.social_instagram,
+
+      // Notification preferences
+      notifications_messages: updateData.notifications_messages,
+      notifications_orders: updateData.notifications_orders,
+      notifications_projects: updateData.notifications_projects,
+      notifications_newsletter: updateData.notifications_newsletter,
+
+      // Settings
+      timezone: updateData.timezone,
     };
 
-    // Remove undefined values
-    Object.keys(userUpdateData).forEach(key => 
+    // Remove undefined values to only update provided fields
+    Object.keys(userUpdateData).forEach(key =>
       userUpdateData[key] === undefined && delete userUpdateData[key]
     );
 
+    // Update user record with all provided fields
     const updatedUser = await this.prisma.user.update({
       where: { id: userId },
       data: userUpdateData,
@@ -135,46 +154,28 @@ export class UsersService {
       },
     });
 
-    // Update professional profile if user is professional and data provided
-    if (existingUser.user_type === 'professional' && 
-        (updateData.bio !== undefined || updateData.specialties !== undefined || updateData.whatsapp_number !== undefined)) {
-      
+    // Update professional profile if user is professional and specialties provided
+    if (existingUser.user_type === 'professional' && updateData.specialties !== undefined) {
       const professionalUpdateData = {
-        bio: updateData.bio,
         specialties: updateData.specialties,
       };
 
-      // Remove undefined values
-      Object.keys(professionalUpdateData).forEach(key => 
-        professionalUpdateData[key] === undefined && delete professionalUpdateData[key]
-      );
-
-      if (Object.keys(professionalUpdateData).length > 0) {
-        if (existingUser.professional_profile) {
-          await this.prisma.professionalProfile.update({
-            where: { user_id: userId },
-            data: professionalUpdateData,
-          });
-        } else {
-          await this.prisma.professionalProfile.create({
-            data: {
-              user_id: userId,
-              ...professionalUpdateData,
-            },
-          });
-        }
-      }
-
-      // Update WhatsApp number in user table if provided
-      if (updateData.whatsapp_number !== undefined) {
-        await this.prisma.user.update({
-          where: { id: userId },
-          data: { whatsapp_number: updateData.whatsapp_number },
+      if (existingUser.professional_profile) {
+        await this.prisma.professionalProfile.update({
+          where: { user_id: userId },
+          data: professionalUpdateData,
+        });
+      } else {
+        await this.prisma.professionalProfile.create({
+          data: {
+            user_id: userId,
+            ...professionalUpdateData,
+          },
         });
       }
     }
 
-    // Fetch updated user data
+    // Fetch final updated user data
     const finalUser = await this.prisma.user.findUnique({
       where: { id: userId },
       include: { professional_profile: true },

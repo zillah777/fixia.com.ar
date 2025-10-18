@@ -119,19 +119,19 @@ enum NotificationType {
 }
 
 model User {
-  id               String    @id @default(uuid())
-  email            String    @unique
-  password_hash    String
-  name             String
-  avatar           String?
-  user_type        UserType
-  location         String?
-  birthdate        DateTime?
-  verified         Boolean   @default(false)
-  email_verified   Boolean   @default(false)
-  phone            String?
-  whatsapp_number  String?
-  bio              String?
+  id              String    @id @default(uuid())
+  email           String    @unique
+  password_hash   String
+  name            String
+  avatar          String?
+  user_type       UserType
+  location        String?
+  birthdate       DateTime?
+  verified        Boolean   @default(false)
+  email_verified  Boolean   @default(false)
+  phone           String?
+  whatsapp_number String?
+  bio             String?
 
   // Social Networks
   social_linkedin  String?
@@ -140,62 +140,62 @@ model User {
   social_instagram String?
 
   // Notification Preferences
-  notifications_messages  Boolean @default(true)
-  notifications_orders    Boolean @default(true)
-  notifications_projects  Boolean @default(true)
+  notifications_messages   Boolean @default(true)
+  notifications_orders     Boolean @default(true)
+  notifications_projects   Boolean @default(true)
   notifications_newsletter Boolean @default(false)
 
   // Settings
-  timezone         String? @default("buenos-aires")
+  timezone String? @default("buenos-aires")
 
   // Security fields
-  failed_login_attempts Int    @default(0)
-  locked_until     DateTime?
-  created_at       DateTime  @default(now())
-  updated_at       DateTime  @updatedAt
-  deleted_at       DateTime?
+  failed_login_attempts Int       @default(0)
+  locked_until          DateTime?
+  created_at            DateTime  @default(now())
+  updated_at            DateTime  @updatedAt
+  deleted_at            DateTime?
 
   // Relations
-  professional_profile ProfessionalProfile?
-  services            Service[]
-  projects            Project[]
-  proposals           Proposal[]
-  reviews_given       Review[] @relation("ReviewerReviews")
-  reviews_received    Review[] @relation("ProfessionalReviews")
-  conversations_as_client Conversation[] @relation("ClientConversations")
-  conversations_as_professional Conversation[] @relation("ProfessionalConversations")
-  notifications       Notification[]
-  sessions           UserSession[]
-  service_views      ServiceView[]
-  user_activity      UserActivity[]
-  password_reset_tokens PasswordResetToken[]
-  email_verification_tokens EmailVerificationToken[]
-  password_history      PasswordHistory[]
-  
+  professional_profile          ProfessionalProfile?
+  services                      Service[]
+  projects                      Project[]
+  proposals                     Proposal[]
+  reviews_given                 Review[]                 @relation("ReviewerReviews")
+  reviews_received              Review[]                 @relation("ProfessionalReviews")
+  conversations_as_client       Conversation[]           @relation("ClientConversations")
+  conversations_as_professional Conversation[]           @relation("ProfessionalConversations")
+  notifications                 Notification[]
+  sessions                      UserSession[]
+  service_views                 ServiceView[]
+  user_activity                 UserActivity[]
+  password_reset_tokens         PasswordResetToken[]
+  email_verification_tokens     EmailVerificationToken[]
+  password_history              PasswordHistory[]
+
   // Transaction Tracking Relations
-  client_jobs         Job[] @relation("ClientJobs")
-  professional_jobs   Job[] @relation("ProfessionalJobs")
-  job_updates         JobStatusUpdate[] @relation("JobUpdates")
-  client_contacts     ContactInteraction[] @relation("ClientContacts")
+  client_jobs           Job[]                @relation("ClientJobs")
+  professional_jobs     Job[]                @relation("ProfessionalJobs")
+  job_updates           JobStatusUpdate[]    @relation("JobUpdates")
+  client_contacts       ContactInteraction[] @relation("ClientContacts")
   professional_contacts ContactInteraction[] @relation("ProfessionalContacts")
-  
+
   // Reviews & Trust Relations
-  moderated_reviews   Review[] @relation("ModeratedReviews")
-  helpful_votes       ReviewHelpfulVote[] @relation("HelpfulVotes")
-  flagged_reviews     ReviewFlag[] @relation("FlaggedReviews")
-  resolved_flags      ReviewFlag[] @relation("ResolvedFlags")
-  trust_score         TrustScore?
-  verification_requests VerificationRequest[] @relation("VerificationRequests")
+  moderated_reviews      Review[]              @relation("ModeratedReviews")
+  helpful_votes          ReviewHelpfulVote[]   @relation("HelpfulVotes")
+  flagged_reviews        ReviewFlag[]          @relation("FlaggedReviews")
+  resolved_flags         ReviewFlag[]          @relation("ResolvedFlags")
+  trust_score            TrustScore?
+  verification_requests  VerificationRequest[] @relation("VerificationRequests")
   reviewed_verifications VerificationRequest[] @relation("ReviewedVerifications")
-  
+
   // Payment Relations
-  payments              Payment[] @relation("UserPayments")
-  professional_payments Payment[] @relation("ProfessionalPayments")
-  payment_preferences   PaymentPreference[] @relation("UserPaymentPreferences")
+  payments                         Payment[]           @relation("UserPayments")
+  professional_payments            Payment[]           @relation("ProfessionalPayments")
+  payment_preferences              PaymentPreference[] @relation("UserPaymentPreferences")
   professional_payment_preferences PaymentPreference[] @relation("ProfessionalPaymentPreferences")
 
   // Favorites Relations
-  favorites             Favorite[] @relation("UserFavorites")
+  favorites Favorite[] @relation("UserFavorites")
 
   @@index([email])
   @@index([user_type])
@@ -205,19 +205,19 @@ model User {
 }
 
 model ProfessionalProfile {
-  id                    String             @id @default(uuid())
-  user_id               String             @unique
-  bio                   String?
-  specialties           String[]
-  years_experience      Int?
-  level                 ProfessionalLevel  @default(Nuevo)
-  rating                Float? @default(0.0)
-  review_count          Int                @default(0)
-  total_earnings        Float? @default(0.0)
-  availability_status   AvailabilityStatus @default(available)
-  response_time_hours   Int                @default(24)
-  created_at            DateTime           @default(now())
-  updated_at            DateTime           @updatedAt
+  id                  String             @id @default(uuid())
+  user_id             String             @unique
+  bio                 String?
+  specialties         String[]
+  years_experience    Int?
+  level               ProfessionalLevel  @default(Nuevo)
+  rating              Float?             @default(0.0)
+  review_count        Int                @default(0)
+  total_earnings      Float?             @default(0.0)
+  availability_status AvailabilityStatus @default(available)
+  response_time_hours Int                @default(24)
+  created_at          DateTime           @default(now())
+  updated_at          DateTime           @updatedAt
 
   // Relations
   user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
@@ -229,14 +229,14 @@ model ProfessionalProfile {
 }
 
 model Category {
-  id            String    @id @default(uuid())
-  name          String    @unique
-  slug          String    @unique
+  id            String   @id @default(uuid())
+  name          String   @unique
+  slug          String   @unique
   description   String?
   icon          String?
-  popular       Boolean   @default(false)
-  service_count Int       @default(0)
-  created_at    DateTime  @default(now())
+  popular       Boolean  @default(false)
+  service_count Int      @default(0)
+  created_at    DateTime @default(now())
 
   // Relations
   services Service[]
@@ -246,32 +246,32 @@ model Category {
 }
 
 model Service {
-  id                   String    @id @default(uuid())
-  professional_id      String
-  category_id          String?
-  title                String
-  description          String
-  price                Float
-  currency             String    @default("ARS")
-  main_image           String?
-  gallery              String[]
-  tags                 String[]
-  delivery_time_days   Int?
-  revisions_included   Int       @default(1)
-  active               Boolean   @default(true)
-  featured             Boolean   @default(false)
-  view_count           Int       @default(0)
-  created_at           DateTime  @default(now())
-  updated_at           DateTime  @updatedAt
+  id                 String   @id @default(uuid())
+  professional_id    String
+  category_id        String?
+  title              String
+  description        String
+  price              Float
+  currency           String   @default("ARS")
+  main_image         String?
+  gallery            String[]
+  tags               String[]
+  delivery_time_days Int?
+  revisions_included Int      @default(1)
+  active             Boolean  @default(true)
+  featured           Boolean  @default(false)
+  view_count         Int      @default(0)
+  created_at         DateTime @default(now())
+  updated_at         DateTime @updatedAt
 
   // Relations
-  professional User      @relation(fields: [professional_id], references: [id], onDelete: Cascade)
-  category     Category? @relation(fields: [category_id], references: [id])
-  reviews      Review[]
-  service_views ServiceView[]
+  professional         User                 @relation(fields: [professional_id], references: [id], onDelete: Cascade)
+  category             Category?            @relation(fields: [category_id], references: [id])
+  reviews              Review[]
+  service_views        ServiceView[]
   contact_interactions ContactInteraction[]
-  payments     Payment[]
-  payment_preferences PaymentPreference[]
+  payments             Payment[]
+  payment_preferences  PaymentPreference[]
 
   @@index([professional_id])
   @@index([category_id])
@@ -282,27 +282,27 @@ model Service {
 }
 
 model Project {
-  id               String        @id @default(uuid())
-  client_id        String
-  category_id      String?
-  title            String
-  description      String
-  budget_min       Decimal?      @db.Decimal(12,2)
-  budget_max       Decimal?      @db.Decimal(12,2)
-  deadline         DateTime?
-  status           ProjectStatus @default(open)
-  location         String?
-  skills_required  String[]
-  proposals_count  Int           @default(0)
-  created_at       DateTime      @default(now())
-  updated_at       DateTime      @updatedAt
+  id              String        @id @default(uuid())
+  client_id       String
+  category_id     String?
+  title           String
+  description     String
+  budget_min      Decimal?      @db.Decimal(12, 2)
+  budget_max      Decimal?      @db.Decimal(12, 2)
+  deadline        DateTime?
+  status          ProjectStatus @default(open)
+  location        String?
+  skills_required String[]
+  proposals_count Int           @default(0)
+  created_at      DateTime      @default(now())
+  updated_at      DateTime      @updatedAt
 
   // Relations
-  client       User         @relation(fields: [client_id], references: [id], onDelete: Cascade)
-  category     Category?    @relation(fields: [category_id], references: [id])
-  proposals    Proposal[]
-  conversation Conversation?
-  job          Job?
+  client               User                 @relation(fields: [client_id], references: [id], onDelete: Cascade)
+  category             Category?            @relation(fields: [category_id], references: [id])
+  proposals            Proposal[]
+  conversation         Conversation?
+  job                  Job?
   contact_interactions ContactInteraction[]
 
   @@index([client_id])
@@ -313,15 +313,15 @@ model Project {
 }
 
 model Proposal {
-  id                  String         @id @default(uuid())
-  project_id          String
-  professional_id     String
-  message             String
-  quoted_price        Decimal        @db.Decimal(12,2)
-  delivery_time_days  Int
-  status              ProposalStatus @default(pending)
-  created_at          DateTime       @default(now())
-  updated_at          DateTime       @updatedAt
+  id                 String         @id @default(uuid())
+  project_id         String
+  professional_id    String
+  message            String
+  quoted_price       Decimal        @db.Decimal(12, 2)
+  delivery_time_days Int
+  status             ProposalStatus @default(pending)
+  created_at         DateTime       @default(now())
+  updated_at         DateTime       @updatedAt
 
   // Relations
   project      Project @relation(fields: [project_id], references: [id], onDelete: Cascade)
@@ -333,35 +333,35 @@ model Proposal {
 }
 
 model Review {
-  id              String   @id @default(uuid())
+  id              String  @id @default(uuid())
   service_id      String?
   job_id          String?
   reviewer_id     String
   professional_id String
   rating          Int
   comment         String?
-  helpful_count   Int      @default(0)
-  
+  helpful_count   Int     @default(0)
+
   // Enhanced Trust Features
-  verified_purchase Boolean  @default(false)
+  verified_purchase Boolean                @default(false)
   moderation_status ReviewModerationStatus @default(pending)
   moderated_by      String?
   moderated_at      DateTime?
-  flagged_count     Int      @default(0)
-  trust_score       Float?   @default(0.0)
-  
+  flagged_count     Int                    @default(0)
+  trust_score       Float?                 @default(0.0)
+
   // Review Categories
-  communication_rating Int?
-  quality_rating      Int?
-  timeliness_rating   Int?
+  communication_rating   Int?
+  quality_rating         Int?
+  timeliness_rating      Int?
   professionalism_rating Int?
-  
+
   // Metadata
-  helpful_votes       ReviewHelpfulVote[]
-  review_flags        ReviewFlag[]
-  
-  created_at      DateTime @default(now())
-  updated_at      DateTime @updatedAt
+  helpful_votes ReviewHelpfulVote[]
+  review_flags  ReviewFlag[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   // Relations
   service      Service? @relation(fields: [service_id], references: [id], onDelete: Cascade)
@@ -381,14 +381,14 @@ model Review {
 }
 
 model Conversation {
-  id                 String             @id @default(uuid())
-  project_id         String             @unique
-  client_id          String
-  professional_id    String
-  whatsapp_chat_url  String?
-  status             ConversationStatus @default(active)
-  last_message_at    DateTime           @default(now())
-  created_at         DateTime           @default(now())
+  id                String             @id @default(uuid())
+  project_id        String             @unique
+  client_id         String
+  professional_id   String
+  whatsapp_chat_url String?
+  status            ConversationStatus @default(active)
+  last_message_at   DateTime           @default(now())
+  created_at        DateTime           @default(now())
 
   // Relations
   project      Project @relation(fields: [project_id], references: [id], onDelete: Cascade)
@@ -504,42 +504,42 @@ model PasswordHistory {
 // =============== TRANSACTION TRACKING SYSTEM ===============
 
 model Job {
-  id                    String        @id @default(uuid())
-  project_id            String        @unique
-  client_id             String
-  professional_id       String
-  proposal_id           String        @unique
-  
+  id              String @id @default(uuid())
+  project_id      String @unique
+  client_id       String
+  professional_id String
+  proposal_id     String @unique
+
   // Job Details
-  title                 String
-  description           String
-  agreed_price          Decimal       @db.Decimal(12,2)
-  currency              String        @default("ARS")
-  delivery_date         DateTime?
-  
+  title         String
+  description   String
+  agreed_price  Decimal   @db.Decimal(12, 2)
+  currency      String    @default("ARS")
+  delivery_date DateTime?
+
   // Status Tracking
-  status                JobStatus     @default(not_started)
-  progress_percentage   Int           @default(0)
-  
+  status              JobStatus @default(not_started)
+  progress_percentage Int       @default(0)
+
   // Timestamps
-  started_at            DateTime?
-  completed_at          DateTime?
-  cancelled_at          DateTime?
-  created_at            DateTime      @default(now())
-  updated_at            DateTime      @updatedAt
+  started_at   DateTime?
+  completed_at DateTime?
+  cancelled_at DateTime?
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
 
   // Relations
-  project               Project       @relation(fields: [project_id], references: [id], onDelete: Cascade)
-  client                User          @relation("ClientJobs", fields: [client_id], references: [id])
-  professional          User          @relation("ProfessionalJobs", fields: [professional_id], references: [id])
-  proposal              Proposal      @relation(fields: [proposal_id], references: [id])
-  
+  project      Project  @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  client       User     @relation("ClientJobs", fields: [client_id], references: [id])
+  professional User     @relation("ProfessionalJobs", fields: [professional_id], references: [id])
+  proposal     Proposal @relation(fields: [proposal_id], references: [id])
+
   // Child Relations
-  milestones            JobMilestone[]
-  status_updates        JobStatusUpdate[]
-  payments              Payment[]
-  payment_preferences   PaymentPreference[]
-  reviews               Review[]
+  milestones          JobMilestone[]
+  status_updates      JobStatusUpdate[]
+  payments            Payment[]
+  payment_preferences PaymentPreference[]
+  reviews             Review[]
 
   @@index([client_id])
   @@index([professional_id])
@@ -549,20 +549,20 @@ model Job {
 }
 
 model JobMilestone {
-  id                    String        @id @default(uuid())
-  job_id                String
-  title                 String
-  description           String?
-  amount                Decimal       @db.Decimal(12,2)
-  due_date              DateTime?
-  completed             Boolean       @default(false)
-  completed_at          DateTime?
-  approved_by_client    Boolean       @default(false)
-  approved_at           DateTime?
-  created_at            DateTime      @default(now())
+  id                 String    @id @default(uuid())
+  job_id             String
+  title              String
+  description        String?
+  amount             Decimal   @db.Decimal(12, 2)
+  due_date           DateTime?
+  completed          Boolean   @default(false)
+  completed_at       DateTime?
+  approved_by_client Boolean   @default(false)
+  approved_at        DateTime?
+  created_at         DateTime  @default(now())
 
   // Relations
-  job                   Job           @relation(fields: [job_id], references: [id], onDelete: Cascade)
+  job Job @relation(fields: [job_id], references: [id], onDelete: Cascade)
 
   @@index([job_id])
   @@index([completed])
@@ -570,17 +570,17 @@ model JobMilestone {
 }
 
 model JobStatusUpdate {
-  id                    String        @id @default(uuid())
-  job_id                String
-  status_from           JobStatus
-  status_to             JobStatus
-  message               String?
-  updated_by_user_id    String
-  created_at            DateTime      @default(now())
+  id                 String    @id @default(uuid())
+  job_id             String
+  status_from        JobStatus
+  status_to          JobStatus
+  message            String?
+  updated_by_user_id String
+  created_at         DateTime  @default(now())
 
   // Relations
-  job                   Job           @relation(fields: [job_id], references: [id], onDelete: Cascade)
-  updated_by            User          @relation("JobUpdates", fields: [updated_by_user_id], references: [id])
+  job        Job  @relation(fields: [job_id], references: [id], onDelete: Cascade)
+  updated_by User @relation("JobUpdates", fields: [updated_by_user_id], references: [id])
 
   @@index([job_id])
   @@index([created_at])
@@ -588,50 +588,50 @@ model JobStatusUpdate {
 }
 
 model Payment {
-  id                    String        @id @default(uuid())
-  job_id                String?       // Optional - can be service payment or job payment
-  service_id            String?       // For direct service payments
-  amount                Decimal       @db.Decimal(12,2)
-  currency              String        @default("ARS")
-  status                PaymentStatus @default(pending)
-  payment_method        String?
-  transaction_id        String?       @unique
-  
+  id             String        @id @default(uuid())
+  job_id         String? // Optional - can be service payment or job payment
+  service_id     String? // For direct service payments
+  amount         Decimal       @db.Decimal(12, 2)
+  currency       String        @default("ARS")
+  status         PaymentStatus @default(pending)
+  payment_method String?
+  transaction_id String?       @unique
+
   // MercadoPago Integration
-  mp_payment_id         String?       @unique
-  mp_preference_id      String?
-  external_reference    String?
-  status_detail         String?
-  
+  mp_payment_id      String? @unique
+  mp_preference_id   String?
+  external_reference String?
+  status_detail      String?
+
   // User Information
-  user_id               String        // Who made the payment
-  professional_id       String?       // Who receives the payment
-  payer_email           String?
-  payer_name            String?
-  description           String?
-  
+  user_id         String // Who made the payment
+  professional_id String? // Who receives the payment
+  payer_email     String?
+  payer_name      String?
+  description     String?
+
   // Payment tracking
-  paid_at               DateTime?
-  released_at           DateTime?
-  refunded_at           DateTime?
-  
+  paid_at     DateTime?
+  released_at DateTime?
+  refunded_at DateTime?
+
   // Processing Details
-  approval_url          String?
-  transaction_data      Json?         // Store MercadoPago response data
-  
+  approval_url     String?
+  transaction_data Json? // Store MercadoPago response data
+
   // Metadata
-  platform_fee          Decimal?      @db.Decimal(12,2)
-  professional_amount   Decimal?      @db.Decimal(12,2)
-  notes                 String?
-  
-  created_at            DateTime      @default(now())
-  updated_at            DateTime      @updatedAt
+  platform_fee        Decimal? @db.Decimal(12, 2)
+  professional_amount Decimal? @db.Decimal(12, 2)
+  notes               String?
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   // Relations
-  job                   Job?          @relation(fields: [job_id], references: [id], onDelete: Cascade)
-  service               Service?      @relation(fields: [service_id], references: [id], onDelete: Cascade)
-  user                  User          @relation("UserPayments", fields: [user_id], references: [id])
-  professional          User?         @relation("ProfessionalPayments", fields: [professional_id], references: [id])
+  job          Job?     @relation(fields: [job_id], references: [id], onDelete: Cascade)
+  service      Service? @relation(fields: [service_id], references: [id], onDelete: Cascade)
+  user         User     @relation("UserPayments", fields: [user_id], references: [id])
+  professional User?    @relation("ProfessionalPayments", fields: [professional_id], references: [id])
 
   @@index([job_id])
   @@index([service_id])
@@ -645,44 +645,44 @@ model Payment {
 }
 
 model PaymentPreference {
-  id                    String   @id @default(uuid())
-  
+  id String @id @default(uuid())
+
   // MercadoPago Integration
-  mp_preference_id      String   @unique
-  external_reference    String?
-  
+  mp_preference_id   String  @unique
+  external_reference String?
+
   // Preference Details
-  amount                Decimal  @db.Decimal(12,2)
-  currency              String   @default("ARS")
-  title                 String
-  description           String
-  
+  amount      Decimal @db.Decimal(12, 2)
+  currency    String  @default("ARS")
+  title       String
+  description String
+
   // Payer Information
-  payer_email           String
-  
+  payer_email String
+
   // Related Entities
-  user_id               String
-  service_id            String?
-  job_id                String?
-  professional_id       String?
-  
+  user_id         String
+  service_id      String?
+  job_id          String?
+  professional_id String?
+
   // URLs
-  success_url           String?
-  failure_url           String?
-  pending_url           String?
-  
+  success_url String?
+  failure_url String?
+  pending_url String?
+
   // MercadoPago Response
-  init_point            String?
-  sandbox_init_point    String?
-  client_id             String?
-  collector_id          Int?
-  
+  init_point         String?
+  sandbox_init_point String?
+  client_id          String?
+  collector_id       Int?
+
   // Status
-  used                  Boolean  @default(false)
-  used_at               DateTime?
-  
-  created_at            DateTime @default(now())
-  updated_at            DateTime @updatedAt
+  used    Boolean   @default(false)
+  used_at DateTime?
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   // Relations
   user         User     @relation("UserPaymentPreferences", fields: [user_id], references: [id])
@@ -699,29 +699,29 @@ model PaymentPreference {
 }
 
 model ContactInteraction {
-  id                    String        @id @default(uuid())
-  client_id             String
-  professional_id       String
-  service_id            String?
-  project_id            String?
-  
+  id              String  @id @default(uuid())
+  client_id       String
+  professional_id String
+  service_id      String?
+  project_id      String?
+
   // Contact Details
-  contact_method        String        // "whatsapp", "email", "phone", "platform"
-  message               String?
-  contact_data          Json?         // Additional contact metadata
-  
+  contact_method String // "whatsapp", "email", "phone", "platform"
+  message        String?
+  contact_data   Json? // Additional contact metadata
+
   // Conversion Tracking
-  converted_to_job      Boolean       @default(false)
-  job_id                String?
-  conversion_value      Decimal?      @db.Decimal(12,2)
-  
-  created_at            DateTime      @default(now())
+  converted_to_job Boolean  @default(false)
+  job_id           String?
+  conversion_value Decimal? @db.Decimal(12, 2)
+
+  created_at DateTime @default(now())
 
   // Relations
-  client                User          @relation("ClientContacts", fields: [client_id], references: [id])
-  professional          User          @relation("ProfessionalContacts", fields: [professional_id], references: [id])
-  service               Service?      @relation(fields: [service_id], references: [id])
-  project               Project?      @relation(fields: [project_id], references: [id])
+  client       User     @relation("ClientContacts", fields: [client_id], references: [id])
+  professional User     @relation("ProfessionalContacts", fields: [professional_id], references: [id])
+  service      Service? @relation(fields: [service_id], references: [id])
+  project      Project? @relation(fields: [project_id], references: [id])
 
   @@index([client_id])
   @@index([professional_id])
@@ -733,9 +733,9 @@ model ContactInteraction {
 // =============== REVIEWS & TRUST SYSTEM ===============
 
 model ReviewHelpfulVote {
-  id        String   @id @default(uuid())
-  review_id String
-  user_id   String
+  id         String   @id @default(uuid())
+  review_id  String
+  user_id    String
   is_helpful Boolean
   created_at DateTime @default(now())
 
@@ -773,33 +773,33 @@ model ReviewFlag {
 }
 
 model TrustScore {
-  id                     String   @id @default(uuid())
-  user_id                String   @unique
-  overall_score          Float    @default(0.0)
-  
+  id            String @id @default(uuid())
+  user_id       String @unique
+  overall_score Float  @default(0.0)
+
   // Component Scores
-  review_score           Float    @default(0.0)
-  completion_score       Float    @default(0.0)
-  communication_score    Float    @default(0.0)
-  reliability_score      Float    @default(0.0)
-  verification_score     Float    @default(0.0)
-  
+  review_score        Float @default(0.0)
+  completion_score    Float @default(0.0)
+  communication_score Float @default(0.0)
+  reliability_score   Float @default(0.0)
+  verification_score  Float @default(0.0)
+
   // Metrics
-  total_jobs_completed   Int      @default(0)
-  total_reviews_received Int      @default(0)
-  average_rating         Float    @default(0.0)
-  response_time_hours    Float    @default(24.0)
-  completion_rate        Float    @default(0.0)
-  
+  total_jobs_completed   Int   @default(0)
+  total_reviews_received Int   @default(0)
+  average_rating         Float @default(0.0)
+  response_time_hours    Float @default(24.0)
+  completion_rate        Float @default(0.0)
+
   // Trust Indicators
-  verified_identity      Boolean  @default(false)
-  verified_skills        Boolean  @default(false)
-  verified_business      Boolean  @default(false)
-  background_checked     Boolean  @default(false)
-  
-  last_calculated_at     DateTime @default(now())
-  created_at            DateTime @default(now())
-  updated_at            DateTime @updatedAt
+  verified_identity  Boolean @default(false)
+  verified_skills    Boolean @default(false)
+  verified_business  Boolean @default(false)
+  background_checked Boolean @default(false)
+
+  last_calculated_at DateTime @default(now())
+  created_at         DateTime @default(now())
+  updated_at         DateTime @updatedAt
 
   // Relations
   user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
@@ -810,26 +810,26 @@ model TrustScore {
 }
 
 model VerificationRequest {
-  id                    String               @id @default(uuid())
-  user_id               String
-  verification_type     VerificationType
-  status                VerificationStatus   @default(pending)
-  
+  id                String             @id @default(uuid())
+  user_id           String
+  verification_type VerificationType
+  status            VerificationStatus @default(pending)
+
   // Submitted Documents
-  documents             String[]             // Array of file URLs
-  additional_info       Json?                // Additional verification data
-  
+  documents       String[] // Array of file URLs
+  additional_info Json? // Additional verification data
+
   // Processing
-  reviewed_by           String?
-  reviewed_at           DateTime?
-  rejection_reason      String?
-  notes                 String?
-  
-  created_at            DateTime             @default(now())
-  updated_at            DateTime             @updatedAt
+  reviewed_by      String?
+  reviewed_at      DateTime?
+  rejection_reason String?
+  notes            String?
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   // Relations
-  user     User @relation("VerificationRequests", fields: [user_id], references: [id], onDelete: Cascade)
+  user     User  @relation("VerificationRequests", fields: [user_id], references: [id], onDelete: Cascade)
   reviewer User? @relation("ReviewedVerifications", fields: [reviewed_by], references: [id])
 
   @@index([user_id])
@@ -839,12 +839,12 @@ model VerificationRequest {
 }
 
 model ReviewTemplate {
-  id          String @id @default(uuid())
+  id          String   @id @default(uuid())
   category    String
   title       String
   description String
-  questions   Json   // Array of review questions
-  active      Boolean @default(true)
+  questions   Json // Array of review questions
+  active      Boolean  @default(true)
   created_at  DateTime @default(now())
 
   @@index([category])
@@ -855,15 +855,15 @@ model ReviewTemplate {
 // =============== FAVORITES SYSTEM ===============
 
 model Favorite {
-  id           String   @id @default(uuid())
-  user_id      String
-  service_id   String?
+  id              String  @id @default(uuid())
+  user_id         String
+  service_id      String?
   professional_id String?
 
-  created_at   DateTime @default(now())
+  created_at DateTime @default(now())
 
   // Relations
-  user         User     @relation("UserFavorites", fields: [user_id], references: [id], onDelete: Cascade)
+  user User @relation("UserFavorites", fields: [user_id], references: [id], onDelete: Cascade)
 
   @@unique([user_id, service_id])
   @@unique([user_id, professional_id])
@@ -872,4 +872,3 @@ model Favorite {
   @@index([professional_id])
   @@map("favorites")
 }
-
