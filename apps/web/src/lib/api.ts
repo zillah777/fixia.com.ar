@@ -190,7 +190,7 @@ apiClient.interceptors.response.use(
       
       switch (status) {
         case 400:
-          toast.error('Solicitud inválida. Verifica los datos enviados.');
+          toast.error(message || 'Solicitud inválida. Verifica los datos enviados.');
           break;
         case 401:
           // 401 errors are handled by interceptors - don't show toast for login attempts
