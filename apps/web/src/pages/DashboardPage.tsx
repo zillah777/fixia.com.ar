@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { userService, DashboardStats } from "../lib/services";
 import { dashboardService } from "../lib/services/dashboard.service";
+import { notificationsService, type Notification } from "../lib/services/notifications.service";
 import type { RecentActivity, CurrentProject } from "../lib/services/dashboard.service";
 import { Skeleton } from "../components/ui/skeleton";
 import { Button } from "../components/ui/button";
@@ -19,19 +20,65 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs"
 import { useSecureAuth } from "../context/SecureAuthContext";
 import { MobileBottomNavigation } from "../components/MobileBottomNavigation";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../components/ui/dropdown-menu";
+import { ScrollArea } from "../components/ui/scroll-area";
 
 function Navigation() {
   const { user, logout } = useSecureAuth();
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const [notifData, count] = await Promise.all([
+          notificationsService.getNotifications({ limit: 5, read: false }),
+          notificationsService.getUnreadCount()
+        ]);
+        setNotifications(notifData.notifications);
+        setUnreadCount(count);
+      } catch (error) {
+        console.error('Error fetching notifications:', error);
+      }
+    };
+
+    if (user) {
+      fetchNotifications();
+      // Poll every 30 seconds for new notifications
+      const interval = setInterval(fetchNotifications, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [user]);
+
+  const handleMarkAsRead = async (notificationId: string) => {
+    try {
+      await notificationsService.markAsRead(notificationId);
+      setNotifications(prev => prev.filter(n => n.id !== notificationId));
+      setUnreadCount(prev => Math.max(0, prev - 1));
+    } catch (error) {
+      console.error('Error marking notification as read:', error);
+    }
+  };
+
+  const getNotificationIcon = (type: string) => {
+    switch (type) {
+      case 'message': return MessageSquare;
+      case 'order': return DollarSign;
+      case 'payment': return DollarSign;
+      case 'review': return Heart;
+      case 'promotion': return Zap;
+      default: return Bell;
+    }
+  };
 
   return (
-    <motion.header 
+    <motion.header
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       className="sticky top-0 z-50 w-full glass border-b border-white/10"
     >
       <div className="container mx-auto flex h-16 items-center justify-between px-6">
         <Link to="/" className="flex items-center space-x-3">
-          <motion.div 
+          <motion.div
             className="relative"
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 400, damping: 10 }}
@@ -43,7 +90,7 @@ function Navigation() {
           </motion.div>
           <span className="text-xl font-semibold tracking-tight text-white">Fixia</span>
         </Link>
-        
+
         <nav className="hidden md:flex items-center space-x-6">
           <Link to="/dashboard" className="text-primary font-medium">
             Dashboard
@@ -58,7 +105,7 @@ function Navigation() {
             Mi Perfil
           </Link>
         </nav>
-        
+
         <div className="flex items-center space-x-3">
           {/* Nuevo Anuncio Button */}
           <Link to={user?.userType === 'professional' ? "/new-project" : "/new-opportunity"}>
@@ -67,14 +114,77 @@ function Navigation() {
               + Nuevo Anuncio
             </Button>
           </Link>
-          
+
           {/* Notificaciones */}
-          <Button variant="ghost" size="icon" className="relative" title="Notificaciones">
-            <Bell className="h-4 w-4" />
-            <span className="absolute -top-1 -right-1 h-4 w-4 bg-primary rounded-full flex items-center justify-center text-xs text-white">
-              3
-            </span>
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="relative" title="Notificaciones">
+                <Bell className="h-4 w-4" />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1 h-4 w-4 bg-primary rounded-full flex items-center justify-center text-xs text-white">
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                )}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-80" align="end">
+              <DropdownMenuLabel className="flex items-center justify-between">
+                <span>Notificaciones</span>
+                {unreadCount > 0 && (
+                  <Badge variant="secondary" className="ml-2">
+                    {unreadCount} nueva{unreadCount !== 1 ? 's' : ''}
+                  </Badge>
+                )}
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <ScrollArea className="h-[300px]">
+                {notifications.length === 0 ? (
+                  <div className="p-4 text-center text-sm text-muted-foreground">
+                    No tienes notificaciones nuevas
+                  </div>
+                ) : (
+                  notifications.map((notification) => {
+                    const Icon = getNotificationIcon(notification.type);
+                    return (
+                      <DropdownMenuItem
+                        key={notification.id}
+                        className="flex items-start space-x-3 p-3 cursor-pointer"
+                        onClick={() => handleMarkAsRead(notification.id)}
+                      >
+                        <div className={`h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0`}>
+                          <Icon className="h-4 w-4 text-primary" />
+                        </div>
+                        <div className="flex-1 space-y-1">
+                          <p className="text-sm font-medium">{notification.title}</p>
+                          <p className="text-xs text-muted-foreground line-clamp-2">
+                            {notification.message}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {new Date(notification.created_at).toLocaleDateString('es-AR', {
+                              day: 'numeric',
+                              month: 'short',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}
+                          </p>
+                        </div>
+                      </DropdownMenuItem>
+                    );
+                  })
+                )}
+              </ScrollArea>
+              {notifications.length > 0 && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link to="/notifications" className="w-full text-center text-sm text-primary">
+                      Ver todas las notificaciones
+                    </Link>
+                  </DropdownMenuItem>
+                </>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
           
           {/* Favoritos */}
           <Link to="/favorites">
