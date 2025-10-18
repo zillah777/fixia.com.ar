@@ -63,10 +63,17 @@ export class NotificationsController {
       const result = await this.notificationsService.getUserNotifications(user.id, filters);
       return result;
     } catch (error) {
-      throw new HttpException(
-        'Failed to retrieve notifications',
-        HttpStatus.INTERNAL_SERVER_ERROR
-      );
+      // Graceful degradation: return empty array instead of throwing error
+      console.error('Error fetching notifications:', error.message);
+      return {
+        notifications: [],
+        pagination: {
+          page: 1,
+          limit: 20,
+          total: 0,
+          pages: 0
+        }
+      };
     }
   }
 
@@ -76,10 +83,9 @@ export class NotificationsController {
       const count = await this.notificationsService.getUnreadCount(user.id);
       return { unreadCount: count };
     } catch (error) {
-      throw new HttpException(
-        'Failed to retrieve unread count',
-        HttpStatus.INTERNAL_SERVER_ERROR
-      );
+      // Graceful degradation: return 0 instead of throwing error
+      console.error('Error fetching unread count:', error.message);
+      return { unreadCount: 0 };
     }
   }
 
