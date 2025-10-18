@@ -197,7 +197,7 @@ function ProfileHeader({ user, onUserUpdate }: any) {
         avatar: uploadResult.url
       });
 
-      onUserUpdate(updatedUser);
+      await onUserUpdate(updatedUser);
 
       toast.success('📸 Foto actualizada', {
         description: `Imagen optimizada (${Math.round(uploadResult.size! / 1024)}KB)`
@@ -847,9 +847,9 @@ export default function ProfilePageFixed() {
   }, [user, navigate]);
 
   // Handle user updates
-  const handleUserUpdate = (updatedUser: any) => {
-    // Trigger a refresh of user data from context
-    refreshUserData();
+  const handleUserUpdate = async (updatedUser: any) => {
+    // Trigger a refresh of user data from context and wait for it to complete
+    await refreshUserData();
   };
 
   if (!user) {
