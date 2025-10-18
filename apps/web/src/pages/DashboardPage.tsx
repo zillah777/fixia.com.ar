@@ -31,13 +31,15 @@ function Navigation() {
     const fetchNotifications = async () => {
       try {
         const [notifData, count] = await Promise.all([
-          notificationsService.getNotifications({ limit: 5, read: false }),
+          notificationsService.getNotifications({ limit: 5 }),
           notificationsService.getUnreadCount()
         ]);
-        setNotifications(notifData.notifications);
-        setUnreadCount(count);
+        setNotifications(notifData.notifications || []);
+        setUnreadCount(count || 0);
       } catch (error) {
         console.error('Error fetching notifications:', error);
+        setNotifications([]);
+        setUnreadCount(0);
       }
     };
 
