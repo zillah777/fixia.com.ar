@@ -79,8 +79,10 @@ function Navigation() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-              <Avatar className="h-8 w-8 cursor-pointer ring-2 ring-primary/20 hover:ring-primary/40 transition-all">
-                <AvatarImage src={user?.avatar} />
+              <Avatar key={user?.avatar} className="h-8 w-8 cursor-pointer ring-2 ring-primary/20 hover:ring-primary/40 transition-all">
+                <AvatarImage
+                  src={user?.avatar ? `${user.avatar}?t=${new Date().getTime()}` : undefined}
+                />
                 <AvatarFallback>{user?.name?.charAt(0) || 'U'}</AvatarFallback>
               </Avatar>
             </Button>
@@ -216,8 +218,11 @@ function ProfileHeader({ user, onUserUpdate }: any) {
         <div className="flex flex-col lg:flex-row items-start lg:items-center space-y-6 lg:space-y-0 lg:space-x-8">
           {/* Avatar */}
           <div className="relative">
-            <Avatar className="h-32 w-32 ring-4 ring-primary/20 ring-offset-4 ring-offset-background">
-              <AvatarImage src={user?.avatar} alt={user?.name} />
+            <Avatar key={user?.avatar} className="h-32 w-32 ring-4 ring-primary/20 ring-offset-4 ring-offset-background">
+              <AvatarImage
+                src={user?.avatar ? `${user.avatar}?t=${new Date().getTime()}` : undefined}
+                alt={user?.name}
+              />
               <AvatarFallback className="text-2xl">{user?.name?.charAt(0) || 'U'}</AvatarFallback>
             </Avatar>
             
