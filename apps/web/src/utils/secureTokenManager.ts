@@ -57,6 +57,7 @@ class SecureTokenManager {
 
   /**
    * Realizar login y establecer cookies httpOnly en el servidor
+   * FALLBACK: También almacena tokens en localStorage para cross-domain compatibility
    */
   async login(credentials: { email: string; password: string }): Promise<{
     success: boolean;
@@ -65,15 +66,19 @@ class SecureTokenManager {
   }> {
     try {
       const data = await api.post('/auth/login', credentials);
-      
+
       // API wrapper extracts the inner data automatically
       // So data is now: { user: {...}, access_token: "...", expires_in: ... }
       let userData;
       let expiresAt;
-      
+      let accessToken;
+      let refreshToken;
+
       if (data?.user) {
         userData = data.user;
         expiresAt = data.expires_in;
+        accessToken = data.access_token;
+        refreshToken = data.refresh_token;
       } else {
         // Log what we actually received for debugging
         console.error('Unexpected login response format:', data);
@@ -86,6 +91,17 @@ class SecureTokenManager {
           success: false,
           error: 'No se recibieron datos del usuario en la respuesta del login',
         };
+      }
+
+      // FALLBACK: Store tokens in localStorage for cross-domain compatibility
+      // This is necessary because httpOnly cookies don't work between fixia.app and fixia-api.onrender.com
+      if (accessToken) {
+        localStorage.setItem('fixia_access_token', accessToken);
+        console.log('✅ Access token stored in localStorage (fallback for cross-domain)');
+      }
+      if (refreshToken) {
+        localStorage.setItem('fixia_refresh_token', refreshToken);
+        console.log('✅ Refresh token stored in localStorage (fallback for cross-domain)');
       }
 
       this.tokenInfo = {
@@ -109,7 +125,7 @@ class SecureTokenManager {
         status: error?.response?.status || 'No status',
         stack: error?.stack?.substring(0, 200) + '...' || 'No stack trace'
       });
-      
+
       return {
         success: false,
         error: error?.response?.data?.message || error?.message || 'Error de conexión',
@@ -119,6 +135,7 @@ class SecureTokenManager {
 
   /**
    * Realizar logout y limpiar cookies httpOnly en el servidor
+   * También limpia tokens del localStorage
    */
   async logout(): Promise<void> {
     try {
@@ -127,6 +144,9 @@ class SecureTokenManager {
       console.error('Error en logout:', error);
     } finally {
       this.tokenInfo = { isAuthenticated: false };
+      // Clear tokens from localStorage
+      localStorage.removeItem('fixia_access_token');
+      localStorage.removeItem('fixia_refresh_token');
       this.clearLocalData();
     }
   }

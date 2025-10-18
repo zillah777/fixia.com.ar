@@ -53,14 +53,22 @@ export const apiClient: AxiosInstance = axios.create({
   },
 });
 
-// SECURITY: No more localStorage token management - using httpOnly cookies
+// SECURITY: Hybrid approach - httpOnly cookies + localStorage fallback for cross-domain
 // Cookies are automatically included with withCredentials: true
+// BUT for cross-domain (fixia.app → fixia-api.onrender.com), we need Authorization header
 
-// Request interceptor - No manual token handling needed with httpOnly cookies
+// Request interceptor - Add Bearer token from localStorage for cross-domain compatibility
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    // httpOnly cookies are automatically included by the browser
-    // No manual token management needed
+    // FALLBACK: For cross-domain compatibility, add token from localStorage to Authorization header
+    // This is necessary because httpOnly cookies don't work between fixia.app and fixia-api.onrender.com
+    const accessToken = localStorage.getItem('fixia_access_token');
+
+    if (accessToken && config.headers) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
+    }
+
+    // httpOnly cookies are also sent automatically as a fallback
     return config;
   },
   (error) => {
@@ -108,14 +116,25 @@ apiClient.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        // SECURITY: Attempt token refresh via httpOnly cookies
-        const response = await axios.post(`${API_BASE_URL}/auth/refresh`, {}, {
-          withCredentials: true, // Include httpOnly cookies
-          timeout: 5000,
-          validateStatus: (status) => status === 200
-        });
-        
-        if (response.status === 200) {
+        // SECURITY: Attempt token refresh via httpOnly cookies AND localStorage token
+        const refreshToken = localStorage.getItem('fixia_refresh_token');
+        const response = await axios.post(`${API_BASE_URL}/auth/refresh`,
+          { refresh_token: refreshToken },
+          {
+            withCredentials: true, // Include httpOnly cookies
+            timeout: 5000,
+            validateStatus: (status) => status === 200
+          }
+        );
+
+        if (response.status === 200 && response.data) {
+          // Update access token in localStorage if provided
+          const newAccessToken = response.data.access_token || response.data.data?.access_token;
+          if (newAccessToken) {
+            localStorage.setItem('fixia_access_token', newAccessToken);
+            console.log('✅ Access token refreshed and stored');
+          }
+
           processQueue(null);
           return apiClient(originalRequest);
         } else {
@@ -123,8 +142,10 @@ apiClient.interceptors.response.use(
         }
       } catch (refreshError) {
         processQueue(refreshError);
-        
-        // Clear any localStorage user data (non-sensitive)
+
+        // Clear all authentication data on refresh failure
+        localStorage.removeItem('fixia_access_token');
+        localStorage.removeItem('fixia_refresh_token');
         localStorage.removeItem('fixia_user_basic');
         localStorage.removeItem('fixia_preferences');
         
