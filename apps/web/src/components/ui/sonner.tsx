@@ -31,7 +31,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
       closeButton={true}
       offset={24}
       gap={16}
-      duration={8000}
+      duration={15000} // 15 segundos - auto-cierre de notificaciones
       {...props}
     />
   );

@@ -423,7 +423,7 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
         
         toast.success(`¡Hola ${transformedUser.name || 'Usuario'}! 👋`, {
           description: "Has iniciado sesión correctamente. Redirigiendo al dashboard...",
-          duration: 5000,
+          duration: 15000, // 15 segundos
         });
       } else {
         throw new Error(result.error || 'Error en el login');
@@ -470,7 +470,7 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
       
       toast.error(errorTitle, {
         description: errorMessage,
-        duration: 10000,
+        duration: 15000, // 15 segundos
       });
       
       throw error;
@@ -578,7 +578,7 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
       
       toast.success('¡Hasta pronto! 👋', {
         description: "Has cerrado sesión correctamente. Te esperamos de vuelta.",
-        duration: 4000,
+        duration: 15000, // 15 segundos
       });
     } catch (error) {
       console.error('Error en logout:', error);
