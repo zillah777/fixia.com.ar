@@ -47,10 +47,11 @@ class NotificationsService {
       if (filters?.offset) params.append('offset', String(filters.offset));
 
       const response = await api.get<NotificationsResponse>(`/notifications?${params.toString()}`);
-      return response.data;
+      // api wrapper already extracts .data, so response IS the data
+      return response || { notifications: [], total: 0, unreadCount: 0, hasMore: false };
     } catch (error: any) {
       console.error('Error fetching notifications:', error);
-      throw error;
+      return { notifications: [], total: 0, unreadCount: 0, hasMore: false };
     }
   }
 
@@ -60,7 +61,8 @@ class NotificationsService {
   async getUnreadCount(): Promise<number> {
     try {
       const response = await api.get<{ unreadCount: number }>('/notifications/unread-count');
-      return response.data.unreadCount;
+      // api wrapper already extracts .data, so response IS the data object
+      return (response as any)?.unreadCount || 0;
     } catch (error: any) {
       console.error('Error fetching unread count:', error);
       return 0;
@@ -73,7 +75,7 @@ class NotificationsService {
   async getStats(): Promise<NotificationStats> {
     try {
       const response = await api.get<NotificationStats>('/notifications/stats');
-      return response.data;
+      return response as NotificationStats;
     } catch (error: any) {
       console.error('Error fetching notification stats:', error);
       throw error;
@@ -88,7 +90,7 @@ class NotificationsService {
       const response = await api.put<{ notification: Notification }>(
         `/notifications/${notificationId}/read`
       );
-      return response.data.notification;
+      return (response as any)?.notification;
     } catch (error: any) {
       console.error('Error marking notification as read:', error);
       throw error;
@@ -101,7 +103,7 @@ class NotificationsService {
   async markAllAsRead(): Promise<{ count: number }> {
     try {
       const response = await api.put<{ count: number }>('/notifications/mark-all-read');
-      return response.data;
+      return response as { count: number };
     } catch (error: any) {
       console.error('Error marking all notifications as read:', error);
       throw error;
@@ -126,7 +128,7 @@ class NotificationsService {
   async deleteAllNotifications(): Promise<{ count: number }> {
     try {
       const response = await api.delete<{ count: number }>('/notifications');
-      return response.data;
+      return response as { count: number };
     } catch (error: any) {
       console.error('Error deleting all notifications:', error);
       throw error;
