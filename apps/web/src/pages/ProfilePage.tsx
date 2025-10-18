@@ -230,14 +230,17 @@ function ProfileHeader({ user, onUserUpdate }: any) {
                 onChange={handleAvatarUpload}
                 className="hidden"
               />
-              <label htmlFor="avatar-upload">
-                <Button size="sm" className="liquid-gradient rounded-full h-10 w-10 p-0 cursor-pointer">
+              <label
+                htmlFor="avatar-upload"
+                className="inline-block cursor-pointer"
+              >
+                <div className="liquid-gradient rounded-full h-10 w-10 p-0 flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow">
                   {isUploading ? (
-                    <div className="animate-spin rounded-full border-2 border-current border-t-transparent h-4 w-4" />
+                    <div className="animate-spin rounded-full border-2 border-white border-t-transparent h-4 w-4" />
                   ) : (
-                    <Camera className="h-4 w-4" />
+                    <Camera className="h-4 w-4 text-white" />
                   )}
-                </Button>
+                </div>
               </label>
             </div>
             
