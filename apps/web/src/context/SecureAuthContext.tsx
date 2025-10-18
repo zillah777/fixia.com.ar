@@ -248,11 +248,6 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
     const initializeAuth = async () => {
       setLoading(true);
       try {
-        // SECURITY: Clear any deprecated localStorage tokens
-        localStorage.removeItem('fixia_token');
-        localStorage.removeItem('fixia_refresh_token');
-        localStorage.removeItem('fixia_user'); // Old user storage
-        
         // Initialize token manager first (sets up interceptors)
         secureTokenManager.setupAxiosInterceptor();
         
