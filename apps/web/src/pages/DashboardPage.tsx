@@ -551,8 +551,49 @@ export default function DashboardPage() {
 
       try {
         setActivityLoading(true);
-        const activities = await dashboardService.getRecentActivity(10);
-        setRecentActivity(activities);
+
+        // Generate activity from user's actual data
+        const activities: RecentActivity[] = [];
+
+        if (user.userType === 'client') {
+          // Load client's projects to generate activity
+          const { opportunitiesService } = await import('../lib/services/opportunities.service');
+          const projects = await opportunitiesService.getMyProjects();
+
+          // Add project creation activities
+          projects.forEach((project: any) => {
+            activities.push({
+              id: `project-${project.id}`,
+              type: 'service_created',
+              title: 'Anuncio publicado',
+              description: `Creaste el anuncio "${project.title}"`,
+              created_at: project.created_at,
+              status: 'completed'
+            });
+
+            // Add proposal received activities
+            if (project.proposals && project.proposals.length > 0) {
+              project.proposals.forEach((proposal: any) => {
+                activities.push({
+                  id: `proposal-${proposal.id}`,
+                  type: 'proposal',
+                  title: 'Propuesta recibida',
+                  description: `${proposal.professional.name} envió una propuesta para "${project.title}"`,
+                  created_at: proposal.created_at,
+                  status: 'new'
+                });
+              });
+            }
+          });
+        } else {
+          // For professionals, use existing service
+          const professionalActivities = await dashboardService.getRecentActivity(10);
+          activities.push(...professionalActivities);
+        }
+
+        // Sort by timestamp (most recent first) and limit to 10
+        activities.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        setRecentActivity(activities.slice(0, 10));
       } catch (error) {
         console.warn('Recent activity fetch failed:', error);
         setRecentActivity([]);
