@@ -229,6 +229,7 @@ export class ReviewsService {
       this.prisma.review.findMany({
         where: { reviewer_id: userId },
         include: {
+          reviewer: { select: { id: true, name: true, avatar: true } },
           professional: { select: { id: true, name: true, avatar: true } },
           service: { select: { id: true, title: true } },
           job: { select: { id: true, title: true } },
