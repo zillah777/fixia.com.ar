@@ -18,6 +18,7 @@ import { servicesService, Service } from "../lib/services";
 import { toast } from "sonner";
 import { MobileBottomNavigation } from "../components/MobileBottomNavigation";
 import { SkipNavigation } from "../components/SkipNavigation";
+import { FixiaNavigation } from "../components/FixiaNavigation";
 
 const featuredServices = [
   {
@@ -84,67 +85,6 @@ const categories = [
   { name: "Educación", icon: GraduationCap, count: "45+ servicios", popular: false }
 ];
 
-function Navigation() {
-  return (
-    <motion.header 
-      id="navigation"
-      role="banner"
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      className="sticky top-0 z-50 w-full glass border-b border-white/10"
-    >
-      <div className="container mx-auto flex h-16 sm:h-20 items-center justify-between px-4 sm:px-6">
-        {/* Logo */}
-        <Link to="/" className="flex items-center space-x-2 sm:space-x-3">
-          <motion.div 
-            className="relative"
-            whileHover={{ scale: 1.05 }}
-            transition={{ type: "spring", stiffness: 400, damping: 10 }}
-          >
-            <div className="h-8 w-8 sm:h-10 sm:w-10 liquid-gradient rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg">
-              <span className="text-white font-bold text-base sm:text-lg">F</span>
-            </div>
-            <div className="absolute -inset-1 liquid-gradient rounded-lg sm:rounded-xl blur opacity-20 animate-pulse-slow"></div>
-          </motion.div>
-          <div className="hidden sm:flex flex-col">
-            <span className="text-lg sm:text-xl font-semibold tracking-tight text-foreground">Fixia</span>
-            <span className="text-xs text-muted-foreground -mt-1">Conecta. Confía. Resuelve.</span>
-          </div>
-        </Link>
-
-        {/* Navigation */}
-        <nav className="hidden lg:flex items-center space-x-8">
-          <Link to="/services" className="text-foreground hover:text-primary transition-colors font-medium">
-            Explorar Servicios
-          </Link>
-          <Link to="/how-it-works" className="text-foreground/80 hover:text-foreground transition-colors">
-            Cómo Funciona
-          </Link>
-          <Link to="/contact" className="text-foreground/80 hover:text-foreground transition-colors">
-            Contacto
-          </Link>
-        </nav>
-
-        {/* Actions */}
-        <div className="flex items-center space-x-2 sm:space-x-4">
-          <Link to="/login">
-            <Button variant="ghost" className="hover:glass-medium transition-all duration-300 text-sm sm:text-base">
-              <span className="hidden sm:inline">Iniciar Sesión</span>
-              <span className="sm:hidden">Entrar</span>
-            </Button>
-          </Link>
-          <Link to="/register">
-            <Button className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg text-sm">
-              <Gift className="h-4 w-4 sm:mr-2" />
-              <span className="hidden sm:inline">Únete Gratis</span>
-              <span className="sm:hidden">Únete</span>
-            </Button>
-          </Link>
-        </div>
-      </div>
-    </motion.header>
-  );
-}
 
 function HeroSection() {
   return (
@@ -778,7 +718,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-background">
       <SkipNavigation />
-      <Navigation />
+      <FixiaNavigation />
       <main id="main-content" role="main" aria-label="Contenido principal">
         <HeroSection />
         <CategoriesSection />
