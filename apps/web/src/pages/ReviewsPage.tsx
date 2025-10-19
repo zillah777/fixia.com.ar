@@ -1,9 +1,8 @@
-import React, { useState, useEffect, memo } from 'react';
+import { useState, useEffect, memo } from 'react';
 import { Filter, TrendingUp, Users, MessageSquare, Shield, Heart } from 'lucide-react';
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
-import { Badge } from '../components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { ReviewsSection } from '../components/reviews/ReviewsSection';
 import { TrustBadge, TrustScoreDisplay } from '../components/trust/TrustBadge';
@@ -57,7 +56,25 @@ export const ReviewsPage = memo(() => {
           setReviewStats({
             total: reviewsData.reviews.length,
             average: avgRating,
-            distribution: { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 }
+            distribution: [
+              { rating: 5, count: 0, percentage: 0 },
+              { rating: 4, count: 0, percentage: 0 },
+              { rating: 3, count: 0, percentage: 0 },
+              { rating: 2, count: 0, percentage: 0 },
+              { rating: 1, count: 0, percentage: 0 }
+            ]
+          });
+        } else {
+          setReviewStats({
+            total: 0,
+            average: 0,
+            distribution: [
+              { rating: 5, count: 0, percentage: 0 },
+              { rating: 4, count: 0, percentage: 0 },
+              { rating: 3, count: 0, percentage: 0 },
+              { rating: 2, count: 0, percentage: 0 },
+              { rating: 1, count: 0, percentage: 0 }
+            ]
           });
         }
       } else {

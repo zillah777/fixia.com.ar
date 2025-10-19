@@ -1,4 +1,4 @@
-import React, { useState, memo } from 'react';
+import { useState, memo } from 'react';
 import { ThumbsUp, Flag, Shield, TrendingUp, Heart } from 'lucide-react';
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from '../ui/button';
@@ -12,7 +12,7 @@ import { cn } from '../ui/utils';
 interface Review {
   id: string;
   rating: number;
-  comment: string;
+  comment?: string;
   verifiedPurchase: boolean;
   trustScore: number;
   communicationRating?: number;
@@ -38,7 +38,7 @@ interface Review {
 
 interface TrustScore {
   overallScore: number;
-  trustBadge: string;
+  trustBadge?: string;
   badgeColor: string;
   totalJobsCompleted: number;
   totalReviewsReceived: number;
