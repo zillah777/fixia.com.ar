@@ -115,6 +115,14 @@ export class UsersService {
       throw new NotFoundException('User not found');
     }
 
+    // Debug logging
+    console.log('[updateProfile] Received data:', {
+      userId,
+      avatar: updateData.avatar,
+      hasAvatar: !!updateData.avatar,
+      allFields: Object.keys(updateData)
+    });
+
     // Build complete user update data with all supported fields
     const userUpdateData: any = {
       // Basic fields
@@ -145,6 +153,12 @@ export class UsersService {
       userUpdateData[key] === undefined && delete userUpdateData[key]
     );
 
+    // Debug logging
+    console.log('[updateProfile] Data to update:', {
+      avatar: userUpdateData.avatar,
+      fieldsToUpdate: Object.keys(userUpdateData)
+    });
+
     // Update user record with all provided fields
     const updatedUser = await this.prisma.user.update({
       where: { id: userId },
@@ -153,6 +167,8 @@ export class UsersService {
         professional_profile: true,
       },
     });
+
+    console.log('[updateProfile] Updated user avatar:', updatedUser.avatar);
 
     // Update professional profile if user is professional and specialties provided
     if (existingUser.user_type === 'professional' && updateData.specialties !== undefined) {
