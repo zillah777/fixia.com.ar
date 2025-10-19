@@ -18,7 +18,7 @@ import { PaymentsModule } from './payments/payments.module';
 import { UploadModule } from './upload/upload.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { CategoriesModule } from './categories/categories.module';
-// import { FavoritesModule } from './favorites/favorites.module';
+import { FavoritesModule } from './favorites/favorites.module';
 
 @Module({
   imports: [
@@ -51,7 +51,7 @@ import { CategoriesModule } from './categories/categories.module';
     UploadModule,
     DashboardModule,
     CategoriesModule,
-    // FavoritesModule,
+    FavoritesModule,
   ],
   controllers: [],
   providers: [],

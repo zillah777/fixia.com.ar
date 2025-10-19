@@ -41,8 +41,8 @@ export const ReviewsPage = memo(() => {
     setIsLoading(true);
     try {
       if (user.userType === 'client') {
-        // For clients, load reviews they received from professionals
-        const reviewsData = await reviewsService.getReviewsByClient(user.id, {
+        // For clients, load reviews they wrote to professionals
+        const reviewsData = await reviewsService.getMyReviews({
           ...filters,
           page: pagination.page,
           limit: pagination.limit
@@ -124,7 +124,7 @@ export const ReviewsPage = memo(() => {
             <h1 className="text-3xl font-bold text-foreground">Mis Reseñas</h1>
             <p className="text-muted-foreground">
               {isClient
-                ? 'Reseñas que los profesionales te han dejado después de completar trabajos'
+                ? 'Reseñas que has escrito sobre profesionales después de completar trabajos'
                 : 'Gestiona tu reputación y monitorea tu puntuación de confianza'
               }
             </p>
