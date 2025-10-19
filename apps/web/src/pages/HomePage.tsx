@@ -321,26 +321,26 @@ function ServiceCardSkeleton() {
 }
 
 function FeaturedServicesSection() {
-  const [services, setServices] = useState<Service[]>([]);
+  const [professionals, setProfessionals] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchFeaturedServices = async () => {
+    const fetchTopProfessionals = async () => {
       try {
         setLoading(true);
-        const featuredServices = await servicesService.getFeaturedServices(3);
-        setServices(featuredServices);
+        const topProfessionals = await servicesService.getTopRatedProfessionals(6);
+        setProfessionals(topProfessionals);
       } catch (error: any) {
-        console.error('Error fetching featured services:', error);
-        setError('No se pudieron cargar los servicios destacados');
-        setServices([]);
+        console.error('Error fetching top professionals:', error);
+        setError('No se pudieron cargar los profesionales destacados');
+        setProfessionals([]);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchFeaturedServices();
+    fetchTopProfessionals();
   }, []);
 
   return (
@@ -362,7 +362,7 @@ function FeaturedServicesSection() {
         <div className="grid lg:grid-cols-3 gap-8">
           {loading ? (
             // Show skeleton loaders while loading
-            Array.from({ length: 3 }).map((_, index) => (
+            Array.from({ length: 6 }).map((_, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 20 }}
@@ -373,25 +373,28 @@ function FeaturedServicesSection() {
               </motion.div>
             ))
           ) : (
-            Array.isArray(services) && services.map((service, index) => {
-              const fullName = `${service.professional.name} ${service.professional.lastName}`;
-              const serviceImage = service.images?.[0] || "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=300&fit=crop";
-              
+            Array.isArray(professionals) && professionals.map((professional, index) => {
+              const rating = professional.professional_profile?.rating || 0;
+              const reviewCount = professional.professional_profile?.review_count || 0;
+              const service = professional.services?.[0];
+              const serviceImage = service?.main_image || professional.avatar || "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=300&fit=crop";
+              const category = service?.category?.name || professional.professional_profile?.specialties?.[0] || "Profesional";
+
               return (
                 <motion.div
-                  key={service.id}
+                  key={professional.id}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.6, delay: 0.1 * index }}
                   whileHover={{ y: -4 }}
                 >
-                  <Link to={`/services/${service.id}`}>
+                  <Link to={`/users/${professional.id}`}>
                     <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 overflow-hidden group cursor-pointer">
                       <div className="relative aspect-video overflow-hidden">
-                        <img 
-                          src={serviceImage} 
-                          alt={service.title}
+                        <img
+                          src={serviceImage}
+                          alt={professional.name}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                           onError={(e) => {
                             (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=300&fit=crop";
@@ -399,49 +402,57 @@ function FeaturedServicesSection() {
                         />
                         <div className="absolute top-4 left-4">
                           <Badge className="bg-primary/20 text-primary border-primary/30">
-                            {service.category}
+                            {category}
                           </Badge>
                         </div>
                         <div className="absolute top-4 right-4">
-                          <Button variant="ghost" size="icon" className="h-9 w-9 glass">
-                            <Heart className="h-4 w-4" />
-                          </Button>
+                          <Badge className="bg-success/20 text-success border-success/30">
+                            <CheckCircle className="h-3 w-3 mr-1" />
+                            Verificado
+                          </Badge>
                         </div>
                       </div>
-                      
+
                       <CardContent className="p-6">
                         <div className="flex items-center space-x-3 mb-4">
-                          <Avatar className="h-10 w-10">
-                            <AvatarImage src={service.professional.avatar} />
-                            <AvatarFallback>{service.professional.name.charAt(0)}</AvatarFallback>
+                          <Avatar className="h-12 w-12 ring-2 ring-primary/20">
+                            <AvatarImage src={professional.avatar} />
+                            <AvatarFallback>{professional.name.charAt(0)}</AvatarFallback>
                           </Avatar>
                           <div className="flex-1">
                             <div className="flex items-center space-x-2">
-                              <span className="font-medium text-sm">{fullName}</span>
-                              {service.professional.verified && (
+                              <span className="font-semibold">{professional.name}</span>
+                              {professional.verified && (
                                 <CheckCircle className="h-4 w-4 text-success" />
                               )}
                             </div>
                             <div className="flex items-center space-x-1 text-xs text-muted-foreground">
                               <MapPin className="h-3 w-3" />
-                              <span>{service.professional.location}</span>
+                              <span>{professional.location || "Chubut, Argentina"}</span>
                             </div>
-                            <Badge className="bg-warning/20 text-warning border-warning/30 text-xs mt-1">
-                              {service.professional.level}
-                            </Badge>
                           </div>
                         </div>
-                        
-                        <h3 className="font-semibold mb-2 line-clamp-2">{service.title}</h3>
-                        <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{service.description}</p>
-                        
+
+                        {service && (
+                          <>
+                            <h3 className="font-semibold mb-2 line-clamp-2">{service.title}</h3>
+                            <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{service.description}</p>
+                          </>
+                        )}
+
+                        {professional.professional_profile?.bio && !service && (
+                          <p className="text-sm text-muted-foreground mb-4 line-clamp-3">{professional.professional_profile.bio}</p>
+                        )}
+
                         <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-1">
                             <Heart className="h-4 w-4 text-warning fill-current" />
-                            <span className="font-medium">{service.averageRating}</span>
-                            <span className="text-muted-foreground text-sm">({service.totalReviews})</span>
+                            <span className="font-bold">{rating.toFixed(1)}</span>
+                            <span className="text-muted-foreground text-sm">({reviewCount} reseñas)</span>
                           </div>
-                          <span className="text-xl font-bold text-primary">${service.price.toLocaleString()}</span>
+                          {service?.price && (
+                            <span className="text-lg font-bold text-primary">${service.price.toLocaleString()}</span>
+                          )}
                         </div>
                       </CardContent>
                     </Card>

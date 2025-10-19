@@ -125,6 +125,10 @@ export const servicesService = {
       search: query
     });
   },
+
+  async getTopRatedProfessionals(limit = 6): Promise<Professional[]> {
+    return api.get<Professional[]>(`/professionals/top-rated?limit=${limit}`);
+  },
 };
 
 export default servicesService;

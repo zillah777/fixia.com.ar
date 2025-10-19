@@ -320,4 +320,66 @@ export class UsersService {
 
     return { message: 'Account deleted successfully' };
   }
+
+  async getTopRatedProfessionals(limit: number = 6) {
+    const professionals = await this.prisma.user.findMany({
+      where: {
+        user_type: 'professional',
+        verified: true,
+        deleted_at: null,
+        professional_profile: {
+          isNot: null,
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+        avatar: true,
+        location: true,
+        verified: true,
+        created_at: true,
+        professional_profile: {
+          select: {
+            bio: true,
+            specialties: true,
+            rating: true,
+            review_count: true,
+            level: true,
+            years_experience: true,
+          },
+        },
+        services: {
+          where: { active: true },
+          select: {
+            id: true,
+            title: true,
+            description: true,
+            price: true,
+            main_image: true,
+            category: {
+              select: {
+                name: true,
+                icon: true,
+              },
+            },
+          },
+          orderBy: { created_at: 'desc' },
+          take: 1, // Get the most recent service
+        },
+        reviews_received: {
+          select: {
+            rating: true,
+          },
+        },
+      },
+      orderBy: {
+        professional_profile: {
+          rating: 'desc',
+        },
+      },
+      take: limit,
+    });
+
+    return professionals;
+  }
 }
