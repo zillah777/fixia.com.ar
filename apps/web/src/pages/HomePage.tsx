@@ -238,8 +238,8 @@ function CategoriesSection() {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mobile-gap">
-          {displayCategories.map((category, index) => {
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 mobile-gap">
+          {displayCategories.slice(0, 6).map((category, index) => {
             const Icon = category.icon;
             return (
               <motion.div
