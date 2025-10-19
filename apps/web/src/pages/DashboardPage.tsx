@@ -382,6 +382,166 @@ function StatCards({ dashboardData, loading, userType, clientStats }: {
   );
 }
 
+// Component for CLIENTS - Shows their announcements
+function ClientAnnouncements({
+  clientProjects,
+  loading
+}: {
+  clientProjects: any[];
+  loading: boolean;
+}) {
+  const formatTimeAgo = (date: string) => {
+    const now = new Date();
+    const past = new Date(date);
+    const diffInHours = Math.floor((now.getTime() - past.getTime()) / (1000 * 60 * 60));
+
+    if (diffInHours < 1) return 'Hace menos de 1 hora';
+    if (diffInHours < 24) return `Hace ${diffInHours} ${diffInHours === 1 ? 'hora' : 'horas'}`;
+    const diffInDays = Math.floor(diffInHours / 24);
+    return `Hace ${diffInDays} ${diffInDays === 1 ? 'día' : 'días'}`;
+  };
+
+  // Prioritize announcements with proposals
+  const announcementsWithProposals = clientProjects.filter(p => p._count?.proposals > 0);
+  const announcementsWithoutProposals = clientProjects.filter(p => p._count?.proposals === 0);
+  const displayProjects = [...announcementsWithProposals, ...announcementsWithoutProposals].slice(0, 5);
+
+  return (
+    <Card className="glass border-white/10">
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle>Mis Solicitudes Activas</CardTitle>
+            <p className="text-sm text-muted-foreground mt-1">
+              Anuncios y propuestas recibidas
+            </p>
+          </div>
+          <Link to="/my-announcements">
+            <Button variant="outline" size="sm" className="glass border-white/20 hover:glass-medium">
+              Ver Todos
+            </Button>
+          </Link>
+        </div>
+      </CardHeader>
+      <CardContent>
+        {loading ? (
+          <div className="space-y-4">
+            {Array.from({ length: 3 }).map((_, index) => (
+              <div key={index} className="p-4 glass-medium rounded-lg">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex-1 space-y-2">
+                    <Skeleton className="h-4 w-3/4" />
+                    <Skeleton className="h-3 w-1/2" />
+                  </div>
+                  <Skeleton className="h-6 w-20" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : displayProjects.length === 0 ? (
+          <div className="text-center py-12">
+            <div className="h-16 w-16 liquid-gradient rounded-xl flex items-center justify-center mx-auto mb-4 opacity-50">
+              <Briefcase className="h-8 w-8 text-white" />
+            </div>
+            <h3 className="text-lg font-medium mb-2">No tienes anuncios activos</h3>
+            <p className="text-muted-foreground mb-4">
+              Publica tu primer anuncio para conectar con profesionales verificados
+            </p>
+            <Link to="/new-opportunity">
+              <Button className="liquid-gradient hover:opacity-90">
+                <Plus className="h-4 w-4 mr-2" />
+                Crear Primer Anuncio
+              </Button>
+            </Link>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {displayProjects.map((project) => {
+              const hasProposals = project._count?.proposals > 0;
+              const proposalCount = project._count?.proposals || 0;
+
+              return (
+                <Link key={project.id} to="/my-announcements">
+                  <div className="p-4 glass-medium rounded-lg hover:glass-strong transition-all cursor-pointer">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2 mb-1">
+                          <h4 className="font-medium">{project.title}</h4>
+                          {project.status === 'open' && (
+                            <Badge className="bg-success/20 text-success border-success/30 text-xs">
+                              Abierto
+                            </Badge>
+                          )}
+                        </div>
+                        <p className="text-sm text-muted-foreground line-clamp-1">
+                          {project.description}
+                        </p>
+                      </div>
+                    </div>
+
+                    {hasProposals ? (
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-4">
+                          <div className="flex items-center space-x-1 text-sm">
+                            <Users className="h-4 w-4 text-primary" />
+                            <span className="font-medium text-primary">
+                              {proposalCount} {proposalCount === 1 ? 'propuesta' : 'propuestas'}
+                            </span>
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            <Clock className="h-3 w-3 inline mr-1" />
+                            {formatTimeAgo(project.created_at)}
+                          </div>
+                        </div>
+                        <Button size="sm" className="liquid-gradient">
+                          <MessageSquare className="h-3 w-3 mr-1" />
+                          Ver Propuestas
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                          <AlertCircle className="h-4 w-4 text-warning" />
+                          <span>Esperando propuestas</span>
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          <Clock className="h-3 w-3 inline mr-1" />
+                          {formatTimeAgo(project.created_at)}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Quick Summary */}
+        {displayProjects.length > 0 && (
+          <div className="mt-6 pt-4 border-t border-white/10">
+            <div className="grid grid-cols-2 gap-4 text-center">
+              <div>
+                <p className="text-2xl font-bold text-primary">
+                  {announcementsWithProposals.length}
+                </p>
+                <p className="text-xs text-muted-foreground">Con propuestas</p>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-warning">
+                  {announcementsWithoutProposals.length}
+                </p>
+                <p className="text-xs text-muted-foreground">Esperando</p>
+              </div>
+            </div>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+// Component for PROFESSIONALS - Shows their projects
 function CurrentProjects({
   projects,
   loading
@@ -426,10 +586,10 @@ function CurrentProjects({
             <p className="text-muted-foreground mb-4">
               Cuando tengas proyectos activos, aparecerán aquí para que puedas hacer seguimiento de su progreso.
             </p>
-            <Link to="/new-project">
+            <Link to="/opportunities">
               <Button className="liquid-gradient hover:opacity-90">
-                <Plus className="h-4 w-4 mr-2" />
-                Crear tu primer servicio
+                <Target className="h-4 w-4 mr-2" />
+                Ver Oportunidades
               </Button>
             </Link>
           </div>
@@ -483,6 +643,7 @@ export default function DashboardPage() {
   } | null>(null);
   const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
   const [currentProjects, setCurrentProjects] = useState<CurrentProject[]>([]);
+  const [clientProjects, setClientProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [activityLoading, setActivityLoading] = useState(true);
   const [projectsLoading, setProjectsLoading] = useState(true);
@@ -513,6 +674,9 @@ export default function DashboardPage() {
             in_progress,
             client_rating: 0 // TODO: Implement client rating from professionals
           });
+
+          // Store client projects for the ClientAnnouncements component
+          setClientProjects(projects);
         } else {
           // Load professional stats
           const data = await userService.getDashboard();
@@ -674,9 +838,13 @@ export default function DashboardPage() {
           transition={{ duration: 0.6, delay: 0.4 }}
           className="grid lg:grid-cols-3 gap-8"
         >
-          {/* Current Projects */}
+          {/* Projects Section - Different for Clients vs Professionals */}
           <div className="lg:col-span-2">
-            <CurrentProjects projects={currentProjects} loading={projectsLoading} />
+            {user?.userType === 'client' ? (
+              <ClientAnnouncements clientProjects={clientProjects} loading={loading} />
+            ) : (
+              <CurrentProjects projects={currentProjects} loading={projectsLoading} />
+            )}
           </div>
 
           {/* Recent Activity */}
