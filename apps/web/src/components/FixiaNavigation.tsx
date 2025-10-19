@@ -53,19 +53,38 @@ export const FixiaNavigation = memo(function FixiaNavigation() {
             </div>
           </Link>
           
-          <nav className="hidden lg:flex items-center space-x-8">
-            <Link to="/services" className="text-foreground hover:text-primary transition-colors font-medium">
-              Explorar Servicios
-            </Link>
-            <Link to="/how-it-works" className="text-foreground hover:text-primary transition-colors font-medium">
-              Cómo Funciona
-            </Link>
-            <Link to="/help" className="text-foreground hover:text-primary transition-colors font-medium">
-              Ayuda
-            </Link>
-            <Link to="/contact" className="text-foreground hover:text-primary transition-colors font-medium">
-              Contacto
-            </Link>
+          <nav className="hidden lg:flex items-center space-x-6">
+            {user?.userType === 'client' ? (
+              <>
+                <Link to="/how-it-works" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  Cómo Funciona
+                </Link>
+                <Link to="/help" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  Ayuda
+                </Link>
+                <Link to="/contact" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  Contacto
+                </Link>
+                <Link to="/services" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  Profesionales
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link to="/services" className="text-foreground hover:text-primary transition-colors font-medium">
+                  Explorar Servicios
+                </Link>
+                <Link to="/how-it-works" className="text-foreground hover:text-primary transition-colors font-medium">
+                  Cómo Funciona
+                </Link>
+                <Link to="/help" className="text-foreground hover:text-primary transition-colors font-medium">
+                  Ayuda
+                </Link>
+                <Link to="/contact" className="text-foreground hover:text-primary transition-colors font-medium">
+                  Contacto
+                </Link>
+              </>
+            )}
           </nav>
         </div>
 
@@ -74,14 +93,26 @@ export const FixiaNavigation = memo(function FixiaNavigation() {
           {isAuthenticated ? (
             // Authenticated User Menu
             <>
-              {/* Search - Hidden on mobile */}
-              <div className="relative hidden lg:block">
-                <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
-                <Input
-                  placeholder="Buscar profesionales o servicios..."
-                  className="w-64 xl:w-80 pl-12 glass border-white/20 focus:border-primary/50 focus:ring-primary/30 transition-all duration-300"
-                />
-              </div>
+              {/* Search - Visible for clients */}
+              {user?.userType === 'client' && (
+                <div className="relative hidden lg:block">
+                  <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+                  <Input
+                    placeholder="Buscar profesionales o servicios..."
+                    className="w-64 xl:w-80 pl-12 glass border-white/20 focus:border-primary/50 focus:ring-primary/30 transition-all duration-300"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        const searchValue = (e.target as HTMLInputElement).value;
+                        if (searchValue.trim()) {
+                          navigate(`/services?q=${encodeURIComponent(searchValue)}`);
+                        } else {
+                          navigate('/services');
+                        }
+                      }
+                    }}
+                  />
+                </div>
+              )}
 
               {/* Quick Actions */}
               <div className="flex items-center space-x-1 sm:space-x-2">
