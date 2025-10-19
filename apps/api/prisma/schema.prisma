@@ -195,7 +195,8 @@ model User {
   professional_payment_preferences PaymentPreference[] @relation("ProfessionalPaymentPreferences")
 
   // Favorites Relations
-  favorites Favorite[] @relation("UserFavorites")
+  favorites                  Favorite[] @relation("UserFavorites")
+  favorites_as_professional Favorite[] @relation("ProfessionalFavorites")
 
   @@index([email])
   @@index([user_type])
@@ -272,6 +273,7 @@ model Service {
   contact_interactions ContactInteraction[]
   payments             Payment[]
   payment_preferences  PaymentPreference[]
+  favorites            Favorite[]           @relation("ServiceFavorites")
 
   @@index([professional_id])
   @@index([category_id])
@@ -863,7 +865,9 @@ model Favorite {
   created_at DateTime @default(now())
 
   // Relations
-  user User @relation("UserFavorites", fields: [user_id], references: [id], onDelete: Cascade)
+  user         User     @relation("UserFavorites", fields: [user_id], references: [id], onDelete: Cascade)
+  service      Service? @relation("ServiceFavorites", fields: [service_id], references: [id], onDelete: Cascade)
+  professional User?    @relation("ProfessionalFavorites", fields: [professional_id], references: [id], onDelete: Cascade)
 
   @@unique([user_id, service_id])
   @@unique([user_id, professional_id])
