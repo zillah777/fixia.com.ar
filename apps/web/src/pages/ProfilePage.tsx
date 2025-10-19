@@ -135,6 +135,19 @@ function ProfileHeader({ user, onUserUpdate }: any) {
     whatsapp_number: user?.whatsapp_number || user?.phone || ''
   });
 
+  // Update local state when user prop changes
+  useEffect(() => {
+    if (user) {
+      setProfileData({
+        name: user.name || '',
+        bio: user.professionalProfile?.description || user.bio || '',
+        location: user.location || '',
+        phone: user.phone || '',
+        whatsapp_number: user.whatsapp_number || user.phone || ''
+      });
+    }
+  }, [user]);
+
   // Handle form submission
   const handleSave = async () => {
     setIsSaving(true);
