@@ -110,9 +110,9 @@ export class ProjectsService {
                   whatsapp_number: true,
                   professional_profile: {
                     select: {
-                      description: true,
-                      average_rating: true,
-                      total_reviews: true,
+                      bio: true,
+                      rating: true,
+                      review_count: true,
                     },
                   },
                 },
