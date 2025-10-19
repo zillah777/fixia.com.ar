@@ -144,40 +144,32 @@ apiClient.interceptors.response.use(
       } catch (refreshError) {
         processQueue(refreshError);
 
+        // Check context BEFORE clearing data
+        const currentPath = window.location.pathname;
+        const isAuthPage = currentPath.includes('/login') || currentPath.includes('/register') ||
+                          currentPath.includes('/verify-email') || currentPath.includes('/forgot-password');
+        const isAuthVerification = originalRequest?.url?.includes('/auth/verify');
+        const hadUserData = localStorage.getItem('fixia_user_basic');
+
         // Clear all authentication data on refresh failure
         localStorage.removeItem('fixia_access_token');
         localStorage.removeItem('fixia_refresh_token');
         localStorage.removeItem('fixia_user_basic');
         localStorage.removeItem('fixia_preferences');
-        
-        // Only redirect if we're not already on auth pages and this isn't an initial auth check
-        const currentPath = window.location.pathname;
-        const isAuthPage = currentPath.includes('/login') || currentPath.includes('/register') || 
-                          currentPath.includes('/verify-email') || currentPath.includes('/forgot-password');
-        const isAuthVerification = originalRequest?.url?.includes('/auth/verify');
-        const isDashboardPage = currentPath.includes('/dashboard');
-        const isDashboardAPI = originalRequest?.url?.includes('/user/dashboard');
-        
-        // Don't redirect immediately after login - give user time on dashboard
-        const timeSincePageLoad = Date.now() - (window.performance?.timing?.navigationStart || 0);
-        const justLoggedIn = timeSincePageLoad < 10000; // Less than 10 seconds since page load
-        
-        if (!isAuthPage && !isAuthVerification && !isDashboardPage && !isDashboardAPI) {
+
+        // Only redirect if:
+        // 1. NOT on an auth page already
+        // 2. NOT just checking auth status (expected 401 on /auth/verify)
+        // 3. User HAD data (meaning they were logged in but token expired)
+        if (!isAuthPage && !isAuthVerification && hadUserData) {
+          // Session truly expired
+          console.log('Session expired - redirecting to login');
           toast.error('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
           setTimeout(() => {
             window.location.href = '/login';
           }, 2000);
-        } else if (isDashboardPage && !justLoggedIn && !isDashboardAPI) {
-          // Only redirect from dashboard if it's not immediately after login and not a dashboard API call
-          console.log('Authentication failed on dashboard - redirecting to login');
-          setTimeout(() => {
-            window.location.href = '/login';
-          }, 1000);
-        } else if ((isDashboardPage && justLoggedIn) || isDashboardAPI) {
-          // Don't redirect for dashboard API failures or immediately after login
-          console.log('Ignoring auth failure for dashboard API or immediately after login');
         }
-        
+
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
