@@ -29,7 +29,26 @@ export interface User {
   isVerified: boolean;
   emailVerified: boolean;
   role?: string;
-  
+
+  // Profile fields
+  bio?: string;
+  whatsapp_number?: string;
+
+  // Social networks
+  social_linkedin?: string;
+  social_twitter?: string;
+  social_github?: string;
+  social_instagram?: string;
+
+  // Notification preferences
+  notifications_messages?: boolean;
+  notifications_orders?: boolean;
+  notifications_projects?: boolean;
+  notifications_newsletter?: boolean;
+
+  // Settings
+  timezone?: string;
+
   // Professional specific fields
   professionalProfile?: {
     id: string;
@@ -48,7 +67,7 @@ export interface User {
     createdAt: string;
     updatedAt: string;
   };
-  
+
   // Legacy fields for backwards compatibility
   accountType: 'client' | 'professional';
   availability: 'available' | 'busy' | 'offline';
@@ -58,19 +77,19 @@ export interface User {
   averageRating: number;
   totalReviews: number;
   joinDate: string;
-  
+
   // Contact limits for clients
   pendingContactRequests: number;
   maxContactRequests: number;
-  
+
   // Argentina specific (computed from location)
   province: string;
   city: string;
-  
+
   // Promotion tracking
   isLaunchPromotion: boolean;
   promotionExpiryDate?: string;
-  
+
   // Timestamps
   createdAt: string;
   updatedAt: string;
@@ -165,6 +184,10 @@ const transformBackendUserSecurely = (backendUser: any): User => {
     province = locationParts[1] || 'Chubut';
   }
 
+  // Sanitize additional fields
+  const sanitizedBio = sanitizeInput(backendUser.bio || '', 'basicHTML');
+  const sanitizedWhatsapp = sanitizeInput(backendUser.whatsapp_number || '', 'phone');
+
   // Construir objeto usuario con datos sanitizados
   const baseUser: User = {
     id: String(backendUser.id || backendUser._id || ''),
@@ -173,18 +196,32 @@ const transformBackendUserSecurely = (backendUser: any): User => {
     lastName: sanitizedLastName || undefined,
     phone: sanitizedPhone || undefined,
     avatar: backendUser.avatar || undefined,
-    userType: ['client', 'professional'].includes(backendUser.userType) 
-      ? backendUser.userType 
+    userType: ['client', 'professional'].includes(backendUser.userType || backendUser.user_type)
+      ? (backendUser.userType || backendUser.user_type)
       : 'client',
     location: sanitizedLocation || undefined,
-    planType: ['free', 'premium'].includes(backendUser.planType) 
-      ? backendUser.planType 
+    planType: ['free', 'premium'].includes(backendUser.planType)
+      ? backendUser.planType
       : 'free',
-    isVerified: Boolean(backendUser.isVerified),
+    isVerified: Boolean(backendUser.isVerified || backendUser.verified),
     emailVerified: Boolean(backendUser.emailVerified || backendUser.email_verified),
     role: backendUser.role || undefined,
-    accountType: ['client', 'professional'].includes(backendUser.userType) 
-      ? backendUser.userType 
+
+    // New fields
+    bio: sanitizedBio || undefined,
+    whatsapp_number: sanitizedWhatsapp || undefined,
+    social_linkedin: backendUser.social_linkedin || undefined,
+    social_twitter: backendUser.social_twitter || undefined,
+    social_github: backendUser.social_github || undefined,
+    social_instagram: backendUser.social_instagram || undefined,
+    notifications_messages: backendUser.notifications_messages ?? true,
+    notifications_orders: backendUser.notifications_orders ?? true,
+    notifications_projects: backendUser.notifications_projects ?? true,
+    notifications_newsletter: backendUser.notifications_newsletter ?? false,
+    timezone: backendUser.timezone || 'buenos-aires',
+
+    accountType: ['client', 'professional'].includes(backendUser.userType || backendUser.user_type)
+      ? (backendUser.userType || backendUser.user_type)
       : 'client',
     availability: 'available',
     badges: Array.isArray(backendUser.badges) ? backendUser.badges : [],
@@ -193,21 +230,21 @@ const transformBackendUserSecurely = (backendUser: any): User => {
     averageRating: Number(backendUser.averageRating) || 0,
     totalReviews: Number(backendUser.totalReviews) || 0,
     joinDate: backendUser.created_at || backendUser.createdAt || now,
-    
+
     // Contact limits
     pendingContactRequests: Number(backendUser.pendingContactRequests) || 0,
     maxContactRequests: Number(backendUser.maxContactRequests) || 3,
-    
+
     // Argentina specific
     province,
     city,
-    
+
     // Promotion tracking
     isLaunchPromotion: Boolean(backendUser.isLaunchPromotion),
     promotionExpiryDate: backendUser.promotionExpiryDate || undefined,
-    
-    createdAt: backendUser.createdAt || now,
-    updatedAt: backendUser.updatedAt || now
+
+    createdAt: backendUser.created_at || backendUser.createdAt || now,
+    updatedAt: backendUser.updated_at || backendUser.updatedAt || now
   };
 
   // Agregar perfil profesional si existe, con sanitización
