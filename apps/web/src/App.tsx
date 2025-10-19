@@ -15,6 +15,7 @@ const ProfilePage = lazy(() => import("./pages/ProfilePage"));
 const PublicProfilePage = lazy(() => import("./pages/PublicProfilePage"));
 const NewProjectPage = lazy(() => import("./pages/NewProjectPage"));
 const NewOpportunityPage = lazy(() => import("./pages/NewOpportunityPage"));
+const MyAnnouncementsPage = lazy(() => import("./pages/MyAnnouncementsPage"));
 const OpportunitiesPage = lazy(() => import("./pages/OpportunitiesPage"));
 const TermsPage = lazy(() => import("./pages/TermsPage"));
 const PrivacyPage = lazy(() => import("./pages/PrivacyPage"));
@@ -291,18 +292,30 @@ function AppRoutes() {
                     </RouteErrorBoundary>
                   } 
                 />
-                <Route 
-                  path="/new-opportunity" 
+                <Route
+                  path="/new-opportunity"
                   element={
                     <RouteErrorBoundary routeName="Nuevo Anuncio" fallbackRoute="/dashboard">
                       <ProtectedRoute>
                         <NewOpportunityPage />
                       </ProtectedRoute>
                     </RouteErrorBoundary>
-                  } 
+                  }
                 />
-                <Route 
-                  path="/opportunities" 
+                <Route
+                  path="/my-announcements"
+                  element={
+                    <RouteErrorBoundary routeName="Mis Anuncios" fallbackRoute="/dashboard">
+                      <ProtectedRoute>
+                        <AsyncErrorBoundary>
+                          <MyAnnouncementsPage />
+                        </AsyncErrorBoundary>
+                      </ProtectedRoute>
+                    </RouteErrorBoundary>
+                  }
+                />
+                <Route
+                  path="/opportunities"
                   element={
                     <RouteErrorBoundary routeName="Oportunidades" fallbackRoute="/dashboard">
                       <ProtectedRoute>
@@ -311,7 +324,7 @@ function AppRoutes() {
                         </AsyncErrorBoundary>
                       </ProtectedRoute>
                     </RouteErrorBoundary>
-                  } 
+                  }
                 />
                 <Route 
                   path="/favorites" 

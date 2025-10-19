@@ -163,30 +163,42 @@ export const FixiaNavigation = memo(function FixiaNavigation() {
                       Dashboard
                     </DropdownMenuItem>
                   </Link>
-                  <Link to="/opportunities">
-                    <DropdownMenuItem className="hover:bg-white/10 cursor-pointer">
-                      <Briefcase className="mr-3 h-4 w-4" />
-                      Oportunidades
-                    </DropdownMenuItem>
-                  </Link>
-                  <Link to="/jobs">
-                    <DropdownMenuItem className="hover:bg-white/10 cursor-pointer">
-                      <Shield className="mr-3 h-4 w-4" />
-                      Mis Trabajos
-                    </DropdownMenuItem>
-                  </Link>
-                  <Link to="/reviews">
-                    <DropdownMenuItem className="hover:bg-white/10 cursor-pointer">
-                      <Heart className="mr-3 h-4 w-4" />
-                      Mis Reseñas
-                    </DropdownMenuItem>
-                  </Link>
-                  <Link to="/verification">
-                    <DropdownMenuItem className="hover:bg-white/10 cursor-pointer">
-                      <Shield className="mr-3 h-4 w-4" />
-                      Verificación
-                    </DropdownMenuItem>
-                  </Link>
+                  {user?.userType === 'client' && (
+                    <Link to="/my-announcements">
+                      <DropdownMenuItem className="hover:bg-white/10 cursor-pointer">
+                        <Briefcase className="mr-3 h-4 w-4" />
+                        Mis Anuncios
+                      </DropdownMenuItem>
+                    </Link>
+                  )}
+                  {user?.userType === 'professional' && (
+                    <>
+                      <Link to="/opportunities">
+                        <DropdownMenuItem className="hover:bg-white/10 cursor-pointer">
+                          <Briefcase className="mr-3 h-4 w-4" />
+                          Oportunidades
+                        </DropdownMenuItem>
+                      </Link>
+                      <Link to="/jobs">
+                        <DropdownMenuItem className="hover:bg-white/10 cursor-pointer">
+                          <Shield className="mr-3 h-4 w-4" />
+                          Mis Trabajos
+                        </DropdownMenuItem>
+                      </Link>
+                      <Link to="/reviews">
+                        <DropdownMenuItem className="hover:bg-white/10 cursor-pointer">
+                          <Heart className="mr-3 h-4 w-4" />
+                          Mis Reseñas
+                        </DropdownMenuItem>
+                      </Link>
+                      <Link to="/verification">
+                        <DropdownMenuItem className="hover:bg-white/10 cursor-pointer">
+                          <Shield className="mr-3 h-4 w-4" />
+                          Verificación
+                        </DropdownMenuItem>
+                      </Link>
+                    </>
+                  )}
                   <DropdownMenuSeparator className="bg-white/10" />
                   <Link to="/settings">
                     <DropdownMenuItem className="hover:bg-white/10 cursor-pointer">

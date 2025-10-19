@@ -97,6 +97,29 @@ export class ProjectsService {
               proposals: true,
             },
           },
+          proposals: {
+            include: {
+              professional: {
+                select: {
+                  id: true,
+                  name: true,
+                  email: true,
+                  avatar: true,
+                  location: true,
+                  phone: true,
+                  whatsapp_number: true,
+                  professional_profile: {
+                    select: {
+                      description: true,
+                      average_rating: true,
+                      total_reviews: true,
+                    },
+                  },
+                },
+              },
+            },
+            orderBy: { created_at: 'desc' },
+          },
         },
         orderBy: { created_at: 'desc' },
       });
