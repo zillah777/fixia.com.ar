@@ -53,20 +53,17 @@ export const FixiaNavigation = memo(function FixiaNavigation() {
             </div>
           </Link>
           
-          <nav className="hidden lg:flex items-center space-x-6">
+          <nav className="hidden lg:flex items-center space-x-8">
             {user?.userType === 'client' ? (
               <>
-                <Link to="/how-it-works" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <Link to="/how-it-works" className="text-foreground/70 hover:text-foreground transition-colors">
                   Cómo Funciona
                 </Link>
-                <Link to="/help" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <Link to="/help" className="text-foreground/70 hover:text-foreground transition-colors">
                   Ayuda
                 </Link>
-                <Link to="/contact" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <Link to="/contact" className="text-foreground/70 hover:text-foreground transition-colors">
                   Contacto
-                </Link>
-                <Link to="/services" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  Profesionales
                 </Link>
               </>
             ) : (
