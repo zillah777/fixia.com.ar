@@ -51,15 +51,20 @@ function QuickActions({ user }: { user: any }) {
         whileHover={{ y: -2 }}
         transition={{ duration: 0.2 }}
       >
-        <Link to="/opportunities">
+        <Link to={isProfessional ? "/opportunities" : "/my-announcements"}>
           <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 cursor-pointer group">
             <CardContent className="p-6 text-center">
               <div className="h-12 w-12 bg-success/20 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
                 <Target className="h-6 w-6 text-success" />
               </div>
-              <h3 className="font-semibold mb-2">Ver Oportunidades</h3>
+              <h3 className="font-semibold mb-2">
+                {isProfessional ? "Ver Oportunidades" : "Mis Anuncios"}
+              </h3>
               <p className="text-sm text-muted-foreground">
-                Encuentra proyectos que se ajusten a tus habilidades
+                {isProfessional
+                  ? "Encuentra proyectos que se ajusten a tus habilidades"
+                  : "Revisa tus anuncios y las propuestas recibidas"
+                }
               </p>
             </CardContent>
           </Card>
@@ -236,7 +241,17 @@ function StatCardSkeleton() {
   );
 }
 
-function StatCards({ dashboardData, loading }: { dashboardData: DashboardStats | null; loading: boolean }) {
+function StatCards({ dashboardData, loading, userType, clientStats }: {
+  dashboardData: DashboardStats | null;
+  loading: boolean;
+  userType?: string;
+  clientStats?: {
+    open_announcements: number;
+    proposals_received: number;
+    in_progress: number;
+    client_rating: number;
+  } | null;
+}) {
   if (loading) {
     return (
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -254,7 +269,44 @@ function StatCards({ dashboardData, loading }: { dashboardData: DashboardStats |
     );
   }
 
-  const stats = [
+  // Stats for CLIENTS
+  const clientStatsCards = [
+    {
+      title: "Anuncios Abiertos",
+      value: clientStats?.open_announcements?.toString() || "0",
+      change: "",
+      changeType: "neutral",
+      icon: Briefcase,
+      description: "solicitudes activas"
+    },
+    {
+      title: "Propuestas Recibidas",
+      value: clientStats?.proposals_received?.toString() || "0",
+      change: "",
+      changeType: "neutral",
+      icon: Users,
+      description: "ofertas de profesionales"
+    },
+    {
+      title: "En Progreso",
+      value: clientStats?.in_progress?.toString() || "0",
+      change: "",
+      changeType: "neutral",
+      icon: TrendingUp,
+      description: "trabajos activos"
+    },
+    {
+      title: "Mi Calificación",
+      value: clientStats?.client_rating?.toFixed(1) || "0.0",
+      change: "",
+      changeType: "neutral",
+      icon: Heart,
+      description: "de profesionales"
+    }
+  ];
+
+  // Stats for PROFESSIONALS
+  const professionalStatsCards = [
     {
       title: "Ingresos Totales",
       value: dashboardData?.total_earnings ? `$${dashboardData.total_earnings.toLocaleString()}` : "$0",
@@ -267,7 +319,7 @@ function StatCards({ dashboardData, loading }: { dashboardData: DashboardStats |
       title: "Servicios Totales",
       value: dashboardData?.total_services?.toString() || "0",
       change: "+2",
-      changeType: "positive", 
+      changeType: "positive",
       icon: Briefcase,
       description: "servicios creados"
     },
@@ -288,6 +340,8 @@ function StatCards({ dashboardData, loading }: { dashboardData: DashboardStats |
       description: `de ${dashboardData?.review_count || 0} reseñas`
     }
   ];
+
+  const stats = userType === 'client' ? clientStatsCards : professionalStatsCards;
 
   return (
     <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -421,6 +475,12 @@ function CurrentProjects({
 export default function DashboardPage() {
   const { user } = useSecureAuth();
   const [dashboardData, setDashboardData] = useState<DashboardStats | null>(null);
+  const [clientStats, setClientStats] = useState<{
+    open_announcements: number;
+    proposals_received: number;
+    in_progress: number;
+    client_rating: number;
+  } | null>(null);
   const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
   const [currentProjects, setCurrentProjects] = useState<CurrentProject[]>([]);
   const [loading, setLoading] = useState(true);
@@ -437,22 +497,50 @@ export default function DashboardPage() {
         // Add delay to ensure authentication is fully established after login
         await new Promise(resolve => setTimeout(resolve, 1000));
 
-        const data = await userService.getDashboard();
-        setDashboardData(data);
+        // Load different data based on user type
+        if (user.userType === 'client') {
+          // Load client stats from projects
+          const { opportunitiesService } = await import('../lib/services/opportunities.service');
+          const projects = await opportunitiesService.getMyProjects();
+
+          const open_announcements = projects.filter((p: any) => p.status === 'open').length;
+          const proposals_received = projects.reduce((sum: number, p: any) => sum + (p._count?.proposals || 0), 0);
+          const in_progress = projects.filter((p: any) => p.status === 'in_progress').length;
+
+          setClientStats({
+            open_announcements,
+            proposals_received,
+            in_progress,
+            client_rating: 0 // TODO: Implement client rating from professionals
+          });
+        } else {
+          // Load professional stats
+          const data = await userService.getDashboard();
+          setDashboardData(data);
+        }
       } catch (error: any) {
         console.warn('Dashboard stats fetch failed, using defaults:', error?.message);
 
         // Set fallback data instead of error
-        setDashboardData({
-          total_services: 0,
-          active_projects: 0,
-          total_earnings: 0,
-          average_rating: 0,
-          review_count: 0,
-          profile_views: 0,
-          messages_count: 0,
-          pending_proposals: 0
-        });
+        if (user.userType === 'client') {
+          setClientStats({
+            open_announcements: 0,
+            proposals_received: 0,
+            in_progress: 0,
+            client_rating: 0
+          });
+        } else {
+          setDashboardData({
+            total_services: 0,
+            active_projects: 0,
+            total_earnings: 0,
+            average_rating: 0,
+            review_count: 0,
+            profile_views: 0,
+            messages_count: 0,
+            pending_proposals: 0
+          });
+        }
       } finally {
         setLoading(false);
       }
@@ -530,7 +618,12 @@ export default function DashboardPage() {
           transition={{ duration: 0.6, delay: 0.3 }}
           className="mb-8"
         >
-          <StatCards dashboardData={dashboardData} loading={loading} />
+          <StatCards
+            dashboardData={dashboardData}
+            loading={loading}
+            userType={user?.userType}
+            clientStats={clientStats}
+          />
         </motion.div>
 
         {/* Main Content Grid */}
