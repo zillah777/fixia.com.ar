@@ -44,6 +44,21 @@ export class ReviewsController {
     return this.reviewsService.getProfessionalReviewStats(professionalId);
   }
 
+  @Get('client/:clientId')
+  @ApiOperation({ summary: 'Get reviews for a client (received from professionals)' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Reviews retrieved successfully' })
+  @ApiQuery({ name: 'rating', required: false, type: Number })
+  @ApiQuery({ name: 'verifiedOnly', required: false, type: Boolean })
+  @ApiQuery({ name: 'sortBy', required: false, type: String })
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  async getReviewsByClient(
+    @Param('clientId') clientId: string,
+    @Query() filters: ReviewFiltersDto
+  ) {
+    return this.reviewsService.getReviewsByClient(clientId, filters);
+  }
+
   @Get('my-reviews')
   @ApiOperation({ summary: 'Get reviews written by current user' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Reviews retrieved successfully' })

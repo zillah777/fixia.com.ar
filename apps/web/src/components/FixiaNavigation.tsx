@@ -194,12 +194,26 @@ export const FixiaNavigation = memo(function FixiaNavigation() {
                     </DropdownMenuItem>
                   </Link>
                   {user?.userType === 'client' && (
-                    <Link to="/my-announcements">
-                      <DropdownMenuItem className="hover:bg-white/10 cursor-pointer">
-                        <Briefcase className="mr-3 h-4 w-4" />
-                        Mis Anuncios
-                      </DropdownMenuItem>
-                    </Link>
+                    <>
+                      <Link to="/my-announcements">
+                        <DropdownMenuItem className="hover:bg-white/10 cursor-pointer">
+                          <Briefcase className="mr-3 h-4 w-4" />
+                          Mis Anuncios
+                        </DropdownMenuItem>
+                      </Link>
+                      <Link to="/favorites">
+                        <DropdownMenuItem className="hover:bg-white/10 cursor-pointer">
+                          <Heart className="mr-3 h-4 w-4" />
+                          Favoritos
+                        </DropdownMenuItem>
+                      </Link>
+                      <Link to="/reviews">
+                        <DropdownMenuItem className="hover:bg-white/10 cursor-pointer">
+                          <Heart className="mr-3 h-4 w-4" />
+                          Mis Reseñas
+                        </DropdownMenuItem>
+                      </Link>
+                    </>
                   )}
                   {user?.userType === 'professional' && (
                     <>

@@ -171,6 +171,51 @@ export class ReviewsService {
     };
   }
 
+  async getReviewsByClient(clientId: string, filters: ReviewFiltersDto = {}) {
+    const {
+      rating,
+      verifiedOnly,
+      sortBy = 'newest',
+      page = 1,
+      limit = 10
+    } = filters;
+
+    const where: Prisma.ReviewWhereInput = {
+      reviewer_id: clientId,
+      moderation_status: ReviewModerationStatus.approved,
+      ...(rating && { rating: rating }),
+      ...(verifiedOnly && { verified_purchase: true })
+    };
+
+    const orderBy = this.getSortOrderBy(sortBy);
+
+    const [reviews, total] = await Promise.all([
+      this.prisma.review.findMany({
+        where,
+        include: {
+          professional: { select: { id: true, name: true, avatar: true } },
+          service: { select: { id: true, title: true } },
+          job: { select: { id: true, title: true } },
+          helpful_votes: true
+        },
+        orderBy,
+        skip: (page - 1) * limit,
+        take: limit
+      }),
+      this.prisma.review.count({ where })
+    ]);
+
+    return {
+      reviews,
+      pagination: {
+        page,
+        limit,
+        total,
+        pages: Math.ceil(total / limit)
+      }
+    };
+  }
+
   async getReviewsByUser(userId: string, filters: ReviewFiltersDto = {}) {
     const {
       sortBy = 'newest',

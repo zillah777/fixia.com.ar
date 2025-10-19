@@ -37,23 +37,46 @@ export const ReviewsPage = memo(() => {
 
   const loadData = async () => {
     if (!user?.id) return;
-    
+
     setIsLoading(true);
     try {
-      const [reviewsData, trustData, statsData] = await Promise.all([
-        reviewsService.getReviewsByProfessional(user.id, {
+      if (user.userType === 'client') {
+        // For clients, load reviews they received from professionals
+        const reviewsData = await reviewsService.getReviewsByClient(user.id, {
           ...filters,
           page: pagination.page,
           limit: pagination.limit
-        }),
-        trustService.getMyTrustScore().catch(() => null),
-        reviewsService.getProfessionalReviewStats(user.id).catch(() => null)
-      ]);
+        });
 
-      setReviews(reviewsData.reviews);
-      setPagination(reviewsData.pagination);
-      setTrustScore(trustData);
-      setReviewStats(statsData);
+        setReviews(reviewsData.reviews);
+        setPagination(reviewsData.pagination);
+
+        // Calculate basic stats for clients
+        if (reviewsData.reviews.length > 0) {
+          const avgRating = reviewsData.reviews.reduce((sum, r) => sum + r.rating, 0) / reviewsData.reviews.length;
+          setReviewStats({
+            total: reviewsData.reviews.length,
+            average: avgRating,
+            distribution: { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 }
+          });
+        }
+      } else {
+        // For professionals, load professional reviews and trust score
+        const [reviewsData, trustData, statsData] = await Promise.all([
+          reviewsService.getReviewsByProfessional(user.id, {
+            ...filters,
+            page: pagination.page,
+            limit: pagination.limit
+          }),
+          trustService.getMyTrustScore().catch(() => null),
+          reviewsService.getProfessionalReviewStats(user.id).catch(() => null)
+        ]);
+
+        setReviews(reviewsData.reviews);
+        setPagination(reviewsData.pagination);
+        setTrustScore(trustData);
+        setReviewStats(statsData);
+      }
     } catch (error) {
       console.error('Error loading reviews data:', error);
     } finally {
@@ -70,7 +93,7 @@ export const ReviewsPage = memo(() => {
     }
   };
 
-  if (!user || user.userType !== 'professional') {
+  if (!user) {
     return (
       <div className="container mx-auto px-4 py-8">
         <Card className="glass border-white/20">
@@ -78,13 +101,15 @@ export const ReviewsPage = memo(() => {
             <Shield className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
             <h2 className="text-xl font-semibold mb-2">Acceso Restringido</h2>
             <p className="text-muted-foreground">
-              Esta página solo está disponible para profesionales verificados.
+              Debes iniciar sesión para ver tus reseñas.
             </p>
           </CardContent>
         </Card>
       </div>
     );
   }
+
+  const isClient = user.userType === 'client';
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-8">
@@ -98,10 +123,13 @@ export const ReviewsPage = memo(() => {
           <div>
             <h1 className="text-3xl font-bold text-foreground">Mis Reseñas</h1>
             <p className="text-muted-foreground">
-              Gestiona tu reputación y monitorea tu puntuación de confianza
+              {isClient
+                ? 'Reseñas que los profesionales te han dejado después de completar trabajos'
+                : 'Gestiona tu reputación y monitorea tu puntuación de confianza'
+              }
             </p>
           </div>
-          {trustScore && (
+          {trustScore && !isClient && (
             <TrustBadge
               score={trustScore.overallScore}
               badge={trustScore.trustBadge || trustService.getBadgeFromScore(trustScore.overallScore)}
@@ -122,7 +150,7 @@ export const ReviewsPage = memo(() => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+        className={`grid grid-cols-1 md:grid-cols-2 ${isClient ? 'lg:grid-cols-2' : 'lg:grid-cols-4'} gap-6`}
       >
         <Card className="glass border-white/20">
           <CardContent className="p-6">
@@ -156,41 +184,45 @@ export const ReviewsPage = memo(() => {
           </CardContent>
         </Card>
 
-        <Card className="glass border-white/20">
-          <CardContent className="p-6">
-            <div className="flex items-center space-x-3">
-              <div className="p-2 bg-purple-100 rounded-lg">
-                <TrendingUp className="h-6 w-6 text-purple-600" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Trabajos Completados</p>
-                <p className="text-2xl font-bold text-foreground">
-                  {trustScore?.totalJobsCompleted || 0}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        {!isClient && (
+          <>
+            <Card className="glass border-white/20">
+              <CardContent className="p-6">
+                <div className="flex items-center space-x-3">
+                  <div className="p-2 bg-purple-100 rounded-lg">
+                    <TrendingUp className="h-6 w-6 text-purple-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Trabajos Completados</p>
+                    <p className="text-2xl font-bold text-foreground">
+                      {trustScore?.totalJobsCompleted || 0}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
-        <Card className="glass border-white/20">
-          <CardContent className="p-6">
-            <div className="flex items-center space-x-3">
-              <div className="p-2 bg-orange-100 rounded-lg">
-                <Users className="h-6 w-6 text-orange-600" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Tasa de Finalización</p>
-                <p className="text-2xl font-bold text-foreground">
-                  {trustScore?.completionRate.toFixed(0) || 0}%
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+            <Card className="glass border-white/20">
+              <CardContent className="p-6">
+                <div className="flex items-center space-x-3">
+                  <div className="p-2 bg-orange-100 rounded-lg">
+                    <Users className="h-6 w-6 text-orange-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Tasa de Finalización</p>
+                    <p className="text-2xl font-bold text-foreground">
+                      {trustScore?.completionRate.toFixed(0) || 0}%
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </>
+        )}
       </motion.div>
 
-      {/* Trust Score Details */}
-      {trustScore && (
+      {/* Trust Score Details - Only for professionals */}
+      {!isClient && trustScore && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

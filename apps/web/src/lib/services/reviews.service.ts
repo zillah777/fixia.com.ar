@@ -126,6 +126,23 @@ class ReviewsService {
     return response.data;
   }
 
+  async getReviewsByClient(
+    clientId: string,
+    filters?: ReviewFiltersDto
+  ): Promise<PaginatedReviews> {
+    const params = new URLSearchParams();
+    if (filters?.rating) params.append('rating', filters.rating.toString());
+    if (filters?.verifiedOnly) params.append('verifiedOnly', 'true');
+    if (filters?.sortBy) params.append('sortBy', filters.sortBy);
+    if (filters?.page) params.append('page', filters.page.toString());
+    if (filters?.limit) params.append('limit', filters.limit.toString());
+
+    const response = await api.get(
+      `/reviews/client/${clientId}?${params.toString()}`
+    );
+    return response.data;
+  }
+
   async getMyReviews(filters?: ReviewFiltersDto): Promise<PaginatedReviews> {
     const params = new URLSearchParams();
     if (filters?.sortBy) params.append('sortBy', filters.sortBy);
