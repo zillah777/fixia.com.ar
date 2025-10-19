@@ -6,13 +6,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../co
 import { Badge } from "../components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Skeleton } from "../components/ui/skeleton";
-import { 
-  ArrowRight, Heart, Shield, Clock, Users, CheckCircle, 
+import {
+  ArrowRight, Heart, Shield, Clock, Users, CheckCircle,
   Search, Zap, Heart, TrendingUp, Globe, Smartphone,
   Palette, Code, PenTool, Camera, Briefcase, HeadphonesIcon,
   Play, ChevronRight, MessageSquare, Heart, Bell, MapPin,
   Crown, Phone, Mail, Gift, CreditCard, Building, User,
-  GraduationCap
+  GraduationCap, Scissors, Leaf, Truck, Flame
 } from "lucide-react";
 import { servicesService, Service } from "../lib/services";
 import { toast } from "sonner";
@@ -75,14 +75,12 @@ const featuredServices = [
 ];
 
 const categories = [
-  { name: "Desarrollo Web", icon: Globe, count: "120+ servicios", popular: true },
-  { name: "Diseño Gráfico", icon: Palette, count: "95+ servicios", popular: true },
-  { name: "Reparaciones", icon: Building, count: "180+ servicios", popular: true },
-  { name: "Marketing Digital", icon: TrendingUp, count: "75+ servicios", popular: false },
-  { name: "Consultoría", icon: HeadphonesIcon, count: "65+ servicios", popular: false },
-  { name: "Limpieza", icon: User, count: "210+ servicios", popular: true },
-  { name: "Jardinería", icon: Camera, count: "85+ servicios", popular: false },
-  { name: "Educación", icon: GraduationCap, count: "45+ servicios", popular: false }
+  { name: "Albañil / Construcción", icon: Building, count: "150+ servicios", popular: true },
+  { name: "Peluquería a domicilio", icon: Scissors, count: "85+ servicios", popular: true },
+  { name: "Jardinería", icon: Leaf, count: "120+ servicios", popular: true },
+  { name: "Fletes / Mudanzas", icon: Truck, count: "95+ servicios", popular: true },
+  { name: "Clases particulares", icon: GraduationCap, count: "110+ servicios", popular: true },
+  { name: "Instalación de gas", icon: Flame, count: "75+ servicios", popular: true }
 ];
 
 
@@ -211,14 +209,21 @@ function CategoriesSection() {
 
   function getIconForCategory(categoryName: string) {
     const iconMap: { [key: string]: any } = {
+      'Albañil / Construcción': Building,
+      'Peluquería a domicilio': Scissors,
+      'Jardinería': Leaf,
+      'Fletes / Mudanzas': Truck,
+      'Clases particulares': GraduationCap,
+      'Instalación de gas': Flame,
+      // Legacy categories (in case API returns old ones)
       'Desarrollo Web': Globe,
       'Diseño Gráfico': Palette,
       'Reparaciones': Briefcase,
       'Marketing Digital': TrendingUp,
       'Consultoría': HeadphonesIcon,
       'Limpieza': Users,
-      'Jardinería': Camera,
-      'Educación': PenTool};
+      'Educación': PenTool
+    };
     return iconMap[categoryName] || Briefcase;
   }
 
