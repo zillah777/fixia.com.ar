@@ -54,6 +54,17 @@ export class UsersController {
     return this.usersService.getDashboard(user.sub);
   }
 
+  @Get('professionals/top-rated')
+  @Public()
+  @ApiOperation({ summary: 'Obtener profesionales mejor calificados' })
+  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Número de profesionales a retornar (default: 6)' })
+  @ApiResponse({ status: 200, description: 'Lista de profesionales mejor calificados' })
+  async getTopRatedProfessionals(
+    @Query('limit', new DefaultValuePipe(6), ParseIntPipe) limit: number,
+  ) {
+    return this.usersService.getTopRatedProfessionals(limit);
+  }
+
   @Get('users/:userId')
   @Public()
   @ApiOperation({ summary: 'Obtener perfil público de un usuario' })
@@ -71,16 +82,5 @@ export class UsersController {
   @ApiResponse({ status: 200, description: 'Cuenta eliminada exitosamente' })
   async deleteAccount(@CurrentUser() user: any) {
     return this.usersService.deleteUser(user.sub, user.sub);
-  }
-
-  @Get('professionals/top-rated')
-  @Public()
-  @ApiOperation({ summary: 'Obtener profesionales mejor calificados' })
-  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Número de profesionales a retornar (default: 6)' })
-  @ApiResponse({ status: 200, description: 'Lista de profesionales mejor calificados' })
-  async getTopRatedProfessionals(
-    @Query('limit', new DefaultValuePipe(6), ParseIntPipe) limit: number,
-  ) {
-    return this.usersService.getTopRatedProfessionals(limit);
   }
 }

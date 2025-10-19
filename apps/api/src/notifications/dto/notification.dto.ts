@@ -1,4 +1,5 @@
-import { IsEnum, IsOptional, IsString, IsBoolean, IsNotEmpty, MaxLength, IsUrl } from 'class-validator';
+import { IsEnum, IsOptional, IsString, IsBoolean, IsNotEmpty, MaxLength, IsUrl, IsNumber } from 'class-validator';
+import { Type } from 'class-transformer';
 import { NotificationType } from '@prisma/client';
 
 export class CreateNotificationDto {
@@ -59,9 +60,13 @@ export class NotificationFiltersDto {
   sortBy?: 'newest' | 'oldest' | 'type' | 'unread';
 
   @IsOptional()
+  @IsNumber()
+  @Type(() => Number)
   page?: number;
 
   @IsOptional()
+  @IsNumber()
+  @Type(() => Number)
   limit?: number;
 }
 
