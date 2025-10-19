@@ -407,18 +407,36 @@ function SettingsSection() {
     confirmPassword: ''
   });
   const [socialNetworks, setSocialNetworks] = useState({
-    linkedin: '',
-    twitter: '',
-    github: '',
-    instagram: ''
+    linkedin: user?.social_linkedin || '',
+    twitter: user?.social_twitter || '',
+    github: user?.social_github || '',
+    instagram: user?.social_instagram || ''
   });
   const [notifications, setNotifications] = useState({
-    newMessages: true,
-    newOrders: true,
-    projectUpdates: true,
-    newsletter: false
+    newMessages: user?.notifications_messages ?? true,
+    newOrders: user?.notifications_orders ?? true,
+    projectUpdates: user?.notifications_projects ?? true,
+    newsletter: user?.notifications_newsletter ?? false
   });
   const [isSaving, setIsSaving] = useState(false);
+
+  // Load user data when component mounts or user changes
+  useEffect(() => {
+    if (user) {
+      setSocialNetworks({
+        linkedin: user.social_linkedin || '',
+        twitter: user.social_twitter || '',
+        github: user.social_github || '',
+        instagram: user.social_instagram || ''
+      });
+      setNotifications({
+        newMessages: user.notifications_messages ?? true,
+        newOrders: user.notifications_orders ?? true,
+        projectUpdates: user.notifications_projects ?? true,
+        newsletter: user.notifications_newsletter ?? false
+      });
+    }
+  }, [user]);
 
   // Auto-save function with debounce
   const autoSaveImplementation = async (field: string, value: any) => {
