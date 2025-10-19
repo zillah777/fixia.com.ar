@@ -253,7 +253,9 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
         
         // Check if we have basic user data from a recent successful login
         const basicUserData = localStorage.getItem('fixia_user_basic');
-        if (basicUserData) {
+        const hasAccessToken = localStorage.getItem('fixia_access_token');
+
+        if (basicUserData && hasAccessToken) {
           try {
             const parsedData = JSON.parse(basicUserData);
             // Set basic user data from localStorage temporarily
@@ -280,21 +282,15 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
               updatedAt: new Date().toISOString()
             } as User);
             setIsAuthenticated(true);
-            
-            // Verify session is still valid and load full user data
-            const isAuth = await secureTokenManager.isAuthenticated(false);
-            if (isAuth) {
-              // Load complete user data in background
-              loadUserData().catch((error) => {
-                console.warn('Failed to load complete user data:', error);
-                // Keep basic data if API call fails
-              });
-            } else {
-              // Session expired, clear state
-              setUser(null);
-              setIsAuthenticated(false);
-              localStorage.removeItem('fixia_user_basic');
-            }
+
+            // Load complete user data in background WITHOUT explicit verification
+            // The loadUserData() call will fail if tokens are expired and THEN we clean up
+            loadUserData().catch((error) => {
+              console.warn('Failed to load complete user data:', error);
+              // If it's a 401, the interceptor will handle token refresh automatically
+              // If refresh fails, the interceptor will clear everything and redirect
+              // So we don't need to do anything here - keep basic data for now
+            });
             return;
           } catch (error) {
             console.warn('Invalid user data in localStorage:', error);
