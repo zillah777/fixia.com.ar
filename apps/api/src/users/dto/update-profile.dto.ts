@@ -1,9 +1,7 @@
-import { 
-  IsString, 
+import {
+  IsString,
   IsOptional,
   IsArray,
-  IsUrl,
-  IsPhoneNumber,
   MinLength,
   MaxLength,
 } from 'class-validator';
@@ -21,13 +19,13 @@ export class UpdateProfileDto {
   @MaxLength(100)
   name?: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     example: 'https://example.com/avatar.jpg',
     description: 'URL del avatar del usuario',
     required: false
   })
   @IsOptional()
-  @IsUrl()
+  @IsString()
   avatar?: string;
 
   @ApiProperty({ 
