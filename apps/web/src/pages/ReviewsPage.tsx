@@ -1,113 +1,106 @@
-import { useState, useEffect, memo } from 'react';
-import { Filter, TrendingUp, Users, MessageSquare, Shield, Heart } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Star, Shield, MessageSquare, Heart, TrendingUp, Users } from 'lucide-react';
 import { motion } from "framer-motion";
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { Button } from '../components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { ReviewsSection } from '../components/reviews/ReviewsSection';
-import { TrustBadge, TrustScoreDisplay } from '../components/trust/TrustBadge';
+import { Card, CardContent } from '../components/ui/card';
+import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar';
+import { Badge } from '../components/ui/badge';
 import { useSecureAuth } from '../context/SecureAuthContext';
-import { reviewsService, Review, ReviewStats } from '../lib/services/reviews.service';
-import { trustService, TrustScore } from '../lib/services/trust.service';
+import { reviewsService } from '../lib/services/reviews.service';
+import { trustService } from '../lib/services/trust.service';
 
-export const ReviewsPage = memo(() => {
+interface SimpleReview {
+  id: string;
+  rating: number;
+  comment?: string;
+  verifiedPurchase: boolean;
+  createdAt: string;
+  reviewer: {
+    id: string;
+    name: string;
+    avatar?: string;
+  };
+  professional: {
+    id: string;
+    name: string;
+  };
+  service?: {
+    id: string;
+    title: string;
+  };
+}
+
+export const ReviewsPage = () => {
   const { user } = useSecureAuth();
-  const [reviews, setReviews] = useState<Review[]>([]);
-  const [trustScore, setTrustScore] = useState<TrustScore | null>(null);
-  const [reviewStats, setReviewStats] = useState<ReviewStats | null>(null);
+  const [reviews, setReviews] = useState<SimpleReview[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [filters, setFilters] = useState({
-    sortBy: 'newest' as const,
-    rating: undefined as number | undefined,
-    verifiedOnly: false
-  });
-  const [pagination, setPagination] = useState({
-    page: 1,
-    limit: 10,
+  const [error, setError] = useState<string | null>(null);
+  const [stats, setStats] = useState({
     total: 0,
-    pages: 0
+    average: 0,
+    jobsCompleted: 0,
+    completionRate: 0
   });
 
   useEffect(() => {
     if (user?.id) {
-      loadData();
+      loadReviews();
     }
-  }, [user?.id, filters]);
+  }, [user?.id]);
 
-  const loadData = async () => {
+  const loadReviews = async () => {
     if (!user?.id) return;
 
     setIsLoading(true);
+    setError(null);
+
     try {
-      if (user.userType === 'client') {
-        // For clients, load reviews they wrote to professionals
-        const reviewsData = await reviewsService.getMyReviews({
-          ...filters,
-          page: pagination.page,
-          limit: pagination.limit
+      const reviewsData = await reviewsService.getMyReviews({ page: 1, limit: 50 });
+
+      setReviews(reviewsData.reviews || []);
+
+      // Calculate simple stats
+      if (reviewsData.reviews && reviewsData.reviews.length > 0) {
+        const avgRating = reviewsData.reviews.reduce((sum: number, r: any) => sum + (r.rating || 0), 0) / reviewsData.reviews.length;
+        setStats({
+          total: reviewsData.reviews.length,
+          average: avgRating,
+          jobsCompleted: 0,
+          completionRate: 0
         });
-
-        setReviews(reviewsData.reviews);
-        setPagination(reviewsData.pagination);
-
-        // Calculate basic stats for clients
-        if (reviewsData.reviews.length > 0) {
-          const avgRating = reviewsData.reviews.reduce((sum, r) => sum + r.rating, 0) / reviewsData.reviews.length;
-          setReviewStats({
-            total: reviewsData.reviews.length,
-            average: avgRating,
-            distribution: [
-              { rating: 5, count: 0, percentage: 0 },
-              { rating: 4, count: 0, percentage: 0 },
-              { rating: 3, count: 0, percentage: 0 },
-              { rating: 2, count: 0, percentage: 0 },
-              { rating: 1, count: 0, percentage: 0 }
-            ]
-          });
-        } else {
-          setReviewStats({
-            total: 0,
-            average: 0,
-            distribution: [
-              { rating: 5, count: 0, percentage: 0 },
-              { rating: 4, count: 0, percentage: 0 },
-              { rating: 3, count: 0, percentage: 0 },
-              { rating: 2, count: 0, percentage: 0 },
-              { rating: 1, count: 0, percentage: 0 }
-            ]
-          });
-        }
-      } else {
-        // For professionals, load professional reviews and trust score
-        const [reviewsData, trustData, statsData] = await Promise.all([
-          reviewsService.getReviewsByProfessional(user.id, {
-            ...filters,
-            page: pagination.page,
-            limit: pagination.limit
-          }),
-          trustService.getMyTrustScore().catch(() => null),
-          reviewsService.getProfessionalReviewStats(user.id).catch(() => null)
-        ]);
-
-        setReviews(reviewsData.reviews);
-        setPagination(reviewsData.pagination);
-        setTrustScore(trustData);
-        setReviewStats(statsData);
       }
-    } catch (error) {
-      console.error('Error loading reviews data:', error);
+
+      // Try to get trust score for professionals
+      if (user.userType === 'professional') {
+        try {
+          const trustData = await trustService.getMyTrustScore();
+          setStats(prev => ({
+            ...prev,
+            jobsCompleted: trustData.totalJobsCompleted || 0,
+            completionRate: trustData.completionRate || 0
+          }));
+        } catch (err) {
+          // Ignore trust score errors
+          console.log('Could not load trust score');
+        }
+      }
+    } catch (err: any) {
+      console.error('Error loading reviews:', err);
+      setError(err?.message || 'Error al cargar las reseñas');
+      setReviews([]);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleRecalculateTrustScore = async () => {
-    try {
-      const updatedTrustScore = await trustService.calculateTrustScore();
-      setTrustScore(updatedTrustScore);
-    } catch (error) {
-      console.error('Error recalculating trust score:', error);
-    }
+  const renderStars = (rating: number) => {
+    return Array.from({ length: 5 }, (_, i) => (
+      <Star
+        key={i}
+        className={`h-4 w-4 ${
+          i < rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
+        }`}
+      />
+    ));
   };
 
   if (!user) {
@@ -130,39 +123,21 @@ export const ReviewsPage = memo(() => {
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-8">
-      {/* Page Header */}
+      {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="space-y-4"
       >
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">Mis Reseñas</h1>
-            <p className="text-muted-foreground">
-              {isClient
-                ? 'Reseñas que has escrito sobre profesionales después de completar trabajos'
-                : 'Gestiona tu reputación y monitorea tu puntuación de confianza'
-              }
-            </p>
-          </div>
-          {trustScore && !isClient && (
-            <TrustBadge
-              score={trustScore.overallScore}
-              badge={trustScore.trustBadge || trustService.getBadgeFromScore(trustScore.overallScore)}
-              size="lg"
-              verificationBadges={{
-                verifiedIdentity: trustScore.verifiedIdentity,
-                verifiedSkills: trustScore.verifiedSkills,
-                verifiedBusiness: trustScore.verifiedBusiness,
-                backgroundChecked: trustScore.backgroundChecked
-              }}
-            />
-          )}
-        </div>
+        <h1 className="text-3xl font-bold text-foreground mb-2">Mis Reseñas</h1>
+        <p className="text-muted-foreground">
+          {isClient
+            ? 'Reseñas que has escrito sobre profesionales'
+            : 'Reseñas que has recibido de tus clientes'
+          }
+        </p>
       </motion.div>
 
-      {/* Stats Overview */}
+      {/* Stats Cards */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -178,7 +153,7 @@ export const ReviewsPage = memo(() => {
               <div>
                 <p className="text-sm text-muted-foreground">Calificación Promedio</p>
                 <p className="text-2xl font-bold text-foreground">
-                  {reviewStats?.average ? reviewStats.average.toFixed(1) : '0.0'}
+                  {stats.average > 0 ? stats.average.toFixed(1) : '0.0'}
                 </p>
               </div>
             </div>
@@ -193,9 +168,7 @@ export const ReviewsPage = memo(() => {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Total Reseñas</p>
-                <p className="text-2xl font-bold text-foreground">
-                  {reviewStats?.total || 0}
-                </p>
+                <p className="text-2xl font-bold text-foreground">{stats.total}</p>
               </div>
             </div>
           </CardContent>
@@ -211,9 +184,7 @@ export const ReviewsPage = memo(() => {
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">Trabajos Completados</p>
-                    <p className="text-2xl font-bold text-foreground">
-                      {trustScore?.totalJobsCompleted || 0}
-                    </p>
+                    <p className="text-2xl font-bold text-foreground">{stats.jobsCompleted}</p>
                   </div>
                 </div>
               </CardContent>
@@ -228,7 +199,7 @@ export const ReviewsPage = memo(() => {
                   <div>
                     <p className="text-sm text-muted-foreground">Tasa de Finalización</p>
                     <p className="text-2xl font-bold text-foreground">
-                      {trustScore?.completionRate.toFixed(0) || 0}%
+                      {stats.completionRate > 0 ? stats.completionRate.toFixed(0) : '0'}%
                     </p>
                   </div>
                 </div>
@@ -238,209 +209,101 @@ export const ReviewsPage = memo(() => {
         )}
       </motion.div>
 
-      {/* Trust Score Details - Only for professionals */}
-      {!isClient && trustScore && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          <Card className="glass border-white/20">
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <span>Desglose de Puntuación de Confianza</span>
-                <Button
-                  onClick={handleRecalculateTrustScore}
-                  variant="outline"
-                  size="sm"
-                >
-                  Recalcular
-                </Button>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-                <TrustScoreDisplay
-                  score={trustScore.reviewScore}
-                  label="Reseñas"
-                />
-                <TrustScoreDisplay
-                  score={trustScore.completionScore}
-                  label="Finalización"
-                />
-                <TrustScoreDisplay
-                  score={trustScore.communicationScore}
-                  label="Comunicación"
-                />
-                <TrustScoreDisplay
-                  score={trustScore.reliabilityScore}
-                  label="Confiabilidad"
-                />
-                <TrustScoreDisplay
-                  score={trustScore.verificationScore}
-                  label="Verificación"
-                />
+      {/* Reviews List */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+      >
+        <Card className="glass border-white/20">
+          <CardContent className="p-6">
+            {isLoading ? (
+              <div className="text-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+                <p className="text-muted-foreground">Cargando reseñas...</p>
               </div>
+            ) : error ? (
+              <div className="text-center py-12">
+                <p className="text-red-500 mb-4">{error}</p>
+                <button
+                  onClick={loadReviews}
+                  className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90"
+                >
+                  Reintentar
+                </button>
+              </div>
+            ) : reviews.length === 0 ? (
+              <div className="text-center py-12 text-muted-foreground">
+                Aún no tienes reseñas.
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {reviews.map((review) => (
+                  <motion.div
+                    key={review.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="p-4 glass rounded-lg border border-white/20"
+                  >
+                    <div className="flex items-start space-x-4">
+                      <Avatar>
+                        <AvatarImage src={review.reviewer?.avatar || ''} />
+                        <AvatarFallback>
+                          {review.reviewer?.name?.charAt(0)?.toUpperCase() || 'U'}
+                        </AvatarFallback>
+                      </Avatar>
 
-              {/* Next Badge Progress */}
-              {(() => {
-                const nextBadge = trustService.getNextBadgeRequirement(trustScore.overallScore);
-                return nextBadge ? (
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-muted-foreground">
-                        Progreso hacia {nextBadge.nextBadge}
-                      </span>
-                      <span className="text-sm font-bold text-foreground">
-                        {nextBadge.pointsNeeded.toFixed(1)} puntos restantes
-                      </span>
+                      <div className="flex-1 space-y-2">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-2">
+                            <span className="font-medium text-foreground">
+                              {review.reviewer?.name || 'Usuario'}
+                            </span>
+                            {review.verifiedPurchase && (
+                              <Badge variant="outline" className="text-xs">
+                                <Shield className="h-3 w-3 mr-1" />
+                                Verificado
+                              </Badge>
+                            )}
+                          </div>
+                          <span className="text-xs text-muted-foreground">
+                            {new Date(review.createdAt).toLocaleDateString('es-AR')}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center space-x-1">
+                          {renderStars(review.rating || 0)}
+                          <span className="text-sm text-muted-foreground ml-2">
+                            ({review.rating || 0}/5)
+                          </span>
+                        </div>
+
+                        {review.comment && (
+                          <p className="text-foreground">{review.comment}</p>
+                        )}
+
+                        {review.service?.title && (
+                          <p className="text-sm text-muted-foreground">
+                            Servicio: {review.service.title}
+                          </p>
+                        )}
+
+                        {review.professional?.name && isClient && (
+                          <p className="text-sm text-muted-foreground">
+                            Profesional: {review.professional.name}
+                          </p>
+                        )}
+                      </div>
                     </div>
-                    <div className="w-full bg-white/20 rounded-full h-2">
-                      <div
-                        className="h-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-300"
-                        style={{ width: `${nextBadge.currentProgress}%` }}
-                      />
-                    </div>
-                  </div>
-                ) : (
-                  <div className="text-center p-4 bg-gradient-to-r from-purple-100 to-gold-100 rounded-lg">
-                    <Heart className="h-8 w-8 mx-auto mb-2 text-purple-600" />
-                    <p className="font-medium text-purple-600">
-                      ¡Felicitaciones! Has alcanzado el nivel más alto
-                    </p>
-                  </div>
-                );
-              })()}
-            </CardContent>
-          </Card>
-        </motion.div>
-      )}
-
-      {/* Filters */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-        className="flex flex-wrap items-center gap-4"
-      >
-        <div className="flex items-center space-x-2">
-          <Filter className="h-4 w-4 text-muted-foreground" />
-          <span className="text-sm font-medium text-foreground">Filtros:</span>
-        </div>
-
-        <Select
-          value={filters.sortBy}
-          onValueChange={(value: any) => setFilters(prev => ({ ...prev, sortBy: value }))}
-        >
-          <SelectTrigger className="w-48 glass border-white/20">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="newest">Más Recientes</SelectItem>
-            <SelectItem value="oldest">Más Antiguos</SelectItem>
-            <SelectItem value="rating_high">Mejor Calificados</SelectItem>
-            <SelectItem value="rating_low">Menor Calificados</SelectItem>
-            <SelectItem value="helpful">Más Útiles</SelectItem>
-          </SelectContent>
-        </Select>
-
-        <Select
-          value={filters.rating?.toString() || ''}
-          onValueChange={(value) => setFilters(prev => ({ 
-            ...prev, 
-            rating: value ? parseInt(value) : undefined 
-          }))}
-        >
-          <SelectTrigger className="w-40 glass border-white/20">
-            <SelectValue placeholder="Calificación" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="">Todas</SelectItem>
-            <SelectItem value="5">5 Estrellas</SelectItem>
-            <SelectItem value="4">4 Estrellas</SelectItem>
-            <SelectItem value="3">3 Estrellas</SelectItem>
-            <SelectItem value="2">2 Estrellas</SelectItem>
-            <SelectItem value="1">1 Estrella</SelectItem>
-          </SelectContent>
-        </Select>
-
-        <Button
-          variant={filters.verifiedOnly ? 'default' : 'outline'}
-          size="sm"
-          onClick={() => setFilters(prev => ({ ...prev, verifiedOnly: !prev.verifiedOnly }))}
-        >
-          <Shield className="h-4 w-4 mr-2" />
-          Solo Verificadas
-        </Button>
+                  </motion.div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </motion.div>
-
-      {/* Reviews Section */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-      >
-        <ReviewsSection
-          professionalId={user.id}
-          reviews={reviews}
-          trustScore={trustScore || undefined}
-          isLoading={isLoading}
-          canReview={false}
-          onHelpfulVote={(reviewId, isHelpful) => {
-            // Update helpful count locally for optimistic UI
-            setReviews(prev => prev.map(review => 
-              review.id === reviewId 
-                ? { ...review, helpfulCount: review.helpfulCount + (isHelpful ? 1 : -1) }
-                : review
-            ));
-          }}
-          onFlagReview={(reviewId, reason) => {
-            console.log('Flag review:', reviewId, reason);
-            // Handle flag review
-          }}
-        />
-      </motion.div>
-
-      {/* Pagination */}
-      {pagination.pages > 1 && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="flex justify-center space-x-2"
-        >
-          <Button
-            variant="outline"
-            onClick={() => setPagination(prev => ({ ...prev, page: prev.page - 1 }))}
-            disabled={pagination.page <= 1}
-          >
-            Anterior
-          </Button>
-          
-          {Array.from({ length: Math.min(5, pagination.pages) }, (_, i) => {
-            const pageNum = i + 1;
-            return (
-              <Button
-                key={pageNum}
-                variant={pagination.page === pageNum ? 'default' : 'outline'}
-                onClick={() => setPagination(prev => ({ ...prev, page: pageNum }))}
-              >
-                {pageNum}
-              </Button>
-            );
-          })}
-          
-          <Button
-            variant="outline"
-            onClick={() => setPagination(prev => ({ ...prev, page: prev.page + 1 }))}
-            disabled={pagination.page >= pagination.pages}
-          >
-            Siguiente
-          </Button>
-        </motion.div>
-      )}
     </div>
   );
-});
+};
 
 ReviewsPage.displayName = 'ReviewsPage';
