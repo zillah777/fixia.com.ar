@@ -96,10 +96,10 @@ export const FixiaNavigation = memo(function FixiaNavigation() {
               {/* Search - Visible for clients */}
               {user?.userType === 'client' && (
                 <div className="relative hidden lg:block">
-                  <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+                  <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground pointer-events-none" />
                   <Input
-                    placeholder="Buscar profesionales o servicios..."
-                    className="w-64 xl:w-80 pl-12 glass border-white/20 focus:border-primary/50 focus:ring-primary/30 transition-all duration-300"
+                    placeholder="Buscar..."
+                    className="w-40 h-8 pl-9 pr-3 text-sm glass border-white/20 focus:border-primary/50 focus:ring-primary/30 transition-all duration-300"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
                         const searchValue = (e.target as HTMLInputElement).value;
