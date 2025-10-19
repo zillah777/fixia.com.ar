@@ -85,11 +85,13 @@ export const FixiaNavigation = memo(function FixiaNavigation() {
 
               {/* Quick Actions */}
               <div className="flex items-center space-x-1 sm:space-x-2">
-                {/* New Project Button - Responsive */}
-                <Link to="/new-project">
+                {/* New Project/Announcement Button - Responsive */}
+                <Link to={user?.userType === 'professional' ? "/new-project" : "/new-opportunity"}>
                   <Button size="sm" className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg">
                     <Plus className="h-4 w-4 sm:mr-2" />
-                    <span className="hidden sm:inline">Nuevo Proyecto</span>
+                    <span className="hidden sm:inline">
+                      {user?.userType === 'professional' ? 'Nuevo Servicio' : 'Crear Anuncio'}
+                    </span>
                   </Button>
                 </Link>
 
