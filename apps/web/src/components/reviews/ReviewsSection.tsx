@@ -171,9 +171,11 @@ export const ReviewsSection = memo<ReviewsSectionProps>(({
                 <Shield className="h-6 w-6 text-primary" />
                 <h3 className="text-lg font-semibold text-foreground">Puntuación de Confianza</h3>
               </div>
-              <Badge className={cn('text-sm', trustScore.badgeColor)}>
-                {trustScore.trustBadge}
-              </Badge>
+              {trustScore.trustBadge && (
+                <Badge className={cn('text-sm', trustScore.badgeColor || '')}>
+                  {trustScore.trustBadge}
+                </Badge>
+              )}
             </div>
           </CardHeader>
           <CardContent className="space-y-6">
