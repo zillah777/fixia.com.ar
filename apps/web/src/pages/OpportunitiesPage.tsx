@@ -1017,7 +1017,7 @@ export default function OpportunitiesPage() {
         >
           <div className="flex items-center space-x-4">
             <h2 className="text-lg font-semibold">
-              {filteredOpportunities.length} oportunidades encontradas
+              {opportunities.length} oportunidades encontradas
             </h2>
             {selectedCategory !== "Todos" && (
               <Badge className="bg-primary/20 text-primary border-primary/30">
@@ -1025,11 +1025,11 @@ export default function OpportunitiesPage() {
               </Badge>
             )}
           </div>
-          
+
           <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-            <span>{filteredOpportunities.filter(o => o.urgency === 'urgent').length} urgentes</span>
+            <span>{opportunities.filter(o => o.urgency === 'urgent').length} urgentes</span>
             <span>•</span>
-            <span>{filteredOpportunities.filter(o => o.featured).length} destacadas</span>
+            <span>{opportunities.filter(o => o.featured).length} destacadas</span>
           </div>
         </motion.div>
 
