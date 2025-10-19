@@ -192,15 +192,26 @@ function ProfileHeader({ user, onUserUpdate }: any) {
       // Upload and optimize image
       const uploadResult = await uploadService.uploadImage(file);
 
+      // Extract URL from nested data structure (API returns {success: true, data: {url, size, ...}})
+      const avatarUrl = uploadResult.data?.url || uploadResult.url;
+
+      if (!avatarUrl) {
+        throw new Error('No se recibió la URL de la imagen');
+      }
+
+      console.log('[ProfilePage] Avatar upload successful:', { avatarUrl });
+
       // Update user profile with new avatar
       const updatedUser = await api.put('/user/profile', {
-        avatar: uploadResult.url
+        avatar: avatarUrl
       });
+
+      console.log('[ProfilePage] Profile updated with avatar:', updatedUser);
 
       await onUserUpdate(updatedUser);
 
       toast.success('📸 Foto actualizada', {
-        description: `Imagen optimizada (${Math.round(uploadResult.size! / 1024)}KB)`
+        description: `Imagen optimizada (${Math.round((uploadResult.data?.size || uploadResult.size || 0) / 1024)}KB)`
       });
     } catch (error: any) {
       console.error('Avatar upload error:', error);
