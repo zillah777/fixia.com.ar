@@ -14,7 +14,7 @@ interface Review {
   rating: number;
   comment?: string;
   verifiedPurchase: boolean;
-  trustScore: number;
+  trustScore?: number;
   communicationRating?: number;
   qualityRating?: number;
   timelinessRating?: number;
@@ -39,7 +39,7 @@ interface Review {
 interface TrustScore {
   overallScore: number;
   trustBadge?: string;
-  badgeColor: string;
+  badgeColor?: string;
   totalJobsCompleted: number;
   totalReviewsReceived: number;
   averageRating: number;
@@ -49,7 +49,7 @@ interface TrustScore {
   verifiedSkills: boolean;
   verifiedBusiness: boolean;
   backgroundChecked: boolean;
-  scoreBreakdown: {
+  scoreBreakdown?: {
     reviewScore: number;
     completionScore: number;
     communicationScore: number;
@@ -242,17 +242,19 @@ export const ReviewsSection = memo<ReviewsSectionProps>(({
             </div>
 
             {/* Score Breakdown */}
-            <div className="space-y-3">
-              <h4 className="text-sm font-medium text-foreground">Desglose de Puntuación</h4>
-              {Object.entries(trustScore.scoreBreakdown).map(([key, value]) => (
-                <div key={key} className="flex justify-between items-center text-sm">
-                  <span className="text-muted-foreground capitalize">
-                    {key.replace(/([A-Z])/g, ' $1').toLowerCase()}
-                  </span>
-                  <span className="font-medium text-foreground">{value.toFixed(1)}</span>
-                </div>
-              ))}
-            </div>
+            {trustScore.scoreBreakdown && (
+              <div className="space-y-3">
+                <h4 className="text-sm font-medium text-foreground">Desglose de Puntuación</h4>
+                {Object.entries(trustScore.scoreBreakdown).map(([key, value]) => (
+                  <div key={key} className="flex justify-between items-center text-sm">
+                    <span className="text-muted-foreground capitalize">
+                      {key.replace(/([A-Z])/g, ' $1').toLowerCase()}
+                    </span>
+                    <span className="font-medium text-foreground">{value.toFixed(1)}</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
       )}
@@ -438,9 +440,11 @@ export const ReviewsSection = memo<ReviewsSectionProps>(({
                             Reportar
                           </Button>
                         </div>
-                        <Badge variant="outline" className="text-xs">
-                          Confianza: {review.trustScore.toFixed(1)}
-                        </Badge>
+                        {review.trustScore && (
+                          <Badge variant="outline" className="text-xs">
+                            Confianza: {review.trustScore.toFixed(1)}
+                          </Badge>
+                        )}
                       </div>
                     </div>
                   </div>

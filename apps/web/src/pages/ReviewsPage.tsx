@@ -178,7 +178,7 @@ export const ReviewsPage = memo(() => {
               <div>
                 <p className="text-sm text-muted-foreground">Calificación Promedio</p>
                 <p className="text-2xl font-bold text-foreground">
-                  {reviewStats?.average.toFixed(1) || '0.0'}
+                  {reviewStats?.average ? reviewStats.average.toFixed(1) : '0.0'}
                 </p>
               </div>
             </div>
