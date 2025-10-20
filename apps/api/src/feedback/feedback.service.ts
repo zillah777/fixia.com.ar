@@ -286,18 +286,19 @@ export class FeedbackService {
    * Calculate trust score for a user
    */
   async calculateTrustScore(userId: string): Promise<TrustScoreDto> {
-    const feedbackStats = await this.prisma.feedback.aggregate({
+    // Count total feedback received
+    const totalFeedback = await this.prisma.feedback.count({
       where: { to_user_id: userId },
-      _count: {
-        id: true,
-      },
-      _sum: {
+    });
+
+    // Count feedback with likes (has_like = true)
+    const totalLikes = await this.prisma.feedback.count({
+      where: {
+        to_user_id: userId,
         has_like: true,
       },
     });
 
-    const totalFeedback = feedbackStats._count.id || 0;
-    const totalLikes = feedbackStats._sum.has_like || 0;
     const trustPercentage =
       totalFeedback > 0 ? (totalLikes / totalFeedback) * 100 : 0;
 
