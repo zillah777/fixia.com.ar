@@ -198,6 +198,10 @@ model User {
   favorites                  Favorite[] @relation("UserFavorites")
   favorites_as_professional Favorite[] @relation("ProfessionalFavorites")
 
+  // Feedback Relations (NEW SYSTEM)
+  feedbacks_given    Feedback[] @relation("FeedbackGiven")
+  feedbacks_received Feedback[] @relation("FeedbackReceived")
+
   @@index([email])
   @@index([user_type])
   @@index([location])
@@ -274,6 +278,7 @@ model Service {
   payments             Payment[]
   payment_preferences  PaymentPreference[]
   favorites            Favorite[]           @relation("ServiceFavorites")
+  feedbacks            Feedback[]           // NEW: Feedback system
 
   @@index([professional_id])
   @@index([category_id])
@@ -542,6 +547,7 @@ model Job {
   payments            Payment[]
   payment_preferences PaymentPreference[]
   reviews             Review[]
+  feedbacks           Feedback[] // NEW: Feedback system
 
   @@index([client_id])
   @@index([professional_id])
@@ -875,4 +881,40 @@ model Favorite {
   @@index([service_id])
   @@index([professional_id])
   @@map("favorites")
+}
+
+// =============== NEW FEEDBACK SYSTEM (Mutual Comments & Likes) ===============
+
+model Feedback {
+  id String @id @default(uuid())
+
+  // Bidirectional: Any user can give feedback to any user
+  from_user_id String
+  to_user_id   String
+
+  // Content (all optional)
+  comment  String? @db.Text
+  has_like Boolean @default(false) // Like = +1 Trust/Reliability
+
+  // Optional Context (where did this feedback come from?)
+  job_id     String?
+  service_id String?
+
+  // Metadata
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Relations
+  from_user User     @relation("FeedbackGiven", fields: [from_user_id], references: [id], onDelete: Cascade)
+  to_user   User     @relation("FeedbackReceived", fields: [to_user_id], references: [id], onDelete: Cascade)
+  job       Job?     @relation(fields: [job_id], references: [id], onDelete: SetNull)
+  service   Service? @relation(fields: [service_id], references: [id], onDelete: SetNull)
+
+  @@unique([from_user_id, to_user_id, job_id]) // One feedback per job
+  @@index([from_user_id])
+  @@index([to_user_id])
+  @@index([job_id])
+  @@index([has_like])
+  @@index([created_at])
+  @@map("feedbacks")
 }

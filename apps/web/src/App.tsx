@@ -29,8 +29,9 @@ const HelpPage = lazy(() => import("./pages/HelpPage"));
 const NotificationsPage = lazy(() => import("./pages/NotificationsPage"));
 const SettingsPage = lazy(() => import("./pages/SettingsPage"));
 const JobsPage = lazy(() => import("./pages/JobsPage"));
-// DISABLED: ReviewsPage causing React error #306 - will be reimplemented as mutual comments
+// DISABLED: ReviewsPage causing React error #306 - replaced with new Feedback system
 // const ReviewsPage = lazy(() => import("./pages/ReviewsPage"));
+const FeedbackPage = lazy(() => import("./pages/FeedbackPage"));
 const VerificationPage = lazy(() => import("./pages/VerificationPage"));
 const VerificationAdminPage = lazy(() => import("./pages/admin/VerificationAdminPage"));
 const PaymentTestPage = lazy(() => import("./pages/PaymentTestPage"));
@@ -361,8 +362,8 @@ function AppRoutes() {
                     </RouteErrorBoundary>
                   } 
                 />
-                <Route 
-                  path="/jobs" 
+                <Route
+                  path="/jobs"
                   element={
                     <RouteErrorBoundary routeName="Mis Trabajos" fallbackRoute="/dashboard">
                       <ProtectedRoute>
@@ -371,9 +372,9 @@ function AppRoutes() {
                         </AsyncErrorBoundary>
                       </ProtectedRoute>
                     </RouteErrorBoundary>
-                  } 
+                  }
                 />
-                {/* DISABLED: Reviews route - will be reimplemented as mutual comments system
+                {/* DISABLED: Reviews route - replaced with new Feedback system below
                 <Route
                   path="/reviews"
                   element={
@@ -387,6 +388,18 @@ function AppRoutes() {
                   }
                 />
                 */}
+                <Route
+                  path="/feedback"
+                  element={
+                    <RouteErrorBoundary routeName="Mi Feedback" fallbackRoute="/dashboard">
+                      <ProtectedRoute>
+                        <AsyncErrorBoundary>
+                          <FeedbackPage />
+                        </AsyncErrorBoundary>
+                      </ProtectedRoute>
+                    </RouteErrorBoundary>
+                  }
+                />
                 <Route 
                   path="/verification" 
                   element={
