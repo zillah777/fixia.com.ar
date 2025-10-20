@@ -10,7 +10,8 @@ import { CommonModule } from './common/common.module';
 import { EmailModule } from './modules/email/email.module';
 import { AdminModule } from './admin/admin.module';
 import { JobsModule } from './jobs/jobs.module';
-import { ReviewsModule } from './reviews/reviews.module';
+// REMOVED: ReviewsModule - will be replaced with Feedback system
+// import { ReviewsModule } from './reviews/reviews.module';
 import { TrustModule } from './trust/trust.module';
 import { VerificationModule } from './verification/verification.module';
 import { NotificationsModule } from './notifications/notifications.module';
@@ -43,7 +44,7 @@ import { FavoritesModule } from './favorites/favorites.module';
     EmailModule,
     AdminModule,
     JobsModule,
-    ReviewsModule,
+    // ReviewsModule removed - will be replaced with Feedback system
     TrustModule,
     VerificationModule,
     NotificationsModule,
