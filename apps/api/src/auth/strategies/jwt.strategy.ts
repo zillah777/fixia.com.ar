@@ -43,9 +43,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
       // Verify user still exists and is not deleted
       const user = await this.prisma.user.findUnique({
-        where: { 
+        where: {
           id: payload.sub,
-          deleted_at: null 
         },
         select: {
           id: true,
@@ -57,10 +56,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
           location: true,
           created_at: true,
           locked_until: true,
+          deleted_at: true,
         },
       });
 
-      if (!user) {
+      if (!user || user.deleted_at !== null) {
         // Use specific error for user not found (e.g., user was deleted)
         throw createSecureError(ERROR_CODES.AUTH_USER_NOT_FOUND, UnauthorizedException);
       }
