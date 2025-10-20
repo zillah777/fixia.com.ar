@@ -391,8 +391,9 @@ export default function FavoritesPage() {
 
       const data = await favoritesService.getAllFavorites();
 
-      setFavoriteServices(data.services);
-      setFavoriteProfessionals(data.professionals);
+      // Validar que data tenga la estructura correcta
+      setFavoriteServices(data?.services || []);
+      setFavoriteProfessionals(data?.professionals || []);
     } catch (err: any) {
       console.error('Error loading favorites:', err);
       setError('Error al cargar favoritos');
@@ -408,7 +409,7 @@ export default function FavoritesPage() {
       setRemovingId(serviceId);
       await favoritesService.removeServiceFromFavorites(serviceId);
 
-      setFavoriteServices(prev => prev.filter(fav => fav.service.id !== serviceId));
+      setFavoriteServices(prev => prev.filter(fav => fav.id !== serviceId));
       toast.success('Servicio eliminado de favoritos');
     } catch (err: any) {
       console.error('Error removing service:', err);
@@ -423,7 +424,7 @@ export default function FavoritesPage() {
       setRemovingId(professionalId);
       await favoritesService.removeProfessionalFromFavorites(professionalId);
 
-      setFavoriteProfessionals(prev => prev.filter(fav => fav.professional.id !== professionalId));
+      setFavoriteProfessionals(prev => prev.filter(fav => fav.id !== professionalId));
       toast.success('Profesional eliminado de favoritos');
     } catch (err: any) {
       console.error('Error removing professional:', err);
