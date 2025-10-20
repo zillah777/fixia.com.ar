@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Shield, ThumbsUp, MessageSquare, TrendingUp } from 'lucide-react';
+import { Shield, ThumbsUp, MessageSquare, TrendingUp, ArrowLeft } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
+import { Button } from '../components/ui/button';
 import { FeedbackList } from '../components/feedback/FeedbackList';
 import { TrustBadge } from '../components/feedback/TrustBadge';
 import { useSecureAuth } from '../context/SecureAuthContext';
@@ -85,13 +87,21 @@ export const FeedbackPage: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           className="space-y-4"
         >
+          {/* Back Button */}
+          <Link to="/dashboard">
+            <Button variant="ghost" className="gap-2 hover:bg-white/10">
+              <ArrowLeft className="h-4 w-4" />
+              Volver al Dashboard
+            </Button>
+          </Link>
+
           <div className="flex items-center gap-3">
             <div className="h-12 w-12 rounded-xl liquid-gradient flex items-center justify-center">
               <Shield className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold">Mi Feedback</h1>
-              <p className="text-muted-foreground">
+              <h1 className="text-3xl font-bold text-foreground">Mi Feedback</h1>
+              <p className="text-lg text-foreground/80">
                 Comentarios y confiabilidad en la plataforma
               </p>
             </div>
@@ -116,20 +126,20 @@ export const FeedbackPage: React.FC = () => {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="flex flex-col items-center p-4 rounded-lg glass-medium">
+                  <div className="flex flex-col items-center p-4 rounded-lg glass-medium border border-blue-500/20">
                     <ThumbsUp className="h-8 w-8 text-blue-400 mb-2" />
-                    <p className="text-2xl font-bold">{trustScore.totalLikes}</p>
-                    <p className="text-sm text-muted-foreground">Likes Positivos</p>
+                    <p className="text-2xl font-bold text-foreground">{trustScore.totalLikes}</p>
+                    <p className="text-sm font-medium text-foreground/70">Likes Positivos</p>
                   </div>
-                  <div className="flex flex-col items-center p-4 rounded-lg glass-medium">
+                  <div className="flex flex-col items-center p-4 rounded-lg glass-medium border border-purple-500/20">
                     <MessageSquare className="h-8 w-8 text-purple-400 mb-2" />
-                    <p className="text-2xl font-bold">{trustScore.totalFeedback}</p>
-                    <p className="text-sm text-muted-foreground">Total Feedback</p>
+                    <p className="text-2xl font-bold text-foreground">{trustScore.totalFeedback}</p>
+                    <p className="text-sm font-medium text-foreground/70">Total Feedback</p>
                   </div>
-                  <div className="flex flex-col items-center p-4 rounded-lg glass-medium">
+                  <div className="flex flex-col items-center p-4 rounded-lg glass-medium border border-green-500/20">
                     <Shield className="h-8 w-8 text-green-400 mb-2" />
-                    <p className="text-2xl font-bold">{trustScore.trustPercentage}%</p>
-                    <p className="text-sm text-muted-foreground">Confiabilidad</p>
+                    <p className="text-2xl font-bold text-foreground">{trustScore.trustPercentage}%</p>
+                    <p className="text-sm font-medium text-foreground/70">Confiabilidad</p>
                   </div>
                 </div>
               </CardContent>
