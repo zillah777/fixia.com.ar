@@ -25,3 +25,5 @@ Disallow: /api
 
 # Sitemap
 Sitemap: https://fixia.app/sitemap.xml
+
+# Last updated: 2025-10-20
