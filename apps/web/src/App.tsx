@@ -29,7 +29,8 @@ const HelpPage = lazy(() => import("./pages/HelpPage"));
 const NotificationsPage = lazy(() => import("./pages/NotificationsPage"));
 const SettingsPage = lazy(() => import("./pages/SettingsPage"));
 const JobsPage = lazy(() => import("./pages/JobsPage"));
-const ReviewsPage = lazy(() => import("./pages/ReviewsPage"));
+// DISABLED: ReviewsPage causing React error #306 - will be reimplemented as mutual comments
+// const ReviewsPage = lazy(() => import("./pages/ReviewsPage"));
 const VerificationPage = lazy(() => import("./pages/VerificationPage"));
 const VerificationAdminPage = lazy(() => import("./pages/admin/VerificationAdminPage"));
 const PaymentTestPage = lazy(() => import("./pages/PaymentTestPage"));
@@ -372,6 +373,7 @@ function AppRoutes() {
                     </RouteErrorBoundary>
                   } 
                 />
+                {/* DISABLED: Reviews route - will be reimplemented as mutual comments system
                 <Route
                   path="/reviews"
                   element={
@@ -384,6 +386,7 @@ function AppRoutes() {
                     </RouteErrorBoundary>
                   }
                 />
+                */}
                 <Route 
                   path="/verification" 
                   element={
