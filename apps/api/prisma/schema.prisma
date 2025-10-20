@@ -148,6 +148,19 @@ model User {
   // Settings
   timezone String? @default("buenos-aires")
 
+  // Dual Roles System (NEW)
+  is_professional_active Boolean  @default(false) // ¿Tiene perfil profesional activo?
+  professional_since     DateTime? // Fecha de activación como profesional
+
+  // Subscription System (NEW)
+  subscription_type       String?   @default("free") // "free", "basic", "premium", "enterprise"
+  subscription_status     String?   @default("inactive") // "active", "inactive", "cancelled", "expired"
+  subscription_started_at DateTime? // Inicio de suscripción
+  subscription_expires_at DateTime? // Fin de suscripción
+  subscription_mp_id      String? // MercadoPago subscription ID
+  subscription_price      Decimal?  @db.Decimal(12, 2) // Precio mensual
+  auto_renew              Boolean   @default(true) // Renovación automática
+
   // Security fields
   failed_login_attempts Int       @default(0)
   locked_until          DateTime?
@@ -199,13 +212,17 @@ model User {
   favorites_as_professional Favorite[] @relation("ProfessionalFavorites")
 
   // Feedback Relations (NEW SYSTEM)
-  feedbacks_given    Feedback[] @relation("FeedbackGiven")
-  feedbacks_received Feedback[] @relation("FeedbackReceived")
+  feedbacks_given    Feedback[]        @relation("FeedbackGiven")
+  feedbacks_received Feedback[]        @relation("FeedbackReceived")
+  role_trust_scores  RoleTrustScore[] // Trust scores por rol
 
   @@index([email])
   @@index([user_type])
   @@index([location])
   @@index([verified])
+  @@index([is_professional_active])
+  @@index([subscription_status])
+  @@index([subscription_expires_at])
   @@map("users")
 }
 
@@ -892,6 +909,9 @@ model Feedback {
   from_user_id String
   to_user_id   String
 
+  // Context: What role was the recipient acting as?
+  to_user_role String @default("client") // "client" o "professional"
+
   // Content (all optional)
   comment  String? @db.Text
   has_like Boolean @default(false) // Like = +1 Trust/Reliability
@@ -913,8 +933,36 @@ model Feedback {
   @@unique([from_user_id, to_user_id, job_id]) // One feedback per job
   @@index([from_user_id])
   @@index([to_user_id])
+  @@index([to_user_role])
   @@index([job_id])
   @@index([has_like])
   @@index([created_at])
   @@map("feedbacks")
+}
+
+// =============== ROLE-BASED TRUST SCORES (NEW) ===============
+
+model RoleTrustScore {
+  id      String @id @default(uuid())
+  user_id String
+  role    String // "client" o "professional"
+
+  // Trust Metrics
+  total_likes      Int   @default(0)
+  total_feedback   Int   @default(0)
+  trust_percentage Float @default(0.0)
+
+  // Last calculation
+  last_calculated_at DateTime @default(now())
+  created_at         DateTime @default(now())
+  updated_at         DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, role]) // One trust score per role per user
+  @@index([user_id])
+  @@index([role])
+  @@index([trust_percentage])
+  @@map("role_trust_scores")
 }
