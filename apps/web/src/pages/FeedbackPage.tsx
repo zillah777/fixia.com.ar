@@ -32,12 +32,17 @@ export const FeedbackPage: React.FC = () => {
         feedbackService.getTrustScore(user.id),
       ]);
 
-      setFeedbackReceived(received);
-      setFeedbackGiven(given);
+      // Ensure arrays are always arrays (defensive programming)
+      setFeedbackReceived(Array.isArray(received) ? received : []);
+      setFeedbackGiven(Array.isArray(given) ? given : []);
       setTrustScore(score);
     } catch (error) {
       console.error('Error loading feedback:', error);
       toast.error('Error al cargar feedback');
+      // Reset to empty arrays on error
+      setFeedbackReceived([]);
+      setFeedbackGiven([]);
+      setTrustScore(null);
     } finally {
       setIsLoading(false);
     }
