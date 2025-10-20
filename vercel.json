@@ -3,11 +3,6 @@
   "outputDirectory": "apps/web/dist",
   "installCommand": "echo 'Skipping root install'",
   "framework": null,
-  "functions": {
-    "**": {
-      "runtime": "nodejs18.x"
-    }
-  },
   "rewrites": [
     {
       "source": "/verify-email",
