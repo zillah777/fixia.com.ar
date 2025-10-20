@@ -84,6 +84,7 @@ export class FeedbackService {
       data: {
         from_user_id: fromUserId,
         to_user_id: dto.toUserId,
+        to_user_role: dto.toUserRole, // NEW: Store role context
         comment: dto.comment,
         has_like: dto.hasLike,
         job_id: dto.jobId,
@@ -283,7 +284,7 @@ export class FeedbackService {
   }
 
   /**
-   * Calculate trust score for a user
+   * Calculate trust score for a user (all roles combined)
    */
   async calculateTrustScore(userId: string): Promise<TrustScoreDto> {
     // Count total feedback received
@@ -295,6 +296,41 @@ export class FeedbackService {
     const totalLikes = await this.prisma.feedback.count({
       where: {
         to_user_id: userId,
+        has_like: true,
+      },
+    });
+
+    const trustPercentage =
+      totalFeedback > 0 ? (totalLikes / totalFeedback) * 100 : 0;
+
+    return {
+      userId,
+      totalLikes,
+      totalFeedback,
+      trustPercentage: Number(trustPercentage.toFixed(1)),
+    };
+  }
+
+  /**
+   * Calculate trust score for a specific role (NEW: Dual Roles System)
+   */
+  async calculateRoleTrustScore(
+    userId: string,
+    role: 'client' | 'professional',
+  ): Promise<TrustScoreDto> {
+    // Count total feedback received in this role
+    const totalFeedback = await this.prisma.feedback.count({
+      where: {
+        to_user_id: userId,
+        to_user_role: role,
+      },
+    });
+
+    // Count feedback with likes (has_like = true) in this role
+    const totalLikes = await this.prisma.feedback.count({
+      where: {
+        to_user_id: userId,
+        to_user_role: role,
         has_like: true,
       },
     });

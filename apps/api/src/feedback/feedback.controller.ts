@@ -174,7 +174,7 @@ export class FeedbackController {
 
   @Get('trust-score/:userId')
   @ApiOperation({
-    summary: 'Calcular Trust Score de un usuario',
+    summary: 'Calcular Trust Score de un usuario (todos los roles)',
     description:
       'Calcula el Trust Score basado en likes recibidos (público para cualquier usuario).',
   })
@@ -192,6 +192,34 @@ export class FeedbackController {
     @Param('userId', ParseUUIDPipe) userId: string,
   ): Promise<TrustScoreDto> {
     return this.feedbackService.calculateTrustScore(userId);
+  }
+
+  @Get('trust-score/:userId/:role')
+  @ApiOperation({
+    summary: 'Calcular Trust Score por rol específico (NEW: Dual Roles)',
+    description:
+      'Calcula el Trust Score de un usuario en un rol específico: "client" o "professional".',
+  })
+  @ApiParam({
+    name: 'userId',
+    description: 'ID del usuario',
+    type: 'string',
+  })
+  @ApiParam({
+    name: 'role',
+    description: 'Rol del usuario',
+    enum: ['client', 'professional'],
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Trust Score del usuario en ese rol',
+    type: TrustScoreDto,
+  })
+  async getRoleTrustScore(
+    @Param('userId', ParseUUIDPipe) userId: string,
+    @Param('role') role: 'client' | 'professional',
+  ): Promise<TrustScoreDto> {
+    return this.feedbackService.calculateRoleTrustScore(userId, role);
   }
 
   @Delete(':id')

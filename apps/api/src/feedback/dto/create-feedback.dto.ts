@@ -1,4 +1,4 @@
-import { IsString, IsBoolean, IsOptional, IsUUID, MaxLength } from 'class-validator';
+import { IsString, IsBoolean, IsOptional, IsUUID, MaxLength, IsIn } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateFeedbackDto {
@@ -8,6 +8,16 @@ export class CreateFeedbackDto {
   })
   @IsUUID()
   toUserId: string;
+
+  @ApiProperty({
+    description: 'Rol en el que actuó el usuario receptor',
+    example: 'professional',
+    enum: ['client', 'professional'],
+    default: 'client',
+  })
+  @IsString()
+  @IsIn(['client', 'professional'])
+  toUserRole: string;
 
   @ApiPropertyOptional({
     description: 'Comentario opcional sobre el usuario',
