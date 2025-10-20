@@ -29,7 +29,7 @@ const HelpPage = lazy(() => import("./pages/HelpPage"));
 const NotificationsPage = lazy(() => import("./pages/NotificationsPage"));
 const SettingsPage = lazy(() => import("./pages/SettingsPage"));
 const JobsPage = lazy(() => import("./pages/JobsPage"));
-// TEMPORARILY DISABLED: const ReviewsPage = lazy(() => import("./pages/ReviewsPage"));
+const ReviewsPage = lazy(() => import("./pages/ReviewsPage"));
 const VerificationPage = lazy(() => import("./pages/VerificationPage"));
 const VerificationAdminPage = lazy(() => import("./pages/admin/VerificationAdminPage"));
 const PaymentTestPage = lazy(() => import("./pages/PaymentTestPage"));
@@ -372,8 +372,6 @@ function AppRoutes() {
                     </RouteErrorBoundary>
                   } 
                 />
-                {/* TEMPORARILY DISABLED: Reviews page causing React error #306 in production
-                    TODO: Re-enable after resolving Vercel cache issues
                 <Route
                   path="/reviews"
                   element={
@@ -386,7 +384,6 @@ function AppRoutes() {
                     </RouteErrorBoundary>
                   }
                 />
-                */}
                 <Route 
                   path="/verification" 
                   element={

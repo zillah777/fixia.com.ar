@@ -207,14 +207,12 @@ export const FixiaNavigation = memo(function FixiaNavigation() {
                           Favoritos
                         </DropdownMenuItem>
                       </Link>
-                      {/* TEMPORARILY DISABLED: Reviews link
                       <Link to="/reviews">
                         <DropdownMenuItem className="hover:bg-white/10 cursor-pointer">
                           <Heart className="mr-3 h-4 w-4" />
                           Mis Reseñas
                         </DropdownMenuItem>
                       </Link>
-                      */}
                     </>
                   )}
                   {user?.userType === 'professional' && (
@@ -231,14 +229,12 @@ export const FixiaNavigation = memo(function FixiaNavigation() {
                           Mis Trabajos
                         </DropdownMenuItem>
                       </Link>
-                      {/* TEMPORARILY DISABLED: Reviews link
                       <Link to="/reviews">
                         <DropdownMenuItem className="hover:bg-white/10 cursor-pointer">
                           <Heart className="mr-3 h-4 w-4" />
                           Mis Reseñas
                         </DropdownMenuItem>
                       </Link>
-                      */}
                       <Link to="/verification">
                         <DropdownMenuItem className="hover:bg-white/10 cursor-pointer">
                           <Shield className="mr-3 h-4 w-4" />
