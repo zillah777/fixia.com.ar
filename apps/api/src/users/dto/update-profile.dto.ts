@@ -2,6 +2,7 @@ import {
   IsString,
   IsOptional,
   IsArray,
+  IsBoolean,
   MinLength,
   MaxLength,
 } from 'class-validator';
@@ -109,36 +110,40 @@ export class UpdateProfileDto {
   social_instagram?: string;
 
   // Notification Preferences
-  @ApiProperty({ 
+  @ApiProperty({
     example: true,
     description: 'Recibir notificaciones de mensajes',
     required: false
   })
   @IsOptional()
+  @IsBoolean()
   notifications_messages?: boolean;
 
-  @ApiProperty({ 
+  @ApiProperty({
     example: true,
     description: 'Recibir notificaciones de pedidos',
     required: false
   })
   @IsOptional()
+  @IsBoolean()
   notifications_orders?: boolean;
 
-  @ApiProperty({ 
+  @ApiProperty({
     example: true,
     description: 'Recibir notificaciones de proyectos',
     required: false
   })
   @IsOptional()
+  @IsBoolean()
   notifications_projects?: boolean;
 
-  @ApiProperty({ 
+  @ApiProperty({
     example: false,
     description: 'Recibir newsletter semanal',
     required: false
   })
   @IsOptional()
+  @IsBoolean()
   notifications_newsletter?: boolean;
 
   // Timezone
