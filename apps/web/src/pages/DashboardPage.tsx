@@ -806,6 +806,61 @@ export default function DashboardPage() {
           </p>
         </motion.div>
 
+        {/* Upgrade to Professional Banner - Only for Clients */}
+        {user?.userType === 'client' && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="mb-8"
+          >
+            <Link to="/pricing">
+              <Card className="glass border-white/10 bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-pink-600/20 hover:scale-[1.02] transition-all duration-300 cursor-pointer group">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-6">
+                      <div className="h-16 w-16 rounded-2xl liquid-gradient flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                        <Zap className="h-8 w-8 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <h3 className="text-2xl font-bold text-white">
+                            🚀 Conviértete en Profesional
+                          </h3>
+                          <Badge className="liquid-gradient text-white border-0">
+                            NUEVO
+                          </Badge>
+                        </div>
+                        <p className="text-white/90 text-lg mb-2">
+                          Ofrece tus servicios y gana dinero en Fixia
+                        </p>
+                        <div className="flex items-center gap-4 text-sm text-white/80">
+                          <div className="flex items-center gap-1">
+                            <CheckCircle className="h-4 w-4 text-green-400" />
+                            <span>Doble rol: Cliente + Profesional</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <CheckCircle className="h-4 w-4 text-green-400" />
+                            <span>Trust Scores separados</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <CheckCircle className="h-4 w-4 text-green-400" />
+                            <span>Desde $2,999/mes</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <Button className="liquid-gradient hover:opacity-90 transition-all group-hover:scale-105 px-8">
+                      Ver Planes
+                      <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+          </motion.div>
+        )}
+
         {/* Quick Actions */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
