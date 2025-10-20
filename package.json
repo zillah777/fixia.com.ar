@@ -14,7 +14,7 @@
     "install:all": "npm run install:api && npm run install:web"
   },
   "engines": {
-    "node": "18.x"
+    "node": "20.x"
   },
   "dependencies": {},
   "devDependencies": {}
