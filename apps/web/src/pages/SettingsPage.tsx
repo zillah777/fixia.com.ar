@@ -223,9 +223,11 @@ function ProfileTab() {
                   <h3 className="font-semibold text-yellow-500">Verificación Pendiente</h3>
                   <p className="text-sm text-muted-foreground">Completa tu verificación para obtener más beneficios</p>
                 </div>
-                <Button size="sm" className="ml-auto liquid-gradient">
-                  Verificar Ahora
-                </Button>
+                <Link to="/verification">
+                  <Button size="sm" className="ml-auto liquid-gradient">
+                    Verificar Ahora
+                  </Button>
+                </Link>
               </>
             )}
           </div>

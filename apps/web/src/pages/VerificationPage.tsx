@@ -7,20 +7,33 @@ import { Badge } from '../components/ui/badge';
 import { Progress } from '../components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { useSecureAuth } from '../context/SecureAuthContext';
-import { 
-  verificationService, 
-  VerificationRequest, 
-  VerificationStatus as VerificationStatusType,
+import {
+  verificationService,
+  VerificationRequest,
+  VerificationStatus as VerificationStatusInterface,
   VerificationType,
   VerificationStatus as VerificationStatusEnum
 } from '../lib/services/verification.service';
+
+// Type guard to differentiate between interface and enum
+type VerificationStatusData = {
+  verifiedIdentity: boolean;
+  verifiedSkills: boolean;
+  verifiedBusiness: boolean;
+  backgroundChecked: boolean;
+  verifiedPhone: boolean;
+  verifiedEmail: boolean;
+  verifiedAddress: boolean;
+  verificationRequests: VerificationRequest[];
+  overallVerificationScore: number;
+};
 import { VerificationRequestForm } from '../components/verification/VerificationRequestForm';
 import { InstantVerificationCard } from '../components/verification/InstantVerificationCard';
 import { VerificationRequestCard } from '../components/verification/VerificationRequestCard';
 
 export const VerificationPage = memo(() => {
   const { user } = useSecureAuth();
-  const [verificationStatus, setVerificationStatus] = useState<VerificationStatusType | null>(null);
+  const [verificationStatus, setVerificationStatus] = useState<VerificationStatusData | null>(null);
   const [verificationRequests, setVerificationRequests] = useState<VerificationRequest[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showRequestForm, setShowRequestForm] = useState(false);
@@ -34,7 +47,7 @@ export const VerificationPage = memo(() => {
 
   const loadVerificationData = async () => {
     if (!user?.id) return;
-    
+
     setIsLoading(true);
     try {
       const [status, requests] = await Promise.all([
@@ -42,7 +55,7 @@ export const VerificationPage = memo(() => {
         verificationService.getMyVerificationRequests()
       ]);
 
-      setVerificationStatus(status);
+      setVerificationStatus(status as unknown as VerificationStatusData);
       setVerificationRequests(requests);
     } catch (error) {
       console.error('Error loading verification data:', error);
@@ -82,23 +95,36 @@ export const VerificationPage = memo(() => {
 
   const getVerificationProgress = () => {
     if (!verificationStatus) return 0;
-    
-    const totalVerifications = 7;
-    const completedVerifications = [
-      verificationStatus.verifiedIdentity,
-      verificationStatus.verifiedSkills,
-      verificationStatus.verifiedBusiness,
-      verificationStatus.backgroundChecked,
-      verificationStatus.verifiedPhone,
-      verificationStatus.verifiedEmail,
-      verificationStatus.verifiedAddress
-    ].filter(Boolean).length;
+
+    // Clients have 1 verification (identity only), professionals have 7
+    const totalVerifications = isClient ? 1 : 7;
+
+    const completedVerifications = isClient
+      ? [verificationStatus.verifiedIdentity].filter(Boolean).length
+      : [
+          verificationStatus.verifiedIdentity,
+          verificationStatus.verifiedSkills,
+          verificationStatus.verifiedBusiness,
+          verificationStatus.backgroundChecked,
+          verificationStatus.verifiedPhone,
+          verificationStatus.verifiedEmail,
+          verificationStatus.verifiedAddress
+        ].filter(Boolean).length;
 
     return (completedVerifications / totalVerifications) * 100;
   };
 
   const getVerificationLevel = () => {
     const progress = getVerificationProgress();
+
+    // Clients have simple verification status
+    if (isClient) {
+      return progress === 100
+        ? { level: 'Verificado', color: 'text-green-600' }
+        : { level: 'Sin Verificar', color: 'text-gray-600' };
+    }
+
+    // Professionals have tiered levels
     if (progress >= 80) return { level: 'Elite', color: 'text-purple-600' };
     if (progress >= 60) return { level: 'Avanzado', color: 'text-blue-600' };
     if (progress >= 40) return { level: 'Intermedio', color: 'text-green-600' };
@@ -106,7 +132,8 @@ export const VerificationPage = memo(() => {
     return { level: 'Principiante', color: 'text-gray-600' };
   };
 
-  if (!user || user.userType !== 'professional') {
+  // Remove the restriction - allow both professionals and clients
+  if (!user) {
     return (
       <div className="container mx-auto px-4 py-8">
         <Card className="glass border-white/20">
@@ -114,13 +141,15 @@ export const VerificationPage = memo(() => {
             <Shield className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
             <h2 className="text-xl font-semibold mb-2">Acceso Restringido</h2>
             <p className="text-muted-foreground">
-              La verificación profesional solo está disponible para usuarios profesionales.
+              Debes iniciar sesión para acceder a la verificación.
             </p>
           </CardContent>
         </Card>
       </div>
     );
   }
+
+  const isClient = user.userType === 'client';
 
   if (isLoading) {
     return (
@@ -138,7 +167,20 @@ export const VerificationPage = memo(() => {
     );
   }
 
-  const verificationsData = [
+  // Client verification options - only identity verification (DNI)
+  const clientVerificationsData = [
+    {
+      type: VerificationType.IDENTITY,
+      title: 'Verificación de Identidad',
+      description: 'Sube las dos caras de tu DNI para verificar tu cuenta',
+      isVerified: verificationStatus?.verifiedIdentity || false,
+      isRequired: true,
+      instant: false
+    }
+  ];
+
+  // Professional verification options - full verifications
+  const professionalVerificationsData = [
     {
       type: VerificationType.IDENTITY,
       title: 'Identidad',
@@ -197,6 +239,8 @@ export const VerificationPage = memo(() => {
     }
   ];
 
+  const verificationsData = isClient ? clientVerificationsData : professionalVerificationsData;
+
   const pendingRequests = verificationRequests.filter(
     req => req.status === VerificationStatusEnum.PENDING
   );
@@ -213,9 +257,14 @@ export const VerificationPage = memo(() => {
       >
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-foreground">Verificación Profesional</h1>
+            <h1 className="text-3xl font-bold text-foreground">
+              {isClient ? 'Verificación de Cuenta' : 'Verificación Profesional'}
+            </h1>
             <p className="text-muted-foreground">
-              Aumenta tu credibilidad y accede a mejores oportunidades
+              {isClient
+                ? 'Verifica tu cuenta para mayor seguridad y confianza en la plataforma'
+                : 'Aumenta tu credibilidad y accede a mejores oportunidades'
+              }
             </p>
           </div>
           <div className="text-right">
@@ -288,9 +337,9 @@ export const VerificationPage = memo(() => {
         transition={{ delay: 0.2 }}
       >
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className={`grid w-full ${isClient ? 'grid-cols-2' : 'grid-cols-3'}`}>
             <TabsTrigger value="overview">Resumen</TabsTrigger>
-            <TabsTrigger value="instant">Verificación Instantánea</TabsTrigger>
+            {!isClient && <TabsTrigger value="instant">Verificación Instantánea</TabsTrigger>}
             <TabsTrigger value="requests">Mis Solicitudes</TabsTrigger>
           </TabsList>
 
@@ -347,24 +396,26 @@ export const VerificationPage = memo(() => {
             </div>
           </TabsContent>
 
-          <TabsContent value="instant" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <InstantVerificationCard
-                type={VerificationType.PHONE}
-                title="Verificación de Teléfono"
-                description="Confirma tu número de teléfono en segundos"
-                isVerified={verificationStatus?.verifiedPhone || false}
-                onSuccess={handleVerificationSuccess}
-              />
-              <InstantVerificationCard
-                type={VerificationType.EMAIL}
-                title="Verificación de Email"
-                description="Confirma tu dirección de correo electrónico"
-                isVerified={verificationStatus?.verifiedEmail || false}
-                onSuccess={handleVerificationSuccess}
-              />
-            </div>
-          </TabsContent>
+          {!isClient && (
+            <TabsContent value="instant" className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <InstantVerificationCard
+                  type={VerificationType.PHONE}
+                  title="Verificación de Teléfono"
+                  description="Confirma tu número de teléfono en segundos"
+                  isVerified={verificationStatus?.verifiedPhone || false}
+                  onSuccess={handleVerificationSuccess}
+                />
+                <InstantVerificationCard
+                  type={VerificationType.EMAIL}
+                  title="Verificación de Email"
+                  description="Confirma tu dirección de correo electrónico"
+                  isVerified={verificationStatus?.verifiedEmail || false}
+                  onSuccess={handleVerificationSuccess}
+                />
+              </div>
+            </TabsContent>
+          )}
 
           <TabsContent value="requests" className="space-y-6">
             {verificationRequests.length === 0 ? (
