@@ -21,6 +21,7 @@ import { UploadModule } from './upload/upload.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { CategoriesModule } from './categories/categories.module';
 import { FavoritesModule } from './favorites/favorites.module';
+import { SubscriptionModule } from './subscription/subscription.module';
 
 @Module({
   imports: [
@@ -54,6 +55,7 @@ import { FavoritesModule } from './favorites/favorites.module';
     DashboardModule,
     CategoriesModule,
     FavoritesModule,
+    SubscriptionModule, // NEW: Subscription and dual roles system
   ],
   controllers: [],
   providers: [],

@@ -1,11 +1,11 @@
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { 
-  ArrowLeft, Check, X, Crown, Users, Zap, Shield, 
+import {
+  ArrowLeft, Check, X, Crown, Users, Zap, Shield,
   Heart, MessageSquare, Bell, Phone, Mail, Gift,
-  TrendingUp, Heart, Clock, HeadphonesIcon, Search,
-  FileText, ChevronRight, AlertCircle, CheckCircle
+  TrendingUp, Clock, HeadphonesIcon, Search,
+  FileText, ChevronRight, AlertCircle, CheckCircle, Rocket, Building2
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
@@ -13,6 +13,8 @@ import { Badge } from "../components/ui/badge";
 import { Alert, AlertDescription } from "../components/ui/alert";
 import { useSecureAuth } from "../context/SecureAuthContext";
 import { FixiaNavigation } from "../components/FixiaNavigation";
+import { subscriptionService, SUBSCRIPTION_PLANS } from "../lib/services/subscription.service";
+import { toast } from "sonner";
 
 interface PlanFeature {
   name: string;
@@ -154,228 +156,192 @@ function HeroSection() {
 function PricingCardsSection() {
   const { user } = useSecureAuth();
   const navigate = useNavigate();
-  const [isUpgrading, setIsUpgrading] = useState(false);
+  const [isProcessing, setIsProcessing] = useState<string | null>(null);
 
   const handleFreePlan = () => {
     navigate('/register');
   };
 
-  const handleProfessionalPlan = () => {
-    if (user) {
-      // Si ya está logueado, mostrar proceso de upgrade
-      navigate('/profile?upgrade=professional');
-    } else {
-      // Si no está logueado, redirigir a registro profesional
-      navigate('/register?type=professional');
+  const handleSelectPlan = async (planType: 'basic' | 'premium' | 'enterprise') => {
+    if (!user) {
+      toast.info('Debes iniciar sesión para suscribirte');
+      navigate('/login');
+      return;
     }
-  };
 
-  const handleUpgrade = async () => {
-    if (!user) return;
-    
-    setIsUpgrading(true);
+    // Check if user is already a professional
+    if (user.userType === 'professional') {
+      toast.info('Ya tienes un perfil profesional activo');
+      return;
+    }
+
+    setIsProcessing(planType);
     try {
-      // Simular proceso de upgrade
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // En implementación real, aquí se haría la llamada a la API
-      // await updateUserPlan(user.id, 'professional');
-      
-      navigate('/profile?upgraded=true');
-    } catch (error) {
-      console.error('Error upgrading plan:', error);
+      // Create payment preference in MercadoPago
+      const preference = await subscriptionService.createPaymentPreference(planType);
+
+      // Redirect to MercadoPago checkout
+      subscriptionService.redirectToCheckout(preference);
+    } catch (error: any) {
+      console.error('Error creating payment preference:', error);
+      toast.error(error.response?.data?.message || 'Error al procesar el pago. Intenta nuevamente.');
     } finally {
-      setIsUpgrading(false);
+      setIsProcessing(null);
     }
   };
 
   return (
     <section className="py-20">
       <div className="container mx-auto px-6">
-        <div className="grid lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
+        <div className="grid lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
           {/* Plan Gratis */}
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.5 }}
           >
-            <Card className="glass border-white/10 h-full relative">
-              <CardHeader className="text-center pb-8">
-                <div className="flex items-center justify-center space-x-2 mb-4">
-                  <Users className="h-8 w-8 text-success" />
-                  <CardTitle className="text-2xl">Plan Gratis</CardTitle>
-                </div>
-                <div className="space-y-2">
-                  <div className="text-4xl font-bold">$0</div>
-                  <div className="text-muted-foreground">Para siempre</div>
-                </div>
-                <p className="text-muted-foreground">
-                  Perfecto para clientes que buscan profesionales ocasionalmente
-                </p>
+            <Card className="glass border-white/10 h-full">
+              <CardHeader className="text-center pb-4">
+                <Users className="h-10 w-10 text-success mx-auto mb-2" />
+                <CardTitle className="text-xl">Gratis</CardTitle>
+                <div className="text-3xl font-bold mt-2">$0</div>
+                <div className="text-sm text-muted-foreground">Solo Cliente</div>
               </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-4">
-                  <div className="flex items-center space-x-3">
-                    <Check className="h-5 w-5 text-success" />
-                    <span>Búsqueda ilimitada de profesionales</span>
+              <CardContent className="space-y-3">
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center gap-2">
+                    <Check className="h-4 w-4 text-success flex-shrink-0" />
+                    <span>Crear proyectos</span>
                   </div>
-                  <div className="flex items-center space-x-3">
-                    <Check className="h-5 w-5 text-success" />
-                    <span>Ver perfiles y reseñas</span>
+                  <div className="flex items-center gap-2">
+                    <Check className="h-4 w-4 text-success flex-shrink-0" />
+                    <span>Contratar servicios</span>
                   </div>
-                  <div className="flex items-center space-x-3">
-                    <Check className="h-5 w-5 text-success" />
-                    <span>3 solicitudes de contacto/mes</span>
+                  <div className="flex items-center gap-2">
+                    <Check className="h-4 w-4 text-success flex-shrink-0" />
+                    <span>Dar feedback</span>
                   </div>
-                  <div className="flex items-center space-x-3">
-                    <Check className="h-5 w-5 text-success" />
-                    <span>1 alerta de servicio activa</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <Check className="h-5 w-5 text-success" />
-                    <span>Soporte por email</span>
-                  </div>
-                  <div className="flex items-center space-x-3 opacity-50">
-                    <X className="h-5 w-5 text-muted-foreground" />
+                  <div className="flex items-center gap-2 opacity-50">
+                    <X className="h-4 w-4 flex-shrink-0" />
                     <span>Publicar servicios</span>
                   </div>
-                  <div className="flex items-center space-x-3 opacity-50">
-                    <X className="h-5 w-5 text-muted-foreground" />
+                  <div className="flex items-center gap-2 opacity-50">
+                    <X className="h-4 w-4 flex-shrink-0" />
                     <span>Perfil profesional</span>
                   </div>
                 </div>
-
-                <Button 
-                  onClick={handleFreePlan}
-                  className="w-full bg-success hover:bg-success/90 text-white"
-                >
-                  <Users className="h-4 w-4 mr-2" />
+                <Button onClick={handleFreePlan} className="w-full bg-success hover:bg-success/90" size="sm">
                   Comenzar Gratis
                 </Button>
-
-                {user && user.userType === 'client' && (
-                  <div className="text-center">
-                    <p className="text-sm text-muted-foreground mb-2">¿Quieres ofrecer servicios?</p>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={handleProfessionalPlan}
-                      className="glass border-primary/30 text-primary hover:bg-primary/10"
-                    >
-                      Actualizar a Profesional
-                      <ChevronRight className="h-4 w-4 ml-1" />
-                    </Button>
-                  </div>
-                )}
               </CardContent>
             </Card>
           </motion.div>
 
-          {/* Plan Profesional */}
+          {/* Plan Basic */}
           <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.1 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
           >
-            <Card className="glass border-primary/30 bg-primary/5 h-full relative overflow-hidden">
-              <div className="absolute top-4 right-4">
-                <Badge className="bg-primary/20 text-primary border-primary/50">
-                  Recomendado
-                </Badge>
-              </div>
-              <CardHeader className="text-center pb-8">
-                <div className="flex items-center justify-center space-x-2 mb-4">
-                  <Crown className="h-8 w-8 text-primary" />
-                  <CardTitle className="text-2xl">Plan Profesional</CardTitle>
-                </div>
-                <div className="space-y-2">
-                  <div className="text-4xl font-bold text-primary">$4.500</div>
-                  <div className="text-muted-foreground">ARS / mes</div>
-                </div>
-                <p className="text-muted-foreground">
-                  Para profesionales que quieren hacer crecer su negocio
-                </p>
+            <Card className="glass border-blue-500/30 bg-blue-500/5 h-full">
+              <CardHeader className="text-center pb-4">
+                <Zap className="h-10 w-10 text-blue-400 mx-auto mb-2" />
+                <CardTitle className="text-xl">Basic</CardTitle>
+                <div className="text-3xl font-bold mt-2 text-blue-400">$2,999</div>
+                <div className="text-sm text-muted-foreground">ARS/mes</div>
               </CardHeader>
-              <CardContent className="space-y-6">
-                <Alert className="border-primary/50 bg-primary/10">
-                  <Gift className="h-4 w-4" />
-                  <AlertDescription>
-                    <strong>¡Oferta de lanzamiento!</strong> Los primeros 200 profesionales obtienen 2 meses completamente gratis.
-                  </AlertDescription>
-                </Alert>
-
-                <div className="space-y-4">
-                  <div className="flex items-center space-x-3">
-                    <Check className="h-5 w-5 text-success" />
-                    <span>Todo lo incluido en Plan Gratis</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <Check className="h-5 w-5 text-success" />
-                    <span className="font-medium">Contactos ilimitados por mes</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <Check className="h-5 w-5 text-success" />
-                    <span className="font-medium">Publicar servicios profesionales</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <Check className="h-5 w-5 text-success" />
-                    <span className="font-medium">Perfil verificado con insignias</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <Check className="h-5 w-5 text-success" />
-                    <span>Portfolio y galería de trabajos</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <Check className="h-5 w-5 text-success" />
-                    <span>5 alertas de servicios activas</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <Check className="h-5 w-5 text-success" />
-                    <span>Estadísticas y analytics</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <Check className="h-5 w-5 text-success" />
-                    <span>Promoción en búsquedas</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <Check className="h-5 w-5 text-success" />
-                    <span className="font-medium">Sin comisiones por servicios</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <Check className="h-5 w-5 text-success" />
-                    <span>Soporte WhatsApp + Email 24hs</span>
-                  </div>
+              <CardContent className="space-y-3">
+                <div className="space-y-2 text-sm">
+                  {SUBSCRIPTION_PLANS.basic.features.map((feature, idx) => (
+                    <div key={idx} className="flex items-center gap-2">
+                      <Check className="h-4 w-4 text-success flex-shrink-0" />
+                      <span>{feature}</span>
+                    </div>
+                  ))}
                 </div>
+                <Button
+                  onClick={() => handleSelectPlan('basic')}
+                  disabled={isProcessing === 'basic'}
+                  className="w-full bg-blue-600 hover:bg-blue-700"
+                  size="sm"
+                >
+                  {isProcessing === 'basic' ? 'Procesando...' : 'Seleccionar Basic'}
+                </Button>
+              </CardContent>
+            </Card>
+          </motion.div>
 
-                {user && user.userType === 'client' ? (
-                  <Button 
-                    onClick={handleUpgrade}
-                    disabled={isUpgrading}
-                    className="w-full liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg"
-                  >
-                    {isUpgrading ? (
-                      <>
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                        Actualizando...
-                      </>
-                    ) : (
-                      <>
-                        <TrendingUp className="h-4 w-4 mr-2" />
-                        Actualizar mi Cuenta
-                      </>
-                    )}
-                  </Button>
-                ) : (
-                  <Button 
-                    onClick={handleProfessionalPlan}
-                    className="w-full liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg"
-                  >
-                    <Crown className="h-4 w-4 mr-2" />
-                    Ser Profesional
-                  </Button>
-                )}
+          {/* Plan Premium - RECOMENDADO */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            <Card className="glass border-primary/50 bg-primary/10 h-full relative">
+              <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-white border-0">
+                RECOMENDADO
+              </Badge>
+              <CardHeader className="text-center pb-4 pt-6">
+                <Crown className="h-10 w-10 text-primary mx-auto mb-2" />
+                <CardTitle className="text-xl">Premium</CardTitle>
+                <div className="text-3xl font-bold mt-2 text-primary">$5,999</div>
+                <div className="text-sm text-muted-foreground">ARS/mes</div>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="space-y-2 text-sm">
+                  {SUBSCRIPTION_PLANS.premium.features.map((feature, idx) => (
+                    <div key={idx} className="flex items-center gap-2">
+                      <Check className="h-4 w-4 text-success flex-shrink-0" />
+                      <span>{feature}</span>
+                    </div>
+                  ))}
+                </div>
+                <Button
+                  onClick={() => handleSelectPlan('premium')}
+                  disabled={isProcessing === 'premium'}
+                  className="w-full liquid-gradient hover:opacity-90"
+                  size="sm"
+                >
+                  {isProcessing === 'premium' ? 'Procesando...' : 'Seleccionar Premium'}
+                </Button>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Plan Enterprise */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
+            <Card className="glass border-purple-500/30 bg-purple-500/5 h-full">
+              <CardHeader className="text-center pb-4">
+                <Building2 className="h-10 w-10 text-purple-400 mx-auto mb-2" />
+                <CardTitle className="text-xl">Enterprise</CardTitle>
+                <div className="text-3xl font-bold mt-2 text-purple-400">$12,999</div>
+                <div className="text-sm text-muted-foreground">ARS/mes</div>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="space-y-2 text-sm">
+                  {SUBSCRIPTION_PLANS.enterprise.features.map((feature, idx) => (
+                    <div key={idx} className="flex items-center gap-2">
+                      <Check className="h-4 w-4 text-success flex-shrink-0" />
+                      <span>{feature}</span>
+                    </div>
+                  ))}
+                </div>
+                <Button
+                  onClick={() => handleSelectPlan('enterprise')}
+                  disabled={isProcessing === 'enterprise'}
+                  className="w-full bg-purple-600 hover:bg-purple-700"
+                  size="sm"
+                >
+                  {isProcessing === 'enterprise' ? 'Procesando...' : 'Seleccionar Enterprise'}
+                </Button>
               </CardContent>
             </Card>
           </motion.div>
