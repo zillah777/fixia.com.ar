@@ -75,8 +75,14 @@ export class SubscriptionService {
       premium: 'Plan Premium - Fixia',
     };
 
+    this.logger.log('🚀 About to create MercadoPago preference...');
+    this.logger.log('🚀 User email:', user.email);
+    this.logger.log('🚀 Plan type:', dto.subscriptionType);
+    this.logger.log('🚀 Price:', dto.price);
+
     try {
       // Create preference
+      this.logger.log('🚀 Calling MercadoPago API...');
       const preference = await this.preferenceClient.create({
         body: {
           items: [
@@ -122,7 +128,10 @@ export class SubscriptionService {
         sandbox_init_point: preference.sandbox_init_point,
       };
     } catch (error) {
-      this.logger.error('Error creating MercadoPago preference:', error);
+      this.logger.error('❌ Error creating MercadoPago preference:', error);
+      this.logger.error('❌ Error message:', error.message);
+      this.logger.error('❌ Error stack:', error.stack);
+      this.logger.error('❌ Full error object:', JSON.stringify(error, null, 2));
       throw new BadRequestException(
         'Error al crear preferencia de pago: ' + error.message,
       );
