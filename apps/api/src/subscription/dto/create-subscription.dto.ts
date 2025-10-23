@@ -1,4 +1,5 @@
 import { IsString, IsIn, IsNumber, Min } from 'class-validator';
+import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateSubscriptionDto {
@@ -15,6 +16,7 @@ export class CreateSubscriptionDto {
     description: 'Precio de la suscripción en ARS',
     example: 2999,
   })
+  @Type(() => Number)
   @IsNumber()
   @Min(0)
   price: number;
