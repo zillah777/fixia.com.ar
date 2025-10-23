@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../common/prisma.service';
 import { CreateSubscriptionDto } from './dto';
-import { MercadoPagoConfig, Preference } from 'mercadopago';
+import { MercadoPagoConfig, Preference, Payment } from 'mercadopago';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
@@ -14,6 +14,7 @@ export class SubscriptionService {
   private readonly logger = new Logger(SubscriptionService.name);
   private mercadoPagoClient: MercadoPagoConfig;
   private preferenceClient: Preference;
+  private paymentClient: Payment;
 
   constructor(
     private prisma: PrismaService,
@@ -32,6 +33,7 @@ export class SubscriptionService {
         },
       });
       this.preferenceClient = new Preference(this.mercadoPagoClient);
+      this.paymentClient = new Payment(this.mercadoPagoClient);
     }
   }
 
@@ -294,16 +296,22 @@ export class SubscriptionService {
     }
 
     try {
-      // In production, you would fetch payment details from MercadoPago API
-      // For now, we'll use the external_reference from the webhook
-      const externalReference = webhookData.data?.external_reference;
+      // Fetch payment details from MercadoPago API
+      this.logger.log(`Fetching payment details for payment ID: ${paymentId}`);
+      const payment = await this.paymentClient.get({ id: paymentId });
+
+      this.logger.log(`Payment status: ${payment.status}`);
+      this.logger.log(`Payment status detail: ${payment.status_detail}`);
+
+      // Get external reference from payment details
+      const externalReference = payment.external_reference;
 
       if (!externalReference) {
-        this.logger.warn('Webhook received without external reference');
+        this.logger.warn('Payment received without external reference');
         return;
       }
 
-      let referenceData;
+      let referenceData: { userId: string; subscriptionType: string; price: number };
       try {
         referenceData = JSON.parse(externalReference);
       } catch (e) {
@@ -318,21 +326,25 @@ export class SubscriptionService {
         return;
       }
 
-      // Check payment status (in real implementation, fetch from MP API)
-      // For now, assume approved if action is payment.updated
-      if (webhookData.action === 'payment.updated' || webhookData.action === 'payment.created') {
+      // Only activate if payment is approved
+      if (payment.status === 'approved') {
+        this.logger.log(`Payment approved! Activating subscription for user ${userId}`);
+
         await this.activateSubscription(
           userId,
           subscriptionType,
           price,
-          paymentId,
+          String(paymentId),
         );
 
-        this.logger.log(`Subscription activated via webhook for user ${userId}`);
+        this.logger.log(`✅ Subscription activated successfully for user ${userId}`);
+      } else {
+        this.logger.log(`Payment status is ${payment.status}, not activating subscription yet`);
       }
     } catch (error) {
-      this.logger.error('Error processing webhook:', error);
-      throw error;
+      this.logger.error('❌ Error processing webhook:', error);
+      this.logger.error('Error details:', error.message);
+      // Don't throw - we don't want to send 500 to MercadoPago
     }
   }
 

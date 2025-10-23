@@ -35,6 +35,9 @@ const FeedbackPage = lazy(() => import("./pages/FeedbackPage"));
 const VerificationPage = lazy(() => import("./pages/VerificationPage"));
 const VerificationAdminPage = lazy(() => import("./pages/admin/VerificationAdminPage"));
 const PaymentTestPage = lazy(() => import("./pages/PaymentTestPage"));
+const SubscriptionSuccess = lazy(() => import("./pages/subscription/SubscriptionSuccess"));
+const SubscriptionFailure = lazy(() => import("./pages/subscription/SubscriptionFailure"));
+const SubscriptionPending = lazy(() => import("./pages/subscription/SubscriptionPending"));
 
 // Context
 import { SecureAuthProvider, useSecureAuth } from "./context/SecureAuthContext";
@@ -203,6 +206,21 @@ function AppRoutes() {
                 <Route path="/pricing" element={
                   <RouteErrorBoundary routeName="Precios" fallbackRoute="/">
                     <PricingPage />
+                  </RouteErrorBoundary>
+                } />
+                <Route path="/subscription/success" element={
+                  <RouteErrorBoundary routeName="Suscripción Exitosa" fallbackRoute="/dashboard">
+                    <SubscriptionSuccess />
+                  </RouteErrorBoundary>
+                } />
+                <Route path="/subscription/failure" element={
+                  <RouteErrorBoundary routeName="Pago Rechazado" fallbackRoute="/pricing">
+                    <SubscriptionFailure />
+                  </RouteErrorBoundary>
+                } />
+                <Route path="/subscription/pending" element={
+                  <RouteErrorBoundary routeName="Pago Pendiente" fallbackRoute="/dashboard">
+                    <SubscriptionPending />
                   </RouteErrorBoundary>
                 } />
                 <Route path="/help" element={

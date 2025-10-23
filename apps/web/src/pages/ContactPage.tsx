@@ -70,20 +70,20 @@ function ContactInfoSection() {
     {
       icon: Mail,
       title: "Correo Electrónico",
-      primary: "soporte@fixia.app",
+      primary: "comercial@fixia.app",
       secondary: "comercial@fixia.app",
       description: "Para consultas generales y soporte técnico",
       color: "text-primary",
-      action: "mailto:soporte@fixia.app"
+      action: "mailto:hello@send.fixia.app"
     },
     {
       icon: Phone,
       title: "Teléfono",
-      primary: "+54 280 4567890",
+      primary: "+54 280 487-4166",
       secondary: "WhatsApp disponible",
       description: "Atención personalizada de Lun-Vie 9:00-18:00",
       color: "text-success",
-      action: "tel:+542804567890"
+      action: "tel:+542804874166"
     },
     {
       icon: MapPin,

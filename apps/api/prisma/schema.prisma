@@ -9,6 +9,694 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id                               String                   @id @default(uuid())
+  email                            String                   @unique
+  password_hash                    String
+  name                             String
+  avatar                           String?
+  user_type                        UserType
+  location                         String?
+  verified                         Boolean                  @default(false)
+  email_verified                   Boolean                  @default(false)
+  phone                            String?
+  whatsapp_number                  String?
+  created_at                       DateTime                 @default(now())
+  updated_at                       DateTime                 @updatedAt
+  deleted_at                       DateTime?
+  birthdate                        DateTime?
+  failed_login_attempts            Int                      @default(0)
+  locked_until                     DateTime?
+  bio                              String?
+  social_linkedin                  String?
+  social_twitter                   String?
+  social_github                    String?
+  social_instagram                 String?
+  notifications_messages           Boolean                  @default(true)
+  notifications_orders             Boolean                  @default(true)
+  notifications_projects           Boolean                  @default(true)
+  notifications_newsletter         Boolean                  @default(false)
+  timezone                         String?                  @default("buenos-aires")
+  auto_renew                       Boolean                  @default(true)
+  is_professional_active           Boolean                  @default(false)
+  professional_since               DateTime?
+  subscription_expires_at          DateTime?
+  subscription_mp_id               String?
+  subscription_price               Decimal?                 @db.Decimal(12, 2)
+  subscription_started_at          DateTime?
+  subscription_status              String?                  @default("inactive")
+  subscription_type                String?                  @default("free")
+  client_contacts                  ContactInteraction[]     @relation("ClientContacts")
+  professional_contacts            ContactInteraction[]     @relation("ProfessionalContacts")
+  conversations_as_client          Conversation[]           @relation("ClientConversations")
+  conversations_as_professional    Conversation[]           @relation("ProfessionalConversations")
+  email_verification_tokens        EmailVerificationToken[]
+  favorites_as_professional        Favorite[]               @relation("ProfessionalFavorites")
+  favorites                        Favorite[]               @relation("UserFavorites")
+  feedbacks_given                  Feedback[]               @relation("FeedbackGiven")
+  feedbacks_received               Feedback[]               @relation("FeedbackReceived")
+  job_updates                      JobStatusUpdate[]        @relation("JobUpdates")
+  client_jobs                      Job[]                    @relation("ClientJobs")
+  professional_jobs                Job[]                    @relation("ProfessionalJobs")
+  notifications                    Notification[]
+  password_history                 PasswordHistory[]
+  password_reset_tokens            PasswordResetToken[]
+  professional_payment_preferences PaymentPreference[]      @relation("ProfessionalPaymentPreferences")
+  payment_preferences              PaymentPreference[]      @relation("UserPaymentPreferences")
+  professional_payments            Payment[]                @relation("ProfessionalPayments")
+  payments                         Payment[]                @relation("UserPayments")
+  professional_profile             ProfessionalProfile?
+  projects                         Project[]
+  proposals                        Proposal[]
+  flagged_reviews                  ReviewFlag[]             @relation("FlaggedReviews")
+  resolved_flags                   ReviewFlag[]             @relation("ResolvedFlags")
+  helpful_votes                    ReviewHelpfulVote[]      @relation("HelpfulVotes")
+  moderated_reviews                Review[]                 @relation("ModeratedReviews")
+  reviews_received                 Review[]                 @relation("ProfessionalReviews")
+  reviews_given                    Review[]                 @relation("ReviewerReviews")
+  role_trust_scores                RoleTrustScore[]
+  service_views                    ServiceView[]
+  services                         Service[]
+  trust_score                      TrustScore?
+  user_activity                    UserActivity[]
+  sessions                         UserSession[]
+  reviewed_verifications           VerificationRequest[]    @relation("ReviewedVerifications")
+  verification_requests            VerificationRequest[]    @relation("VerificationRequests")
+
+  @@index([email])
+  @@index([user_type])
+  @@index([location])
+  @@index([verified])
+  @@index([is_professional_active])
+  @@index([subscription_status])
+  @@index([subscription_expires_at])
+  @@map("users")
+}
+
+model ProfessionalProfile {
+  id                  String             @id @default(uuid())
+  user_id             String             @unique
+  bio                 String?
+  specialties         String[]
+  years_experience    Int?
+  level               ProfessionalLevel  @default(Nuevo)
+  rating              Float?             @default(0.0)
+  review_count        Int                @default(0)
+  total_earnings      Float?             @default(0.0)
+  availability_status AvailabilityStatus @default(available)
+  response_time_hours Int                @default(24)
+  created_at          DateTime           @default(now())
+  updated_at          DateTime           @updatedAt
+  user                User               @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([rating])
+  @@index([level])
+  @@map("professional_profiles")
+}
+
+model Category {
+  id            String    @id @default(uuid())
+  name          String    @unique
+  slug          String    @unique
+  description   String?
+  icon          String?
+  popular       Boolean   @default(false)
+  service_count Int       @default(0)
+  created_at    DateTime  @default(now())
+  projects      Project[]
+  services      Service[]
+
+  @@map("categories")
+}
+
+model Service {
+  id                   String               @id @default(uuid())
+  professional_id      String
+  category_id          String?
+  title                String
+  description          String
+  price                Float
+  currency             String               @default("ARS")
+  main_image           String?
+  gallery              String[]
+  tags                 String[]
+  delivery_time_days   Int?
+  revisions_included   Int                  @default(1)
+  active               Boolean              @default(true)
+  featured             Boolean              @default(false)
+  view_count           Int                  @default(0)
+  created_at           DateTime             @default(now())
+  updated_at           DateTime             @updatedAt
+  contact_interactions ContactInteraction[]
+  favorites            Favorite[]           @relation("ServiceFavorites")
+  feedbacks            Feedback[]
+  payment_preferences  PaymentPreference[]
+  payments             Payment[]
+  reviews              Review[]
+  service_views        ServiceView[]
+  category             Category?            @relation(fields: [category_id], references: [id])
+  professional         User                 @relation(fields: [professional_id], references: [id], onDelete: Cascade)
+
+  @@index([professional_id])
+  @@index([category_id])
+  @@index([price])
+  @@index([active])
+  @@index([featured])
+  @@map("services")
+}
+
+model Project {
+  id                   String               @id @default(uuid())
+  client_id            String
+  category_id          String?
+  title                String
+  description          String
+  budget_min           Decimal?             @db.Decimal(12, 2)
+  budget_max           Decimal?             @db.Decimal(12, 2)
+  deadline             DateTime?
+  status               ProjectStatus        @default(open)
+  location             String?
+  skills_required      String[]
+  proposals_count      Int                  @default(0)
+  created_at           DateTime             @default(now())
+  updated_at           DateTime             @updatedAt
+  contact_interactions ContactInteraction[]
+  conversation         Conversation?
+  job                  Job?
+  category             Category?            @relation(fields: [category_id], references: [id])
+  client               User                 @relation(fields: [client_id], references: [id], onDelete: Cascade)
+  proposals            Proposal[]
+
+  @@index([client_id])
+  @@index([category_id])
+  @@index([status])
+  @@index([budget_min, budget_max])
+  @@map("projects")
+}
+
+model Proposal {
+  id                 String         @id @default(uuid())
+  project_id         String
+  professional_id    String
+  message            String
+  quoted_price       Decimal        @db.Decimal(12, 2)
+  delivery_time_days Int
+  status             ProposalStatus @default(pending)
+  created_at         DateTime       @default(now())
+  updated_at         DateTime       @updatedAt
+  job                Job?
+  professional       User           @relation(fields: [professional_id], references: [id], onDelete: Cascade)
+  project            Project        @relation(fields: [project_id], references: [id], onDelete: Cascade)
+
+  @@unique([project_id, professional_id])
+  @@map("proposals")
+}
+
+model Review {
+  id                     String                 @id @default(uuid())
+  service_id             String?
+  reviewer_id            String
+  professional_id        String
+  rating                 Int
+  comment                String?
+  helpful_count          Int                    @default(0)
+  created_at             DateTime               @default(now())
+  job_id                 String?
+  verified_purchase      Boolean                @default(false)
+  moderated_by           String?
+  moderated_at           DateTime?
+  flagged_count          Int                    @default(0)
+  trust_score            Float?                 @default(0.0)
+  communication_rating   Int?
+  quality_rating         Int?
+  timeliness_rating      Int?
+  professionalism_rating Int?
+  updated_at             DateTime               @updatedAt
+  moderation_status      ReviewModerationStatus @default(pending)
+  review_flags           ReviewFlag[]
+  helpful_votes          ReviewHelpfulVote[]
+  job                    Job?                   @relation(fields: [job_id], references: [id], onDelete: Cascade)
+  moderator              User?                  @relation("ModeratedReviews", fields: [moderated_by], references: [id])
+  professional           User                   @relation("ProfessionalReviews", fields: [professional_id], references: [id], onDelete: Cascade)
+  reviewer               User                   @relation("ReviewerReviews", fields: [reviewer_id], references: [id], onDelete: Cascade)
+  service                Service?               @relation(fields: [service_id], references: [id], onDelete: Cascade)
+
+  @@index([service_id])
+  @@index([job_id])
+  @@index([professional_id])
+  @@index([rating])
+  @@index([moderation_status])
+  @@index([verified_purchase])
+  @@index([trust_score])
+  @@map("reviews")
+}
+
+model Conversation {
+  id                String             @id @default(uuid())
+  project_id        String             @unique
+  client_id         String
+  professional_id   String
+  whatsapp_chat_url String?
+  status            ConversationStatus @default(active)
+  last_message_at   DateTime           @default(now())
+  created_at        DateTime           @default(now())
+  client            User               @relation("ClientConversations", fields: [client_id], references: [id], onDelete: Cascade)
+  professional      User               @relation("ProfessionalConversations", fields: [professional_id], references: [id], onDelete: Cascade)
+  project           Project            @relation(fields: [project_id], references: [id], onDelete: Cascade)
+
+  @@map("conversations")
+}
+
+model Notification {
+  id         String           @id @default(uuid())
+  user_id    String
+  type       NotificationType
+  title      String
+  message    String
+  read       Boolean          @default(false)
+  action_url String?
+  created_at DateTime         @default(now())
+  user       User             @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+model UserSession {
+  id            String   @id @default(uuid())
+  user_id       String
+  refresh_token String
+  expires_at    DateTime
+  ip_address    String?
+  user_agent    String?
+  created_at    DateTime @default(now())
+  user          User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("user_sessions")
+}
+
+model ServiceView {
+  id         String   @id @default(uuid())
+  service_id String
+  viewer_id  String?
+  ip_address String?
+  user_agent String?
+  viewed_at  DateTime @default(now())
+  service    Service  @relation(fields: [service_id], references: [id])
+  viewer     User?    @relation(fields: [viewer_id], references: [id])
+
+  @@map("service_views")
+}
+
+model UserActivity {
+  id            String   @id @default(uuid())
+  user_id       String
+  action        String
+  resource_type String?
+  resource_id   String?
+  metadata      Json?
+  created_at    DateTime @default(now())
+  user          User     @relation(fields: [user_id], references: [id])
+
+  @@map("user_activity")
+}
+
+model PasswordResetToken {
+  id         String   @id @default(uuid())
+  user_id    String
+  token      String   @unique
+  expires_at DateTime
+  used       Boolean  @default(false)
+  created_at DateTime @default(now())
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("password_reset_tokens")
+}
+
+model EmailVerificationToken {
+  id         String   @id @default(uuid())
+  user_id    String
+  token      String   @unique
+  expires_at DateTime
+  used       Boolean  @default(false)
+  created_at DateTime @default(now())
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("email_verification_tokens")
+}
+
+model PasswordHistory {
+  id            String   @id @default(uuid())
+  user_id       String
+  password_hash String
+  created_at    DateTime @default(now())
+  user          User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([created_at])
+  @@map("password_history")
+}
+
+model Job {
+  id                  String              @id @default(uuid())
+  project_id          String              @unique
+  client_id           String
+  professional_id     String
+  proposal_id         String              @unique
+  title               String
+  description         String
+  agreed_price        Decimal             @db.Decimal(12, 2)
+  currency            String              @default("ARS")
+  delivery_date       DateTime?
+  progress_percentage Int                 @default(0)
+  started_at          DateTime?
+  completed_at        DateTime?
+  cancelled_at        DateTime?
+  created_at          DateTime            @default(now())
+  updated_at          DateTime            @updatedAt
+  status              JobStatus           @default(not_started)
+  feedbacks           Feedback[]
+  milestones          JobMilestone[]
+  status_updates      JobStatusUpdate[]
+  client              User                @relation("ClientJobs", fields: [client_id], references: [id])
+  professional        User                @relation("ProfessionalJobs", fields: [professional_id], references: [id])
+  project             Project             @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  proposal            Proposal            @relation(fields: [proposal_id], references: [id])
+  payment_preferences PaymentPreference[]
+  payments            Payment[]
+  reviews             Review[]
+
+  @@index([client_id])
+  @@index([professional_id])
+  @@index([status])
+  @@index([created_at])
+  @@map("jobs")
+}
+
+model JobMilestone {
+  id                 String    @id @default(uuid())
+  job_id             String
+  title              String
+  description        String?
+  amount             Decimal   @db.Decimal(12, 2)
+  due_date           DateTime?
+  completed          Boolean   @default(false)
+  completed_at       DateTime?
+  approved_by_client Boolean   @default(false)
+  approved_at        DateTime?
+  created_at         DateTime  @default(now())
+  job                Job       @relation(fields: [job_id], references: [id], onDelete: Cascade)
+
+  @@index([job_id])
+  @@index([completed])
+  @@map("job_milestones")
+}
+
+model JobStatusUpdate {
+  id                 String    @id @default(uuid())
+  job_id             String
+  message            String?
+  updated_by_user_id String
+  created_at         DateTime  @default(now())
+  status_from        JobStatus
+  status_to          JobStatus
+  job                Job       @relation(fields: [job_id], references: [id], onDelete: Cascade)
+  updated_by         User      @relation("JobUpdates", fields: [updated_by_user_id], references: [id])
+
+  @@index([job_id])
+  @@index([created_at])
+  @@map("job_status_updates")
+}
+
+model Payment {
+  id                  String        @id @default(uuid())
+  job_id              String?
+  service_id          String?
+  amount              Decimal       @db.Decimal(12, 2)
+  currency            String        @default("ARS")
+  payment_method      String?
+  transaction_id      String?       @unique
+  mp_payment_id       String?       @unique
+  mp_preference_id    String?
+  external_reference  String?
+  status_detail       String?
+  user_id             String
+  professional_id     String?
+  payer_email         String?
+  payer_name          String?
+  description         String?
+  paid_at             DateTime?
+  released_at         DateTime?
+  refunded_at         DateTime?
+  approval_url        String?
+  transaction_data    Json?
+  platform_fee        Decimal?      @db.Decimal(12, 2)
+  professional_amount Decimal?      @db.Decimal(12, 2)
+  notes               String?
+  created_at          DateTime      @default(now())
+  updated_at          DateTime      @updatedAt
+  status              PaymentStatus @default(pending)
+  job                 Job?          @relation(fields: [job_id], references: [id], onDelete: Cascade)
+  professional        User?         @relation("ProfessionalPayments", fields: [professional_id], references: [id])
+  service             Service?      @relation(fields: [service_id], references: [id], onDelete: Cascade)
+  user                User          @relation("UserPayments", fields: [user_id], references: [id])
+
+  @@index([job_id])
+  @@index([service_id])
+  @@index([user_id])
+  @@index([professional_id])
+  @@index([status])
+  @@index([mp_payment_id])
+  @@index([external_reference])
+  @@index([created_at])
+  @@map("payments")
+}
+
+model PaymentPreference {
+  id                 String    @id @default(uuid())
+  mp_preference_id   String    @unique
+  external_reference String?
+  amount             Decimal   @db.Decimal(12, 2)
+  currency           String    @default("ARS")
+  title              String
+  description        String
+  payer_email        String
+  user_id            String
+  service_id         String?
+  job_id             String?
+  professional_id    String?
+  success_url        String?
+  failure_url        String?
+  pending_url        String?
+  init_point         String?
+  sandbox_init_point String?
+  client_id          String?
+  collector_id       Int?
+  used               Boolean   @default(false)
+  used_at            DateTime?
+  created_at         DateTime  @default(now())
+  updated_at         DateTime  @updatedAt
+  job                Job?      @relation(fields: [job_id], references: [id])
+  professional       User?     @relation("ProfessionalPaymentPreferences", fields: [professional_id], references: [id])
+  service            Service?  @relation(fields: [service_id], references: [id])
+  user               User      @relation("UserPaymentPreferences", fields: [user_id], references: [id])
+
+  @@index([user_id])
+  @@index([professional_id])
+  @@index([service_id])
+  @@index([job_id])
+  @@index([mp_preference_id])
+  @@map("payment_preferences")
+}
+
+model ContactInteraction {
+  id               String   @id @default(uuid())
+  client_id        String
+  professional_id  String
+  service_id       String?
+  project_id       String?
+  contact_method   String
+  message          String?
+  contact_data     Json?
+  converted_to_job Boolean  @default(false)
+  job_id           String?
+  conversion_value Decimal? @db.Decimal(12, 2)
+  created_at       DateTime @default(now())
+  client           User     @relation("ClientContacts", fields: [client_id], references: [id])
+  professional     User     @relation("ProfessionalContacts", fields: [professional_id], references: [id])
+  project          Project? @relation(fields: [project_id], references: [id])
+  service          Service? @relation(fields: [service_id], references: [id])
+
+  @@index([client_id])
+  @@index([professional_id])
+  @@index([created_at])
+  @@index([converted_to_job])
+  @@map("contact_interactions")
+}
+
+model ReviewHelpfulVote {
+  id         String   @id @default(uuid())
+  review_id  String
+  user_id    String
+  is_helpful Boolean
+  created_at DateTime @default(now())
+  review     Review   @relation(fields: [review_id], references: [id], onDelete: Cascade)
+  user       User     @relation("HelpfulVotes", fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([review_id, user_id])
+  @@index([review_id])
+  @@index([user_id])
+  @@map("review_helpful_votes")
+}
+
+model ReviewFlag {
+  id          String           @id @default(uuid())
+  review_id   String
+  flagger_id  String
+  description String?
+  resolved    Boolean          @default(false)
+  resolved_by String?
+  resolved_at DateTime?
+  created_at  DateTime         @default(now())
+  reason      ReviewFlagReason
+  flagger     User             @relation("FlaggedReviews", fields: [flagger_id], references: [id], onDelete: Cascade)
+  resolver    User?            @relation("ResolvedFlags", fields: [resolved_by], references: [id])
+  review      Review           @relation(fields: [review_id], references: [id], onDelete: Cascade)
+
+  @@unique([review_id, flagger_id])
+  @@index([review_id])
+  @@index([flagger_id])
+  @@index([resolved])
+  @@map("review_flags")
+}
+
+model TrustScore {
+  id                     String   @id @default(uuid())
+  user_id                String   @unique
+  overall_score          Float    @default(0.0)
+  review_score           Float    @default(0.0)
+  completion_score       Float    @default(0.0)
+  communication_score    Float    @default(0.0)
+  reliability_score      Float    @default(0.0)
+  verification_score     Float    @default(0.0)
+  total_jobs_completed   Int      @default(0)
+  total_reviews_received Int      @default(0)
+  average_rating         Float    @default(0.0)
+  response_time_hours    Float    @default(24.0)
+  completion_rate        Float    @default(0.0)
+  verified_identity      Boolean  @default(false)
+  verified_skills        Boolean  @default(false)
+  verified_business      Boolean  @default(false)
+  background_checked     Boolean  @default(false)
+  last_calculated_at     DateTime @default(now())
+  created_at             DateTime @default(now())
+  updated_at             DateTime @updatedAt
+  user                   User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([overall_score])
+  @@index([user_id])
+  @@map("trust_scores")
+}
+
+model VerificationRequest {
+  id                String             @id @default(uuid())
+  user_id           String
+  documents         String[]
+  additional_info   Json?
+  reviewed_by       String?
+  reviewed_at       DateTime?
+  rejection_reason  String?
+  notes             String?
+  created_at        DateTime           @default(now())
+  updated_at        DateTime           @updatedAt
+  verification_type VerificationType
+  status            VerificationStatus @default(pending)
+  reviewer          User?              @relation("ReviewedVerifications", fields: [reviewed_by], references: [id])
+  user              User               @relation("VerificationRequests", fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([status])
+  @@index([verification_type])
+  @@map("verification_requests")
+}
+
+model ReviewTemplate {
+  id          String   @id @default(uuid())
+  category    String
+  title       String
+  description String
+  questions   Json
+  active      Boolean  @default(true)
+  created_at  DateTime @default(now())
+
+  @@index([category])
+  @@index([active])
+  @@map("review_templates")
+}
+
+model Favorite {
+  id              String   @id @default(uuid())
+  user_id         String
+  service_id      String?
+  professional_id String?
+  created_at      DateTime @default(now())
+  professional    User?    @relation("ProfessionalFavorites", fields: [professional_id], references: [id], onDelete: Cascade)
+  service         Service? @relation("ServiceFavorites", fields: [service_id], references: [id], onDelete: Cascade)
+  user            User     @relation("UserFavorites", fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, service_id])
+  @@unique([user_id, professional_id])
+  @@index([user_id])
+  @@index([service_id])
+  @@index([professional_id])
+  @@map("favorites")
+}
+
+model Feedback {
+  id           String   @id @default(uuid())
+  from_user_id String
+  to_user_id   String
+  comment      String?
+  has_like     Boolean  @default(false)
+  job_id       String?
+  service_id   String?
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+  to_user_role String   @default("client")
+  from_user    User     @relation("FeedbackGiven", fields: [from_user_id], references: [id], onDelete: Cascade)
+  job          Job?     @relation(fields: [job_id], references: [id])
+  service      Service? @relation(fields: [service_id], references: [id])
+  to_user      User     @relation("FeedbackReceived", fields: [to_user_id], references: [id], onDelete: Cascade)
+
+  @@unique([from_user_id, to_user_id, job_id])
+  @@index([from_user_id])
+  @@index([to_user_id])
+  @@index([to_user_role])
+  @@index([job_id])
+  @@index([has_like])
+  @@index([created_at])
+  @@map("feedbacks")
+}
+
+model RoleTrustScore {
+  id                 String   @id @default(uuid())
+  user_id            String
+  role               String
+  total_likes        Int      @default(0)
+  total_feedback     Int      @default(0)
+  trust_percentage   Float    @default(0.0)
+  last_calculated_at DateTime @default(now())
+  created_at         DateTime @default(now())
+  updated_at         DateTime @updatedAt
+  user               User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, role])
+  @@index([user_id])
+  @@index([role])
+  @@index([trust_percentage])
+  @@map("role_trust_scores")
+}
+
 enum UserType {
   client
   professional
@@ -116,853 +804,4 @@ enum NotificationType {
   job_milestone
   job_completed
   payment_received
-}
-
-model User {
-  id              String    @id @default(uuid())
-  email           String    @unique
-  password_hash   String
-  name            String
-  avatar          String?
-  user_type       UserType
-  location        String?
-  birthdate       DateTime?
-  verified        Boolean   @default(false)
-  email_verified  Boolean   @default(false)
-  phone           String?
-  whatsapp_number String?
-  bio             String?
-
-  // Social Networks
-  social_linkedin  String?
-  social_twitter   String?
-  social_github    String?
-  social_instagram String?
-
-  // Notification Preferences
-  notifications_messages   Boolean @default(true)
-  notifications_orders     Boolean @default(true)
-  notifications_projects   Boolean @default(true)
-  notifications_newsletter Boolean @default(false)
-
-  // Settings
-  timezone String? @default("buenos-aires")
-
-  // Dual Roles System (NEW)
-  is_professional_active Boolean  @default(false) // ¿Tiene perfil profesional activo?
-  professional_since     DateTime? // Fecha de activación como profesional
-
-  // Subscription System (NEW)
-  subscription_type       String?   @default("free") // "free", "basic", "premium", "enterprise"
-  subscription_status     String?   @default("inactive") // "active", "inactive", "cancelled", "expired"
-  subscription_started_at DateTime? // Inicio de suscripción
-  subscription_expires_at DateTime? // Fin de suscripción
-  subscription_mp_id      String? // MercadoPago subscription ID
-  subscription_price      Decimal?  @db.Decimal(12, 2) // Precio mensual
-  auto_renew              Boolean   @default(true) // Renovación automática
-
-  // Security fields
-  failed_login_attempts Int       @default(0)
-  locked_until          DateTime?
-  created_at            DateTime  @default(now())
-  updated_at            DateTime  @updatedAt
-  deleted_at            DateTime?
-
-  // Relations
-  professional_profile          ProfessionalProfile?
-  services                      Service[]
-  projects                      Project[]
-  proposals                     Proposal[]
-  reviews_given                 Review[]                 @relation("ReviewerReviews")
-  reviews_received              Review[]                 @relation("ProfessionalReviews")
-  conversations_as_client       Conversation[]           @relation("ClientConversations")
-  conversations_as_professional Conversation[]           @relation("ProfessionalConversations")
-  notifications                 Notification[]
-  sessions                      UserSession[]
-  service_views                 ServiceView[]
-  user_activity                 UserActivity[]
-  password_reset_tokens         PasswordResetToken[]
-  email_verification_tokens     EmailVerificationToken[]
-  password_history              PasswordHistory[]
-
-  // Transaction Tracking Relations
-  client_jobs           Job[]                @relation("ClientJobs")
-  professional_jobs     Job[]                @relation("ProfessionalJobs")
-  job_updates           JobStatusUpdate[]    @relation("JobUpdates")
-  client_contacts       ContactInteraction[] @relation("ClientContacts")
-  professional_contacts ContactInteraction[] @relation("ProfessionalContacts")
-
-  // Reviews & Trust Relations
-  moderated_reviews      Review[]              @relation("ModeratedReviews")
-  helpful_votes          ReviewHelpfulVote[]   @relation("HelpfulVotes")
-  flagged_reviews        ReviewFlag[]          @relation("FlaggedReviews")
-  resolved_flags         ReviewFlag[]          @relation("ResolvedFlags")
-  trust_score            TrustScore?
-  verification_requests  VerificationRequest[] @relation("VerificationRequests")
-  reviewed_verifications VerificationRequest[] @relation("ReviewedVerifications")
-
-  // Payment Relations
-  payments                         Payment[]           @relation("UserPayments")
-  professional_payments            Payment[]           @relation("ProfessionalPayments")
-  payment_preferences              PaymentPreference[] @relation("UserPaymentPreferences")
-  professional_payment_preferences PaymentPreference[] @relation("ProfessionalPaymentPreferences")
-
-  // Favorites Relations
-  favorites                  Favorite[] @relation("UserFavorites")
-  favorites_as_professional Favorite[] @relation("ProfessionalFavorites")
-
-  // Feedback Relations (NEW SYSTEM)
-  feedbacks_given    Feedback[]        @relation("FeedbackGiven")
-  feedbacks_received Feedback[]        @relation("FeedbackReceived")
-  role_trust_scores  RoleTrustScore[] // Trust scores por rol
-
-  @@index([email])
-  @@index([user_type])
-  @@index([location])
-  @@index([verified])
-  @@index([is_professional_active])
-  @@index([subscription_status])
-  @@index([subscription_expires_at])
-  @@map("users")
-}
-
-model ProfessionalProfile {
-  id                  String             @id @default(uuid())
-  user_id             String             @unique
-  bio                 String?
-  specialties         String[]
-  years_experience    Int?
-  level               ProfessionalLevel  @default(Nuevo)
-  rating              Float?             @default(0.0)
-  review_count        Int                @default(0)
-  total_earnings      Float?             @default(0.0)
-  availability_status AvailabilityStatus @default(available)
-  response_time_hours Int                @default(24)
-  created_at          DateTime           @default(now())
-  updated_at          DateTime           @updatedAt
-
-  // Relations
-  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
-
-  @@index([user_id])
-  @@index([rating])
-  @@index([level])
-  @@map("professional_profiles")
-}
-
-model Category {
-  id            String   @id @default(uuid())
-  name          String   @unique
-  slug          String   @unique
-  description   String?
-  icon          String?
-  popular       Boolean  @default(false)
-  service_count Int      @default(0)
-  created_at    DateTime @default(now())
-
-  // Relations
-  services Service[]
-  projects Project[]
-
-  @@map("categories")
-}
-
-model Service {
-  id                 String   @id @default(uuid())
-  professional_id    String
-  category_id        String?
-  title              String
-  description        String
-  price              Float
-  currency           String   @default("ARS")
-  main_image         String?
-  gallery            String[]
-  tags               String[]
-  delivery_time_days Int?
-  revisions_included Int      @default(1)
-  active             Boolean  @default(true)
-  featured           Boolean  @default(false)
-  view_count         Int      @default(0)
-  created_at         DateTime @default(now())
-  updated_at         DateTime @updatedAt
-
-  // Relations
-  professional         User                 @relation(fields: [professional_id], references: [id], onDelete: Cascade)
-  category             Category?            @relation(fields: [category_id], references: [id])
-  reviews              Review[]
-  service_views        ServiceView[]
-  contact_interactions ContactInteraction[]
-  payments             Payment[]
-  payment_preferences  PaymentPreference[]
-  favorites            Favorite[]           @relation("ServiceFavorites")
-  feedbacks            Feedback[]           // NEW: Feedback system
-
-  @@index([professional_id])
-  @@index([category_id])
-  @@index([price])
-  @@index([active])
-  @@index([featured])
-  @@map("services")
-}
-
-model Project {
-  id              String        @id @default(uuid())
-  client_id       String
-  category_id     String?
-  title           String
-  description     String
-  budget_min      Decimal?      @db.Decimal(12, 2)
-  budget_max      Decimal?      @db.Decimal(12, 2)
-  deadline        DateTime?
-  status          ProjectStatus @default(open)
-  location        String?
-  skills_required String[]
-  proposals_count Int           @default(0)
-  created_at      DateTime      @default(now())
-  updated_at      DateTime      @updatedAt
-
-  // Relations
-  client               User                 @relation(fields: [client_id], references: [id], onDelete: Cascade)
-  category             Category?            @relation(fields: [category_id], references: [id])
-  proposals            Proposal[]
-  conversation         Conversation?
-  job                  Job?
-  contact_interactions ContactInteraction[]
-
-  @@index([client_id])
-  @@index([category_id])
-  @@index([status])
-  @@index([budget_min, budget_max])
-  @@map("projects")
-}
-
-model Proposal {
-  id                 String         @id @default(uuid())
-  project_id         String
-  professional_id    String
-  message            String
-  quoted_price       Decimal        @db.Decimal(12, 2)
-  delivery_time_days Int
-  status             ProposalStatus @default(pending)
-  created_at         DateTime       @default(now())
-  updated_at         DateTime       @updatedAt
-
-  // Relations
-  project      Project @relation(fields: [project_id], references: [id], onDelete: Cascade)
-  professional User    @relation(fields: [professional_id], references: [id], onDelete: Cascade)
-  job          Job?
-
-  @@unique([project_id, professional_id])
-  @@map("proposals")
-}
-
-model Review {
-  id              String  @id @default(uuid())
-  service_id      String?
-  job_id          String?
-  reviewer_id     String
-  professional_id String
-  rating          Int
-  comment         String?
-  helpful_count   Int     @default(0)
-
-  // Enhanced Trust Features
-  verified_purchase Boolean                @default(false)
-  moderation_status ReviewModerationStatus @default(pending)
-  moderated_by      String?
-  moderated_at      DateTime?
-  flagged_count     Int                    @default(0)
-  trust_score       Float?                 @default(0.0)
-
-  // Review Categories
-  communication_rating   Int?
-  quality_rating         Int?
-  timeliness_rating      Int?
-  professionalism_rating Int?
-
-  // Metadata
-  helpful_votes ReviewHelpfulVote[]
-  review_flags  ReviewFlag[]
-
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-
-  // Relations
-  service      Service? @relation(fields: [service_id], references: [id], onDelete: Cascade)
-  job          Job?     @relation(fields: [job_id], references: [id], onDelete: Cascade)
-  reviewer     User     @relation("ReviewerReviews", fields: [reviewer_id], references: [id], onDelete: Cascade)
-  professional User     @relation("ProfessionalReviews", fields: [professional_id], references: [id], onDelete: Cascade)
-  moderator    User?    @relation("ModeratedReviews", fields: [moderated_by], references: [id])
-
-  @@index([service_id])
-  @@index([job_id])
-  @@index([professional_id])
-  @@index([rating])
-  @@index([moderation_status])
-  @@index([verified_purchase])
-  @@index([trust_score])
-  @@map("reviews")
-}
-
-model Conversation {
-  id                String             @id @default(uuid())
-  project_id        String             @unique
-  client_id         String
-  professional_id   String
-  whatsapp_chat_url String?
-  status            ConversationStatus @default(active)
-  last_message_at   DateTime           @default(now())
-  created_at        DateTime           @default(now())
-
-  // Relations
-  project      Project @relation(fields: [project_id], references: [id], onDelete: Cascade)
-  client       User    @relation("ClientConversations", fields: [client_id], references: [id], onDelete: Cascade)
-  professional User    @relation("ProfessionalConversations", fields: [professional_id], references: [id], onDelete: Cascade)
-
-  @@map("conversations")
-}
-
-model Notification {
-  id         String           @id @default(uuid())
-  user_id    String
-  type       NotificationType
-  title      String
-  message    String
-  read       Boolean          @default(false)
-  action_url String?
-  created_at DateTime         @default(now())
-
-  // Relations
-  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
-
-  @@map("notifications")
-}
-
-model UserSession {
-  id            String   @id @default(uuid())
-  user_id       String
-  refresh_token String
-  expires_at    DateTime
-  ip_address    String?
-  user_agent    String?
-  created_at    DateTime @default(now())
-
-  // Relations
-  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
-
-  @@map("user_sessions")
-}
-
-model ServiceView {
-  id         String   @id @default(uuid())
-  service_id String
-  viewer_id  String?
-  ip_address String?
-  user_agent String?
-  viewed_at  DateTime @default(now())
-
-  // Relations
-  service Service @relation(fields: [service_id], references: [id])
-  viewer  User?   @relation(fields: [viewer_id], references: [id])
-
-  @@map("service_views")
-}
-
-model UserActivity {
-  id            String   @id @default(uuid())
-  user_id       String
-  action        String
-  resource_type String?
-  resource_id   String?
-  metadata      Json?
-  created_at    DateTime @default(now())
-
-  // Relations
-  user User @relation(fields: [user_id], references: [id])
-
-  @@map("user_activity")
-}
-
-model PasswordResetToken {
-  id         String   @id @default(uuid())
-  user_id    String
-  token      String   @unique
-  expires_at DateTime
-  used       Boolean  @default(false)
-  created_at DateTime @default(now())
-
-  // Relations
-  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
-
-  @@map("password_reset_tokens")
-}
-
-model EmailVerificationToken {
-  id         String   @id @default(uuid())
-  user_id    String
-  token      String   @unique
-  expires_at DateTime
-  used       Boolean  @default(false)
-  created_at DateTime @default(now())
-
-  // Relations
-  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
-
-  @@map("email_verification_tokens")
-}
-
-model PasswordHistory {
-  id            String   @id @default(uuid())
-  user_id       String
-  password_hash String
-  created_at    DateTime @default(now())
-
-  // Relations
-  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
-
-  @@index([user_id])
-  @@index([created_at])
-  @@map("password_history")
-}
-
-// =============== TRANSACTION TRACKING SYSTEM ===============
-
-model Job {
-  id              String @id @default(uuid())
-  project_id      String @unique
-  client_id       String
-  professional_id String
-  proposal_id     String @unique
-
-  // Job Details
-  title         String
-  description   String
-  agreed_price  Decimal   @db.Decimal(12, 2)
-  currency      String    @default("ARS")
-  delivery_date DateTime?
-
-  // Status Tracking
-  status              JobStatus @default(not_started)
-  progress_percentage Int       @default(0)
-
-  // Timestamps
-  started_at   DateTime?
-  completed_at DateTime?
-  cancelled_at DateTime?
-  created_at   DateTime  @default(now())
-  updated_at   DateTime  @updatedAt
-
-  // Relations
-  project      Project  @relation(fields: [project_id], references: [id], onDelete: Cascade)
-  client       User     @relation("ClientJobs", fields: [client_id], references: [id])
-  professional User     @relation("ProfessionalJobs", fields: [professional_id], references: [id])
-  proposal     Proposal @relation(fields: [proposal_id], references: [id])
-
-  // Child Relations
-  milestones          JobMilestone[]
-  status_updates      JobStatusUpdate[]
-  payments            Payment[]
-  payment_preferences PaymentPreference[]
-  reviews             Review[]
-  feedbacks           Feedback[] // NEW: Feedback system
-
-  @@index([client_id])
-  @@index([professional_id])
-  @@index([status])
-  @@index([created_at])
-  @@map("jobs")
-}
-
-model JobMilestone {
-  id                 String    @id @default(uuid())
-  job_id             String
-  title              String
-  description        String?
-  amount             Decimal   @db.Decimal(12, 2)
-  due_date           DateTime?
-  completed          Boolean   @default(false)
-  completed_at       DateTime?
-  approved_by_client Boolean   @default(false)
-  approved_at        DateTime?
-  created_at         DateTime  @default(now())
-
-  // Relations
-  job Job @relation(fields: [job_id], references: [id], onDelete: Cascade)
-
-  @@index([job_id])
-  @@index([completed])
-  @@map("job_milestones")
-}
-
-model JobStatusUpdate {
-  id                 String    @id @default(uuid())
-  job_id             String
-  status_from        JobStatus
-  status_to          JobStatus
-  message            String?
-  updated_by_user_id String
-  created_at         DateTime  @default(now())
-
-  // Relations
-  job        Job  @relation(fields: [job_id], references: [id], onDelete: Cascade)
-  updated_by User @relation("JobUpdates", fields: [updated_by_user_id], references: [id])
-
-  @@index([job_id])
-  @@index([created_at])
-  @@map("job_status_updates")
-}
-
-model Payment {
-  id             String        @id @default(uuid())
-  job_id         String? // Optional - can be service payment or job payment
-  service_id     String? // For direct service payments
-  amount         Decimal       @db.Decimal(12, 2)
-  currency       String        @default("ARS")
-  status         PaymentStatus @default(pending)
-  payment_method String?
-  transaction_id String?       @unique
-
-  // MercadoPago Integration
-  mp_payment_id      String? @unique
-  mp_preference_id   String?
-  external_reference String?
-  status_detail      String?
-
-  // User Information
-  user_id         String // Who made the payment
-  professional_id String? // Who receives the payment
-  payer_email     String?
-  payer_name      String?
-  description     String?
-
-  // Payment tracking
-  paid_at     DateTime?
-  released_at DateTime?
-  refunded_at DateTime?
-
-  // Processing Details
-  approval_url     String?
-  transaction_data Json? // Store MercadoPago response data
-
-  // Metadata
-  platform_fee        Decimal? @db.Decimal(12, 2)
-  professional_amount Decimal? @db.Decimal(12, 2)
-  notes               String?
-
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-
-  // Relations
-  job          Job?     @relation(fields: [job_id], references: [id], onDelete: Cascade)
-  service      Service? @relation(fields: [service_id], references: [id], onDelete: Cascade)
-  user         User     @relation("UserPayments", fields: [user_id], references: [id])
-  professional User?    @relation("ProfessionalPayments", fields: [professional_id], references: [id])
-
-  @@index([job_id])
-  @@index([service_id])
-  @@index([user_id])
-  @@index([professional_id])
-  @@index([status])
-  @@index([mp_payment_id])
-  @@index([external_reference])
-  @@index([created_at])
-  @@map("payments")
-}
-
-model PaymentPreference {
-  id String @id @default(uuid())
-
-  // MercadoPago Integration
-  mp_preference_id   String  @unique
-  external_reference String?
-
-  // Preference Details
-  amount      Decimal @db.Decimal(12, 2)
-  currency    String  @default("ARS")
-  title       String
-  description String
-
-  // Payer Information
-  payer_email String
-
-  // Related Entities
-  user_id         String
-  service_id      String?
-  job_id          String?
-  professional_id String?
-
-  // URLs
-  success_url String?
-  failure_url String?
-  pending_url String?
-
-  // MercadoPago Response
-  init_point         String?
-  sandbox_init_point String?
-  client_id          String?
-  collector_id       Int?
-
-  // Status
-  used    Boolean   @default(false)
-  used_at DateTime?
-
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-
-  // Relations
-  user         User     @relation("UserPaymentPreferences", fields: [user_id], references: [id])
-  service      Service? @relation(fields: [service_id], references: [id])
-  job          Job?     @relation(fields: [job_id], references: [id])
-  professional User?    @relation("ProfessionalPaymentPreferences", fields: [professional_id], references: [id])
-
-  @@index([user_id])
-  @@index([professional_id])
-  @@index([service_id])
-  @@index([job_id])
-  @@index([mp_preference_id])
-  @@map("payment_preferences")
-}
-
-model ContactInteraction {
-  id              String  @id @default(uuid())
-  client_id       String
-  professional_id String
-  service_id      String?
-  project_id      String?
-
-  // Contact Details
-  contact_method String // "whatsapp", "email", "phone", "platform"
-  message        String?
-  contact_data   Json? // Additional contact metadata
-
-  // Conversion Tracking
-  converted_to_job Boolean  @default(false)
-  job_id           String?
-  conversion_value Decimal? @db.Decimal(12, 2)
-
-  created_at DateTime @default(now())
-
-  // Relations
-  client       User     @relation("ClientContacts", fields: [client_id], references: [id])
-  professional User     @relation("ProfessionalContacts", fields: [professional_id], references: [id])
-  service      Service? @relation(fields: [service_id], references: [id])
-  project      Project? @relation(fields: [project_id], references: [id])
-
-  @@index([client_id])
-  @@index([professional_id])
-  @@index([created_at])
-  @@index([converted_to_job])
-  @@map("contact_interactions")
-}
-
-// =============== REVIEWS & TRUST SYSTEM ===============
-
-model ReviewHelpfulVote {
-  id         String   @id @default(uuid())
-  review_id  String
-  user_id    String
-  is_helpful Boolean
-  created_at DateTime @default(now())
-
-  // Relations
-  review Review @relation(fields: [review_id], references: [id], onDelete: Cascade)
-  user   User   @relation("HelpfulVotes", fields: [user_id], references: [id], onDelete: Cascade)
-
-  @@unique([review_id, user_id])
-  @@index([review_id])
-  @@index([user_id])
-  @@map("review_helpful_votes")
-}
-
-model ReviewFlag {
-  id          String           @id @default(uuid())
-  review_id   String
-  flagger_id  String
-  reason      ReviewFlagReason
-  description String?
-  resolved    Boolean          @default(false)
-  resolved_by String?
-  resolved_at DateTime?
-  created_at  DateTime         @default(now())
-
-  // Relations
-  review   Review @relation(fields: [review_id], references: [id], onDelete: Cascade)
-  flagger  User   @relation("FlaggedReviews", fields: [flagger_id], references: [id], onDelete: Cascade)
-  resolver User?  @relation("ResolvedFlags", fields: [resolved_by], references: [id])
-
-  @@unique([review_id, flagger_id])
-  @@index([review_id])
-  @@index([flagger_id])
-  @@index([resolved])
-  @@map("review_flags")
-}
-
-model TrustScore {
-  id            String @id @default(uuid())
-  user_id       String @unique
-  overall_score Float  @default(0.0)
-
-  // Component Scores
-  review_score        Float @default(0.0)
-  completion_score    Float @default(0.0)
-  communication_score Float @default(0.0)
-  reliability_score   Float @default(0.0)
-  verification_score  Float @default(0.0)
-
-  // Metrics
-  total_jobs_completed   Int   @default(0)
-  total_reviews_received Int   @default(0)
-  average_rating         Float @default(0.0)
-  response_time_hours    Float @default(24.0)
-  completion_rate        Float @default(0.0)
-
-  // Trust Indicators
-  verified_identity  Boolean @default(false)
-  verified_skills    Boolean @default(false)
-  verified_business  Boolean @default(false)
-  background_checked Boolean @default(false)
-
-  last_calculated_at DateTime @default(now())
-  created_at         DateTime @default(now())
-  updated_at         DateTime @updatedAt
-
-  // Relations
-  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
-
-  @@index([overall_score])
-  @@index([user_id])
-  @@map("trust_scores")
-}
-
-model VerificationRequest {
-  id                String             @id @default(uuid())
-  user_id           String
-  verification_type VerificationType
-  status            VerificationStatus @default(pending)
-
-  // Submitted Documents
-  documents       String[] // Array of file URLs
-  additional_info Json? // Additional verification data
-
-  // Processing
-  reviewed_by      String?
-  reviewed_at      DateTime?
-  rejection_reason String?
-  notes            String?
-
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-
-  // Relations
-  user     User  @relation("VerificationRequests", fields: [user_id], references: [id], onDelete: Cascade)
-  reviewer User? @relation("ReviewedVerifications", fields: [reviewed_by], references: [id])
-
-  @@index([user_id])
-  @@index([status])
-  @@index([verification_type])
-  @@map("verification_requests")
-}
-
-model ReviewTemplate {
-  id          String   @id @default(uuid())
-  category    String
-  title       String
-  description String
-  questions   Json // Array of review questions
-  active      Boolean  @default(true)
-  created_at  DateTime @default(now())
-
-  @@index([category])
-  @@index([active])
-  @@map("review_templates")
-}
-
-// =============== FAVORITES SYSTEM ===============
-
-model Favorite {
-  id              String  @id @default(uuid())
-  user_id         String
-  service_id      String?
-  professional_id String?
-
-  created_at DateTime @default(now())
-
-  // Relations
-  user         User     @relation("UserFavorites", fields: [user_id], references: [id], onDelete: Cascade)
-  service      Service? @relation("ServiceFavorites", fields: [service_id], references: [id], onDelete: Cascade)
-  professional User?    @relation("ProfessionalFavorites", fields: [professional_id], references: [id], onDelete: Cascade)
-
-  @@unique([user_id, service_id])
-  @@unique([user_id, professional_id])
-  @@index([user_id])
-  @@index([service_id])
-  @@index([professional_id])
-  @@map("favorites")
-}
-
-// =============== NEW FEEDBACK SYSTEM (Mutual Comments & Likes) ===============
-
-model Feedback {
-  id String @id @default(uuid())
-
-  // Bidirectional: Any user can give feedback to any user
-  from_user_id String
-  to_user_id   String
-
-  // Context: What role was the recipient acting as?
-  to_user_role String @default("client") // "client" o "professional"
-
-  // Content (all optional)
-  comment  String? @db.Text
-  has_like Boolean @default(false) // Like = +1 Trust/Reliability
-
-  // Optional Context (where did this feedback come from?)
-  job_id     String?
-  service_id String?
-
-  // Metadata
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-
-  // Relations
-  from_user User     @relation("FeedbackGiven", fields: [from_user_id], references: [id], onDelete: Cascade)
-  to_user   User     @relation("FeedbackReceived", fields: [to_user_id], references: [id], onDelete: Cascade)
-  job       Job?     @relation(fields: [job_id], references: [id], onDelete: SetNull)
-  service   Service? @relation(fields: [service_id], references: [id], onDelete: SetNull)
-
-  @@unique([from_user_id, to_user_id, job_id]) // One feedback per job
-  @@index([from_user_id])
-  @@index([to_user_id])
-  @@index([to_user_role])
-  @@index([job_id])
-  @@index([has_like])
-  @@index([created_at])
-  @@map("feedbacks")
-}
-
-// =============== ROLE-BASED TRUST SCORES (NEW) ===============
-
-model RoleTrustScore {
-  id      String @id @default(uuid())
-  user_id String
-  role    String // "client" o "professional"
-
-  // Trust Metrics
-  total_likes      Int   @default(0)
-  total_feedback   Int   @default(0)
-  trust_percentage Float @default(0.0)
-
-  // Last calculation
-  last_calculated_at DateTime @default(now())
-  created_at         DateTime @default(now())
-  updated_at         DateTime @updatedAt
-
-  // Relations
-  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
-
-  @@unique([user_id, role]) // One trust score per role per user
-  @@index([user_id])
-  @@index([role])
-  @@index([trust_percentage])
-  @@map("role_trust_scores")
 }

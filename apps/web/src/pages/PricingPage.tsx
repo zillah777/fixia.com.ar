@@ -159,6 +159,10 @@ function PricingCardsSection() {
   const [isProcessing, setIsProcessing] = useState<string | null>(null);
 
   const handleFreePlan = () => {
+    if (user && user.userType === 'client') {
+      toast.info('Ya tienes una cuenta gratuita como cliente');
+      return;
+    }
     navigate('/register');
   };
 
@@ -233,9 +237,19 @@ function PricingCardsSection() {
                     <span>Perfil profesional</span>
                   </div>
                 </div>
-                <Button onClick={handleFreePlan} className="w-full bg-success hover:bg-success/90" size="sm">
-                  Comenzar Gratis
-                </Button>
+                {user && user.userType === 'client' ? (
+                  <Button
+                    disabled
+                    className="w-full bg-success/50 cursor-not-allowed"
+                    size="sm"
+                  >
+                    Plan Actual
+                  </Button>
+                ) : (
+                  <Button onClick={handleFreePlan} className="w-full bg-success hover:bg-success/90" size="sm">
+                    Comenzar Gratis
+                  </Button>
+                )}
               </CardContent>
             </Card>
           </motion.div>

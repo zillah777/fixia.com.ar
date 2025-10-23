@@ -52,7 +52,7 @@ function ClientProcessSection() {
     {
       step: "Paso 2", 
       title: "Elige tu Profesional",
-      description: "Compara perfiles, lee reseñas y selecciona al Profesional perfecto para tu proyecto.",
+      description: "Compara perfiles, lee reseñas y selecciona al Profesional perfecto  que se adecue a tu necesidad.",
       icon: Users,
       color: "text-success"
     },
@@ -162,7 +162,7 @@ function ProfessionalProcessSection() {
     {
       step: "Paso 3",
       title: "Recibe Solicitudes",
-      description: "Los clientes te encontrarán y contactarán para proyectos que coincidan con tu expertise.",
+      description: "Los clientes te encontrarán y contactarán para trabajos y tareas que coincidan con tu expertise.",
       icon: Bell,
       color: "text-warning"
     },
