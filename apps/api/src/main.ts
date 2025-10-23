@@ -243,7 +243,7 @@ async function bootstrap() {
         whitelist: true,
         forbidNonWhitelisted: true,
         transform: true,
-        disableErrorMessages: process.env.NODE_ENV === 'production',
+        disableErrorMessages: false, // Temporarily enabled to debug subscription issues
         validationError: {
           target: false,
           value: false,

@@ -52,6 +52,11 @@ export class SubscriptionController {
     @Req() req: any,
     @Body() dto: CreateSubscriptionDto,
   ) {
+    console.log('📦 Received subscription request:', JSON.stringify(dto));
+    console.log('📦 Data types:', {
+      subscriptionType: typeof dto.subscriptionType,
+      price: typeof dto.price,
+    });
     const userId = req.user.userId;
     return this.subscriptionService.createPaymentPreference(userId, dto);
   }
