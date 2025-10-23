@@ -1,7 +1,7 @@
 import { apiClient } from '../api';
 
 export interface SubscriptionPlan {
-  type: 'basic' | 'premium' | 'enterprise';
+  type: 'basic' | 'premium';
   price: number;
   name: string;
   features: string[];
@@ -48,19 +48,7 @@ export const SUBSCRIPTION_PLANS: Record<string, SubscriptionPlan> = {
       'Prioridad en búsquedas',
       'Estadísticas avanzadas',
       'Soporte prioritario',
-    ],
-  },
-  enterprise: {
-    type: 'enterprise',
-    price: 12999,
-    name: 'Plan Enterprise',
-    features: [
-      'Todo en Premium +',
-      'Equipo de profesionales',
-      'API access',
-      'Manager dedicado',
-      'Personalización avanzada',
-      'SLA garantizado',
+      'WhatsApp support 24hs',
     ],
   },
 };
@@ -70,7 +58,7 @@ class SubscriptionService {
    * Create a MercadoPago payment preference for a subscription plan
    */
   async createPaymentPreference(
-    planType: 'basic' | 'premium' | 'enterprise',
+    planType: 'basic' | 'premium',
   ): Promise<PaymentPreference> {
     const plan = SUBSCRIPTION_PLANS[planType];
 

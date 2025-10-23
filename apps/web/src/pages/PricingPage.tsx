@@ -162,7 +162,7 @@ function PricingCardsSection() {
     navigate('/register');
   };
 
-  const handleSelectPlan = async (planType: 'basic' | 'premium' | 'enterprise') => {
+  const handleSelectPlan = async (planType: 'basic' | 'premium') => {
     if (!user) {
       toast.info('Debes iniciar sesión para suscribirte');
       navigate('/login');
@@ -193,7 +193,7 @@ function PricingCardsSection() {
   return (
     <section className="py-20">
       <div className="container mx-auto px-6">
-        <div className="grid lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+        <div className="grid lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
           {/* Plan Gratis */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -306,41 +306,6 @@ function PricingCardsSection() {
                   size="sm"
                 >
                   {isProcessing === 'premium' ? 'Procesando...' : 'Seleccionar Premium'}
-                </Button>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          {/* Plan Enterprise */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-          >
-            <Card className="glass border-purple-500/30 bg-purple-500/5 h-full">
-              <CardHeader className="text-center pb-4">
-                <Building2 className="h-10 w-10 text-purple-400 mx-auto mb-2" />
-                <CardTitle className="text-xl">Enterprise</CardTitle>
-                <div className="text-3xl font-bold mt-2 text-purple-400">$12,999</div>
-                <div className="text-sm text-muted-foreground">ARS/mes</div>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="space-y-2 text-sm">
-                  {SUBSCRIPTION_PLANS.enterprise.features.map((feature, idx) => (
-                    <div key={idx} className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-success flex-shrink-0" />
-                      <span>{feature}</span>
-                    </div>
-                  ))}
-                </div>
-                <Button
-                  onClick={() => handleSelectPlan('enterprise')}
-                  disabled={isProcessing === 'enterprise'}
-                  className="w-full bg-purple-600 hover:bg-purple-700"
-                  size="sm"
-                >
-                  {isProcessing === 'enterprise' ? 'Procesando...' : 'Seleccionar Enterprise'}
                 </Button>
               </CardContent>
             </Card>

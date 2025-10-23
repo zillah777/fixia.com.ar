@@ -5,10 +5,10 @@ export class CreateSubscriptionDto {
   @ApiProperty({
     description: 'Tipo de plan de suscripción',
     example: 'basic',
-    enum: ['basic', 'premium', 'enterprise'],
+    enum: ['basic', 'premium'],
   })
   @IsString()
-  @IsIn(['basic', 'premium', 'enterprise'])
+  @IsIn(['basic', 'premium'])
   subscriptionType: string;
 
   @ApiProperty({

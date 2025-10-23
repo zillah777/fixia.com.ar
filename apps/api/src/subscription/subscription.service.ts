@@ -69,7 +69,6 @@ export class SubscriptionService {
     const planNames = {
       basic: 'Plan Basic - Fixia',
       premium: 'Plan Premium - Fixia',
-      enterprise: 'Plan Enterprise - Fixia',
     };
 
     try {
