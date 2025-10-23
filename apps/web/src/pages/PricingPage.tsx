@@ -182,13 +182,19 @@ function PricingCardsSection() {
     setIsProcessing(planType);
     try {
       // Create payment preference in MercadoPago
+      console.log('Creating payment preference for plan:', planType);
       const preference = await subscriptionService.createPaymentPreference(planType);
+
+      console.log('✅ Preference received from backend:', preference);
+      console.log('Init point:', preference.init_point);
+      console.log('Sandbox init point:', preference.sandbox_init_point);
 
       // Redirect to MercadoPago checkout
       subscriptionService.redirectToCheckout(preference);
     } catch (error: any) {
-      console.error('Error creating payment preference:', error);
+      console.error('❌ Error creating payment preference:', error);
       console.error('Error response:', error.response?.data);
+      console.error('Full error:', JSON.stringify(error, null, 2));
       const errorMessage = error.response?.data?.message || error.message || 'Error al procesar el pago. Intenta nuevamente.';
       toast.error(errorMessage);
     } finally {

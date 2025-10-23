@@ -85,53 +85,66 @@ export class SubscriptionService {
     this.logger.log('🚀 Plan type:', dto.subscriptionType);
     this.logger.log('🚀 Price:', dto.price);
 
+    const preferenceBody = {
+      items: [
+        {
+          id: dto.subscriptionType,
+          title: planNames[dto.subscriptionType] || 'Suscripción Fixia',
+          description: `Suscripción mensual ${dto.subscriptionType}`,
+          quantity: 1,
+          unit_price: dto.price,
+          currency_id: 'ARS',
+        },
+      ],
+      payer: {
+        name: user.name || 'Usuario',
+        email: user.email,
+      },
+      back_urls: {
+        success: `${this.configService.get('FRONTEND_URL')}/subscription/success`,
+        failure: `${this.configService.get('FRONTEND_URL')}/subscription/failure`,
+        pending: `${this.configService.get('FRONTEND_URL')}/subscription/pending`,
+      },
+      auto_return: 'approved',
+      notification_url: `${this.configService.get('API_URL')}/subscription/webhook`,
+      external_reference: JSON.stringify({
+        userId,
+        subscriptionType: dto.subscriptionType,
+        price: dto.price,
+      }),
+      metadata: {
+        user_id: userId,
+        subscription_type: dto.subscriptionType,
+      },
+    };
+
+    this.logger.log('📦 Preference body:', JSON.stringify(preferenceBody, null, 2));
+    this.logger.log('🔗 Notification URL:', preferenceBody.notification_url);
+    this.logger.log('🔗 Success URL:', preferenceBody.back_urls.success);
+
     try {
       // Create preference
       this.logger.log('🚀 Calling MercadoPago API...');
       const preference = await this.preferenceClient.create({
-        body: {
-          items: [
-            {
-              id: dto.subscriptionType,
-              title: planNames[dto.subscriptionType] || 'Suscripción Fixia',
-              description: `Suscripción mensual ${dto.subscriptionType}`,
-              quantity: 1,
-              unit_price: dto.price,
-              currency_id: 'ARS',
-            },
-          ],
-          payer: {
-            name: user.name || 'Usuario',
-            email: user.email,
-          },
-          back_urls: {
-            success: `${this.configService.get('FRONTEND_URL')}/subscription/success`,
-            failure: `${this.configService.get('FRONTEND_URL')}/subscription/failure`,
-            pending: `${this.configService.get('FRONTEND_URL')}/subscription/pending`,
-          },
-          auto_return: 'approved',
-          notification_url: `${this.configService.get('API_URL')}/subscription/webhook`,
-          external_reference: JSON.stringify({
-            userId,
-            subscriptionType: dto.subscriptionType,
-            price: dto.price,
-          }),
-          metadata: {
-            user_id: userId,
-            subscription_type: dto.subscriptionType,
-          },
-        },
+        body: preferenceBody,
       });
 
       this.logger.log(
-        `Payment preference created for user ${userId}: ${preference.id}`,
+        `✅ Payment preference created for user ${userId}: ${preference.id}`,
       );
+      this.logger.log('✅ Init point:', preference.init_point);
+      this.logger.log('✅ Sandbox init point:', preference.sandbox_init_point);
+      this.logger.log('✅ Full preference response:', JSON.stringify(preference, null, 2));
 
-      return {
+      const response = {
         id: preference.id,
         init_point: preference.init_point,
         sandbox_init_point: preference.sandbox_init_point,
       };
+
+      this.logger.log('📤 Returning to frontend:', JSON.stringify(response, null, 2));
+
+      return response;
     } catch (error) {
       this.logger.error('❌ Error creating MercadoPago preference:', error);
       this.logger.error('❌ Error message:', error.message);
