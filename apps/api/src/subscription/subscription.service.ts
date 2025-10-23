@@ -40,9 +40,13 @@ export class SubscriptionService {
    */
   async createPaymentPreference(
     userId: string,
-    dto: CreateSubscriptionDto,
+    dto: any, // Changed to any temporarily
   ): Promise<any> {
+    this.logger.log(`🔍 Checking MercadoPago client: ${!!this.preferenceClient}`);
+    this.logger.log(`🔍 MercadoPago Access Token exists: ${!!this.configService.get('MERCADOPAGO_ACCESS_TOKEN')}`);
+
     if (!this.preferenceClient) {
+      this.logger.error('❌ MercadoPago client is not initialized!');
       throw new BadRequestException('MercadoPago not configured');
     }
 
