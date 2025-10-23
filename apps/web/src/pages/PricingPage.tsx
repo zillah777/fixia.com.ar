@@ -184,7 +184,9 @@ function PricingCardsSection() {
       subscriptionService.redirectToCheckout(preference);
     } catch (error: any) {
       console.error('Error creating payment preference:', error);
-      toast.error(error.response?.data?.message || 'Error al procesar el pago. Intenta nuevamente.');
+      console.error('Error response:', error.response?.data);
+      const errorMessage = error.response?.data?.message || error.message || 'Error al procesar el pago. Intenta nuevamente.';
+      toast.error(errorMessage);
     } finally {
       setIsProcessing(null);
     }
