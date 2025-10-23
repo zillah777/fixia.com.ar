@@ -68,7 +68,7 @@ export class SubscriptionController {
       throw new BadRequestException('Invalid price');
     }
 
-    const userId = req.user.userId;
+    const userId = req.user.sub; // Extract user ID from JWT payload
     return this.subscriptionService.createPaymentPreference(userId, dto);
   }
 
@@ -86,7 +86,7 @@ export class SubscriptionController {
   @ApiResponse({ status: 401, description: 'No autorizado' })
   @ApiResponse({ status: 404, description: 'Usuario no encontrado' })
   async getSubscriptionStatus(@Req() req: any) {
-    const userId = req.user.userId;
+    const userId = req.user.sub; // Extract user ID from JWT payload
     return this.subscriptionService.getSubscriptionStatus(userId);
   }
 
@@ -108,7 +108,7 @@ export class SubscriptionController {
   })
   @ApiResponse({ status: 401, description: 'No autorizado' })
   async cancelSubscription(@Req() req: any) {
-    const userId = req.user.userId;
+    const userId = req.user.sub; // Extract user ID from JWT payload
     await this.subscriptionService.cancelSubscription(userId);
     return { message: 'Suscripción cancelada exitosamente' };
   }
