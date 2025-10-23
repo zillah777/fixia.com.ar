@@ -66,22 +66,18 @@ class SubscriptionService {
       throw new Error('Plan no válido');
     }
 
-    console.log('🔵 Sending request to backend:', {
-      subscriptionType: planType,
-      price: plan.price,
-    });
-
     const response = await apiClient.post('/subscription/create-preference', {
       subscriptionType: planType,
       price: plan.price,
     });
 
-    console.log('🔵 Raw response from apiClient:', response);
-    console.log('🔵 Response.data:', response.data);
-    console.log('🔵 Response.data type:', typeof response.data);
-    console.log('🔵 Response.data stringified:', JSON.stringify(response.data, null, 2));
+    // Backend wraps response in {success: true, data: {...}}
+    // Extract the actual preference data from response.data.data
+    const preferenceData = response.data.data || response.data;
 
-    return response.data;
+    console.log('✅ Preference data extracted:', preferenceData);
+
+    return preferenceData;
   }
 
   /**
