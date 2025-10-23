@@ -51,6 +51,9 @@ export class SubscriptionService {
     }
 
     // Get user details
+    this.logger.log('🔍 UserID received:', userId);
+    this.logger.log('🔍 UserID type:', typeof userId);
+
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
     });
