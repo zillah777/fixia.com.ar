@@ -8,6 +8,7 @@ import {
   HttpCode,
   HttpStatus,
   Delete,
+  BadRequestException,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -50,13 +51,23 @@ export class SubscriptionController {
   @ApiResponse({ status: 401, description: 'No autorizado' })
   async createPaymentPreference(
     @Req() req: any,
-    @Body() dto: CreateSubscriptionDto,
+    @Body() dto: any, // Temporarily use any to bypass validation
   ) {
     console.log('📦 Received subscription request:', JSON.stringify(dto));
     console.log('📦 Data types:', {
       subscriptionType: typeof dto.subscriptionType,
       price: typeof dto.price,
     });
+    console.log('📦 Raw DTO:', dto);
+
+    // Manual validation
+    if (!dto.subscriptionType || !['basic', 'premium'].includes(dto.subscriptionType)) {
+      throw new BadRequestException('Invalid subscription type');
+    }
+    if (!dto.price || typeof dto.price !== 'number' || dto.price < 0) {
+      throw new BadRequestException('Invalid price');
+    }
+
     const userId = req.user.userId;
     return this.subscriptionService.createPaymentPreference(userId, dto);
   }
