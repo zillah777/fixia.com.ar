@@ -74,6 +74,20 @@ export class SubscriptionService {
       throw new BadRequestException('Ya tienes una suscripción activa');
     }
 
+    // Check if user subscribed in the last 30 days (prevent multiple subscriptions per month)
+    if (user.subscription_started_at) {
+      const daysSinceLastSubscription = Math.floor(
+        (new Date().getTime() - new Date(user.subscription_started_at).getTime()) / (1000 * 60 * 60 * 24)
+      );
+
+      if (daysSinceLastSubscription < 30) {
+        const daysRemaining = 30 - daysSinceLastSubscription;
+        throw new BadRequestException(
+          `Solo puedes suscribirte una vez por mes. Podrás suscribirte nuevamente en ${daysRemaining} día${daysRemaining > 1 ? 's' : ''}`
+        );
+      }
+    }
+
     // Get plan details
     const planNames = {
       basic: 'Plan Basic - Fixia',
