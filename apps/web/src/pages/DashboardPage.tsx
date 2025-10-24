@@ -735,42 +735,43 @@ export default function DashboardPage() {
         // Add delay to ensure authentication is fully established after login
         await new Promise(resolve => setTimeout(resolve, 1000));
 
-        // Load different data based on user type
-        if (user.userType === 'client') {
-          // Load client stats from projects
-          const { opportunitiesService } = await import('../lib/services/opportunities.service');
-          const projects = await opportunitiesService.getMyProjects();
+        // Load data - professionals with dual role load BOTH client and professional data
+        // Always load client stats (everyone can be a client)
+        const { opportunitiesService } = await import('../lib/services/opportunities.service');
+        const projects = await opportunitiesService.getMyProjects();
 
-          const open_announcements = projects.filter((p: any) => p.status === 'open').length;
-          const proposals_received = projects.reduce((sum: number, p: any) => sum + (p._count?.proposals || 0), 0);
-          const in_progress = projects.filter((p: any) => p.status === 'in_progress').length;
+        const open_announcements = projects.filter((p: any) => p.status === 'open').length;
+        const proposals_received = projects.reduce((sum: number, p: any) => sum + (p._count?.proposals || 0), 0);
+        const in_progress = projects.filter((p: any) => p.status === 'in_progress').length;
 
-          setClientStats({
-            open_announcements,
-            proposals_received,
-            in_progress,
-            client_rating: 0 // TODO: Implement client rating from professionals
-          });
+        setClientStats({
+          open_announcements,
+          proposals_received,
+          in_progress,
+          client_rating: 0 // TODO: Implement client rating from professionals
+        });
 
-          // Store client projects for the ClientAnnouncements component
-          setClientProjects(projects);
-        } else {
-          // Load professional stats
+        // Store client projects for the ClientAnnouncements component
+        setClientProjects(projects);
+
+        // Additionally load professional stats if user is professional
+        if (user.userType === 'professional') {
           const data = await userService.getDashboard();
           setDashboardData(data);
         }
       } catch (error: any) {
         console.warn('Dashboard stats fetch failed, using defaults:', error?.message);
 
-        // Set fallback data instead of error
-        if (user.userType === 'client') {
-          setClientStats({
-            open_announcements: 0,
-            proposals_received: 0,
-            in_progress: 0,
-            client_rating: 0
-          });
-        } else {
+        // Set fallback data instead of error - always set client stats (dual role)
+        setClientStats({
+          open_announcements: 0,
+          proposals_received: 0,
+          in_progress: 0,
+          client_rating: 0
+        });
+
+        // Set professional stats fallback if user is professional
+        if (user.userType === 'professional') {
           setDashboardData({
             total_services: 0,
             active_projects: 0,
@@ -793,41 +794,41 @@ export default function DashboardPage() {
       try {
         setActivityLoading(true);
 
-        // Generate activity from user's actual data
+        // Generate activity from user's actual data - load both client AND professional activities (dual role)
         const activities: RecentActivity[] = [];
 
-        if (user.userType === 'client') {
-          // Load client's projects to generate activity
-          const { opportunitiesService } = await import('../lib/services/opportunities.service');
-          const projects = await opportunitiesService.getMyProjects();
+        // Always load client activities (everyone can be a client)
+        const { opportunitiesService } = await import('../lib/services/opportunities.service');
+        const projects = await opportunitiesService.getMyProjects();
 
-          // Add project creation activities
-          projects.forEach((project: any) => {
-            activities.push({
-              id: `project-${project.id}`,
-              type: 'service_created',
-              title: 'Anuncio publicado',
-              description: `Creaste el anuncio "${project.title}"`,
-              created_at: project.created_at,
-              status: 'completed'
-            });
-
-            // Add proposal received activities
-            if (project.proposals && project.proposals.length > 0) {
-              project.proposals.forEach((proposal: any) => {
-                activities.push({
-                  id: `proposal-${proposal.id}`,
-                  type: 'proposal',
-                  title: 'Propuesta recibida',
-                  description: `${proposal.professional.name} envió una propuesta para "${project.title}"`,
-                  created_at: proposal.created_at,
-                  status: 'new'
-                });
-              });
-            }
+        // Add project creation activities
+        projects.forEach((project: any) => {
+          activities.push({
+            id: `project-${project.id}`,
+            type: 'service_created',
+            title: 'Anuncio publicado',
+            description: `Creaste el anuncio "${project.title}"`,
+            created_at: project.created_at,
+            status: 'completed'
           });
-        } else {
-          // For professionals, use existing service
+
+          // Add proposal received activities
+          if (project.proposals && project.proposals.length > 0) {
+            project.proposals.forEach((proposal: any) => {
+              activities.push({
+                id: `proposal-${proposal.id}`,
+                type: 'proposal',
+                title: 'Propuesta recibida',
+                description: `${proposal.professional.name} envió una propuesta para "${project.title}"`,
+                created_at: proposal.created_at,
+                status: 'new'
+              });
+            });
+          }
+        });
+
+        // Additionally load professional activities if user is professional
+        if (user.userType === 'professional') {
           const professionalActivities = await dashboardService.getRecentActivity(10);
           activities.push(...professionalActivities);
         }
