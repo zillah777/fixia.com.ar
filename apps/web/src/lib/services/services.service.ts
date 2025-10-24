@@ -12,14 +12,25 @@ export interface ServiceCategory {
 export interface Professional {
   id: string;
   name: string;
-  lastName: string;
+  lastName?: string;
   avatar?: string;
   verified: boolean;
-  level: string;
-  location: string;
-  averageRating: number;
-  totalReviews: number;
-  badges: Array<{
+  level?: string;
+  location?: string;
+  whatsapp_number?: string;
+  averageRating?: number;
+  totalReviews?: number;
+  professional_profile?: {
+    bio?: string;
+    rating?: number;
+    review_count?: number;
+    level?: string;
+    specialties?: string[];
+    response_time_hours?: number;
+    availability_status?: string;
+    completed_orders?: number;
+  };
+  badges?: Array<{
     id: string;
     name: string;
     description: string;
@@ -32,19 +43,31 @@ export interface Service {
   id: string;
   title: string;
   description: string;
-  category: string;
+  category: string | { id: string; name: string; slug: string; icon?: string };
   subcategory?: string;
   price: number;
-  priceType: 'fixed' | 'hourly' | 'negotiable';
-  images: string[];
+  priceType?: 'fixed' | 'hourly' | 'negotiable';
+  images?: string[];
+  main_image?: string;
+  gallery?: string[];
   tags: string[];
-  featured: boolean;
+  featured?: boolean;
   active: boolean;
   professional: Professional;
-  averageRating: number;
-  totalReviews: number;
-  createdAt: string;
-  updatedAt: string;
+  averageRating?: number;
+  totalReviews?: number;
+  view_count?: number;
+  delivery_time_days?: number;
+  revisions_included?: number;
+  _count?: {
+    favorites?: number;
+    reviews?: number;
+    service_views?: number;
+  };
+  createdAt?: string;
+  updatedAt?: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface ServiceFilters {
@@ -128,6 +151,24 @@ export const servicesService = {
 
   async getTopRatedProfessionals(limit = 6): Promise<Professional[]> {
     return api.get<Professional[]>(`/professionals/top-rated?limit=${limit}`);
+  },
+
+  async trackView(serviceId: string): Promise<{ message: string }> {
+    try {
+      return await api.post<{ message: string }>(`/services/${serviceId}/view`, {});
+    } catch (error) {
+      console.error('Error tracking view:', error);
+      // Silently fail - view tracking is not critical
+      return { message: 'View tracking failed' };
+    }
+  },
+
+  async getServiceAnalytics(serviceId: string): Promise<any> {
+    return api.get(`/services/${serviceId}/analytics`);
+  },
+
+  async getMyServicesAnalytics(): Promise<any> {
+    return api.get('/services/my/analytics');
   },
 };
 

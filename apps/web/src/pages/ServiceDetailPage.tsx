@@ -129,6 +129,13 @@ export default function ServiceDetailPage() {
       try {
         const serviceData = await servicesService.getServiceById(id);
         setService(serviceData);
+
+        // Track view after successfully loading service
+        // Do this asynchronously without blocking the UI
+        servicesService.trackView(id).catch((err) => {
+          console.log('View tracking failed:', err);
+          // Silently fail - don't show error to user
+        });
       } catch (err) {
         setError('Error al cargar el servicio');
         console.error('Error fetching service:', err);

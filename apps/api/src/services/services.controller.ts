@@ -1,15 +1,18 @@
-import { 
-  Controller, 
-  Get, 
-  Post, 
-  Body, 
-  Param, 
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
   Put,
   Delete,
   Query,
   UseGuards,
   ParseUUIDPipe,
+  Req,
+  Ip,
 } from '@nestjs/common';
+import { Request } from 'express';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { ServicesService } from './services.service';
 import { CreateServiceDto } from './dto/create-service.dto';
@@ -99,5 +102,46 @@ export class ServicesController {
   @ApiResponse({ status: 404, description: 'Servicio no encontrado' })
   remove(@Param('id', ParseUUIDPipe) id: string, @CurrentUser() user: any) {
     return this.servicesService.remove(id, user.sub);
+  }
+
+  @Post(':id/view')
+  @Public()
+  @ApiOperation({ summary: 'Registrar una vista del servicio' })
+  @ApiParam({ name: 'id', description: 'ID del servicio', type: 'string' })
+  @ApiResponse({ status: 201, description: 'Vista registrada exitosamente' })
+  @ApiResponse({ status: 404, description: 'Servicio no encontrado' })
+  async trackView(
+    @Param('id', ParseUUIDPipe) id: string,
+    @CurrentUser() user: any,
+    @Req() req: Request,
+    @Ip() ip: string,
+  ) {
+    const viewerId = user?.sub || null;
+    const ipAddress = ip || req.ip || req.headers['x-forwarded-for'] as string || 'unknown';
+    const userAgent = req.headers['user-agent'] || 'unknown';
+
+    return this.servicesService.trackView(id, viewerId, ipAddress, userAgent);
+  }
+
+  @Get(':id/analytics')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Obtener analytics de un servicio propio' })
+  @ApiParam({ name: 'id', description: 'ID del servicio', type: 'string' })
+  @ApiResponse({ status: 200, description: 'Analytics del servicio' })
+  @ApiResponse({ status: 403, description: 'Solo puedes ver analytics de tus propios servicios' })
+  @ApiResponse({ status: 404, description: 'Servicio no encontrado' })
+  getAnalytics(@Param('id', ParseUUIDPipe) id: string, @CurrentUser() user: any) {
+    return this.servicesService.getServiceAnalytics(id, user.sub);
+  }
+
+  @Get('my/analytics')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('professional')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Obtener analytics de todos mis servicios' })
+  @ApiResponse({ status: 200, description: 'Analytics de todos los servicios del profesional' })
+  getMyServicesAnalytics(@CurrentUser() user: any) {
+    return this.servicesService.getMyServicesAnalytics(user.sub);
   }
 }
