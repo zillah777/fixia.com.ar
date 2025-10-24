@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import {
   Plus, TrendingUp, Users, Heart, MessageSquare,
   Calendar, Clock, DollarSign, ArrowRight, Briefcase, Target,
-  Zap, CheckCircle, AlertCircle, Search, Settings, Bell
+  Zap, CheckCircle, AlertCircle, Search, Settings, Bell, Crown
 } from "lucide-react";
 import { userService, DashboardStats } from "../lib/services";
 import { dashboardService } from "../lib/services/dashboard.service";
@@ -20,61 +20,81 @@ import { FixiaNavigation } from "../components/FixiaNavigation";
 
 function QuickActions({ user }: { user: any }) {
   const isProfessional = user?.userType === 'professional';
-  
+
   return (
-    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-      <motion.div
-        whileHover={{ y: -2 }}
-        transition={{ duration: 0.2 }}
-      >
-        <Link to={isProfessional ? "/new-project" : "/new-opportunity"}>
+    <div className={`grid md:grid-cols-2 lg:grid-cols-${isProfessional ? '3' : '4'} gap-4`}>
+      {/* Professional Actions - Show for professionals with dual role */}
+      {isProfessional && (
+        <>
+          <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.2 }}>
+            <Link to="/new-project">
+              <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 cursor-pointer group">
+                <CardContent className="p-6 text-center">
+                  <div className="h-12 w-12 liquid-gradient rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                    <Plus className="h-6 w-6 text-white" />
+                  </div>
+                  <h3 className="font-semibold mb-2">Crear Servicio</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Publica un nuevo servicio y empieza a generar ingresos
+                  </p>
+                </CardContent>
+              </Card>
+            </Link>
+          </motion.div>
+
+          <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.2 }}>
+            <Link to="/opportunities">
+              <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 cursor-pointer group">
+                <CardContent className="p-6 text-center">
+                  <div className="h-12 w-12 bg-success/20 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                    <Target className="h-6 w-6 text-success" />
+                  </div>
+                  <h3 className="font-semibold mb-2">Ver Oportunidades</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Encuentra proyectos que se ajusten a tus habilidades
+                  </p>
+                </CardContent>
+              </Card>
+            </Link>
+          </motion.div>
+        </>
+      )}
+
+      {/* Client Actions - Show for everyone (dual role + pure clients) */}
+      <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.2 }}>
+        <Link to="/new-opportunity">
           <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 cursor-pointer group">
             <CardContent className="p-6 text-center">
-              <div className="h-12 w-12 liquid-gradient rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                <Plus className="h-6 w-6 text-white" />
+              <div className="h-12 w-12 bg-purple-500/20 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                <Plus className="h-6 w-6 text-purple-400" />
               </div>
-              <h3 className="font-semibold mb-2">
-                {isProfessional ? "Crear Servicio" : "Crear Anuncio"}
-              </h3>
+              <h3 className="font-semibold mb-2">Crear Anuncio</h3>
               <p className="text-sm text-muted-foreground">
-                {isProfessional 
-                  ? "Publica un nuevo servicio y empieza a generar ingresos"
-                  : "Publica lo que necesitas y conecta con profesionales"
-                }
+                Publica lo que necesitas y conecta con profesionales
               </p>
             </CardContent>
           </Card>
         </Link>
       </motion.div>
 
-      <motion.div
-        whileHover={{ y: -2 }}
-        transition={{ duration: 0.2 }}
-      >
-        <Link to={isProfessional ? "/opportunities" : "/my-announcements"}>
+      <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.2 }}>
+        <Link to="/my-announcements">
           <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 cursor-pointer group">
             <CardContent className="p-6 text-center">
-              <div className="h-12 w-12 bg-success/20 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                <Target className="h-6 w-6 text-success" />
+              <div className="h-12 w-12 bg-info/20 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                <Briefcase className="h-6 w-6 text-info" />
               </div>
-              <h3 className="font-semibold mb-2">
-                {isProfessional ? "Ver Oportunidades" : "Mis Anuncios"}
-              </h3>
+              <h3 className="font-semibold mb-2">Mis Anuncios</h3>
               <p className="text-sm text-muted-foreground">
-                {isProfessional
-                  ? "Encuentra proyectos que se ajusten a tus habilidades"
-                  : "Revisa tus anuncios y las propuestas recibidas"
-                }
+                Revisa tus anuncios y las propuestas recibidas
               </p>
             </CardContent>
           </Card>
         </Link>
       </motion.div>
 
-      <motion.div
-        whileHover={{ y: -2 }}
-        transition={{ duration: 0.2 }}
-      >
+      {/* Common Actions */}
+      <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.2 }}>
         <Link to="/services">
           <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 cursor-pointer group">
             <CardContent className="p-6 text-center">
@@ -90,10 +110,7 @@ function QuickActions({ user }: { user: any }) {
         </Link>
       </motion.div>
 
-      <motion.div
-        whileHover={{ y: -2 }}
-        transition={{ duration: 0.2 }}
-      >
+      <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.2 }}>
         <Link to="/profile">
           <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 cursor-pointer group">
             <CardContent className="p-6 text-center">
@@ -341,43 +358,100 @@ function StatCards({ dashboardData, loading, userType, clientStats }: {
     }
   ];
 
-  const stats = userType === 'client' ? clientStatsCards : professionalStatsCards;
+  // For professionals (dual role), show both professional and client stats
+  const showBothStats = userType === 'professional';
 
   return (
-    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-      {stats.map((stat, index) => {
-        const Icon = stat.icon;
-        return (
-          <motion.div
-            key={stat.title}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 * index }}
-          >
-            <Card className="glass hover:glass-medium transition-all duration-300 border-white/10">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">{stat.title}</p>
-                    <p className="text-3xl font-bold mt-2">{stat.value}</p>
-                    <div className="flex items-center mt-2 space-x-2">
-                      <span className={`text-sm ${
-                        stat.changeType === 'positive' ? 'text-success' : 'text-destructive'
-                      }`}>
-                        {stat.change}
-                      </span>
-                      <span className="text-xs text-muted-foreground">{stat.description}</span>
+    <div className="space-y-6">
+      {/* Professional Stats - Only for professionals */}
+      {showBothStats && (
+        <>
+          <div className="flex items-center gap-2 mb-4">
+            <Briefcase className="h-5 w-5 text-primary" />
+            <h3 className="text-lg font-semibold">Estadísticas Profesionales</h3>
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {professionalStatsCards.map((stat, index) => {
+              const Icon = stat.icon;
+              return (
+                <motion.div
+                  key={stat.title}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.1 * index }}
+                >
+                  <Card className="glass hover:glass-medium transition-all duration-300 border-white/10">
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm text-muted-foreground">{stat.title}</p>
+                          <p className="text-3xl font-bold mt-2">{stat.value}</p>
+                          <div className="flex items-center mt-2 space-x-2">
+                            <span className={`text-sm ${
+                              stat.changeType === 'positive' ? 'text-success' : 'text-destructive'
+                            }`}>
+                              {stat.change}
+                            </span>
+                            <span className="text-xs text-muted-foreground">{stat.description}</span>
+                          </div>
+                        </div>
+                        <div className="h-12 w-12 bg-primary/20 rounded-xl flex items-center justify-center">
+                          <Icon className="h-6 w-6 text-primary" />
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              );
+            })}
+          </div>
+        </>
+      )}
+
+      {/* Client Stats - For everyone (both pure clients and dual role professionals) */}
+      <div>
+        {showBothStats && (
+          <div className="flex items-center gap-2 mb-4 mt-8">
+            <Users className="h-5 w-5 text-info" />
+            <h3 className="text-lg font-semibold">Estadísticas de Cliente</h3>
+          </div>
+        )}
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {clientStatsCards.map((stat, index) => {
+            const Icon = stat.icon;
+            return (
+              <motion.div
+                key={stat.title}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: showBothStats ? 0.4 + 0.1 * index : 0.1 * index }}
+              >
+                <Card className="glass hover:glass-medium transition-all duration-300 border-white/10">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm text-muted-foreground">{stat.title}</p>
+                        <p className="text-3xl font-bold mt-2">{stat.value}</p>
+                        <div className="flex items-center mt-2 space-x-2">
+                          <span className={`text-sm ${
+                            stat.changeType === 'positive' ? 'text-success' : 'text-destructive'
+                          }`}>
+                            {stat.change}
+                          </span>
+                          <span className="text-xs text-muted-foreground">{stat.description}</span>
+                        </div>
+                      </div>
+                      <div className="h-12 w-12 bg-info/20 rounded-xl flex items-center justify-center">
+                        <Icon className="h-6 w-6 text-info" />
+                      </div>
                     </div>
-                  </div>
-                  <div className="h-12 w-12 bg-primary/20 rounded-xl flex items-center justify-center">
-                    <Icon className="h-6 w-6 text-primary" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        );
-      })}
+                  </CardContent>
+                </Card>
+              </motion.div>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 }
@@ -932,12 +1006,20 @@ export default function DashboardPage() {
           transition={{ duration: 0.6, delay: 0.4 }}
           className="grid lg:grid-cols-3 gap-8"
         >
-          {/* Projects Section - Different for Clients vs Professionals */}
-          <div className="lg:col-span-2">
-            {user?.userType === 'client' ? (
+          {/* Projects Section - Show both for professionals (dual role) */}
+          <div className="lg:col-span-2 space-y-8">
+            {user?.userType === 'professional' && (
+              <>
+                {/* Professional Section */}
+                <CurrentProjects projects={currentProjects} loading={projectsLoading} />
+
+                {/* Client Section (dual role) */}
+                <ClientAnnouncements clientProjects={clientProjects} loading={loading} />
+              </>
+            )}
+
+            {user?.userType === 'client' && (
               <ClientAnnouncements clientProjects={clientProjects} loading={loading} />
-            ) : (
-              <CurrentProjects projects={currentProjects} loading={projectsLoading} />
             )}
           </div>
 
