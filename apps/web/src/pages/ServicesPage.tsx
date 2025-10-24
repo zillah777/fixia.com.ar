@@ -516,6 +516,7 @@ function ServiceCard({ service, viewMode }: { service: Service, viewMode: string
     );
   }
 
+  // Fiverr-style card (grid view)
   return (
     <>
       <ContactProfessionalModal
@@ -523,136 +524,145 @@ function ServiceCard({ service, viewMode }: { service: Service, viewMode: string
         open={showContactModal}
         onClose={() => setShowContactModal(false)}
       />
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        whileHover={{ y: -4 }}
-        transition={{ duration: 0.3 }}
-      >
-        <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 overflow-hidden group">
-        {/* Image */}
-        <div className="relative aspect-[4/3] overflow-hidden">
-          <img 
-            src={service.images?.[0] || "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=300&fit=crop"} 
-            alt={service.title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-          />
-          {service.featured && (
-            <Badge className="absolute top-3 left-3 bg-warning/20 text-warning border-warning/30">
-              <Heart className="h-3 w-3 mr-1" />
-              Destacado
-            </Badge>
-          )}
-          <Button
-            variant="ghost"
-            size="icon" className="absolute top-3 right-3 h-9 w-9 glass opacity-0 group-hover:opacity-100 transition-opacity"
-            onClick={toggleFavorite}
-            disabled={loading}
-          >
-            {loading ? (
-              <div className="animate-spin rounded-full border-2 border-current border-t-transparent h-4 w-4  text-white" />
-            ) : (
-              <Heart className={`h-4 w-4 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-white'}`} />
-            )}
-          </Button>
-          <div className="absolute bottom-3 right-3">
-            <Badge className="bg-background/80 backdrop-blur-sm text-xs">
-              {service.category}
-            </Badge>
-          </div>
-        </div>
-        
-        {/* Content */}
-        <CardContent className="p-4 space-y-3">
-          {/* Professional Info */}
-          <div className="flex items-center space-x-3">
-            <Avatar className="h-8 w-8">
-              <AvatarImage src={service.professional.avatar} />
-              <AvatarFallback>{service.professional.name.charAt(0)}</AvatarFallback>
-            </Avatar>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center space-x-1">
-                <span className="text-sm font-medium truncate">{service.professional.name}</span>
-                {service.professional.verified && (
-                  <CheckCircle className="h-4 w-4 text-success flex-shrink-0" />
-                )}
-              </div>
-              <Badge className="bg-primary/20 text-primary border-primary/30 text-xs">
-                {service.professional.level}
-              </Badge>
-            </div>
-            <Button variant="ghost" size="icon" className="h-9 w-9 opacity-0 group-hover:opacity-100 transition-opacity">
-              <Share2 className="h-4 w-4" />
-            </Button>
-          </div>
-          
-          {/* Title and Description */}
-          <Link to={`/services/${service.id}`}>
-            <h3 className="font-semibold hover:text-primary transition-colors cursor-pointer line-clamp-2">
-              {service.title}
-            </h3>
-          </Link>
-          
-          <p className="text-muted-foreground text-sm line-clamp-2">
-            {service.description}
-          </p>
-          
-          {/* Tags */}
-          <div className="flex flex-wrap gap-2">
-            {service.tags.slice(0, 3).map((tag: string) => (
-              <Badge key={tag} variant="outline" className="glass border-white/20 text-xs">
-                {tag}
-              </Badge>
-            ))}
-          </div>
-          
-          {/* Stats */}
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <div className="flex items-center space-x-3">
-              <span className="flex items-center">
-                <Heart className="h-3 w-3 mr-1 text-warning fill-current" />
-                {service.averageRating} ({service.totalReviews})
-              </span>
-              <span className="flex items-center">
-                <Clock className="h-3 w-3 mr-1" />
-                {service.active ? 'Disponible' : 'No disponible'}
-              </span>
-            </div>
-            <span className="flex items-center">
-              <MapPin className="h-3 w-3 mr-1" />
-              {service.professional.location?.split(',')[0] || 'N/A'}
-            </span>
-          </div>
-          
-          {/* Price and Actions */}
-          <div className="pt-2 border-t border-white/10 space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-xl font-bold text-primary">${service.price}</span>
-              <span className="text-xs text-muted-foreground">
-                {service.priceType === 'hourly' ? 'Por hora' : service.priceType === 'fixed' ? 'Precio fijo' : 'Negociable'}
-              </span>
-            </div>
-            <div className="flex gap-2">
+      <Link to={`/services/${service.id}`}>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          whileHover={{ y: -4 }}
+          transition={{ duration: 0.3 }}
+        >
+          <Card className="bg-card/50 backdrop-blur-sm hover:bg-card/70 transition-all duration-300 border border-white/10 hover:border-white/20 overflow-hidden group cursor-pointer">
+            {/* Image Container */}
+            <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+              <img
+                src={service.main_image || service.images?.[0] || "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=300&fit=crop"}
+                alt={service.title}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              />
+
+              {/* Destacado Badge - Top Left */}
+              {service.featured && (
+                <div className="absolute top-3 left-3">
+                  <Badge className="bg-primary text-primary-foreground border-0 text-xs font-medium px-2 py-1">
+                    Destacado
+                  </Badge>
+                </div>
+              )}
+
+              {/* Favorite Button - Top Right */}
               <Button
-                size="sm"
-                variant="outline"
-                className="glass border-white/20 hover:glass-medium flex-1"
-                onClick={handleContactClick}
+                variant="ghost"
+                size="icon"
+                className="absolute top-3 right-3 h-8 w-8 bg-background/80 hover:bg-background opacity-0 group-hover:opacity-100 transition-opacity"
+                onClick={toggleFavorite}
+                disabled={loading}
               >
-                <MessageCircle className="h-3 w-3 mr-1" />
-                Contactar
+                {loading ? (
+                  <div className="animate-spin rounded-full border-2 border-current border-t-transparent h-4 w-4" />
+                ) : (
+                  <Heart className={`h-4 w-4 ${isFavorite ? 'fill-red-500 text-red-500' : ''}`} />
+                )}
               </Button>
-              <Link to={`/services/${service.id}`} className="flex-1">
-                <Button size="sm" className="liquid-gradient hover:opacity-90 transition-all duration-300 w-full">
-                  Ver Detalles
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
+
+              {/* Category Badge - Bottom Right */}
+              <div className="absolute bottom-3 right-3">
+                <Badge className="bg-background/90 text-foreground border-0 text-xs font-medium px-2 py-1 backdrop-blur-sm">
+                  {service.category?.name || 'Desarrollo Web'}
+                </Badge>
+              </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
-    </motion.div>
+
+            {/* Content */}
+            <CardContent className="p-4">
+              {/* Professional Info */}
+              <div className="flex items-center gap-2 mb-3">
+                <Avatar className="h-6 w-6 border border-white/20">
+                  <AvatarImage src={service.professional?.avatar} />
+                  <AvatarFallback className="text-xs bg-primary/10">
+                    {service.professional?.name?.charAt(0) || 'P'}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                  <span className="text-sm font-medium text-foreground truncate">
+                    {service.professional?.name || 'Profesional'}
+                  </span>
+                  {service.professional?.verified && (
+                    <CheckCircle className="h-3.5 w-3.5 text-primary flex-shrink-0" />
+                  )}
+                </div>
+                <Badge variant="outline" className="text-xs border-primary/30 text-primary bg-primary/5 px-1.5 py-0">
+                  Pro
+                </Badge>
+              </div>
+
+              {/* Title */}
+              <h3 className="font-semibold text-base text-foreground mb-2 line-clamp-2 leading-tight hover:text-primary transition-colors">
+                {service.title}
+              </h3>
+
+              {/* Description */}
+              <p className="text-sm text-muted-foreground mb-3 line-clamp-2 leading-relaxed">
+                {service.description}
+              </p>
+
+              {/* Tags */}
+              <div className="flex flex-wrap gap-1.5 mb-3">
+                {(service.tags || []).slice(0, 3).map((tag: string, index: number) => (
+                  <Badge
+                    key={index}
+                    variant="secondary"
+                    className="text-xs font-normal bg-muted hover:bg-muted/80 border-0 px-2 py-0.5"
+                  >
+                    {tag}
+                  </Badge>
+                ))}
+              </div>
+
+              {/* Rating and Stats */}
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-1">
+                  <Heart className="h-3.5 w-3.5 text-warning fill-warning" />
+                  <span className="text-sm font-semibold text-foreground">
+                    {service.professional?.professional_profile?.rating?.toFixed(1) || '4.9'}
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    ({service.professional?.professional_profile?.review_count || 187})
+                  </span>
+                </div>
+                <span className="text-xs text-muted-foreground flex items-center gap-1">
+                  <Clock className="h-3 w-3" />
+                  {service.delivery_time_days || 21} días
+                </span>
+              </div>
+
+              {/* Price Section */}
+              <div className="pt-3 border-t border-white/10">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-baseline gap-2">
+                    {/* Show strikethrough price if there's a discount */}
+                    <span className="text-xs text-muted-foreground line-through">
+                      ${Math.floor(service.price * 1.3)}
+                    </span>
+                    <span className="text-lg font-bold text-foreground">
+                      ${service.price}
+                    </span>
+                  </div>
+                  <Button
+                    size="sm"
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground text-xs px-4 py-1.5 h-auto"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                  >
+                    Ver Detalles →
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </Link>
     </>
   );
 }
