@@ -258,10 +258,11 @@ function StatCardSkeleton() {
   );
 }
 
-function StatCards({ dashboardData, loading, userType, clientStats }: {
+function StatCards({ dashboardData, loading, userType, clientStats, planType }: {
   dashboardData: DashboardStats | null;
   loading: boolean;
   userType?: string;
+  planType?: 'free' | 'basic' | 'premium';
   clientStats?: {
     open_announcements: number;
     proposals_received: number;
@@ -334,11 +335,13 @@ function StatCards({ dashboardData, loading, userType, clientStats }: {
     },
     {
       title: "Servicios Totales",
-      value: dashboardData?.total_services?.toString() || "0",
-      change: "+2",
+      value: planType === 'basic'
+        ? `${dashboardData?.total_services || 0}/5`
+        : dashboardData?.total_services?.toString() || "0",
+      change: planType === 'basic' ? '' : '+2',
       changeType: "positive",
       icon: Briefcase,
-      description: "servicios creados"
+      description: planType === 'basic' ? 'límite plan Basic' : planType === 'premium' ? 'ilimitados' : 'servicios creados'
     },
     {
       title: "Proyectos Activos",
@@ -936,8 +939,43 @@ export default function DashboardPage() {
           </motion.div>
         )}
 
+        {/* Service limit warning for Basic users approaching limit */}
+        {user?.userType === 'professional' && user?.planType === 'basic' && dashboardData && dashboardData.total_services >= 4 && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+            className="mb-6"
+          >
+            <Card className="glass border-warning/20 bg-gradient-to-r from-warning/10 to-transparent">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-3">
+                  <AlertCircle className="h-5 w-5 text-warning flex-shrink-0" />
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-foreground">
+                      {dashboardData.total_services === 5
+                        ? '¡Has alcanzado el límite de servicios!'
+                        : '¡Casi alcanzas el límite de servicios!'}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {dashboardData.total_services === 5
+                        ? 'Tienes 5/5 servicios activos. Actualiza a Premium para servicios ilimitados.'
+                        : `Tienes ${dashboardData.total_services}/5 servicios activos. Actualiza a Premium para no tener límites.`}
+                    </p>
+                  </div>
+                  <Link to="/pricing">
+                    <Button size="sm" className="bg-warning hover:bg-warning/90 text-warning-foreground">
+                      Actualizar a Premium
+                    </Button>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+
         {/* Subtle Premium upgrade suggestion for Basic users */}
-        {user?.userType === 'professional' && user?.planType === 'basic' && (
+        {user?.userType === 'professional' && user?.planType === 'basic' && (!dashboardData || dashboardData.total_services < 4) && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -995,6 +1033,7 @@ export default function DashboardPage() {
             dashboardData={dashboardData}
             loading={loading}
             userType={user?.userType}
+            planType={user?.planType}
             clientStats={clientStats}
           />
         </motion.div>

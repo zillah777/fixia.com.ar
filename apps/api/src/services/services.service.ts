@@ -10,14 +10,33 @@ export class ServicesService {
   constructor(private prisma: PrismaService) {}
 
   async create(userId: string, createServiceDto: CreateServiceDto) {
-    // Verify user is professional
+    // Verify user is professional and get subscription info
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      select: { user_type: true },
+      select: {
+        user_type: true,
+        subscription_type: true,
+      },
     });
 
     if (!user || user.user_type !== 'professional') {
       throw new ForbiddenException('Only professionals can create services');
+    }
+
+    // Check service limit for Basic users (5 services max)
+    if (user.subscription_type === 'basic') {
+      const activeServicesCount = await this.prisma.service.count({
+        where: {
+          professional_id: userId,
+          active: true,
+        },
+      });
+
+      if (activeServicesCount >= 5) {
+        throw new ForbiddenException(
+          'Has alcanzado el límite de 5 servicios para el plan Basic. Actualiza a Premium para publicar servicios ilimitados.'
+        );
+      }
     }
 
     // Verify category exists
