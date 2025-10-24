@@ -1,97 +1,302 @@
 import { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
-import { motion } from "framer-motion";
+import { Link, useParams, useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import {
-  ArrowLeft, Heart, Heart, Share2, Clock, DollarSign, Users, Heart,
-  MessageSquare, Shield, CheckCircle, MapPin, Calendar, Zap,
-  ThumbsUp, Eye, ArrowRight, Play, Download, Flag, MoreHorizontal, AlertTriangle
+  Heart, Share2, Clock, CheckCircle, MapPin,
+  Star, MessageCircle, Shield, Eye, X, ChevronLeft, ChevronRight,
+  Award, ThumbsUp, Flag, Package
 } from "lucide-react";
 import { servicesService, type Service } from "../lib/services/services.service";
+import { favoritesService } from "../lib/services/favorites.service";
 import { openWhatsAppChat } from "../lib/whatsapp";
+import { toast } from "sonner";
+import { useSecureAuth } from "../context/SecureAuthContext";
 import { Button } from "../components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { Separator } from "../components/ui/separator";
-import { Progress } from "../components/ui/progress";
-import { ScrollArea } from "../components/ui/scroll-area";
+import { Dialog, DialogContent, DialogTitle } from "../components/ui/dialog";
+import { FixiaNavigation } from "../components/FixiaNavigation";
+import { MobileBottomNavigation } from "../components/MobileBottomNavigation";
 
+// Suppress unused imports for later use
+const _unused = { useNavigate };
 
-function Navigation() {
+// Package interface matching NewProjectPage structure
+interface ServicePackage {
+  name: string;
+  price: number;
+  description: string;
+  deliveryTime: number;
+  revisions: number;
+  features: string[];
+}
+
+// Lightbox for images
+function ImageLightbox({
+  images,
+  currentIndex,
+  onClose,
+  onPrevious,
+  onNext
+}: {
+  images: string[];
+  currentIndex: number;
+  onClose: () => void;
+  onPrevious: () => void;
+  onNext: () => void;
+}) {
   return (
-    <motion.header 
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      className="sticky top-0 z-50 w-full glass border-b border-white/10"
-    >
-      <div className="container mx-auto flex h-16 items-center justify-between px-6">
-        <Link to="/services" className="flex items-center space-x-2 text-muted-foreground hover:text-primary transition-colors">
-          <ArrowLeft className="h-4 w-4" />
-          Volver a servicios
-        </Link>
-        
-        <Link to="/" className="flex items-center space-x-3">
-          <div className="h-8 w-8 liquid-gradient rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold">F</span>
-          </div>
-          <span className="font-semibold">Fixia</span>
-        </Link>
-        
-        <div className="flex items-center space-x-2">
-          <Button variant="ghost" size="sm">
-            <Share2 className="h-4 w-4 mr-2" />
-            Compartir
+    <Dialog open={true} onOpenChange={onClose}>
+      <DialogContent className="max-w-7xl w-full h-[90vh] p-0 bg-background/95 backdrop-blur-xl border-white/10">
+        <DialogTitle className="sr-only">Galería de imágenes</DialogTitle>
+        <div className="relative w-full h-full flex items-center justify-center p-4">
+          {/* Close button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute top-4 right-4 z-50 bg-background/80 hover:bg-background"
+            onClick={onClose}
+          >
+            <X className="h-5 w-5" />
           </Button>
-          <Button variant="ghost" size="sm">
-            <Heart className="h-4 w-4" />
-          </Button>
+
+          {/* Previous button */}
+          {images.length > 1 && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute left-4 top-1/2 -translate-y-1/2 z-50 bg-background/80 hover:bg-background"
+              onClick={onPrevious}
+            >
+              <ChevronLeft className="h-6 w-6" />
+            </Button>
+          )}
+
+          {/* Image */}
+          <img
+            src={images[currentIndex]}
+            alt={`Imagen ${currentIndex + 1}`}
+            className="max-h-full max-w-full object-contain rounded-lg"
+          />
+
+          {/* Next button */}
+          {images.length > 1 && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute right-4 top-1/2 -translate-y-1/2 z-50 bg-background/80 hover:bg-background"
+              onClick={onNext}
+            >
+              <ChevronRight className="h-6 w-6" />
+            </Button>
+          )}
+
+          {/* Counter */}
+          {images.length > 1 && (
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-background/80 px-4 py-2 rounded-full text-sm">
+              {currentIndex + 1} / {images.length}
+            </div>
+          )}
         </div>
-      </div>
-    </motion.header>
+      </DialogContent>
+    </Dialog>
   );
 }
 
 export default function ServiceDetailPage() {
   const { id } = useParams();
+  const { user } = useSecureAuth();
   const [service, setService] = useState<Service | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedPackage, setSelectedPackage] = useState(0);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [selectedPackage, setSelectedPackage] = useState<'basic' | 'standard' | 'premium'>('standard');
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [favoriteLoading, setFavoriteLoading] = useState(false);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
 
-  // Fetch service details from API
+  // Fetch service details
   useEffect(() => {
     const fetchService = async () => {
       if (!id) return;
-      
+
       setLoading(true);
       setError(null);
-      
+
       try {
         const serviceData = await servicesService.getServiceById(id);
         setService(serviceData);
       } catch (err) {
-        setError('Error al cargar el servicio. Por favor, intenta nuevamente.');
+        setError('Error al cargar el servicio');
         console.error('Error fetching service:', err);
       } finally {
         setLoading(false);
       }
     };
-    
+
     fetchService();
   }, [id]);
+
+  // Check favorite status
+  useEffect(() => {
+    const checkFavorite = async () => {
+      if (!service || !user) return;
+
+      try {
+        const result = await favoritesService.isServiceFavorite(service.id);
+        setIsFavorite(result.is_favorite);
+      } catch (error) {
+        setIsFavorite(false);
+      }
+    };
+
+    checkFavorite();
+  }, [service, user]);
+
+  const toggleFavorite = async () => {
+    if (!service) return;
+    if (favoriteLoading) return;
+
+    try {
+      setFavoriteLoading(true);
+
+      if (isFavorite) {
+        await favoritesService.removeServiceFromFavorites(service.id);
+        setIsFavorite(false);
+        toast.success('Eliminado de favoritos');
+      } else {
+        await favoritesService.addServiceToFavorites(service.id);
+        setIsFavorite(true);
+        toast.success('Agregado a favoritos');
+      }
+    } catch (error: any) {
+      if (error?.response?.status === 401) {
+        toast.error('Debes iniciar sesión para agregar favoritos');
+      } else {
+        toast.error('Error al actualizar favoritos');
+      }
+    } finally {
+      setFavoriteLoading(false);
+    }
+  };
+
+  const handleContactWhatsApp = () => {
+    if (!service?.professional?.whatsapp_number) {
+      toast.error('El profesional no tiene WhatsApp configurado');
+      return;
+    }
+
+    openWhatsAppChat({
+      phone: service.professional.whatsapp_number,
+      name: service.professional.name,
+      service: {
+        title: service.title,
+        price: getCurrentPackage().price,
+        id: service.id
+      }
+    });
+  };
+
+  const handleShare = async () => {
+    const url = window.location.href;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: service?.title,
+          text: service?.description,
+          url: url
+        });
+      } catch (err) {
+        // User cancelled share
+      }
+    } else {
+      navigator.clipboard.writeText(url);
+      toast.success('Link copiado al portapapeles');
+    }
+  };
+
+  const getCurrentPackage = (): ServicePackage => {
+    // Default packages based on service price
+    const basePrice = service?.price || 0;
+
+    const packages = {
+      basic: {
+        name: 'Básico',
+        price: Math.floor(basePrice * 0.7),
+        description: 'Opción básica con características esenciales',
+        deliveryTime: service?.delivery_time_days || 7,
+        revisions: 1,
+        features: [
+          'Entrega en tiempo estimado',
+          '1 revisión incluida',
+          'Soporte por email',
+          'Archivos finales'
+        ]
+      },
+      standard: {
+        name: 'Estándar',
+        price: basePrice,
+        description: 'La opción más popular con excelente valor',
+        deliveryTime: Math.floor((service?.delivery_time_days || 7) * 0.8),
+        revisions: service?.revisions_included || 2,
+        features: [
+          'Entrega más rápida',
+          `${service?.revisions_included || 2} revisiones incluidas`,
+          'Soporte prioritario',
+          'Archivos fuente',
+          'Optimización incluida'
+        ]
+      },
+      premium: {
+        name: 'Premium',
+        price: Math.floor(basePrice * 1.5),
+        description: 'Servicio completo con todas las características',
+        deliveryTime: Math.floor((service?.delivery_time_days || 7) * 0.5),
+        revisions: 5,
+        features: [
+          'Entrega express',
+          'Revisiones ilimitadas',
+          'Soporte 24/7',
+          'Archivos fuente premium',
+          'Optimización avanzada',
+          'Consultoría incluida'
+        ]
+      }
+    };
+
+    return packages[selectedPackage];
+  };
+
+  const openLightbox = (index: number) => {
+    setLightboxIndex(index);
+    setLightboxOpen(true);
+  };
+
+  const previousImage = () => {
+    const images = service?.gallery || [];
+    setLightboxIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+  };
+
+  const nextImage = () => {
+    const images = service?.gallery || [];
+    setLightboxIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+  };
 
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
-        <Navigation />
-        <div className="container mx-auto px-6 py-8 flex items-center justify-center">
-          <div className="glass rounded-2xl p-8 flex items-center space-x-4">
-            <div className="animate-spin rounded-full border-2 border-current border-t-transparent h-6 w-6  text-primary" />
-            <span className="text-lg">Cargando servicio...</span>
+        <FixiaNavigation />
+        <div className="container mx-auto px-4 sm:px-6 py-8 flex items-center justify-center min-h-[60vh]">
+          <div className="glass rounded-2xl p-8 flex flex-col items-center space-y-4">
+            <div className="animate-spin rounded-full border-4 border-current border-t-transparent h-12 w-12 text-primary" />
+            <span className="text-lg font-medium">Cargando servicio...</span>
           </div>
         </div>
+        <MobileBottomNavigation />
       </div>
     );
   }
@@ -99,533 +304,748 @@ export default function ServiceDetailPage() {
   if (error || !service) {
     return (
       <div className="min-h-screen bg-background">
-        <Navigation />
-        <div className="container mx-auto px-6 py-8">
+        <FixiaNavigation />
+        <div className="container mx-auto px-4 sm:px-6 py-8">
           <div className="text-center py-16">
-            <div className="glass rounded-2xl p-12 max-w-lg mx-auto">
+            <Card className="glass border-white/10 p-12 max-w-lg mx-auto">
               <div className="h-16 w-16 bg-destructive/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <AlertTriangle className="h-8 w-8 text-destructive" />
+                <X className="h-8 w-8 text-destructive" />
               </div>
-              <h3 className="text-xl font-semibold mb-4">Error al cargar el servicio</h3>
-              <p className="text-muted-foreground mb-6">{error || 'Servicio no encontrado'}</p>
+              <h3 className="text-xl font-semibold mb-4">Servicio no encontrado</h3>
+              <p className="text-muted-foreground mb-6">{error}</p>
               <Link to="/services">
                 <Button className="liquid-gradient hover:opacity-90">
                   Volver a Servicios
                 </Button>
               </Link>
-            </div>
+            </Card>
           </div>
         </div>
+        <MobileBottomNavigation />
       </div>
     );
   }
 
+  const currentPackage = getCurrentPackage();
+  const images = service.gallery || [];
+
   return (
     <div className="min-h-screen bg-background">
-      <Navigation />
-      
-      <main className="container mx-auto px-6 py-8">
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-8">
+      <FixiaNavigation />
+
+      {/* Lightbox */}
+      {lightboxOpen && images.length > 0 && (
+        <ImageLightbox
+          images={images}
+          currentIndex={lightboxIndex}
+          onClose={() => setLightboxOpen(false)}
+          onPrevious={previousImage}
+          onNext={nextImage}
+        />
+      )}
+
+      <main className="container mx-auto px-4 sm:px-6 py-4 sm:py-8">
+        {/* Breadcrumb */}
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-4 sm:mb-6"
+        >
+          <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+            <Link to="/services" className="hover:text-primary transition-colors">
+              Servicios
+            </Link>
+            <span>/</span>
+            <Link to={`/services?category=${service.category?.name}`} className="hover:text-primary transition-colors">
+              {service.category?.name}
+            </Link>
+            <span>/</span>
+            <span className="text-foreground truncate max-w-[200px]">{service.title}</span>
+          </div>
+        </motion.div>
+
+        <div className="grid lg:grid-cols-3 gap-6 lg:gap-8">
+          {/* Main Content - Left Side */}
+          <div className="lg:col-span-2 space-y-6">
             {/* Image Gallery */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
+              transition={{ duration: 0.5 }}
             >
               <Card className="glass border-white/10 overflow-hidden">
-                <div className="relative aspect-video">
-                  <img 
-                    src={service.images?.[currentImageIndex] || service.images?.[0] || "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&h=600&fit=crop"}
+                <div className="relative aspect-video bg-muted">
+                  <img
+                    src={service.main_image || images[0] || "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&h=600&fit=crop"}
                     alt={service.title}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover cursor-pointer hover:opacity-95 transition-opacity"
+                    onClick={() => images.length > 0 && openLightbox(0)}
                   />
-                  {service.images && service.images.length > 1 && (
-                    <div className="absolute bottom-4 left-4 flex space-x-2">
-                      {service.images.map((_, index) => (
-                        <button
-                          key={index}
-                          onClick={() => setCurrentImageIndex(index)}
-                          className={`w-3 h-3 rounded-full transition-all ${
-                            index === currentImageIndex 
-                              ? 'bg-primary' 
-                              : 'bg-white/50 hover:bg-white/70'
-                          }`}
-                        />
-                      ))}
+
+                  {/* Action buttons overlay */}
+                  <div className="absolute top-4 right-4 flex items-center gap-2">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="bg-background/80 hover:bg-background backdrop-blur-sm"
+                      onClick={handleShare}
+                    >
+                      <Share2 className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="bg-background/80 hover:bg-background backdrop-blur-sm"
+                      onClick={toggleFavorite}
+                      disabled={favoriteLoading}
+                    >
+                      {favoriteLoading ? (
+                        <div className="animate-spin rounded-full border-2 border-current border-t-transparent h-4 w-4" />
+                      ) : (
+                        <Heart className={`h-4 w-4 ${isFavorite ? 'fill-red-500 text-red-500' : ''}`} />
+                      )}
+                    </Button>
+                  </div>
+
+                  {/* Gallery thumbnails */}
+                  {images.length > 1 && (
+                    <div className="absolute bottom-4 left-4 right-4">
+                      <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                        {images.slice(0, 5).map((img, index) => (
+                          <button
+                            key={index}
+                            onClick={() => openLightbox(index)}
+                            className="flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden border-2 border-white/20 hover:border-primary/50 transition-colors"
+                          >
+                            <img src={img} alt={`Miniatura ${index + 1}`} className="w-full h-full object-cover" />
+                          </button>
+                        ))}
+                        {images.length > 5 && (
+                          <button
+                            onClick={() => openLightbox(5)}
+                            className="flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-lg bg-background/80 backdrop-blur-sm border-2 border-white/20 flex items-center justify-center text-sm font-medium hover:border-primary/50 transition-colors"
+                          >
+                            +{images.length - 5}
+                          </button>
+                        )}
+                      </div>
                     </div>
                   )}
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="absolute top-4 right-4 glass"
+                </div>
+              </Card>
+            </motion.div>
+
+            {/* Service Title & Professional Info */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+            >
+              <Card className="glass border-white/10 p-4 sm:p-6">
+                {/* Category & Featured badges */}
+                <div className="flex flex-wrap items-center gap-2 mb-4">
+                  <Badge variant="outline" className="border-primary/30 text-primary bg-primary/5">
+                    {service.category?.name}
+                  </Badge>
+                  {service.featured && (
+                    <Badge className="bg-warning/20 text-warning border-warning/30">
+                      <Star className="h-3 w-3 mr-1 fill-current" />
+                      Destacado
+                    </Badge>
+                  )}
+                </div>
+
+                {/* Title */}
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 leading-tight">
+                  {service.title}
+                </h1>
+
+                {/* Professional Info */}
+                <div className="flex items-center justify-between flex-wrap gap-4">
+                  <Link
+                    to={`/professional/${service.professional.id}`}
+                    className="flex items-center gap-3 group"
                   >
-                    <Play className="h-4 w-4 mr-2" />
-                    Ver demo
-                  </Button>
-                </div>
-              </Card>
-            </motion.div>
-
-            {/* Service Info */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-            >
-              <Card className="glass border-white/10 p-6">
-                <div className="space-y-6">
-                  <div>
-                    <div className="flex items-center space-x-3 mb-4">
-                      <Badge className="bg-primary/20 text-primary border-primary/30">
-                        Desarrollo Web
-                      </Badge>
-                      <Badge className="bg-warning/20 text-warning border-warning/30">
-                        <Heart className="h-3 w-3 mr-1" />
-                        Destacado
-                      </Badge>
-                    </div>
-                    
-                    <h1 className="text-3xl font-bold mb-4">{service.title}</h1>
-                    
-                    <div className="flex items-center space-x-6 text-sm text-muted-foreground">
-                      <div className="flex items-center space-x-1">
-                        <Heart className="h-4 w-4 text-warning fill-current" />
-                        <span className="font-medium">{service.averageRating}</span>
-                        <span>({service.totalReviews} reseñas)</span>
-                      </div>
-                      <span className="flex items-center">
-                        <Eye className="h-4 w-4 mr-1" />
-                        Popular
-                      </span>
-                      <span className="flex items-center">
-                        <Users className="h-4 w-4 mr-1" />
-                        {service.active ? 'Disponible' : 'No disponible'}
-                      </span>
-                    </div>
-                  </div>
-
-                  <Separator />
-
-                  <div className="space-y-4">
-                    <h3 className="font-semibold">Descripción del Servicio</h3>
-                    <div className="prose prose-invert max-w-none">
-                      <p className="text-muted-foreground leading-relaxed">
-                        {service.description}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            </motion.div>
-
-            {/* Packages */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-            >
-              <Card className="glass border-white/10 p-6">
-                <h3 className="font-semibold mb-6">Información del Servicio</h3>
-                
-                <Card className="glass hover:glass-medium border-white/10">
-                  <CardHeader className="text-center">
-                    <CardTitle className="text-lg">Servicio</CardTitle>
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-center space-x-2">
-                        <span className="text-2xl font-bold text-primary">
-                          ${service.price}
+                    <Avatar className="h-12 w-12 border-2 border-white/20">
+                      <AvatarImage src={service.professional.avatar} />
+                      <AvatarFallback className="bg-primary/10">
+                        {service.professional.name.charAt(0)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold group-hover:text-primary transition-colors">
+                          {service.professional.name}
                         </span>
-                      </div>
-                      <p className="text-sm text-muted-foreground">
-                        {service.priceType === 'hourly' ? 'Por hora' : service.priceType === 'fixed' ? 'Precio fijo' : 'Negociable'}
-                      </p>
-                    </div>
-                  </CardHeader>
-                  
-                  <CardContent className="space-y-4">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="flex items-center text-success">
-                        <Clock className="h-4 w-4 mr-1" />
-                        {service.active ? 'Disponible' : 'No disponible'}
-                      </span>
-                      <span className="text-muted-foreground">
-                        Categoría: {service.category}
-                      </span>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <h4 className="font-medium">Características:</h4>
-                      <ul className="space-y-2 text-sm">
-                        <li className="flex items-center space-x-2">
-                          <CheckCircle className="h-4 w-4 text-success flex-shrink-0" />
-                          <span>Servicio profesional verificado</span>
-                        </li>
-                        <li className="flex items-center space-x-2">
-                          <CheckCircle className="h-4 w-4 text-success flex-shrink-0" />
-                          <span>Comunicación directa con el profesional</span>
-                        </li>
-                        <li className="flex items-center space-x-2">
-                          <CheckCircle className="h-4 w-4 text-success flex-shrink-0" />
-                          <span>Garantía de calidad</span>
-                        </li>
-                        {service.featured && (
-                          <li className="flex items-center space-x-2">
-                            <CheckCircle className="h-4 w-4 text-success flex-shrink-0" />
-                            <span>Servicio destacado</span>
-                          </li>
+                        {service.professional.verified && (
+                          <CheckCircle className="h-4 w-4 text-primary" />
                         )}
-                      </ul>
-                    </div>
-
-                    {service.tags && service.tags.length > 0 && (
-                      <div className="space-y-2">
-                        <h4 className="font-medium">Tecnologías:</h4>
-                        <div className="flex flex-wrap gap-2">
-                          {service.tags.map((tag, index) => (
-                            <Badge key={index} variant="outline" className="glass border-white/20 text-xs">
-                              {tag}
-                            </Badge>
-                          ))}
-                        </div>
                       </div>
-                    )}
-                  </CardContent>
-                </Card>
+                      <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                        <span className="flex items-center gap-1">
+                          <Star className="h-3.5 w-3.5 text-warning fill-warning" />
+                          {service.professional.professional_profile?.rating?.toFixed(1) || '5.0'}
+                        </span>
+                        <span>
+                          ({service.professional.professional_profile?.review_count || 0} reseñas)
+                        </span>
+                        {service.professional.location && (
+                          <>
+                            <span>•</span>
+                            <span className="flex items-center gap-1">
+                              <MapPin className="h-3.5 w-3.5" />
+                              {service.professional.location}
+                            </span>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </Link>
+
+                  {/* Stats */}
+                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                    <span className="flex items-center gap-1">
+                      <Eye className="h-4 w-4" />
+                      {service.view_count || 0} vistas
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Heart className="h-4 w-4" />
+                      {service._count?.favorites || 0}
+                    </span>
+                  </div>
+                </div>
               </Card>
             </motion.div>
 
-            {/* Tabs */}
+            {/* Tabs Content */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
             >
-              <Card className="glass border-white/10">
-                <Tabs defaultValue="reviews" className="w-full">
-                  <TabsList className="glass w-full justify-start">
-                    <TabsTrigger value="reviews">Información del Servicio</TabsTrigger>
-                    <TabsTrigger value="professional">Sobre el Profesional</TabsTrigger>
-                  </TabsList>
-                  
-                  <TabsContent value="reviews" className="p-6">
-                    <div className="space-y-6">
-                      {/* Service Rating */}
-                      <div className="flex items-center space-x-8">
-                        <div className="text-center">
-                          <div className="text-3xl font-bold">{service.averageRating}</div>
-                          <div className="flex items-center justify-center mt-1">
-                            {[1,2,3,4,5].map((star) => (
-                              <Heart 
-                                key={star} 
-                                className={`h-4 w-4 ${
-                                  star <= Math.round(service.averageRating)
-                                    ? 'text-warning fill-current' 
-                                    : 'text-muted-foreground'
-                                }`}
-                              />
-                            ))}
-                          </div>
-                          <div className="text-sm text-muted-foreground mt-1">
-                            {service.totalReviews} reseñas
-                          </div>
-                        </div>
+              <Tabs defaultValue="about" className="w-full">
+                <TabsList className="glass w-full justify-start overflow-x-auto">
+                  <TabsTrigger value="about">Descripción</TabsTrigger>
+                  <TabsTrigger value="packages">Paquetes</TabsTrigger>
+                  <TabsTrigger value="reviews">Reseñas</TabsTrigger>
+                  <TabsTrigger value="faq">Preguntas</TabsTrigger>
+                </TabsList>
+
+                {/* About Tab */}
+                <TabsContent value="about" className="mt-6">
+                  <Card className="glass border-white/10">
+                    <CardHeader>
+                      <CardTitle>Sobre este servicio</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                      <div className="prose prose-sm sm:prose max-w-none">
+                        <p className="text-muted-foreground whitespace-pre-wrap leading-relaxed">
+                          {service.description}
+                        </p>
                       </div>
-                      
+
                       <Separator />
-                      
-                      {/* Service Details */}
-                      <div className="space-y-4">
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="glass-medium rounded-lg p-4">
-                            <h4 className="font-medium mb-2">Categoría</h4>
-                            <p className="text-muted-foreground">{service.category}</p>
-                          </div>
-                          <div className="glass-medium rounded-lg p-4">
-                            <h4 className="font-medium mb-2">Subcategoría</h4>
-                            <p className="text-muted-foreground">{service.subcategory || 'N/A'}</p>
-                          </div>
-                          <div className="glass-medium rounded-lg p-4">
-                            <h4 className="font-medium mb-2">Tipo de Precio</h4>
-                            <p className="text-muted-foreground">
-                              {service.priceType === 'hourly' ? 'Por hora' : 
-                               service.priceType === 'fixed' ? 'Precio fijo' : 'Negociable'}
-                            </p>
-                          </div>
-                          <div className="glass-medium rounded-lg p-4">
-                            <h4 className="font-medium mb-2">Estado</h4>
-                            <p className="text-muted-foreground">
-                              {service.active ? 'Activo' : 'Inactivo'}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </TabsContent>
-                  
-                  <TabsContent value="professional" className="p-6">
-                    <div className="space-y-6">
-                      {/* Professional Info */}
-                      <div className="flex items-center space-x-4">
-                        <Avatar className="h-16 w-16">
-                          <AvatarImage src={service.professional.avatar} />
-                          <AvatarFallback>{service.professional.name.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                        
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-2 mb-2">
-                            <h3 className="text-xl font-semibold">{service.professional.name} {service.professional.lastName}</h3>
-                            {service.professional.verified && (
-                              <CheckCircle className="h-5 w-5 text-success" />
-                            )}
-                          </div>
-                          <Badge className="bg-primary/20 text-primary border-primary/30">
-                            {service.professional.level}
-                          </Badge>
-                          <p className="text-muted-foreground mt-2">{service.professional.location}</p>
-                        </div>
-                      </div>
-                      
-                      <Separator />
-                      
-                      {/* Professional Stats */}
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="glass-medium rounded-lg p-4">
-                          <h4 className="font-medium mb-2">Calificación Promedio</h4>
-                          <div className="flex items-center space-x-2">
-                            <Heart className="h-4 w-4 text-warning fill-current" />
-                            <span className="font-bold">{service.professional.averageRating}</span>
-                          </div>
-                        </div>
-                        <div className="glass-medium rounded-lg p-4">
-                          <h4 className="font-medium mb-2">Total de Reseñas</h4>
-                          <p className="font-bold">{service.professional.totalReviews}</p>
-                        </div>
-                      </div>
-                      
-                      {/* Professional Badges */}
-                      {service.professional.badges && service.professional.badges.length > 0 && (
-                        <div className="space-y-3">
-                          <h4 className="font-medium">Insignias y Certificaciones</h4>
-                          <div className="grid gap-3">
-                            {service.professional.badges.map((badge) => (
-                              <div key={badge.id} className="glass-medium rounded-lg p-4">
-                                <div className="flex items-center space-x-3">
-                                  <div className="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center">
-                                    <Heart className="h-5 w-5 text-primary" />
-                                  </div>
-                                  <div>
-                                    <h5 className="font-medium">{badge.name}</h5>
-                                    <p className="text-sm text-muted-foreground">{badge.description}</p>
-                                    <Badge className="mt-1 text-xs" variant="outline">{badge.category}</Badge>
-                                  </div>
-                                </div>
-                              </div>
+
+                      {/* Tags */}
+                      {service.tags && service.tags.length > 0 && (
+                        <div>
+                          <h3 className="font-semibold mb-3">Tecnologías y habilidades</h3>
+                          <div className="flex flex-wrap gap-2">
+                            {service.tags.map((tag: string, index: number) => (
+                              <Badge key={index} variant="secondary" className="bg-muted">
+                                {tag}
+                              </Badge>
                             ))}
                           </div>
                         </div>
                       )}
-                    </div>
-                  </TabsContent>
-                </Tabs>
-              </Card>
-            </motion.div>
-          </div>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Order Card */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6 }}
-            >
-              <Card className="glass border-white/10 sticky top-24">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle>Hacer Pedido</CardTitle>
-                    <Badge className="bg-success/20 text-success border-success/30">
-                      Disponible
-                    </Badge>
-                  </div>
-                </CardHeader>
-                
-                <CardContent className="space-y-4">
-                  <div className="text-center">
-                    <div className="flex items-center justify-center space-x-2 mb-2">
-                      <span className="text-3xl font-bold text-primary">
-                        ${service.price}
-                      </span>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      {service.priceType === 'hourly' ? 'Por hora' : service.priceType === 'fixed' ? 'Precio fijo' : 'Negociable'}
-                    </p>
-                  </div>
-                  
-                  <div className="space-y-3 text-sm">
-                    <div className="flex items-center justify-between">
-                      <span className="flex items-center text-muted-foreground">
-                        <Clock className="h-4 w-4 mr-2" />
-                        Estado
-                      </span>
-                      <span className="font-medium">
-                        {service.active ? 'Disponible' : 'No disponible'}
-                      </span>
-                    </div>
-                    
-                    <div className="flex items-center justify-between">
-                      <span className="flex items-center text-muted-foreground">
-                        <Zap className="h-4 w-4 mr-2" />
-                        Categoría
-                      </span>
-                      <span className="font-medium">
-                        {service.category}
-                      </span>
-                    </div>
-                  </div>
-                  
-                  <Separator />
-                  
-                  <div className="space-y-3">
-                    <Button className="w-full liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg">
-                      <DollarSign className="h-4 w-4 mr-2" />
-                      Continuar (${service.price})
-                    </Button>
-                    
-                    <Button 
-                      variant="outline" 
-                      className="w-full glass border-white/20 hover:glass-medium"
-                      onClick={() => openWhatsAppChat({
-                        phone: "542804123456", // Default WhatsApp number
-                        name: service.professional.name,
-                        service: {
-                          title: service.title,
-                          price: service.price,
-                          id: service.id
+                      <Separator />
+
+                      {/* Service highlights */}
+                      <div>
+                        <h3 className="font-semibold mb-4">Características destacadas</h3>
+                        <div className="grid sm:grid-cols-2 gap-4">
+                          <div className="flex items-start gap-3">
+                            <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                              <Clock className="h-5 w-5 text-primary" />
+                            </div>
+                            <div>
+                              <div className="font-medium">Entrega rápida</div>
+                              <div className="text-sm text-muted-foreground">
+                                {service.delivery_time_days || 7} días promedio
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="flex items-start gap-3">
+                            <div className="h-10 w-10 rounded-lg bg-success/10 flex items-center justify-center flex-shrink-0">
+                              <Shield className="h-5 w-5 text-success" />
+                            </div>
+                            <div>
+                              <div className="font-medium">Profesional verificado</div>
+                              <div className="text-sm text-muted-foreground">
+                                Identidad confirmada
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="flex items-start gap-3">
+                            <div className="h-10 w-10 rounded-lg bg-warning/10 flex items-center justify-center flex-shrink-0">
+                              <Award className="h-5 w-5 text-warning" />
+                            </div>
+                            <div>
+                              <div className="font-medium">Calidad garantizada</div>
+                              <div className="text-sm text-muted-foreground">
+                                {service.revisions_included || 2} revisiones incluidas
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="flex items-start gap-3">
+                            <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                              <MessageCircle className="h-5 w-5 text-primary" />
+                            </div>
+                            <div>
+                              <div className="font-medium">Comunicación directa</div>
+                              <div className="text-sm text-muted-foreground">
+                                Contacto via WhatsApp
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+
+                {/* Packages Tab */}
+                <TabsContent value="packages" className="mt-6">
+                  <div className="grid md:grid-cols-3 gap-4 sm:gap-6">
+                    {(['basic', 'standard', 'premium'] as const).map((pkg) => {
+                      const packageData = {
+                        basic: {
+                          name: 'Básico',
+                          price: Math.floor((service.price || 0) * 0.7),
+                          description: 'Opción básica con características esenciales',
+                          deliveryTime: service.delivery_time_days || 7,
+                          revisions: 1,
+                          features: [
+                            'Entrega en tiempo estimado',
+                            '1 revisión incluida',
+                            'Soporte por email',
+                            'Archivos finales'
+                          ]
+                        },
+                        standard: {
+                          name: 'Estándar',
+                          price: service.price || 0,
+                          description: 'La opción más popular',
+                          deliveryTime: Math.floor((service.delivery_time_days || 7) * 0.8),
+                          revisions: service.revisions_included || 2,
+                          features: [
+                            'Entrega más rápida',
+                            `${service.revisions_included || 2} revisiones`,
+                            'Soporte prioritario',
+                            'Archivos fuente',
+                            'Optimización incluida'
+                          ]
+                        },
+                        premium: {
+                          name: 'Premium',
+                          price: Math.floor((service.price || 0) * 1.5),
+                          description: 'Servicio completo',
+                          deliveryTime: Math.floor((service.delivery_time_days || 7) * 0.5),
+                          revisions: 5,
+                          features: [
+                            'Entrega express',
+                            'Revisiones ilimitadas',
+                            'Soporte 24/7',
+                            'Archivos fuente premium',
+                            'Optimización avanzada',
+                            'Consultoría incluida'
+                          ]
                         }
-                      })}
-                    >
-                      <MessageSquare className="h-4 w-4 mr-2" />
-                      Contactar por WhatsApp
-                    </Button>
+                      }[pkg];
+
+                      const isPopular = pkg === 'standard';
+
+                      return (
+                        <motion.div
+                          key={pkg}
+                          whileHover={{ y: -4 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <Card className={`glass border-white/10 relative overflow-hidden ${
+                            isPopular ? 'ring-2 ring-primary/30' : ''
+                          }`}>
+                            {isPopular && (
+                              <div className="absolute top-0 right-0 bg-primary text-primary-foreground px-3 py-1 text-xs font-medium rounded-bl-lg">
+                                Más popular
+                              </div>
+                            )}
+
+                            <CardHeader className="pb-4">
+                              <div className="flex items-center justify-between mb-2">
+                                <CardTitle className="text-lg">{packageData.name}</CardTitle>
+                                <Package className="h-5 w-5 text-muted-foreground" />
+                              </div>
+                              <CardDescription className="text-sm">
+                                {packageData.description}
+                              </CardDescription>
+                            </CardHeader>
+
+                            <CardContent className="space-y-4">
+                              {/* Price */}
+                              <div>
+                                <div className="text-3xl font-bold text-primary">
+                                  ${packageData.price.toLocaleString()}
+                                </div>
+                                <div className="text-sm text-muted-foreground">
+                                  Precio total
+                                </div>
+                              </div>
+
+                              <Separator />
+
+                              {/* Delivery & Revisions */}
+                              <div className="space-y-2 text-sm">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-muted-foreground">Entrega</span>
+                                  <span className="font-medium">{packageData.deliveryTime} días</span>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                  <span className="text-muted-foreground">Revisiones</span>
+                                  <span className="font-medium">
+                                    {packageData.revisions === 5 ? 'Ilimitadas' : packageData.revisions}
+                                  </span>
+                                </div>
+                              </div>
+
+                              <Separator />
+
+                              {/* Features */}
+                              <div className="space-y-2">
+                                {packageData.features.map((feature, index) => (
+                                  <div key={index} className="flex items-start gap-2 text-sm">
+                                    <CheckCircle className="h-4 w-4 text-success flex-shrink-0 mt-0.5" />
+                                    <span>{feature}</span>
+                                  </div>
+                                ))}
+                              </div>
+
+                              {/* Contact button */}
+                              <Button
+                                className={`w-full ${isPopular ? 'liquid-gradient' : 'bg-primary/10 hover:bg-primary/20 text-primary'}`}
+                                onClick={() => {
+                                  setSelectedPackage(pkg);
+                                  handleContactWhatsApp();
+                                }}
+                              >
+                                Contactar
+                                <MessageCircle className="ml-2 h-4 w-4" />
+                              </Button>
+                            </CardContent>
+                          </Card>
+                        </motion.div>
+                      );
+                    })}
                   </div>
-                  
-                  <div className="flex items-center justify-center space-x-4 text-xs text-muted-foreground pt-2">
-                    <span className="flex items-center">
-                      <Shield className="h-3 w-3 mr-1" />
-                      Pago seguro
-                    </span>
-                    <span className="flex items-center">
-                      <Calendar className="h-3 w-3 mr-1" />
-                      Garantía 30 días
-                    </span>
-                  </div>
-                </CardContent>
-              </Card>
+                </TabsContent>
+
+                {/* Reviews Tab */}
+                <TabsContent value="reviews" className="mt-6">
+                  <Card className="glass border-white/10">
+                    <CardHeader>
+                      <CardTitle>Reseñas de clientes</CardTitle>
+                      <CardDescription>
+                        Lo que otros clientes dicen sobre este servicio
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      {/* Rating summary */}
+                      <div className="flex items-center gap-8 mb-8 flex-wrap">
+                        <div className="text-center">
+                          <div className="text-5xl font-bold mb-2">
+                            {service.professional.professional_profile?.rating?.toFixed(1) || '5.0'}
+                          </div>
+                          <div className="flex items-center gap-1 justify-center mb-1">
+                            {[...Array(5)].map((_, i) => (
+                              <Star key={i} className="h-5 w-5 fill-warning text-warning" />
+                            ))}
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            {service.professional.professional_profile?.review_count || 0} reseñas
+                          </div>
+                        </div>
+
+                        <div className="flex-1 space-y-2 min-w-[200px]">
+                          {[5, 4, 3, 2, 1].map((stars) => (
+                            <div key={stars} className="flex items-center gap-3">
+                              <span className="text-sm w-16">{stars} estrellas</span>
+                              <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+                                <div
+                                  className="h-full bg-warning"
+                                  style={{ width: stars === 5 ? '80%' : stars === 4 ? '15%' : '5%' }}
+                                />
+                              </div>
+                              <span className="text-sm text-muted-foreground w-8">
+                                {stars === 5 ? '80%' : stars === 4 ? '15%' : '5%'}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <Separator className="my-6" />
+
+                      {/* Reviews list - Placeholder */}
+                      <div className="space-y-6">
+                        <div className="text-center py-8 text-muted-foreground">
+                          <MessageCircle className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                          <p>Aún no hay reseñas para este servicio</p>
+                          <p className="text-sm">Sé el primero en dejar una reseña</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+
+                {/* FAQ Tab */}
+                <TabsContent value="faq" className="mt-6">
+                  <Card className="glass border-white/10">
+                    <CardHeader>
+                      <CardTitle>Preguntas frecuentes</CardTitle>
+                      <CardDescription>
+                        Respuestas a las dudas más comunes
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        {/* FAQ Placeholder */}
+                        <div className="text-center py-8 text-muted-foreground">
+                          <Package className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                          <p>No hay preguntas frecuentes configuradas</p>
+                          <p className="text-sm">Contacta al profesional para más información</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+              </Tabs>
             </motion.div>
 
-            {/* Professional Info */}
+            {/* About Professional */}
             <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
             >
               <Card className="glass border-white/10">
                 <CardHeader>
-                  <CardTitle>Sobre el Profesional</CardTitle>
+                  <CardTitle>Sobre el profesional</CardTitle>
                 </CardHeader>
-                
-                <CardContent className="space-y-4">
-                  <div className="flex items-center space-x-4">
-                    <Avatar className="h-12 w-12">
+                <CardContent className="space-y-6">
+                  <div className="flex items-start gap-4">
+                    <Avatar className="h-16 w-16 border-2 border-white/20">
                       <AvatarImage src={service.professional.avatar} />
-                      <AvatarFallback>{service.professional.name.charAt(0)}</AvatarFallback>
+                      <AvatarFallback className="bg-primary/10 text-lg">
+                        {service.professional.name.charAt(0)}
+                      </AvatarFallback>
                     </Avatar>
-                    
                     <div className="flex-1">
-                      <div className="flex items-center space-x-2">
-                        <h4 className="font-medium">{service.professional.name} {service.professional.lastName}</h4>
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="font-semibold text-lg">{service.professional.name}</h3>
                         {service.professional.verified && (
-                          <CheckCircle className="h-4 w-4 text-success" />
+                          <CheckCircle className="h-5 w-5 text-primary" />
                         )}
                       </div>
-                      <Badge className="bg-primary/20 text-primary border-primary/30 text-xs">
-                        {service.professional.level}
-                      </Badge>
-                    </div>
-                  </div>
-                  
-                  <p className="text-sm text-muted-foreground">
-                    Profesional verificado especializado en {service.category}. Ubicado en {service.professional.location}.
-                  </p>
-                  
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <div className="text-muted-foreground">Calificación</div>
-                      <div className="font-medium flex items-center space-x-1">
-                        <Heart className="h-3 w-3 text-warning fill-current" />
-                        <span>{service.professional.averageRating}</span>
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3">
+                        <span className="flex items-center gap-1">
+                          <Star className="h-4 w-4 text-warning fill-warning" />
+                          {service.professional.professional_profile?.rating?.toFixed(1) || '5.0'}
+                        </span>
+                        <span>•</span>
+                        <span>{service.professional.professional_profile?.review_count || 0} reseñas</span>
+                        {service.professional.location && (
+                          <>
+                            <span>•</span>
+                            <span className="flex items-center gap-1">
+                              <MapPin className="h-4 w-4" />
+                              {service.professional.location}
+                            </span>
+                          </>
+                        )}
                       </div>
-                    </div>
-                    <div>
-                      <div className="text-muted-foreground">Reseñas</div>
-                      <div className="font-medium">{service.professional.totalReviews}</div>
-                    </div>
-                    <div>
-                      <div className="text-muted-foreground">Nivel</div>
-                      <div className="font-medium">{service.professional.level}</div>
-                    </div>
-                    <div>
-                      <div className="text-muted-foreground">Verificado</div>
-                      <div className="font-medium">{service.professional.verified ? 'Sí' : 'No'}</div>
+                      {service.professional.professional_profile?.bio && (
+                        <p className="text-sm text-muted-foreground">
+                          {service.professional.professional_profile.bio}
+                        </p>
+                      )}
                     </div>
                   </div>
-                  
-                  <div className="flex items-center space-x-2">
-                    <span className="text-sm text-muted-foreground">Ubicación:</span>
-                    <div className="flex flex-wrap gap-2">
-                      <Badge variant="outline" className="glass border-white/20 text-xs">
-                        {service.professional.location}
-                      </Badge>
-                    </div>
-                  </div>
-                  
-                  <Button variant="outline" className="w-full glass border-white/20 hover:glass-medium">
-                    Ver Perfil Completo
-                  </Button>
-                </CardContent>
-              </Card>
-            </motion.div>
 
-            {/* Related Services */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-            >
-              <Card className="glass border-white/10">
-                <CardHeader>
-                  <CardTitle>Más servicios de {service.professional.name}</CardTitle>
-                </CardHeader>
-                
-                <CardContent className="space-y-4">
-                  <div className="text-center py-8 text-muted-foreground">
-                    <p>No hay servicios relacionados disponibles en este momento.</p>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <div className="text-center p-3 glass-light rounded-lg">
+                      <div className="text-2xl font-bold text-primary mb-1">
+                        {service.professional.professional_profile?.completed_orders || 0}
+                      </div>
+                      <div className="text-xs text-muted-foreground">Proyectos</div>
+                    </div>
+                    <div className="text-center p-3 glass-light rounded-lg">
+                      <div className="text-2xl font-bold text-success mb-1">
+                        {service.professional.professional_profile?.response_time_hours || 2}h
+                      </div>
+                      <div className="text-xs text-muted-foreground">Respuesta</div>
+                    </div>
+                    <div className="text-center p-3 glass-light rounded-lg">
+                      <div className="text-2xl font-bold text-warning mb-1">
+                        {service.professional.professional_profile?.rating?.toFixed(1) || '5.0'}
+                      </div>
+                      <div className="text-xs text-muted-foreground">Rating</div>
+                    </div>
+                    <div className="text-center p-3 glass-light rounded-lg">
+                      <div className="text-2xl font-bold text-primary mb-1">
+                        {service.professional.professional_profile?.review_count || 0}
+                      </div>
+                      <div className="text-xs text-muted-foreground">Reseñas</div>
+                    </div>
                   </div>
-                  
-                  <Link to="/services">
-                    <Button variant="outline" className="w-full glass border-white/20 hover:glass-medium">
-                      Ver Todos los Servicios
-                      <ArrowRight className="ml-2 h-4 w-4" />
+
+                  <Link to={`/professional/${service.professional.id}`}>
+                    <Button variant="outline" className="w-full glass border-white/20">
+                      Ver perfil completo
                     </Button>
                   </Link>
                 </CardContent>
               </Card>
             </motion.div>
           </div>
+
+          {/* Sticky Sidebar - Right Side */}
+          <div className="lg:col-span-1">
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="lg:sticky lg:top-24 space-y-6"
+            >
+              {/* Price & Contact Card */}
+              <Card className="glass border-white/10">
+                <CardContent className="p-6 space-y-6">
+                  {/* Selected package info */}
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="text-sm text-muted-foreground">Paquete seleccionado</span>
+                      <Badge variant="outline" className="capitalize">
+                        {currentPackage.name}
+                      </Badge>
+                    </div>
+
+                    <div className="flex items-baseline gap-2 mb-1">
+                      <span className="text-3xl font-bold text-primary">
+                        ${currentPackage.price.toLocaleString()}
+                      </span>
+                    </div>
+                    <div className="text-sm text-muted-foreground">Precio total del servicio</div>
+                  </div>
+
+                  <Separator />
+
+                  {/* Package quick info */}
+                  <div className="space-y-3 text-sm">
+                    <div className="flex items-center justify-between">
+                      <span className="flex items-center gap-2 text-muted-foreground">
+                        <Clock className="h-4 w-4" />
+                        Tiempo de entrega
+                      </span>
+                      <span className="font-medium">{currentPackage.deliveryTime} días</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="flex items-center gap-2 text-muted-foreground">
+                        <Package className="h-4 w-4" />
+                        Revisiones
+                      </span>
+                      <span className="font-medium">
+                        {currentPackage.revisions === 5 ? 'Ilimitadas' : currentPackage.revisions}
+                      </span>
+                    </div>
+                  </div>
+
+                  <Separator />
+
+                  {/* Contact button */}
+                  <Button
+                    className="w-full liquid-gradient hover:opacity-90 h-12 text-base font-semibold"
+                    size="lg"
+                    onClick={handleContactWhatsApp}
+                  >
+                    <MessageCircle className="mr-2 h-5 w-5" />
+                    Contactar via WhatsApp
+                  </Button>
+
+                  <div className="text-xs text-center text-muted-foreground">
+                    Comunícate directamente con el profesional
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Trust indicators */}
+              <Card className="glass border-white/10">
+                <CardContent className="p-6 space-y-4">
+                  <div className="flex items-start gap-3">
+                    <div className="h-10 w-10 rounded-lg bg-success/10 flex items-center justify-center flex-shrink-0">
+                      <Shield className="h-5 w-5 text-success" />
+                    </div>
+                    <div>
+                      <div className="font-medium text-sm mb-1">Pago seguro</div>
+                      <div className="text-xs text-muted-foreground">
+                        Acuerda el pago directamente con el profesional
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3">
+                    <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <MessageCircle className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <div className="font-medium text-sm mb-1">Comunicación directa</div>
+                      <div className="text-xs text-muted-foreground">
+                        Habla con el profesional por WhatsApp
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3">
+                    <div className="h-10 w-10 rounded-lg bg-warning/10 flex items-center justify-center flex-shrink-0">
+                      <ThumbsUp className="h-5 w-5 text-warning" />
+                    </div>
+                    <div>
+                      <div className="font-medium text-sm mb-1">Satisfacción garantizada</div>
+                      <div className="text-xs text-muted-foreground">
+                        Revisiones incluidas en tu paquete
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Report button */}
+              <Button
+                variant="ghost"
+                className="w-full text-muted-foreground hover:text-destructive"
+                size="sm"
+              >
+                <Flag className="h-4 w-4 mr-2" />
+                Reportar servicio
+              </Button>
+            </motion.div>
+          </div>
         </div>
       </main>
+
+      <MobileBottomNavigation />
     </div>
   );
 }
