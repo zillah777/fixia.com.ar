@@ -181,6 +181,7 @@ export class SubscriptionService {
     await this.prisma.user.update({
       where: { id: userId },
       data: {
+        user_type: 'professional', // Change userType to professional
         is_professional_active: true,
         professional_since: user.professional_since || startDate,
         subscription_type: subscriptionType,

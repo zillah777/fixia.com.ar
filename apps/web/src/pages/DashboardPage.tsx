@@ -807,7 +807,8 @@ export default function DashboardPage() {
         </motion.div>
 
         {/* Upgrade to Professional Banner - Only for Clients */}
-        {user?.userType === 'client' && (
+        {/* Show "Become Professional" banner only for free clients */}
+        {user?.userType === 'client' && user?.planType === 'free' && (
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -853,6 +854,44 @@ export default function DashboardPage() {
                     <Button className="liquid-gradient hover:opacity-90 transition-all group-hover:scale-105 px-8">
                       Ver Planes
                       <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+          </motion.div>
+        )}
+
+        {/* Subtle Premium upgrade suggestion for Basic users */}
+        {user?.userType === 'professional' && user?.planType !== 'premium' && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+            className="mb-6"
+          >
+            <Link to="/pricing">
+              <Card className="glass border-primary/20 bg-gradient-to-r from-primary/5 to-transparent hover:border-primary/40 transition-all cursor-pointer group">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <Crown className="h-5 w-5 text-primary flex-shrink-0" />
+                      <div>
+                        <p className="text-sm font-medium text-foreground">
+                          Desbloquea servicios ilimitados con <span className="text-primary font-bold">Premium</span>
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          Badge destacado, prioridad en búsquedas y estadísticas avanzadas
+                        </p>
+                      </div>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-primary hover:text-primary/90 group-hover:translate-x-1 transition-transform"
+                    >
+                      Mejorar
+                      <ArrowRight className="ml-1 h-4 w-4" />
                     </Button>
                   </div>
                 </CardContent>
