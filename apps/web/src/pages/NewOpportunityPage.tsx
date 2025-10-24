@@ -87,14 +87,11 @@ export default function NewOpportunityPage() {
 
   const [currentSkill, setCurrentSkill] = useState('');
 
-  // Redirect if not authenticated or not client
+  // Redirect if not authenticated (professionals with dual role can create announcements as clients)
   useEffect(() => {
     if (!user) {
       toast.error('Debes iniciar sesión para crear un anuncio');
       navigate('/login');
-    } else if (user.userType !== 'client') {
-      toast.error('Solo los clientes pueden crear anuncios de proyectos');
-      navigate('/dashboard');
     }
   }, [user, navigate]);
 

@@ -80,19 +80,16 @@ export default function MyAnnouncementsPage() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [showProposals, setShowProposals] = useState(false);
 
-  // Redirect if not client
+  // Redirect if not authenticated (professionals with dual role can access as clients)
   useEffect(() => {
     if (!user) {
       toast.error('Debes iniciar sesión');
       navigate('/login');
-    } else if (user.userType !== 'client') {
-      toast.error('Esta sección es solo para clientes');
-      navigate('/dashboard');
     }
   }, [user, navigate]);
 
   useEffect(() => {
-    if (user?.userType === 'client') {
+    if (user) {
       loadProjects();
     }
   }, [user]);
