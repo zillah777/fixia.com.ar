@@ -863,7 +863,7 @@ export default function DashboardPage() {
         )}
 
         {/* Subtle Premium upgrade suggestion for Basic users */}
-        {user?.userType === 'professional' && user?.planType !== 'premium' && (
+        {user?.userType === 'professional' && user?.planType === 'basic' && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}

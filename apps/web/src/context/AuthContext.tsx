@@ -28,7 +28,7 @@ export interface User {
   avatar?: string;
   userType: 'client' | 'professional'; // Backend uses 'userType' not 'accountType'
   location?: string; // Backend stores location as a single field
-  planType: 'free' | 'premium';
+  planType: 'free' | 'basic' | 'premium';
   isVerified: boolean;
   emailVerified: boolean;
   role?: string; // Optional role property for compatibility
@@ -217,7 +217,12 @@ const transformBackendUser = (backendUser: any): User => {
     avatar: safeString(backendUser.avatar || backendUser.profileImage, ''),
     userType: validUserType as 'client' | 'professional',
     location: safeString(backendUser.location, ''),
-    planType: (safeString(backendUser.planType) === 'premium' ? 'premium' : 'free') as 'free' | 'premium',
+    planType: (() => {
+      const plan = safeString(backendUser.subscription_type || backendUser.planType);
+      if (plan === 'premium') return 'premium';
+      if (plan === 'basic') return 'basic';
+      return 'free';
+    })() as 'free' | 'basic' | 'premium',
     
     // Verification fields
     isVerified: safeBool(backendUser.verified || backendUser.isVerified),
@@ -257,8 +262,8 @@ const transformBackendUser = (backendUser: any): User => {
     // Contact limits with safe defaults
     pendingContactRequests: safeNumber(backendUser.pendingContactRequests, 0),
     maxContactRequests: safeNumber(
-      backendUser.maxContactRequests, 
-      (safeString(backendUser.planType) === 'premium' ? 10 : 3)
+      backendUser.maxContactRequests,
+      (safeString(backendUser.subscription_type || backendUser.planType) === 'premium' ? 10 : 5)
     ),
     
     // Argentina specific - safely parsed above
@@ -397,7 +402,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       userType: (storedUserData.userType === 'professional' || storedUserData.userType === 'client') 
         ? storedUserData.userType : 'client',
       location: storedUserData.location || '',
-      planType: (storedUserData.planType === 'premium') ? 'premium' : 'free',
+      planType: (storedUserData.planType === 'premium') ? 'premium' :
+                (storedUserData.planType === 'basic') ? 'basic' : 'free',
       isVerified: Boolean(storedUserData.isVerified),
       emailVerified: Boolean(storedUserData.emailVerified),
       professionalProfile: storedUserData.professionalProfile || undefined,
