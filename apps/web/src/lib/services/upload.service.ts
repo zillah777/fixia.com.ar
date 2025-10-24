@@ -11,7 +11,7 @@ class UploadService {
   /**
    * Upload an image file to Cloudinary via backend
    */
-  async uploadImage(file: File): Promise<UploadResponse> {
+  async uploadImage(file: File, type: 'avatar' | 'service' = 'service'): Promise<UploadResponse> {
     try {
       // Validate file type
       if (!file.type.startsWith('image/')) {
@@ -28,7 +28,8 @@ class UploadService {
       formData.append('file', file);
 
       // Upload to backend (which uploads to Cloudinary)
-      const response = await api.post<UploadResponse>('/upload/avatar', formData, {
+      const endpoint = type === 'avatar' ? '/upload/avatar' : '/upload/image';
+      const response = await api.post<UploadResponse>(endpoint, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

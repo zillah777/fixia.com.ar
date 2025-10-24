@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  ArrowLeft, ArrowRight, Check, Upload, X, Plus, Minus, 
-  Image, FileText, DollarSign, Clock, Tag, Settings, 
+import {
+  ArrowLeft, ArrowRight, Check, Upload, X, Plus,
+  Image, FileText, DollarSign, Tag, Settings,
   Eye, Save, AlertCircle, Info, Heart, Briefcase, Globe,
-  Camera, Trash2, Edit3, Zap, Shield, Heart
+  Camera, Trash2, Zap, Shield, Loader2
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -13,16 +13,14 @@ import { Label } from "../components/ui/label";
 import { Textarea } from "../components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
-import { Checkbox } from "../components/ui/checkbox";
 import { Switch } from "../components/ui/switch";
 import { Separator } from "../components/ui/separator";
 import { Progress } from "../components/ui/progress";
 import { Alert, AlertDescription } from "../components/ui/alert";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { useSecureAuth } from "../context/SecureAuthContext";
 import { toast } from "sonner";
 import { servicesService, ServiceCategory } from "../lib/services/services.service";
+import { uploadService } from "../lib/services/upload.service";
 
 // Icon mapping for categories
 const getIconComponent = (iconName: string) => {
@@ -628,6 +626,49 @@ function PricingStep({ data, setData }: { data: ProjectData; setData: (data: Pro
 
 function MediaStep({ data, setData }: { data: ProjectData; setData: (data: ProjectData) => void }) {
   const [draggedOver, setDraggedOver] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [uploadingGallery, setUploadingGallery] = useState(false);
+
+  const handleMainImageUpload = async (file: File) => {
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      const result = await uploadService.uploadImage(file);
+      setData({ ...data, images: [result.url] });
+      toast.success('Imagen principal cargada exitosamente');
+    } catch (error: any) {
+      console.error('Error uploading main image:', error);
+      toast.error(error.message || 'Error al cargar la imagen');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleGalleryImageUpload = async (file: File) => {
+    if (!file) return;
+    if (data.gallery.length >= 5) {
+      toast.error('Máximo 5 imágenes en la galería');
+      return;
+    }
+
+    setUploadingGallery(true);
+    try {
+      const result = await uploadService.uploadImage(file);
+      setData({ ...data, gallery: [...data.gallery, result.url] });
+      toast.success('Imagen agregada a la galería');
+    } catch (error: any) {
+      console.error('Error uploading gallery image:', error);
+      toast.error(error.message || 'Error al cargar la imagen');
+    } finally {
+      setUploadingGallery(false);
+    }
+  };
+
+  const removeGalleryImage = (index: number) => {
+    const newGallery = data.gallery.filter((_, i) => i !== index);
+    setData({ ...data, gallery: newGallery });
+  };
 
   return (
     <motion.div
@@ -647,62 +688,133 @@ function MediaStep({ data, setData }: { data: ProjectData; setData: (data: Proje
             Las imágenes de calidad aumentan las conversiones hasta un 40%
           </CardDescription>
         </CardHeader>
-        
+
         <CardContent className="space-y-6">
           {/* Main Image Upload */}
           <div className="space-y-4">
             <Label>Imagen Principal del Servicio *</Label>
-            <div 
-              className={`border-2 border-dashed rounded-lg p-8 text-center transition-all ${
-                draggedOver 
-                  ? 'border-primary/50 bg-primary/10' 
-                  : 'border-white/20 glass hover:glass-medium'
-              }`}
-              onDragOver={(e) => {
-                e.preventDefault();
-                setDraggedOver(true);
-              }}
-              onDragLeave={() => setDraggedOver(false)}
-              onDrop={(e) => {
-                e.preventDefault();
-                setDraggedOver(false);
-                // Handle file drop
-              }}
-            >
-              <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-              <div className="space-y-2">
-                <div className="font-medium">Arrastra una imagen aquí o haz clic para seleccionar</div>
-                <div className="text-sm text-muted-foreground">
-                  PNG, JPG hasta 10MB. Tamaño recomendado: 1280x720px
-                </div>
+
+            {data.images[0] ? (
+              <div className="relative">
+                <img
+                  src={data.images[0]}
+                  alt="Main service"
+                  className="w-full h-64 object-cover rounded-lg"
+                />
+                <Button
+                  size="icon"
+                  variant="destructive"
+                  className="absolute top-2 right-2"
+                  onClick={() => setData({ ...data, images: [] })}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
               </div>
-              <Button className="mt-4 liquid-gradient">
-                <Upload className="h-4 w-4 mr-2" />
-                Seleccionar Imagen
-              </Button>
-            </div>
+            ) : (
+              <div
+                className={`border-2 border-dashed rounded-lg p-8 text-center transition-all cursor-pointer ${
+                  draggedOver
+                    ? 'border-primary/50 bg-primary/10'
+                    : 'border-white/20 glass hover:glass-medium'
+                }`}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  setDraggedOver(true);
+                }}
+                onDragLeave={() => setDraggedOver(false)}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  setDraggedOver(false);
+                  const file = e.dataTransfer.files[0];
+                  if (file) handleMainImageUpload(file);
+                }}
+                onClick={() => document.getElementById('main-image-input')?.click()}
+              >
+                {uploading ? (
+                  <Loader2 className="h-12 w-12 mx-auto mb-4 text-primary animate-spin" />
+                ) : (
+                  <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                )}
+                <div className="space-y-2">
+                  <div className="font-medium">
+                    {uploading ? 'Subiendo imagen...' : 'Arrastra una imagen aquí o haz clic para seleccionar'}
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    PNG, JPG hasta 5MB. Tamaño recomendado: 1280x720px
+                  </div>
+                </div>
+                <input
+                  id="main-image-input"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handleMainImageUpload(file);
+                  }}
+                  disabled={uploading}
+                />
+              </div>
+            )}
           </div>
           
           {/* Gallery */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <Label>Galería de Imágenes (Opcional)</Label>
-              <span className="text-sm text-muted-foreground">Hasta 5 imágenes adicionales</span>
+              <span className="text-sm text-muted-foreground">
+                {data.gallery.length}/5 imágenes
+              </span>
             </div>
-            
+
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-              {/* Upload slots */}
-              {[...Array(5)].map((_, index) => (
-                <div 
-                  key={index}
-                  className="aspect-square border-2 border-dashed border-white/20 rounded-lg flex items-center justify-center glass hover:glass-medium cursor-pointer transition-all"
-                >
-                  <div className="text-center">
-                    <Plus className="h-6 w-6 mx-auto mb-2 text-muted-foreground" />
-                    <div className="text-xs text-muted-foreground">Imagen {index + 1}</div>
-                  </div>
+              {/* Existing images */}
+              {data.gallery.map((imageUrl, index) => (
+                <div key={index} className="relative aspect-square">
+                  <img
+                    src={imageUrl}
+                    alt={`Gallery ${index + 1}`}
+                    className="w-full h-full object-cover rounded-lg"
+                  />
+                  <Button
+                    size="icon"
+                    variant="destructive"
+                    className="absolute top-1 right-1 h-6 w-6"
+                    onClick={() => removeGalleryImage(index)}
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
                 </div>
               ))}
+
+              {/* Upload slots */}
+              {data.gallery.length < 5 && (
+                <div
+                  className="aspect-square border-2 border-dashed border-white/20 rounded-lg flex items-center justify-center glass hover:glass-medium cursor-pointer transition-all"
+                  onClick={() => document.getElementById('gallery-image-input')?.click()}
+                >
+                  {uploadingGallery ? (
+                    <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                  ) : (
+                    <div className="text-center">
+                      <Plus className="h-6 w-6 mx-auto mb-2 text-muted-foreground" />
+                      <div className="text-xs text-muted-foreground">Agregar</div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              <input
+                id="gallery-image-input"
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) handleGalleryImageUpload(file);
+                }}
+                disabled={uploadingGallery || data.gallery.length >= 5}
+              />
             </div>
           </div>
           
