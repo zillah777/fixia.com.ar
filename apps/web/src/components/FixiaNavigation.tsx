@@ -28,10 +28,10 @@ export const FixiaNavigation = memo(function FixiaNavigation() {
     }
   }, [logout, navigate]);
   return (
-    <motion.header 
+    <motion.header
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      className="sticky top-0 z-50 w-full glass border-b border-white/10"
+      className="sticky top-0 z-50 w-full backdrop-blur-xl bg-background/80 border-b border-white/10 shadow-lg shadow-black/5"
     >
       <div className="container mx-auto flex h-16 sm:h-20 items-center justify-between px-4 sm:px-6">
         {/* Logo and Navigation Links */}
@@ -53,38 +53,39 @@ export const FixiaNavigation = memo(function FixiaNavigation() {
             </div>
           </Link>
           
-          <nav className="hidden lg:flex items-center space-x-8">
+          <nav className="hidden lg:flex items-center space-x-1">
             {user?.userType === 'client' ? (
               <>
-                <Link to="/how-it-works" className="text-foreground/70 hover:text-foreground transition-colors">
-                  Cómo Funciona
+                <Link to="/how-it-works" className="relative px-4 py-2 text-sm font-medium text-foreground/80 hover:text-foreground transition-all duration-300 rounded-lg hover:bg-white/5 group">
+                  <span className="relative z-10">Cómo Funciona</span>
+                  <span className="absolute inset-x-0 -bottom-px h-px bg-gradient-to-r from-transparent via-primary to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></span>
                 </Link>
-                <Link to="/about" className="text-foreground/70 hover:text-foreground transition-colors">
-                  Acerca de
+                <Link to="/about" className="relative px-4 py-2 text-sm font-medium text-foreground/80 hover:text-foreground transition-all duration-300 rounded-lg hover:bg-white/5 group">
+                  <span className="relative z-10">Acerca de</span>
+                  <span className="absolute inset-x-0 -bottom-px h-px bg-gradient-to-r from-transparent via-primary to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></span>
                 </Link>
-                <Link to="/help" className="text-foreground/70 hover:text-foreground transition-colors">
-                  Ayuda
-                </Link>
-                <Link to="/contact" className="text-foreground/70 hover:text-foreground transition-colors">
-                  Contacto
+                <Link to="/help" className="relative px-4 py-2 text-sm font-medium text-foreground/80 hover:text-foreground transition-all duration-300 rounded-lg hover:bg-white/5 group">
+                  <span className="relative z-10">Ayuda</span>
+                  <span className="absolute inset-x-0 -bottom-px h-px bg-gradient-to-r from-transparent via-primary to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></span>
                 </Link>
               </>
             ) : (
               <>
-                <Link to="/services" className="text-foreground hover:text-primary transition-colors font-medium">
-                  Explorar Servicios
+                <Link to="/services" className="relative px-4 py-2 text-sm font-semibold text-foreground hover:text-primary transition-all duration-300 rounded-lg hover:bg-white/5 group">
+                  <span className="relative z-10">Explorar Servicios</span>
+                  <span className="absolute inset-x-0 -bottom-px h-px bg-gradient-to-r from-transparent via-primary to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></span>
                 </Link>
-                <Link to="/how-it-works" className="text-foreground hover:text-primary transition-colors font-medium">
-                  Cómo Funciona
+                <Link to="/how-it-works" className="relative px-4 py-2 text-sm font-medium text-foreground/80 hover:text-foreground transition-all duration-300 rounded-lg hover:bg-white/5 group">
+                  <span className="relative z-10">Cómo Funciona</span>
+                  <span className="absolute inset-x-0 -bottom-px h-px bg-gradient-to-r from-transparent via-primary to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></span>
                 </Link>
-                <Link to="/about" className="text-foreground hover:text-primary transition-colors font-medium">
-                  Acerca de
+                <Link to="/about" className="relative px-4 py-2 text-sm font-medium text-foreground/80 hover:text-foreground transition-all duration-300 rounded-lg hover:bg-white/5 group">
+                  <span className="relative z-10">Acerca de</span>
+                  <span className="absolute inset-x-0 -bottom-px h-px bg-gradient-to-r from-transparent via-primary to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></span>
                 </Link>
-                <Link to="/help" className="text-foreground hover:text-primary transition-colors font-medium">
-                  Ayuda
-                </Link>
-                <Link to="/contact" className="text-foreground hover:text-primary transition-colors font-medium">
-                  Contacto
+                <Link to="/help" className="relative px-4 py-2 text-sm font-medium text-foreground/80 hover:text-foreground transition-all duration-300 rounded-lg hover:bg-white/5 group">
+                  <span className="relative z-10">Ayuda</span>
+                  <span className="absolute inset-x-0 -bottom-px h-px bg-gradient-to-r from-transparent via-primary to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></span>
                 </Link>
               </>
             )}
