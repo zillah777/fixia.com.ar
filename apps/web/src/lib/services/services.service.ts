@@ -138,8 +138,8 @@ export const servicesService = {
     return api.delete(`/services/${id}`);
   },
 
-  async toggleServiceStatus(id: string): Promise<Service> {
-    return api.patch<Service>(`/services/${id}/toggle-status`);
+  async toggleServiceActive(id: string): Promise<{ message: string; service: { id: string; active: boolean; title: string } }> {
+    return api.put<{ message: string; service: { id: string; active: boolean; title: string } }>(`/services/${id}/toggle-active`, {});
   },
 
   async searchServices(query: string, filters?: Omit<ServiceFilters, 'search'>): Promise<PaginatedResponse<Service>> {

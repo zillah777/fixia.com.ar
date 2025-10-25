@@ -5,7 +5,7 @@ import {
   Plus, TrendingUp, Users, Heart, MessageSquare,
   Calendar, Clock, DollarSign, ArrowRight, Briefcase, Target,
   Zap, CheckCircle, AlertCircle, Search, Settings, Bell, Crown,
-  Eye, BarChart3, TrendingDown, Star
+  Eye, BarChart3, TrendingDown, Star, Pause, Play, Edit, Trash2, MoreVertical
 } from "lucide-react";
 import { userService, DashboardStats } from "../lib/services";
 import { dashboardService } from "../lib/services/dashboard.service";
@@ -16,6 +16,14 @@ import { Button } from "../components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Progress } from "../components/ui/progress";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from "../components/ui/dropdown-menu";
+import { toast } from "sonner";
 import { useSecureAuth } from "../context/SecureAuthContext";
 import { MobileBottomNavigation } from "../components/MobileBottomNavigation";
 import { FixiaNavigation } from "../components/FixiaNavigation";
@@ -628,21 +636,22 @@ function ServiceAnalytics({
 }) {
   const [analyticsData, setAnalyticsData] = useState<any>(null);
   const [analyticsLoading, setAnalyticsLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
+
+  const fetchAnalytics = async () => {
+    try {
+      setAnalyticsLoading(true);
+      const data = await servicesService.getMyServicesAnalytics();
+      setAnalyticsData(data);
+    } catch (error) {
+      console.warn('Failed to fetch service analytics:', error);
+      setAnalyticsData(null);
+    } finally {
+      setAnalyticsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchAnalytics = async () => {
-      try {
-        setAnalyticsLoading(true);
-        const data = await servicesService.getMyServicesAnalytics();
-        setAnalyticsData(data);
-      } catch (error) {
-        console.warn('Failed to fetch service analytics:', error);
-        setAnalyticsData(null);
-      } finally {
-        setAnalyticsLoading(false);
-      }
-    };
-
     fetchAnalytics();
   }, []);
 
@@ -651,6 +660,44 @@ function ServiceAnalytics({
       return `${(views / 1000).toFixed(1)}k`;
     }
     return views.toString();
+  };
+
+  const handleToggleActive = async (serviceId: string, currentTitle: string, event: React.MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    setActionLoading(serviceId);
+    try {
+      const result = await servicesService.toggleServiceActive(serviceId);
+      toast.success(result.message);
+      // Refresh analytics data
+      await fetchAnalytics();
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Error al cambiar estado del servicio');
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleDeleteService = async (serviceId: string, serviceTitle: string, event: React.MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (!confirm(`¿Estás seguro de eliminar "${serviceTitle}"? Esta acción no se puede deshacer.`)) {
+      return;
+    }
+
+    setActionLoading(serviceId);
+    try {
+      await servicesService.deleteService(serviceId);
+      toast.success('Servicio eliminado exitosamente');
+      // Refresh analytics data
+      await fetchAnalytics();
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Error al eliminar servicio');
+    } finally {
+      setActionLoading(null);
+    }
   };
 
   return (
@@ -757,35 +804,84 @@ function ServiceAnalytics({
                 Servicios Más Vistos
               </h4>
               {analyticsData.services.slice(0, 5).map((service: any, index: number) => (
-                <Link key={service.id} to={`/service/${service.id}`}>
-                  <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.3, delay: index * 0.05 }}
-                    className="p-4 glass-medium rounded-lg hover:glass-strong transition-all cursor-pointer group"
-                  >
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <h5 className="font-medium group-hover:text-primary transition-colors">
-                            {service.title}
-                          </h5>
-                          {index === 0 && (
-                            <Badge className="bg-warning/20 text-warning border-warning/30 text-xs">
-                              Top
-                            </Badge>
-                          )}
-                        </div>
-                        <p className="text-xs text-muted-foreground">
-                          {service.category}
-                        </p>
+                <motion.div
+                  key={service.id}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3, delay: index * 0.05 }}
+                  className="p-4 glass-medium rounded-lg hover:glass-strong transition-all group relative"
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <Link to={`/service/${service.id}`} className="flex-1 cursor-pointer">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h5 className="font-medium group-hover:text-primary transition-colors">
+                          {service.title}
+                        </h5>
+                        {index === 0 && (
+                          <Badge className="bg-warning/20 text-warning border-warning/30 text-xs">
+                            Top
+                          </Badge>
+                        )}
+                        {!service.active && (
+                          <Badge variant="outline" className="bg-muted/20 text-muted-foreground border-muted/30 text-xs">
+                            Pausado
+                          </Badge>
+                        )}
                       </div>
-                      <div className="text-right">
-                        <p className="text-lg font-bold text-primary">
-                          ${service.price.toLocaleString('es-AR')}
-                        </p>
-                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        {service.category}
+                      </p>
+                    </Link>
+                    <div className="flex items-center gap-2">
+                      <p className="text-lg font-bold text-primary">
+                        ${service.price.toLocaleString('es-AR')}
+                      </p>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                            disabled={actionLoading === service.id}
+                          >
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="glass border-white/20">
+                          <DropdownMenuItem
+                            onClick={(e) => handleToggleActive(service.id, service.title, e)}
+                            className="hover:bg-white/10 cursor-pointer"
+                          >
+                            {service.active ? (
+                              <>
+                                <Pause className="mr-2 h-4 w-4" />
+                                Pausar servicio
+                              </>
+                            ) : (
+                              <>
+                                <Play className="mr-2 h-4 w-4" />
+                                Activar servicio
+                              </>
+                            )}
+                          </DropdownMenuItem>
+                          <Link to={`/services/${service.id}/edit`}>
+                            <DropdownMenuItem className="hover:bg-white/10 cursor-pointer">
+                              <Edit className="mr-2 h-4 w-4" />
+                              Editar servicio
+                            </DropdownMenuItem>
+                          </Link>
+                          <DropdownMenuSeparator className="bg-white/10" />
+                          <DropdownMenuItem
+                            onClick={(e) => handleDeleteService(service.id, service.title, e)}
+                            className="hover:bg-white/10 cursor-pointer text-destructive"
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Eliminar servicio
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
+                  </div>
 
                     <div className="grid grid-cols-3 gap-3">
                       <div className="flex items-center gap-2">
@@ -844,8 +940,7 @@ function ServiceAnalytics({
                         )}
                       </div>
                     </div>
-                  </motion.div>
-                </Link>
+                </motion.div>
               ))}
             </div>
 

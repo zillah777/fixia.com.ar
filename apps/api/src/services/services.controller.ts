@@ -92,6 +92,18 @@ export class ServicesController {
     return this.servicesService.update(id, user.sub, updateServiceDto);
   }
 
+  @Put(':id/toggle-active')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Activar/Pausar un servicio propio' })
+  @ApiParam({ name: 'id', description: 'ID del servicio', type: 'string' })
+  @ApiResponse({ status: 200, description: 'Estado del servicio actualizado exitosamente' })
+  @ApiResponse({ status: 403, description: 'Solo puedes modificar tus propios servicios' })
+  @ApiResponse({ status: 404, description: 'Servicio no encontrado' })
+  toggleActive(@Param('id', ParseUUIDPipe) id: string, @CurrentUser() user: any) {
+    return this.servicesService.toggleActive(id, user.sub);
+  }
+
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()

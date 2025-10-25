@@ -419,12 +419,47 @@ export class ServicesService {
     });
   }
 
+  async toggleActive(id: string, userId: string) {
+    const service = await this.prisma.service.findUnique({
+      where: { id },
+      select: {
+        professional_id: true,
+        active: true,
+      },
+    });
+
+    if (!service) {
+      throw new NotFoundException('Service not found');
+    }
+
+    if (service.professional_id !== userId) {
+      throw new ForbiddenException('You can only modify your own services');
+    }
+
+    const updatedService = await this.prisma.service.update({
+      where: { id },
+      data: {
+        active: !service.active,
+      },
+      select: {
+        id: true,
+        active: true,
+        title: true,
+      },
+    });
+
+    return {
+      message: `Service ${updatedService.active ? 'activated' : 'paused'} successfully`,
+      service: updatedService,
+    };
+  }
+
   async remove(id: string, userId: string) {
     const service = await this.prisma.service.findUnique({
       where: { id },
-      select: { 
+      select: {
         professional_id: true,
-        category_id: true 
+        category_id: true
       },
     });
 
@@ -658,11 +693,11 @@ export class ServicesService {
     const services = await this.prisma.service.findMany({
       where: {
         professional_id: userId,
-        active: true,
       },
       select: {
         id: true,
         title: true,
+        active: true,
         view_count: true,
         created_at: true,
         price: true,
@@ -711,6 +746,7 @@ export class ServicesService {
       services: services.map((s) => ({
         id: s.id,
         title: s.title,
+        active: s.active,
         category: s.category.name,
         price: s.price,
         views: s.view_count,
