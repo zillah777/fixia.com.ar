@@ -393,12 +393,12 @@ function StatCards({ dashboardData, loading, userType, clientStats, planType }: 
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.1 * index }}
                 >
-                  <Card className="glass hover:glass-medium transition-all duration-300 border-white/10">
+                  <Card className="glass-glow hover:glass-medium transition-all duration-300 border-white/10 card-hover">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="text-sm text-muted-foreground">{stat.title}</p>
-                          <p className="text-3xl font-bold mt-2">{stat.value}</p>
+                          <p className="text-3xl font-bold mt-2 text-gradient">{stat.value}</p>
                           <div className="flex items-center mt-2 space-x-2">
                             <span className={`text-sm ${
                               stat.changeType === 'positive' ? 'text-success' : 'text-destructive'
@@ -408,7 +408,7 @@ function StatCards({ dashboardData, loading, userType, clientStats, planType }: 
                             <span className="text-xs text-muted-foreground">{stat.description}</span>
                           </div>
                         </div>
-                        <div className="h-12 w-12 bg-primary/20 rounded-xl flex items-center justify-center">
+                        <div className="h-12 w-12 bg-primary/20 rounded-xl flex items-center justify-center float">
                           <Icon className="h-6 w-6 text-primary" />
                         </div>
                       </div>
@@ -439,12 +439,12 @@ function StatCards({ dashboardData, loading, userType, clientStats, planType }: 
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: showBothStats ? 0.4 + 0.1 * index : 0.1 * index }}
               >
-                <Card className="glass hover:glass-medium transition-all duration-300 border-white/10">
+                <Card className="glass-glow hover:glass-medium transition-all duration-300 border-white/10 card-hover">
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm text-muted-foreground">{stat.title}</p>
-                        <p className="text-3xl font-bold mt-2">{stat.value}</p>
+                        <p className="text-3xl font-bold mt-2 text-gradient">{stat.value}</p>
                         <div className="flex items-center mt-2 space-x-2">
                           <span className={`text-sm ${
                             stat.changeType === 'positive' ? 'text-success' : 'text-destructive'
@@ -454,7 +454,7 @@ function StatCards({ dashboardData, loading, userType, clientStats, planType }: 
                           <span className="text-xs text-muted-foreground">{stat.description}</span>
                         </div>
                       </div>
-                      <div className="h-12 w-12 bg-info/20 rounded-xl flex items-center justify-center">
+                      <div className="h-12 w-12 bg-info/20 rounded-xl flex items-center justify-center float">
                         <Icon className="h-6 w-6 text-info" />
                       </div>
                     </div>

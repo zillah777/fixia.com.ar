@@ -87,7 +87,7 @@ const categories = [
 
 function HeroSection() {
   return (
-    <section className="relative mobile-section overflow-hidden">
+    <section className="relative mobile-section overflow-hidden gradient-mesh">
       <div className="container mx-auto mobile-container">
         <div className="max-w-4xl mx-auto text-center">
           <motion.div
@@ -105,7 +105,7 @@ function HeroSection() {
               <span className="bg-gradient-to-r from-white via-white to-white/70 bg-clip-text text-transparent">
                 Conecta.
               </span>{" "}
-              <span className="text-gradient-primary text-gradient-fallback">
+              <span className="text-gradient-rainbow">
                 Confía.
               </span>{" "}
               <span className="bg-gradient-to-r from-white via-white to-white/70 bg-clip-text text-transparent">
@@ -133,14 +133,14 @@ function HeroSection() {
             
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-8 sm:mb-12">
               <Link to="/services">
-                <Button size="lg" className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-xl px-6 py-3 sm:px-6 sm:py-6 mobile-text-lg w-full sm:w-auto ">
+                <Button size="lg" className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-xl px-6 py-3 sm:px-6 sm:py-6 mobile-text-lg w-full sm:w-auto glow-hover">
                   <Search className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                   Buscar Profesionales
                   <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
                 </Button>
               </Link>
               <Link to="/register?type=professional">
-                <Button size="lg" variant="outline" className="glass border-white/20 hover:glass-medium px-6 py-3 sm:px-6 sm:py-6 mobile-text-lg w-full sm:w-auto ">
+                <Button size="lg" variant="outline" className="glass border-white/20 hover:glass-medium px-6 py-3 sm:px-6 sm:py-6 mobile-text-lg w-full sm:w-auto neon-border">
                   <Crown className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                   Ser Profesional
                 </Button>
@@ -257,14 +257,14 @@ function CategoriesSection() {
                 whileHover={{ y: -4 }}
               >
                 <Link to={`/services?category=${encodeURIComponent(category.name)}`}>
-                  <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 cursor-pointer group h-full relative bg-card/50 backdrop-blur-xl mobile-card ">
+                  <Card className="glass-glow hover:glass-medium transition-all duration-300 border-white/10 cursor-pointer group h-full relative bg-card/50 backdrop-blur-xl mobile-card card-hover">
                     {category.popular && (
-                      <Badge className="absolute top-2 right-2 bg-blue-500/20 text-blue-400 border-blue-400/30 text-xs px-2 py-0.5 font-medium">
+                      <Badge className="absolute top-2 right-2 bg-blue-500/20 text-blue-400 border-blue-400/30 text-xs px-2 py-0.5 font-medium pulse-glow">
                         Popular
                       </Badge>
                     )}
                     <CardContent className="p-3 sm:p-4 md:p-6 text-center">
-                      <div className="h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-xl md:rounded-2xl flex items-center justify-center mx-auto mb-3 sm:mb-4 group-hover:from-blue-500/30 group-hover:to-purple-500/30 transition-all duration-300 border border-blue-400/20">
+                      <div className="h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-xl md:rounded-2xl flex items-center justify-center mx-auto mb-3 sm:mb-4 group-hover:from-blue-500/30 group-hover:to-purple-500/30 transition-all duration-300 border border-blue-400/20 float">
                         <Icon className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 text-blue-400 group-hover:text-blue-300 transition-colors" />
                       </div>
                       <h3 className="font-semibold mb-1 sm:mb-2 text-white text-xs sm:text-sm md:text-base leading-tight">{category.name}</h3>
@@ -391,7 +391,7 @@ function FeaturedServicesSection() {
                   whileHover={{ y: -4 }}
                 >
                   <Link to={`/users/${professional.id}`}>
-                    <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 overflow-hidden group cursor-pointer">
+                    <Card className="frosted hover:glass-medium transition-all duration-300 border-white/10 overflow-hidden group cursor-pointer card-hover spotlight">
                       <div className="relative aspect-video overflow-hidden">
                         <img
                           src={serviceImage}
@@ -532,10 +532,10 @@ function HowItWorksSection() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: 0.1 * index }}
               >
-                <Card className="glass border-white/10 text-center h-full">
+                <Card className="glass-glow border-white/10 text-center h-full card-hover">
                   <CardContent className="p-8">
                     <div className="relative mb-6">
-                      <div className="h-20 w-20 liquid-gradient rounded-2xl flex items-center justify-center mx-auto">
+                      <div className="h-20 w-20 liquid-gradient rounded-2xl flex items-center justify-center mx-auto glow-primary">
                         <Icon className="h-10 w-10 text-white" />
                       </div>
                       <div className="absolute -top-2 -right-2 h-8 w-8 bg-background rounded-full border-2 border-primary/30 flex items-center justify-center">
@@ -586,7 +586,7 @@ function CTASection() {
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
         >
-          <Card className="glass border-white/10 overflow-hidden">
+          <Card className="glass-glow border-white/10 overflow-hidden neon-border">
             <CardContent className="p-12 text-center">
               <div className="max-w-3xl mx-auto">
                 <h2 className="text-4xl font-bold mb-6 text-foreground">

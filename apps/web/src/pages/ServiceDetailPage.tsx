@@ -426,7 +426,7 @@ export default function ServiceDetailPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              <Card className="glass border-white/10 overflow-hidden">
+              <Card className="frosted border-white/10 overflow-hidden shimmer">
                 <div className="relative aspect-video bg-muted">
                   <img
                     src={service.main_image || images[0] || "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&h=600&fit=crop"}
@@ -729,11 +729,11 @@ export default function ServiceDetailPage() {
                           whileHover={{ y: -4 }}
                           transition={{ duration: 0.2 }}
                         >
-                          <Card className={`glass border-white/10 relative overflow-hidden ${
-                            isPopular ? 'ring-2 ring-primary/30' : ''
+                          <Card className={`glass-glow border-white/10 relative overflow-hidden card-hover ${
+                            isPopular ? 'ring-2 ring-primary/30 neon-border' : ''
                           }`}>
                             {isPopular && (
-                              <div className="absolute top-0 right-0 bg-primary text-primary-foreground px-3 py-1 text-xs font-medium rounded-bl-lg">
+                              <div className="absolute top-0 right-0 bg-primary text-primary-foreground px-3 py-1 text-xs font-medium rounded-bl-lg pulse-glow">
                                 Más popular
                               </div>
                             )}
