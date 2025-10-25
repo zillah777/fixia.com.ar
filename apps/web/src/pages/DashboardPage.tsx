@@ -1224,13 +1224,13 @@ export default function DashboardPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="mb-8"
+          className="mb-10"
         >
-          <h1 className="text-3xl font-bold mb-2 text-white">
-            Bienvenido de vuelta, {user?.name} 👋
+          <h1 className="text-4xl sm:text-5xl font-extrabold mb-3 text-white tracking-tight">
+            ¡Hola {user?.name}! 👋
           </h1>
-          <p className="text-muted-foreground">
-            Gestiona tus servicios, proyectos y aprovecha nuevas oportunidades en Fixia
+          <p className="text-lg sm:text-xl text-muted-foreground/80 leading-relaxed">
+            Gestiona todo desde tu panel de control
           </p>
         </motion.div>
 
