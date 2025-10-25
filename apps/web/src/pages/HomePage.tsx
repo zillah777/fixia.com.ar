@@ -101,21 +101,23 @@ function HeroSection() {
               <span className="sm:hidden">+500 profesionales</span>
             </Badge>
             
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold mb-4 sm:mb-6 tracking-tight leading-tight">
-              <span className="bg-gradient-to-r from-white via-white to-white/70 bg-clip-text text-transparent">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extrabold mb-6 sm:mb-8 tracking-tight leading-[1.1]">
+              <span className="bg-gradient-to-r from-white via-white to-white/80 bg-clip-text text-transparent drop-shadow-sm">
                 Conecta.
               </span>{" "}
-              <span className="text-gradient-rainbow">
+              <span className="text-gradient-rainbow inline-block">
                 Confía.
               </span>{" "}
-              <span className="bg-gradient-to-r from-white via-white to-white/70 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-white via-white to-white/80 bg-clip-text text-transparent drop-shadow-sm">
                 Resuelve.
               </span>
             </h1>
-            
-            <p className="text-base sm:text-lg md:text-xl text-muted-foreground mb-6 sm:mb-8 max-w-2xl mx-auto leading-relaxed">
-              El primer marketplace de microservicios de la Provincia del Chubut. 
-              Conecta con profesionales locales verificados o promociona tus servicios.
+
+            <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground/90 mb-8 sm:mb-10 max-w-3xl mx-auto leading-relaxed font-medium">
+              El primer marketplace de servicios profesionales de Chubut.
+              <span className="block mt-2 text-base sm:text-lg md:text-xl text-muted-foreground/70">
+                Conecta con profesionales verificados o promociona tus servicios sin comisiones.
+              </span>
             </p>
             
             {/* Launch Promotion Alert */}
@@ -131,36 +133,49 @@ function HeroSection() {
               </CardContent>
             </Card>
             
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-8 sm:mb-12">
-              <Link to="/services">
-                <Button size="lg" className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-xl px-6 py-3 sm:px-6 sm:py-6 mobile-text-lg w-full sm:w-auto glow-hover">
-                  <Search className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-                  Buscar Profesionales
-                  <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-5 mb-10 sm:mb-14">
+              <Link to="/services" className="w-full sm:w-auto">
+                <Button
+                  size="lg"
+                  className="liquid-gradient hover:opacity-90 hover:scale-105 transition-all duration-300 shadow-2xl hover:shadow-primary/50 px-8 py-6 sm:px-10 sm:py-7 text-base sm:text-lg font-semibold w-full sm:w-auto glow-hover rounded-2xl group"
+                >
+                  <Search className="mr-3 h-5 w-5 sm:h-6 sm:w-6 group-hover:rotate-12 transition-transform" />
+                  Explorar Profesionales
+                  <ArrowRight className="ml-3 h-5 w-5 sm:h-6 sm:w-6 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
-              <Link to="/register?type=professional">
-                <Button size="lg" variant="outline" className="glass border-white/20 hover:glass-medium px-6 py-3 sm:px-6 sm:py-6 mobile-text-lg w-full sm:w-auto neon-border">
-                  <Crown className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-                  Ser Profesional
+              <Link to="/register?type=professional" className="w-full sm:w-auto">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="glass border-white/30 hover:glass-medium hover:border-white/50 hover:scale-105 px-8 py-6 sm:px-10 sm:py-7 text-base sm:text-lg font-semibold w-full sm:w-auto neon-border rounded-2xl transition-all duration-300 group"
+                >
+                  <Crown className="mr-3 h-5 w-5 sm:h-6 sm:w-6 text-warning group-hover:text-warning/80 transition-colors" />
+                  Ofrecer Servicios
                 </Button>
               </Link>
             </div>
             
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 text-xs sm:text-sm text-muted-foreground mb-6">
-              <div className="flex items-center">
-                <Shield className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 text-success" />
-                Sin comisiones
+            <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-8 md:gap-10 text-sm sm:text-base mb-8">
+              <div className="flex items-center gap-3 group">
+                <div className="h-10 w-10 rounded-full bg-success/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <Shield className="h-5 w-5 text-success" />
+                </div>
+                <span className="font-medium text-white/90">Sin comisiones</span>
               </div>
-              <div className="flex items-center">
-                <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 text-success" />
-                <span className="hidden sm:inline">Profesionales verificados</span>
-                <span className="sm:hidden">Verificados</span>
+              <div className="flex items-center gap-3 group">
+                <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <CheckCircle className="h-5 w-5 text-primary" />
+                </div>
+                <span className="font-medium text-white/90 hidden sm:inline">Profesionales verificados</span>
+                <span className="font-medium text-white/90 sm:hidden">Verificados</span>
               </div>
-              <div className="flex items-center">
-                <Phone className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 text-success" />
-                <span className="hidden sm:inline">Contacto directo WhatsApp</span>
-                <span className="sm:hidden">WhatsApp directo</span>
+              <div className="flex items-center gap-3 group">
+                <div className="h-10 w-10 rounded-full bg-success/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <Phone className="h-5 w-5 text-success" />
+                </div>
+                <span className="font-medium text-white/90 hidden sm:inline">Contacto directo</span>
+                <span className="font-medium text-white/90 sm:hidden">Directo</span>
               </div>
             </div>
             
@@ -236,10 +251,12 @@ function CategoriesSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-8 sm:mb-12 lg:mb-16"
+          className="text-center mb-12 sm:mb-16 lg:mb-20"
         >
-          <h2 className="mobile-text-3xl font-bold mb-3 sm:mb-4 text-foreground">Servicios Más Solicitados</h2>
-          <p className="mobile-text-lg text-muted-foreground max-w-2xl mx-auto">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-4 sm:mb-6 text-foreground tracking-tight">
+            Servicios Más Solicitados
+          </h2>
+          <p className="text-lg sm:text-xl text-muted-foreground/80 max-w-2xl mx-auto leading-relaxed">
             Descubre los profesionales más valorados en cada categoría de Chubut
           </p>
         </motion.div>
@@ -352,11 +369,13 @@ function FeaturedServicesSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-16"
+          className="text-center mb-12 sm:mb-16 lg:mb-20"
         >
-          <h2 className="text-4xl font-bold mb-4 text-foreground">Profesionales Destacados</h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Conoce a algunos de los mejores profesionales verificados de Chubut
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-4 sm:mb-6 text-foreground tracking-tight">
+            Profesionales Destacados
+          </h2>
+          <p className="text-lg sm:text-xl text-muted-foreground/80 max-w-2xl mx-auto leading-relaxed">
+            Conoce a los mejores profesionales verificados de Chubut
           </p>
         </motion.div>
 
@@ -513,11 +532,13 @@ function HowItWorksSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-16"
+          className="text-center mb-12 sm:mb-16 lg:mb-20"
         >
-          <h2 className="text-4xl font-bold mb-4 text-foreground">Cómo Funciona Fixia</h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Un proceso simple, seguro y sin comisiones para conectar con los mejores
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-4 sm:mb-6 text-foreground tracking-tight">
+            Cómo Funciona Fixia
+          </h2>
+          <p className="text-lg sm:text-xl text-muted-foreground/80 max-w-2xl mx-auto leading-relaxed">
+            Simple, seguro y sin comisiones
           </p>
         </motion.div>
 
@@ -587,35 +608,56 @@ function CTASection() {
           transition={{ duration: 0.8 }}
         >
           <Card className="glass-glow border-white/10 overflow-hidden neon-border">
-            <CardContent className="p-12 text-center">
-              <div className="max-w-3xl mx-auto">
-                <h2 className="text-4xl font-bold mb-6 text-foreground">
-                  ¿Listo para conectar con los mejores profesionales de Chubut?
+            <CardContent className="p-8 sm:p-12 md:p-16 text-center">
+              <div className="max-w-4xl mx-auto">
+                <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-6 sm:mb-8 text-foreground tracking-tight leading-tight">
+                  ¿Listo para conectar con los mejores profesionales?
                 </h2>
-                <p className="text-xl text-muted-foreground mb-8">
-                  Únete a la revolución del marketplace local. Sin comisiones, 
-                  con profesionales verificados y contacto directo.
+                <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground/80 mb-10 sm:mb-12 leading-relaxed">
+                  Únete al marketplace local líder de Chubut.
+                  <span className="block mt-2 text-base sm:text-lg text-muted-foreground/60">
+                    Sin comisiones • Profesionales verificados • Contacto directo
+                  </span>
                 </p>
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                  <Link to="/register">
-                    <Button size="lg" className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-xl px-6">
-                      <Users className="mr-2 h-5 w-5" />
-                      Buscar Profesionales
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-5">
+                  <Link to="/register" className="w-full sm:w-auto">
+                    <Button
+                      size="lg"
+                      className="liquid-gradient hover:opacity-90 hover:scale-105 transition-all duration-300 shadow-2xl hover:shadow-primary/50 px-10 py-6 text-lg font-semibold w-full sm:w-auto rounded-2xl group"
+                    >
+                      <Users className="mr-3 h-6 w-6 group-hover:scale-110 transition-transform" />
+                      Comenzar Ahora
                     </Button>
                   </Link>
-                  <Link to="/register?type=professional">
-                    <Button size="lg" variant="outline" className="glass border-white/20 hover:glass-medium px-6">
-                      <Crown className="mr-2 h-5 w-5" />
-                      Ser Profesional
+                  <Link to="/register?type=professional" className="w-full sm:w-auto">
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      className="glass border-white/30 hover:glass-medium hover:border-white/50 hover:scale-105 px-10 py-6 text-lg font-semibold w-full sm:w-auto rounded-2xl transition-all duration-300 group"
+                    >
+                      <Crown className="mr-3 h-6 w-6 text-warning group-hover:text-warning/80 transition-colors" />
+                      Ofrecer Servicios
                     </Button>
                   </Link>
                 </div>
-                
-                <div className="flex items-center justify-center space-x-8 mt-8 text-sm text-muted-foreground">
-                  <span>✨ Sin comisiones</span>
-                  <span>🛡️ Profesionales verificados</span>
-                  <span>📱 Contacto directo WhatsApp</span>
-                  <span>🎯 Matchmaking inteligente</span>
+
+                <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 mt-10 text-sm sm:text-base text-muted-foreground/60">
+                  <span className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-success" />
+                    Sin comisiones
+                  </span>
+                  <span className="flex items-center gap-2">
+                    <Shield className="h-4 w-4 text-primary" />
+                    Verificados
+                  </span>
+                  <span className="flex items-center gap-2">
+                    <Phone className="h-4 w-4 text-success" />
+                    Contacto directo
+                  </span>
+                  <span className="flex items-center gap-2">
+                    <Zap className="h-4 w-4 text-warning" />
+                    Respuesta rápida
+                  </span>
                 </div>
               </div>
             </CardContent>
