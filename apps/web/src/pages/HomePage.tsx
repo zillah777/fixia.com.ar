@@ -219,7 +219,7 @@ function CategoriesSection() {
   const displayCategories = (Array.isArray(apiCategories) && apiCategories.length > 0) ? apiCategories.map(cat => ({
     name: cat.name,
     icon: getIconForCategory(cat.name),
-    count: `${cat.count}+ servicios`,
+    count: cat.count ? `${cat.count}+ servicios` : '0 servicios',
     popular: cat.popular
   })) : categories;
 
