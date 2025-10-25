@@ -233,6 +233,9 @@ function CategoriesSection() {
       'Electricista': Zap,
       // Legacy categories (in case API returns old ones)
       'Fletes / Mudanzas': Truck,
+      'Carga ligera': Truck,
+      'Animadores / Payasos': User,
+      'Asistente virtual': Users,
       'Clases particulares': GraduationCap,
       'Instalación de gas': Flame,
       'Desarrollo Web': Globe,

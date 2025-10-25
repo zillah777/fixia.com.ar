@@ -70,10 +70,9 @@ async function main() {
     { name: 'Desarrollo de apps', slug: 'desarrollo-apps', description: 'Desarrollo de aplicaciones móviles', icon: '📱', popular: false },
 
     // 📦 Mudanzas y Transporte
-    { name: 'Fletes / Mudanzas', slug: 'fletes-mudanzas', description: 'Servicio de mudanzas y fletes', icon: '🚚', popular: true },
+    { name: 'Mudanza / fletes', slug: 'mudanza-fletes', description: 'Servicio de mudanzas y fletes', icon: '🚚', popular: true },
     { name: 'Transporte de personas', slug: 'transporte-personas', description: 'Servicio de transporte privado', icon: '🚗', popular: true },
     { name: 'Motomensajería', slug: 'motomensajeria', description: 'Envío rápido de paquetes', icon: '🏍️', popular: false },
-    { name: 'Carga ligera', slug: 'carga-ligera', description: 'Transporte de carga pequeña', icon: '📦', popular: true },
     { name: 'Chofer privado', slug: 'chofer-privado', description: 'Servicio de chofer particular', icon: '🚙', popular: false },
 
     // 🐶 Cuidado de Mascotas
@@ -85,7 +84,7 @@ async function main() {
     // 📸 Eventos y Entretenimiento
     { name: 'Fotografía', slug: 'fotografia', description: 'Fotografía profesional para eventos', icon: '📷', popular: true },
     { name: 'Filmación', slug: 'filmacion', description: 'Videos profesionales para eventos', icon: '🎥', popular: true },
-    { name: 'Animadores / Payasos', slug: 'animadores', description: 'Animación infantil para fiestas', icon: '🎪', popular: true },
+    { name: 'Niñera', slug: 'ninera', description: 'Cuidado de niños a domicilio', icon: '👶', popular: true },
     { name: 'Música en vivo', slug: 'musica-vivo', description: 'Música en vivo para eventos', icon: '🎵', popular: false },
     { name: 'Decoración de eventos', slug: 'decoracion-eventos', description: 'Decoración para fiestas y eventos', icon: '🎈', popular: true },
     { name: 'Organización de eventos', slug: 'organizacion-eventos', description: 'Planificación integral de eventos', icon: '📋', popular: true },
@@ -95,7 +94,7 @@ async function main() {
     { name: 'Publicidad digital', slug: 'publicidad-digital', description: 'Campañas de marketing online', icon: '📊', popular: true },
     { name: 'Redacción / Copywriting', slug: 'redaccion-copywriting', description: 'Redacción de contenidos publicitarios', icon: '✍️', popular: false },
     { name: 'Ventas por comisión', slug: 'ventas-comision', description: 'Representación de ventas', icon: '💼', popular: false },
-    { name: 'Asistente virtual', slug: 'asistente-virtual', description: 'Asistencia administrativa remota', icon: '💻', popular: true },
+    { name: 'Asistente virtual', slug: 'asistente-virtual', description: 'Asistencia administrativa remota', icon: '💻', popular: false },
 
     // 🧰 Servicios Generales
     { name: 'Ayudante para tareas varias', slug: 'ayudante-tareas', description: 'Ayuda con tareas diversas', icon: '🧰', popular: true },
