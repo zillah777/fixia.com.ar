@@ -1,9 +1,9 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { 
-  ArrowLeft, Target, Zap, Shield, Clock, Users, 
+import {
+  ArrowLeft, Target, Zap, Shield, Clock, Users,
   CheckCircle, Search, Bell, Heart, TrendingUp,
-  Globe, Heart, Heart, Lightbulb, Compass, 
+  Globe, Lightbulb, Compass,
   Crown, UserPlus, ArrowRight, MapPin, Sparkles,
   MessageSquare, Phone, Mail, Gift
 } from "lucide-react";
@@ -23,37 +23,45 @@ function HeroSection() {
           transition={{ duration: 1 }}
           className="max-w-4xl mx-auto text-center"
         >
-          <Badge className="mb-6 bg-primary/20 text-primary border-primary/30 px-4 py-2">
-            <MapPin className="h-4 w-4 mr-2" />
+          <Badge className="mb-8 bg-primary/20 text-primary border-primary/30 px-5 py-2.5 text-base pulse-glow">
+            <MapPin className="h-5 w-5 mr-2" />
             Las páginas amarillas del futuro
           </Badge>
-          
-          <h1 className="text-5xl lg:text-6xl font-bold mb-6 tracking-tight">
-            <span className="bg-gradient-to-r from-white via-white to-white/70 bg-clip-text text-transparent">
+
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold mb-8 tracking-tight leading-tight">
+            <span className="bg-gradient-to-r from-white via-white to-white/80 bg-clip-text text-transparent drop-shadow-sm">
               Acerca de
             </span>{" "}
-            <span className="bg-gradient-to-r from-primary-solid to-purple-400 bg-clip-text text-transparent">
+            <span className="text-gradient-rainbow inline-block">
               Fixia
             </span>
           </h1>
-          
-          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
-            Somos las páginas amarillas del futuro, los clasificados de la nueva era digital. 
-            Conectamos profesionales con clientes de manera inteligente y moderna.
+
+          <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground/90 mb-10 max-w-3xl mx-auto leading-relaxed font-medium">
+            Somos las páginas amarillas del futuro, los clasificados de la nueva era digital.
+            <span className="block mt-2 text-base sm:text-lg text-muted-foreground/70">
+              Conectamos profesionales con clientes de manera inteligente y moderna
+            </span>
           </p>
           
-          <div className="flex items-center justify-center space-x-8 text-sm text-muted-foreground">
-            <div className="flex items-center">
-              <Sparkles className="h-4 w-4 mr-2 text-primary" />
-              Chubut, Argentina
+          <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-8 md:gap-10 text-sm sm:text-base">
+            <div className="flex items-center gap-3 group">
+              <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Sparkles className="h-5 w-5 text-primary" />
+              </div>
+              <span className="font-medium text-white/90">Chubut, Argentina</span>
             </div>
-            <div className="flex items-center">
-              <Users className="h-4 w-4 mr-2 text-success" />
-              +500 profesionales
+            <div className="flex items-center gap-3 group">
+              <div className="h-10 w-10 rounded-full bg-success/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Users className="h-5 w-5 text-success" />
+              </div>
+              <span className="font-medium text-white/90">+500 profesionales</span>
             </div>
-            <div className="flex items-center">
-              <Heart className="h-4 w-4 mr-2 text-warning" />
-              Sin comisiones
+            <div className="flex items-center gap-3 group">
+              <div className="h-10 w-10 rounded-full bg-warning/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Heart className="h-5 w-5 text-warning" />
+              </div>
+              <span className="font-medium text-white/90">Sin comisiones</span>
             </div>
           </div>
         </motion.div>
@@ -74,21 +82,27 @@ function MissionSection() {
           className="max-w-4xl mx-auto"
         >
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4 text-foreground">Nuestra Misión</h2>
-            <div className="w-24 h-1 liquid-gradient mx-auto mb-6"></div>
+            <div className="flex items-center justify-center gap-4 mb-6">
+              <div className="h-14 w-14 rounded-2xl bg-primary/20 flex items-center justify-center float">
+                <Target className="h-7 w-7 text-primary" />
+              </div>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-foreground tracking-tight">Nuestra Misión</h2>
+            </div>
           </div>
 
-          <Card className="glass border-white/10 overflow-hidden">
+          <Card className="glass-glow border-white/10 overflow-hidden card-hover">
             <CardContent className="p-12 text-center">
               <div className="max-w-3xl mx-auto">
-                <Target className="h-16 w-16 text-primary mx-auto mb-6" />
-                <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
+                <div className="h-20 w-20 rounded-3xl bg-primary/20 flex items-center justify-center mx-auto mb-8 float">
+                  <Target className="h-10 w-10 text-primary" />
+                </div>
+                <p className="text-xl sm:text-2xl text-muted-foreground/90 mb-8 leading-relaxed font-medium">
                   Revolucionar la forma en que las personas encuentran y contratan servicios profesionales 
                   en Chubut, creando un ecosistema digital que beneficie tanto a profesionales como a clientes.
                 </p>
-                <div className="bg-primary/10 rounded-2xl p-6 border border-primary/20">
-                  <p className="text-lg italic">
-                    "Somos el puente que conecta talento con necesidad, facilitando encuentros 
+                <div className="bg-primary/10 rounded-3xl p-8 border border-primary/20 glass-glow">
+                  <p className="text-xl sm:text-2xl italic font-medium leading-relaxed">
+                    "Somos el puente que conecta talento con necesidad, facilitando encuentros
                     que generan valor y confianza en nuestra comunidad."
                   </p>
                 </div>
@@ -140,8 +154,13 @@ function WhatIsFixiaSection() {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl font-bold mb-4 text-foreground">¿Qué es Fixia?</h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <div className="flex items-center justify-center gap-4 mb-6">
+            <div className="h-14 w-14 rounded-2xl bg-info/20 flex items-center justify-center float">
+              <Globe className="h-7 w-7 text-info" />
+            </div>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-foreground tracking-tight">¿Qué es Fixia?</h2>
+          </div>
+          <p className="text-lg sm:text-xl text-muted-foreground/80 max-w-2xl mx-auto leading-relaxed">
             Somos mucho más que una simple plataforma de servicios
           </p>
         </motion.div>
@@ -158,13 +177,13 @@ function WhatIsFixiaSection() {
                 transition={{ duration: 0.6, delay: 0.1 * index }}
                 whileHover={{ y: -4 }}
               >
-                <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 h-full">
-                  <CardContent className="p-6 text-center">
-                    <div className="h-16 w-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                      <Icon className="h-8 w-8 text-primary" />
+                <Card className="glass-glow hover:glass-medium transition-all duration-300 border-white/10 h-full card-hover">
+                  <CardContent className="p-8 text-center">
+                    <div className="h-20 w-20 bg-primary/10 rounded-3xl flex items-center justify-center mx-auto mb-6 float">
+                      <Icon className="h-10 w-10 text-primary" />
                     </div>
-                    <h3 className="font-semibold mb-2">{feature.title}</h3>
-                    <p className="text-sm text-muted-foreground">{feature.description}</p>
+                    <h3 className="text-lg sm:text-xl font-bold mb-3 text-foreground">{feature.title}</h3>
+                    <p className="text-base text-muted-foreground/80 leading-relaxed">{feature.description}</p>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -214,8 +233,13 @@ function ApproachSection() {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl font-bold mb-4 text-foreground">Nuestro Enfoque</h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <div className="flex items-center justify-center gap-4 mb-6">
+            <div className="h-14 w-14 rounded-2xl bg-success/20 flex items-center justify-center float">
+              <Compass className="h-7 w-7 text-success" />
+            </div>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-foreground tracking-tight">Nuestro Enfoque</h2>
+          </div>
+          <p className="text-lg sm:text-xl text-muted-foreground/80 max-w-2xl mx-auto leading-relaxed">
             Cuatro pilares fundamentales que guían todo lo que hacemos
           </p>
         </motion.div>
@@ -232,13 +256,13 @@ function ApproachSection() {
                 transition={{ duration: 0.6, delay: 0.1 * index }}
                 whileHover={{ y: -4 }}
               >
-                <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 h-full">
-                  <CardContent className="p-6 text-center">
-                    <div className={`h-16 w-16 bg-current/10 rounded-2xl flex items-center justify-center mx-auto mb-4 ${approach.color}`}>
-                      <Icon className={`h-8 w-8 ${approach.color}`} />
+                <Card className="glass-glow hover:glass-medium transition-all duration-300 border-white/10 h-full card-hover">
+                  <CardContent className="p-8 text-center">
+                    <div className={`h-20 w-20 bg-current/10 rounded-3xl flex items-center justify-center mx-auto mb-6 ${approach.color} float`}>
+                      <Icon className={`h-10 w-10 ${approach.color}`} />
                     </div>
-                    <h3 className={`font-semibold mb-3 ${approach.color}`}>{approach.title}</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">{approach.description}</p>
+                    <h3 className={`text-xl sm:text-2xl font-bold mb-4 ${approach.color}`}>{approach.title}</h3>
+                    <p className="text-base text-muted-foreground/80 leading-relaxed">{approach.description}</p>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -286,8 +310,13 @@ function HowItWorksSection() {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl font-bold mb-4 text-foreground">¿Cómo Funciona?</h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <div className="flex items-center justify-center gap-4 mb-6">
+            <div className="h-14 w-14 rounded-2xl bg-warning/20 flex items-center justify-center float">
+              <Zap className="h-7 w-7 text-warning" />
+            </div>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-foreground tracking-tight">¿Cómo Funciona?</h2>
+          </div>
+          <p className="text-lg sm:text-xl text-muted-foreground/80 max-w-2xl mx-auto leading-relaxed">
             Un proceso simple y eficiente para cada tipo de usuario
           </p>
         </motion.div>
@@ -303,8 +332,8 @@ function HowItWorksSection() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: 0.2 * index }}
               >
-                <Card className="glass border-white/10 h-full">
-                  <CardContent className="p-8">
+                <Card className="glass-glow border-white/10 h-full card-hover">
+                  <CardContent className="p-10">
                     <div className="flex items-center space-x-4 mb-6">
                       <div className="h-12 w-12 liquid-gradient rounded-xl flex items-center justify-center">
                         <Icon className="h-6 w-6 text-white" />
@@ -333,11 +362,13 @@ function HowItWorksSection() {
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.4 }}
         >
-          <Card className="glass border-primary/30 bg-primary/5">
-            <CardContent className="p-8 text-center">
-              <Bell className="h-12 w-12 text-primary mx-auto mb-4" />
-              <h4 className="text-xl font-semibold mb-4">Conexión Instantánea</h4>
-              <p className="text-muted-foreground max-w-2xl mx-auto">
+          <Card className="glass-glow border-primary/30 bg-primary/5 card-hover">
+            <CardContent className="p-10 text-center">
+              <div className="h-16 w-16 rounded-3xl bg-primary/20 flex items-center justify-center mx-auto mb-6 float">
+                <Bell className="h-8 w-8 text-primary" />
+              </div>
+              <h4 className="text-2xl sm:text-3xl font-bold mb-6 text-foreground">Conexión Instantánea</h4>
+              <p className="text-lg text-muted-foreground/80 max-w-2xl mx-auto leading-relaxed">
                 Nuestro algoritmo inteligente conecta automáticamente la demanda con la oferta más adecuada 
                 en tiempo real, optimizando cada match para el beneficio de ambas partes.
               </p>
@@ -376,8 +407,13 @@ function WhyChooseFixiaSection() {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl font-bold mb-4 text-foreground">¿Por Qué Elegir Fixia?</h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <div className="flex items-center justify-center gap-4 mb-6">
+            <div className="h-14 w-14 rounded-2xl bg-success/20 flex items-center justify-center float">
+              <CheckCircle className="h-7 w-7 text-success" />
+            </div>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-foreground tracking-tight">¿Por Qué Elegir Fixia?</h2>
+          </div>
+          <p className="text-lg sm:text-xl text-muted-foreground/80 max-w-2xl mx-auto leading-relaxed">
             Beneficios únicos para profesionales y clientes
           </p>
         </motion.div>
@@ -389,7 +425,7 @@ function WhyChooseFixiaSection() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <Card className="glass border-primary/30 bg-primary/5 h-full">
+            <Card className="glass-glow border-primary/30 bg-primary/5 h-full card-hover">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-3">
                   <Crown className="h-6 w-6 text-primary" />
@@ -413,7 +449,7 @@ function WhyChooseFixiaSection() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <Card className="glass border-success/30 bg-success/5 h-full">
+            <Card className="glass-glow border-success/30 bg-success/5 h-full card-hover">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-3">
                   <UserPlus className="h-6 w-6 text-success" />
@@ -474,8 +510,13 @@ function ValuesSection() {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl font-bold mb-4 text-foreground">Nuestros Valores</h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <div className="flex items-center justify-center gap-4 mb-6">
+            <div className="h-14 w-14 rounded-2xl bg-primary/20 flex items-center justify-center float">
+              <Heart className="h-7 w-7 text-primary" />
+            </div>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-foreground tracking-tight">Nuestros Valores</h2>
+          </div>
+          <p className="text-lg sm:text-xl text-muted-foreground/80 max-w-2xl mx-auto leading-relaxed">
             Los principios que nos definen y nos impulsan cada día
           </p>
         </motion.div>
@@ -492,13 +533,13 @@ function ValuesSection() {
                 transition={{ duration: 0.6, delay: 0.1 * index }}
                 whileHover={{ y: -4 }}
               >
-                <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 h-full text-center">
-                  <CardContent className="p-6">
-                    <div className={`h-16 w-16 bg-current/10 rounded-2xl flex items-center justify-center mx-auto mb-4 ${value.color}`}>
-                      <Icon className={`h-8 w-8 ${value.color}`} />
+                <Card className="glass-glow hover:glass-medium transition-all duration-300 border-white/10 h-full text-center card-hover">
+                  <CardContent className="p-8">
+                    <div className={`h-20 w-20 bg-current/10 rounded-3xl flex items-center justify-center mx-auto mb-6 ${value.color} float`}>
+                      <Icon className={`h-10 w-10 ${value.color}`} />
                     </div>
-                    <h3 className={`font-semibold mb-3 ${value.color}`}>{value.title}</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">{value.description}</p>
+                    <h3 className={`text-xl sm:text-2xl font-bold mb-4 ${value.color}`}>{value.title}</h3>
+                    <p className="text-base text-muted-foreground/80 leading-relaxed">{value.description}</p>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -521,23 +562,25 @@ function CommitmentSection() {
           transition={{ duration: 0.8 }}
           className="max-w-4xl mx-auto"
         >
-          <Card className="glass border-white/10 overflow-hidden">
+          <Card className="glass-glow border-white/10 overflow-hidden card-hover">
             <CardContent className="p-12 text-center">
-              <Compass className="h-16 w-16 text-primary mx-auto mb-6" />
-              <h2 className="text-3xl font-bold mb-6">Nuestro Compromiso</h2>
-              <div className="space-y-6 text-muted-foreground leading-relaxed">
-                <p className="text-lg">
+              <div className="h-20 w-20 rounded-3xl bg-primary/20 flex items-center justify-center mx-auto mb-8 float">
+                <Compass className="h-10 w-10 text-primary" />
+              </div>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-8 text-foreground tracking-tight">Nuestro Compromiso</h2>
+              <div className="space-y-6 text-muted-foreground/90 leading-relaxed">
+                <p className="text-xl sm:text-2xl font-medium">
                   En Fixia creemos que cada profesional merece una oportunidad justa de mostrar su talento, 
                   y cada cliente merece acceso a servicios de calidad con total transparencia.
                 </p>
-                <p>
+                <p className="text-lg">
                   Somos un equipo apasionado por la tecnología y comprometido con el desarrollo económico 
                   local de Chubut. Trabajamos incansablemente para que nuestra plataforma sea la herramienta 
                   que impulse el crecimiento de profesionales y la satisfacción de clientes.
                 </p>
               </div>
-              <div className="bg-primary/10 rounded-2xl p-6 border border-primary/20 mt-8">
-                <p className="text-xl italic font-medium">
+              <div className="bg-primary/10 rounded-3xl p-8 border border-primary/20 mt-8 glass-glow">
+                <p className="text-xl sm:text-2xl italic font-bold leading-relaxed">
                   "No somos solo una app, somos el futuro de cómo las personas se conectan para crear valor juntas"
                 </p>
                 <p className="text-sm text-muted-foreground mt-3">- Equipo Fixia</p>
@@ -560,32 +603,34 @@ function CTASection() {
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
         >
-          <Card className="glass border-white/10 overflow-hidden">
+          <Card className="glass-glow border-white/10 overflow-hidden card-hover">
             <CardContent className="p-12 text-center">
               <div className="max-w-3xl mx-auto">
-                <Gift className="h-16 w-16 text-primary mx-auto mb-6" />
-                <h2 className="text-4xl font-bold mb-6">
+                <div className="h-20 w-20 rounded-3xl bg-primary/20 flex items-center justify-center mx-auto mb-8 float">
+                  <Gift className="h-10 w-10 text-primary" />
+                </div>
+                <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-8 text-foreground tracking-tight">
                   ¿Listo para ser parte del futuro?
                 </h2>
-                <p className="text-xl text-muted-foreground mb-8">
+                <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground/90 mb-10 font-medium leading-relaxed">
                   Únete a la revolución del marketplace local. Sin comisiones, 
                   con profesionales verificados y contacto directo.
                 </p>
                 
-                <Badge className="bg-warning/20 text-warning border-warning/30 mb-6">
+                <Badge className="bg-warning/20 text-warning border-warning/30 mb-8 px-5 py-2.5 text-base pulse-glow">
                   🎉 Promoción: Primeros 200 usuarios obtienen 2 meses gratis
                 </Badge>
                 
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                   <Link to="/register">
-                    <Button size="lg" className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-xl px-6">
-                      <Users className="mr-2 h-5 w-5" />
+                    <Button size="lg" className="liquid-gradient hover:opacity-90 hover:scale-105 transition-all duration-300 shadow-xl px-10 py-7 text-lg font-semibold rounded-2xl">
+                      <Users className="mr-3 h-6 w-6" />
                       Buscar Profesionales
                     </Button>
                   </Link>
                   <Link to="/register?type=professional">
-                    <Button size="lg" variant="outline" className="glass border-white/20 hover:glass-medium px-6">
-                      <Crown className="mr-2 h-5 w-5" />
+                    <Button size="lg" variant="outline" className="glass-glow border-white/20 hover:glass-medium hover:scale-105 transition-all px-10 py-7 text-lg font-semibold rounded-2xl">
+                      <Crown className="mr-3 h-6 w-6" />
                       Ser Profesional
                     </Button>
                   </Link>
