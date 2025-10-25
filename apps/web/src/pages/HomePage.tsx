@@ -79,9 +79,9 @@ const categories = [
   { name: "Albañil / Construcción", icon: Building, count: "150+ servicios", popular: true },
   { name: "Peluquería a domicilio", icon: Scissors, count: "85+ servicios", popular: true },
   { name: "Jardinería", icon: Leaf, count: "120+ servicios", popular: true },
-  { name: "Fletes / Mudanzas", icon: Truck, count: "95+ servicios", popular: true },
-  { name: "Clases particulares", icon: GraduationCap, count: "110+ servicios", popular: true },
-  { name: "Instalación de gas", icon: Flame, count: "75+ servicios", popular: true }
+  { name: "Mudanza / fletes", icon: Truck, count: "95+ servicios", popular: true },
+  { name: "Niñera", icon: User, count: "110+ servicios", popular: true },
+  { name: "Electricista", icon: Zap, count: "75+ servicios", popular: true }
 ];
 
 
@@ -228,10 +228,13 @@ function CategoriesSection() {
       'Albañil / Construcción': Building,
       'Peluquería a domicilio': Scissors,
       'Jardinería': Leaf,
+      'Mudanza / fletes': Truck,
+      'Niñera': User,
+      'Electricista': Zap,
+      // Legacy categories (in case API returns old ones)
       'Fletes / Mudanzas': Truck,
       'Clases particulares': GraduationCap,
       'Instalación de gas': Flame,
-      // Legacy categories (in case API returns old ones)
       'Desarrollo Web': Globe,
       'Diseño Gráfico': Palette,
       'Reparaciones': Briefcase,
