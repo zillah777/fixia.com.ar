@@ -1,20 +1,20 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { 
-  ArrowLeft, Search, Users, MessageSquare, Heart,
-  Crown, UserPlus, FileText, Heart, Shield, Clock,
-  CheckCircle, Zap, HeadphonesIcon, Heart, Phone, Mail, Bell
+import {
+  Search, Users, MessageSquare, Heart,
+  Crown, UserPlus, FileText, Shield, Clock,
+  CheckCircle, Zap, HeadphonesIcon, Phone, Mail, Bell
 } from "lucide-react";
 import { Button } from "../components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import { Card, CardContent } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { FixiaNavigation } from "../components/FixiaNavigation";
 
 
 function HeroSection() {
   return (
-    <section className="py-20 lg:py-28">
-      <div className="container mx-auto px-6">
+    <section className="py-12 sm:py-16 lg:py-20">
+      <div className="container mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -75,27 +75,27 @@ function ClientProcessSection() {
   ];
 
   return (
-    <section className="py-20">
-      <div className="container mx-auto px-6">
+    <section className="py-10 sm:py-12 lg:py-16">
+      <div className="container mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-16"
+          className="text-center mb-10 sm:mb-12"
         >
-          <div className="flex items-center justify-center gap-4 mb-6">
-            <div className="h-14 w-14 rounded-2xl bg-success/20 flex items-center justify-center">
-              <UserPlus className="h-7 w-7 text-success" />
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-4 sm:mb-6">
+            <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-2xl bg-success/20 flex items-center justify-center">
+              <UserPlus className="h-6 w-6 sm:h-7 sm:w-7 text-success" />
             </div>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-foreground tracking-tight">Para Clientes</h2>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-foreground tracking-tight">Para Clientes</h2>
           </div>
           <p className="text-lg sm:text-xl text-muted-foreground/80 max-w-2xl mx-auto leading-relaxed">
             Encuentra y contrata profesionales verificados en 4 pasos simples
           </p>
         </motion.div>
 
-        <div className="grid lg:grid-cols-2 gap-8">
+        <div className="grid lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
           {steps.map((step, index) => {
             const Icon = step.icon;
             return (
@@ -108,17 +108,17 @@ function ClientProcessSection() {
                 whileHover={{ y: -4 }}
               >
                 <Card className="glass-glow hover:glass-medium transition-all duration-300 border-white/10 h-full card-hover group">
-                  <CardContent className="p-8">
-                    <div className="flex items-start space-x-6">
-                      <div className={`h-16 w-16 bg-current/10 rounded-2xl flex items-center justify-center flex-shrink-0 ${step.color} group-hover:scale-110 transition-transform float`}>
-                        <Icon className={`h-8 w-8 ${step.color}`} />
+                  <CardContent className="p-4 sm:p-6 lg:p-8">
+                    <div className="flex items-start space-x-3 sm:space-x-4 lg:space-x-6">
+                      <div className={`h-12 w-12 sm:h-14 sm:w-14 lg:h-16 lg:w-16 bg-current/10 rounded-xl sm:rounded-2xl flex items-center justify-center flex-shrink-0 ${step.color} group-hover:scale-110 transition-transform float`}>
+                        <Icon className={`h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 ${step.color}`} />
                       </div>
-                      <div className="flex-1">
-                        <Badge className="mb-3 bg-primary/20 text-primary border-primary/30 text-sm font-semibold">
+                      <div className="flex-1 min-w-0">
+                        <Badge className="mb-2 sm:mb-3 bg-primary/20 text-primary border-primary/30 text-xs sm:text-sm font-semibold">
                           {step.step}
                         </Badge>
-                        <h3 className="text-xl sm:text-2xl font-bold mb-3 text-foreground">{step.title}</h3>
-                        <p className="text-muted-foreground/80 leading-relaxed text-base">{step.description}</p>
+                        <h3 className="text-lg sm:text-xl lg:text-2xl font-bold mb-2 sm:mb-3 text-foreground">{step.title}</h3>
+                        <p className="text-muted-foreground/80 leading-relaxed text-sm sm:text-base">{step.description}</p>
                       </div>
                     </div>
                   </CardContent>
@@ -180,25 +180,25 @@ function ProfessionalProcessSection() {
   ];
 
   return (
-    <section className="py-20 bg-gradient-to-b from-transparent to-primary/5">
-      <div className="container mx-auto px-6">
+    <section className="py-10 sm:py-12 lg:py-16 bg-gradient-to-b from-transparent to-primary/5">
+      <div className="container mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-16"
+          className="text-center mb-10 sm:mb-12"
         >
-          <div className="flex items-center justify-center space-x-3 mb-6">
-            <Crown className="h-8 w-8 text-primary" />
-            <h2 className="text-4xl font-bold text-foreground">Para Profesionales</h2>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-4 sm:mb-6">
+            <Crown className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground">Para Profesionales</h2>
           </div>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Únete como Profesional y haz crecer tu negocio
           </p>
         </motion.div>
 
-        <div className="grid lg:grid-cols-2 gap-8">
+        <div className="grid lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
           {steps.map((step, index) => {
             const Icon = step.icon;
             return (
@@ -211,17 +211,17 @@ function ProfessionalProcessSection() {
                 whileHover={{ y: -4 }}
               >
                 <Card className="glass-glow hover:glass-medium transition-all duration-300 border-white/10 h-full card-hover group">
-                  <CardContent className="p-8">
-                    <div className="flex items-start space-x-6">
-                      <div className={`h-16 w-16 bg-current/10 rounded-2xl flex items-center justify-center flex-shrink-0 ${step.color} group-hover:scale-110 transition-transform float`}>
-                        <Icon className={`h-8 w-8 ${step.color}`} />
+                  <CardContent className="p-4 sm:p-6 lg:p-8">
+                    <div className="flex items-start space-x-3 sm:space-x-4 lg:space-x-6">
+                      <div className={`h-12 w-12 sm:h-14 sm:w-14 lg:h-16 lg:w-16 bg-current/10 rounded-xl sm:rounded-2xl flex items-center justify-center flex-shrink-0 ${step.color} group-hover:scale-110 transition-transform float`}>
+                        <Icon className={`h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 ${step.color}`} />
                       </div>
-                      <div className="flex-1">
-                        <Badge className="mb-3 bg-primary/20 text-primary border-primary/30 text-sm font-semibold">
+                      <div className="flex-1 min-w-0">
+                        <Badge className="mb-2 sm:mb-3 bg-primary/20 text-primary border-primary/30 text-xs sm:text-sm font-semibold">
                           {step.step}
                         </Badge>
-                        <h3 className="text-xl sm:text-2xl font-bold mb-3 text-foreground">{step.title}</h3>
-                        <p className="text-muted-foreground/80 leading-relaxed text-base">{step.description}</p>
+                        <h3 className="text-lg sm:text-xl lg:text-2xl font-bold mb-2 sm:mb-3 text-foreground">{step.title}</h3>
+                        <p className="text-muted-foreground/80 leading-relaxed text-sm sm:text-base">{step.description}</p>
                       </div>
                     </div>
                   </CardContent>
@@ -260,7 +260,7 @@ function WhyChooseFixiaSection() {
     },
     {
       icon: HeadphonesIcon,
-      title: "Soporte 24/7", 
+      title: "Soporte 24/7",
       description: "Nuestro equipo está disponible para ayudarte en cualquier momento durante el proceso.",
       color: "text-primary"
     },
@@ -273,8 +273,8 @@ function WhyChooseFixiaSection() {
   ];
 
   return (
-    <section className="py-20">
-      <div className="container mx-auto px-6">
+    <section className="py-10 sm:py-12 lg:py-16">
+      <div className="container mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -320,8 +320,8 @@ function WhyChooseFixiaSection() {
 
 function CTASection() {
   return (
-    <section className="py-20">
-      <div className="container mx-auto px-6">
+    <section className="py-10 sm:py-12 lg:py-16">
+      <div className="container mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -355,18 +355,18 @@ function CTASection() {
                   </Link>
                 </div>
                 
-                <div className="flex items-center justify-center space-x-8 mt-8 text-sm text-muted-foreground">
+                <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 lg:gap-8 mt-6 sm:mt-8 text-xs sm:text-sm text-muted-foreground">
                   <div className="flex items-center">
-                    <Shield className="h-4 w-4 mr-2 text-success" />
-                    Sin comisiones
+                    <Shield className="h-4 w-4 mr-2 text-success flex-shrink-0" />
+                    <span>Sin comisiones</span>
                   </div>
                   <div className="flex items-center">
-                    <CheckCircle className="h-4 w-4 mr-2 text-success" />
-                    Profesionales verificados
+                    <CheckCircle className="h-4 w-4 mr-2 text-success flex-shrink-0" />
+                    <span className="whitespace-nowrap">Profesionales verificados</span>
                   </div>
                   <div className="flex items-center">
-                    <Clock className="h-4 w-4 mr-2 text-success" />
-                    Soporte 24/7
+                    <Clock className="h-4 w-4 mr-2 text-success flex-shrink-0" />
+                    <span>Soporte 24/7</span>
                   </div>
                 </div>
               </div>
@@ -380,8 +380,8 @@ function CTASection() {
 
 function ContactSection() {
   return (
-    <section className="py-16">
-      <div className="container mx-auto px-6">
+    <section className="py-8 sm:py-10 lg:py-12">
+      <div className="container mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
