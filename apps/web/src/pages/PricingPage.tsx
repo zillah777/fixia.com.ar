@@ -2,15 +2,12 @@ import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import {
-  ArrowLeft, Check, X, Crown, Users, Zap, Shield,
-  Heart, MessageSquare, Bell, Phone, Mail, Gift,
-  TrendingUp, Clock, HeadphonesIcon, Search,
-  FileText, ChevronRight, AlertCircle, CheckCircle, Rocket, Building2
+  Check, X, Crown, Users, Zap, Shield,
+  Heart, Gift, Clock, HeadphonesIcon, CheckCircle
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
-import { Alert, AlertDescription } from "../components/ui/alert";
 import { useSecureAuth } from "../context/SecureAuthContext";
 import { FixiaNavigation } from "../components/FixiaNavigation";
 import { subscriptionService, SUBSCRIPTION_PLANS } from "../lib/services/subscription.service";
@@ -106,20 +103,20 @@ const planFeatures: PlanFeature[] = [
 
 function HeroSection() {
   return (
-    <section className="py-20 lg:py-28">
-      <div className="container mx-auto px-6">
+    <section className="py-12 sm:py-16 lg:py-20">
+      <div className="container mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1 }}
           className="max-w-4xl mx-auto text-center"
         >
-          <Badge className="mb-6 bg-success/20 text-success border-success/30 px-4 py-2">
-            <Gift className="h-4 w-4 mr-2" />
-            Promoción: 2 meses gratis para primeros 200 profesionales
+          <Badge className="mb-4 sm:mb-6 bg-success/20 text-success border-success/30 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm">
+            <Gift className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 flex-shrink-0" />
+            <span className="whitespace-nowrap">Promoción: 2 meses gratis</span>
           </Badge>
-          
-          <h1 className="text-5xl lg:text-6xl font-bold mb-6 tracking-tight">
+
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 tracking-tight">
             <span className="bg-gradient-to-r from-white via-white to-white/70 bg-clip-text text-transparent">
               Planes que se Adaptan
             </span>{" "}
@@ -127,24 +124,24 @@ function HeroSection() {
               a Ti
             </span>
           </h1>
-          
-          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
-            Comienza gratis como cliente o impulsa tu negocio con nuestro Plan Profesional. 
+
+          <p className="text-base sm:text-lg md:text-xl text-muted-foreground mb-6 sm:mb-8 max-w-2xl mx-auto leading-relaxed">
+            Comienza gratis como cliente o impulsa tu negocio con nuestro Plan Profesional.
             Sin comisiones, sin límites.
           </p>
-          
-          <div className="flex items-center justify-center space-x-8 text-sm text-muted-foreground">
-            <div className="flex items-center">
-              <Shield className="h-4 w-4 mr-2 text-success" />
+
+          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 lg:gap-8 text-xs sm:text-sm text-muted-foreground">
+            <div className="flex items-center whitespace-nowrap">
+              <Shield className="h-4 w-4 mr-2 text-success flex-shrink-0" />
               Sin permanencia
             </div>
-            <div className="flex items-center">
-              <CheckCircle className="h-4 w-4 mr-2 text-success" />
+            <div className="flex items-center whitespace-nowrap">
+              <CheckCircle className="h-4 w-4 mr-2 text-success flex-shrink-0" />
               Cancelación gratuita
             </div>
-            <div className="flex items-center">
-              <Clock className="h-4 w-4 mr-2 text-success" />
-              Cambio de plan instantáneo
+            <div className="flex items-center whitespace-nowrap">
+              <Clock className="h-4 w-4 mr-2 text-success flex-shrink-0" />
+              Cambio instantáneo
             </div>
           </div>
         </motion.div>
@@ -203,9 +200,9 @@ function PricingCardsSection() {
   };
 
   return (
-    <section className="py-20">
-      <div className="container mx-auto px-6">
-        <div className="grid lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+    <section className="py-10 sm:py-12 lg:py-16">
+      <div className="container mx-auto px-4 sm:px-6">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 max-w-6xl mx-auto">
           {/* Plan Gratis */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -214,14 +211,14 @@ function PricingCardsSection() {
             transition={{ duration: 0.5 }}
           >
             <Card className="glass border-white/10 h-full">
-              <CardHeader className="text-center pb-4">
-                <Users className="h-10 w-10 text-success mx-auto mb-2" />
-                <CardTitle className="text-xl">Gratis</CardTitle>
-                <div className="text-3xl font-bold mt-2">$0</div>
-                <div className="text-sm text-muted-foreground">Solo Cliente</div>
+              <CardHeader className="text-center pb-3 sm:pb-4 pt-4 sm:pt-6">
+                <Users className="h-8 w-8 sm:h-10 sm:w-10 text-success mx-auto mb-2" />
+                <CardTitle className="text-lg sm:text-xl">Gratis</CardTitle>
+                <div className="text-2xl sm:text-3xl font-bold mt-2">$0</div>
+                <div className="text-xs sm:text-sm text-muted-foreground">Solo Cliente</div>
               </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="space-y-2 text-sm">
+              <CardContent className="space-y-3 p-4 sm:p-6">
+                <div className="space-y-2 text-xs sm:text-sm">
                   <div className="flex items-center gap-2">
                     <Check className="h-4 w-4 text-success flex-shrink-0" />
                     <span>Crear proyectos</span>
@@ -268,14 +265,14 @@ function PricingCardsSection() {
             transition={{ duration: 0.5, delay: 0.1 }}
           >
             <Card className="glass border-blue-500/30 bg-blue-500/5 h-full">
-              <CardHeader className="text-center pb-4">
-                <Zap className="h-10 w-10 text-blue-400 mx-auto mb-2" />
-                <CardTitle className="text-xl">Basic</CardTitle>
-                <div className="text-3xl font-bold mt-2 text-blue-400">$2,999</div>
-                <div className="text-sm text-muted-foreground">ARS/mes</div>
+              <CardHeader className="text-center pb-3 sm:pb-4 pt-4 sm:pt-6">
+                <Zap className="h-8 w-8 sm:h-10 sm:w-10 text-blue-400 mx-auto mb-2" />
+                <CardTitle className="text-lg sm:text-xl">Basic</CardTitle>
+                <div className="text-2xl sm:text-3xl font-bold mt-2 text-blue-400">$2,999</div>
+                <div className="text-xs sm:text-sm text-muted-foreground">ARS/mes</div>
               </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="space-y-2 text-sm">
+              <CardContent className="space-y-3 p-4 sm:p-6">
+                <div className="space-y-2 text-xs sm:text-sm">
                   {SUBSCRIPTION_PLANS.basic.features.map((feature, idx) => (
                     <div key={idx} className="flex items-center gap-2">
                       <Check className="h-4 w-4 text-success flex-shrink-0" />
@@ -303,17 +300,17 @@ function PricingCardsSection() {
             transition={{ duration: 0.5, delay: 0.2 }}
           >
             <Card className="glass border-primary/50 bg-primary/10 h-full relative">
-              <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-white border-0">
+              <Badge className="absolute -top-2.5 sm:-top-3 left-1/2 -translate-x-1/2 bg-primary text-white border-0 text-xs sm:text-sm px-2 sm:px-3 py-1">
                 RECOMENDADO
               </Badge>
-              <CardHeader className="text-center pb-4 pt-6">
-                <Crown className="h-10 w-10 text-primary mx-auto mb-2" />
-                <CardTitle className="text-xl">Premium</CardTitle>
-                <div className="text-3xl font-bold mt-2 text-primary">$5,999</div>
-                <div className="text-sm text-muted-foreground">ARS/mes</div>
+              <CardHeader className="text-center pb-3 sm:pb-4 pt-6 sm:pt-8">
+                <Crown className="h-8 w-8 sm:h-10 sm:w-10 text-primary mx-auto mb-2" />
+                <CardTitle className="text-lg sm:text-xl">Premium</CardTitle>
+                <div className="text-2xl sm:text-3xl font-bold mt-2 text-primary">$5,999</div>
+                <div className="text-xs sm:text-sm text-muted-foreground">ARS/mes</div>
               </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="space-y-2 text-sm">
+              <CardContent className="space-y-3 p-4 sm:p-6">
+                <div className="space-y-2 text-xs sm:text-sm">
                   {SUBSCRIPTION_PLANS.premium.features.map((feature, idx) => (
                     <div key={idx} className="flex items-center gap-2">
                       <Check className="h-4 w-4 text-success flex-shrink-0" />
@@ -340,17 +337,17 @@ function PricingCardsSection() {
 
 function ComparisonTableSection() {
   return (
-    <section className="py-20">
-      <div className="container mx-auto px-6">
+    <section className="py-10 sm:py-12 lg:py-16">
+      <div className="container mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-16"
+          className="text-center mb-8 sm:mb-12 lg:mb-16"
         >
-          <h2 className="text-4xl font-bold mb-4">Comparación Detallada</h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">Comparación Detallada</h2>
+          <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
             Todas las funcionalidades lado a lado para que elijas el plan perfecto
           </p>
         </motion.div>
@@ -365,58 +362,58 @@ function ComparisonTableSection() {
           <Card className="glass border-white/10 overflow-hidden">
             <CardContent className="p-0">
               <div className="overflow-x-auto">
-                <table className="w-full">
+                <table className="w-full text-xs sm:text-sm md:text-base">
                   <thead>
                     <tr className="border-b border-white/10">
-                      <th className="text-left p-6 font-semibold">Funcionalidad</th>
-                      <th className="text-center p-6 font-semibold">
-                        <div className="flex items-center justify-center space-x-2">
-                          <Users className="h-5 w-5 text-success" />
-                          <span>Gratis</span>
+                      <th className="text-left p-3 sm:p-4 md:p-6 font-semibold">Funcionalidad</th>
+                      <th className="text-center p-3 sm:p-4 md:p-6 font-semibold">
+                        <div className="flex items-center justify-center gap-1 sm:gap-2">
+                          <Users className="h-4 w-4 sm:h-5 sm:w-5 text-success flex-shrink-0" />
+                          <span className="hidden sm:inline">Gratis</span>
                         </div>
                       </th>
-                      <th className="text-center p-6 font-semibold">
-                        <div className="flex items-center justify-center space-x-2">
-                          <Crown className="h-5 w-5 text-primary" />
-                          <span>Profesional</span>
+                      <th className="text-center p-3 sm:p-4 md:p-6 font-semibold">
+                        <div className="flex items-center justify-center gap-1 sm:gap-2">
+                          <Crown className="h-4 w-4 sm:h-5 sm:w-5 text-primary flex-shrink-0" />
+                          <span className="hidden sm:inline">Profesional</span>
                         </div>
                       </th>
                     </tr>
                   </thead>
                   <tbody>
                     {planFeatures.map((feature, index) => (
-                      <tr 
-                        key={index} 
+                      <tr
+                        key={index}
                         className={`border-b border-white/5 ${feature.highlight ? 'bg-primary/5' : ''}`}
                       >
-                        <td className="p-4">
-                          <div className="flex items-center space-x-2">
-                            <span className={feature.highlight ? 'font-medium' : ''}>{feature.name}</span>
+                        <td className="p-2 sm:p-3 md:p-4">
+                          <div className="flex items-center gap-1 sm:gap-2">
+                            <span className={`text-xs sm:text-sm ${feature.highlight ? 'font-medium' : ''}`}>{feature.name}</span>
                             {feature.highlight && (
-                              <Heart className="h-4 w-4 text-warning" />
+                              <Heart className="h-3 w-3 sm:h-4 sm:w-4 text-warning flex-shrink-0" />
                             )}
                           </div>
                         </td>
-                        <td className="p-4 text-center">
+                        <td className="p-2 sm:p-3 md:p-4 text-center">
                           {typeof feature.free === 'boolean' ? (
                             feature.free ? (
-                              <Check className="h-5 w-5 text-success mx-auto" />
+                              <Check className="h-4 w-4 sm:h-5 sm:w-5 text-success mx-auto" />
                             ) : (
-                              <X className="h-5 w-5 text-muted-foreground mx-auto" />
+                              <X className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground mx-auto" />
                             )
                           ) : (
-                            <span className="text-sm">{feature.free}</span>
+                            <span className="text-xs sm:text-sm break-words">{feature.free}</span>
                           )}
                         </td>
-                        <td className="p-4 text-center">
+                        <td className="p-2 sm:p-3 md:p-4 text-center">
                           {typeof feature.professional === 'boolean' ? (
                             feature.professional ? (
-                              <Check className="h-5 w-5 text-success mx-auto" />
+                              <Check className="h-4 w-4 sm:h-5 sm:w-5 text-success mx-auto" />
                             ) : (
-                              <X className="h-5 w-5 text-muted-foreground mx-auto" />
+                              <X className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground mx-auto" />
                             )
                           ) : (
-                            <span className="text-sm font-medium">{feature.professional}</span>
+                            <span className="text-xs sm:text-sm font-medium break-words">{feature.professional}</span>
                           )}
                         </td>
                       </tr>
@@ -461,22 +458,22 @@ function FAQSection() {
   ];
 
   return (
-    <section className="py-20">
-      <div className="container mx-auto px-6">
+    <section className="py-10 sm:py-12 lg:py-16">
+      <div className="container mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-16"
+          className="text-center mb-8 sm:mb-12 lg:mb-16"
         >
-          <h2 className="text-4xl font-bold mb-4">Preguntas Frecuentes</h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">Preguntas Frecuentes</h2>
+          <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
             Resolvemos las dudas más comunes sobre nuestros planes
           </p>
         </motion.div>
 
-        <div className="max-w-3xl mx-auto space-y-4">
+        <div className="max-w-3xl mx-auto space-y-3 sm:space-y-4">
           {faqs.map((faq, index) => (
             <motion.div
               key={index}
@@ -486,9 +483,9 @@ function FAQSection() {
               transition={{ duration: 0.6, delay: 0.1 * index }}
             >
               <Card className="glass border-white/10">
-                <CardContent className="p-6">
-                  <h4 className="font-semibold mb-3 text-primary">{faq.question}</h4>
-                  <p className="text-muted-foreground leading-relaxed">{faq.answer}</p>
+                <CardContent className="p-4 sm:p-6">
+                  <h4 className="font-semibold mb-2 sm:mb-3 text-primary text-sm sm:text-base">{faq.question}</h4>
+                  <p className="text-muted-foreground leading-relaxed text-xs sm:text-sm">{faq.answer}</p>
                 </CardContent>
               </Card>
             </motion.div>
@@ -501,8 +498,8 @@ function FAQSection() {
 
 function CTASection() {
   return (
-    <section className="py-20">
-      <div className="container mx-auto px-6">
+    <section className="py-10 sm:py-12 lg:py-16">
+      <div className="container mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -510,43 +507,43 @@ function CTASection() {
           transition={{ duration: 0.8 }}
         >
           <Card className="glass border-white/10 overflow-hidden">
-            <CardContent className="p-12 text-center">
+            <CardContent className="p-6 sm:p-8 md:p-12 text-center">
               <div className="max-w-3xl mx-auto">
-                <Zap className="h-16 w-16 text-primary mx-auto mb-6" />
-                <h2 className="text-4xl font-bold mb-6">
+                <Zap className="h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 text-primary mx-auto mb-4 sm:mb-6" />
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6">
                   ¿Listo para comenzar?
                 </h2>
-                <p className="text-xl text-muted-foreground mb-8">
-                  Únete a cientos de profesionales y clientes que ya confían en Fixia 
+                <p className="text-base sm:text-lg md:text-xl text-muted-foreground mb-6 sm:mb-8">
+                  Únete a cientos de profesionales y clientes que ya confían en Fixia
                   para conectar y hacer crecer sus negocios.
                 </p>
-                
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
                   <Link to="/register">
-                    <Button size="lg" className="bg-success hover:bg-success/90 text-white px-6">
+                    <Button size="lg" className="bg-success hover:bg-success/90 text-white px-6 w-full sm:w-auto">
                       <Users className="mr-2 h-5 w-5" />
                       Comenzar Gratis
                     </Button>
                   </Link>
                   <Link to="/register?type=professional">
-                    <Button size="lg" className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-xl px-6">
+                    <Button size="lg" className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-xl px-6 w-full sm:w-auto">
                       <Crown className="mr-2 h-5 w-5" />
                       Ser Profesional
                     </Button>
                   </Link>
                 </div>
-                
-                <div className="flex items-center justify-center space-x-8 mt-8 text-sm text-muted-foreground">
-                  <div className="flex items-center">
-                    <Shield className="h-4 w-4 mr-2 text-success" />
+
+                <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 lg:gap-8 mt-6 sm:mt-8 text-xs sm:text-sm text-muted-foreground">
+                  <div className="flex items-center whitespace-nowrap">
+                    <Shield className="h-4 w-4 mr-2 text-success flex-shrink-0" />
                     Sin permanencia
                   </div>
-                  <div className="flex items-center">
-                    <CheckCircle className="h-4 w-4 mr-2 text-success" />
+                  <div className="flex items-center whitespace-nowrap">
+                    <CheckCircle className="h-4 w-4 mr-2 text-success flex-shrink-0" />
                     Cambio instantáneo
                   </div>
-                  <div className="flex items-center">
-                    <HeadphonesIcon className="h-4 w-4 mr-2 text-success" />
+                  <div className="flex items-center whitespace-nowrap">
+                    <HeadphonesIcon className="h-4 w-4 mr-2 text-success flex-shrink-0" />
                     Soporte incluido
                   </div>
                 </div>
