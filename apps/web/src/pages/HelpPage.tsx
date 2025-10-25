@@ -173,12 +173,22 @@ function HeroSection() {
           transition={{ duration: 0.8 }}
           className="text-center max-w-4xl mx-auto"
         >
-          <HelpCircle className="h-20 w-20 text-primary mx-auto mb-6" />
-          <h1 className="text-4xl lg:text-5xl font-bold mb-6 text-foreground">
-            ¿En qué podemos ayudarte?
+          <div className="h-24 w-24 rounded-3xl bg-primary/20 flex items-center justify-center mx-auto mb-8 float">
+            <HelpCircle className="h-12 w-12 text-primary" />
+          </div>
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold mb-8 tracking-tight leading-tight">
+            <span className="bg-gradient-to-r from-white via-white to-white/80 bg-clip-text text-transparent drop-shadow-sm">
+              ¿En qué podemos
+            </span>{" "}
+            <span className="text-gradient-rainbow inline-block">
+              ayudarte?
+            </span>
           </h1>
-          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Encuentra respuestas rápidas a tus preguntas o contacta con nuestro equipo de soporte
+          <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground/90 mb-10 max-w-3xl mx-auto leading-relaxed font-medium">
+            Encuentra respuestas rápidas a tus preguntas.
+            <span className="block mt-2 text-base sm:text-lg text-muted-foreground/70">
+              Nuestro centro de ayuda está disponible 24/7 para ti
+            </span>
           </p>
           
           {/* Search Bar */}
@@ -188,7 +198,7 @@ function HeroSection() {
               placeholder="Buscar en el centro de ayuda..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-12 pr-4 py-6 text-lg glass border-white/20"
+              className="pl-12 pr-4 py-7 text-lg glass-glow border-white/20 focus:border-primary/50 transition-all"
             />
           </div>
         </motion.div>
@@ -209,8 +219,13 @@ function PopularFAQ() {
           viewport={{ once: true }}
           className="text-center mb-12"
         >
-          <h2 className="text-3xl font-bold mb-4 text-foreground">Preguntas Frecuentes</h2>
-          <p className="text-xl text-muted-foreground">
+          <div className="flex items-center justify-center gap-4 mb-6">
+            <div className="h-14 w-14 rounded-2xl bg-primary/20 flex items-center justify-center float">
+              <HelpCircle className="h-7 w-7 text-primary" />
+            </div>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-foreground tracking-tight">Preguntas Frecuentes</h2>
+          </div>
+          <p className="text-lg sm:text-xl text-muted-foreground/80 max-w-2xl mx-auto leading-relaxed">
             Las consultas más comunes de nuestra comunidad
           </p>
         </motion.div>
@@ -225,16 +240,16 @@ function PopularFAQ() {
                 viewport={{ once: true }}
                 transition={{ delay: 0.1 * index }}
               >
-                <AccordionItem value={faq.id} className="glass border border-white/10 rounded-lg px-6">
-                  <AccordionTrigger className="text-left hover:no-underline">
+                <AccordionItem value={faq.id} className="glass-glow border border-white/10 rounded-xl px-6 card-hover">
+                  <AccordionTrigger className="text-left hover:no-underline group">
                     <div className="flex items-center space-x-3">
-                      <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
-                        <HelpCircle className="h-4 w-4 text-primary" />
+                      <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                        <HelpCircle className="h-5 w-5 text-primary" />
                       </div>
-                      <span className="font-medium text-foreground">{faq.question}</span>
+                      <span className="font-semibold text-base sm:text-lg text-foreground">{faq.question}</span>
                     </div>
                   </AccordionTrigger>
-                  <AccordionContent className="text-muted-foreground pl-11">
+                  <AccordionContent className="text-muted-foreground/80 pl-13 text-base leading-relaxed">
                     {faq.answer}
                   </AccordionContent>
                 </AccordionItem>
@@ -257,8 +272,13 @@ function HelpArticles() {
           viewport={{ once: true }}
           className="text-center mb-12"
         >
-          <h2 className="text-3xl font-bold mb-4 text-foreground">Artículos de Ayuda</h2>
-          <p className="text-xl text-muted-foreground">
+          <div className="flex items-center justify-center gap-4 mb-6">
+            <div className="h-14 w-14 rounded-2xl bg-success/20 flex items-center justify-center float">
+              <BookOpen className="h-7 w-7 text-success" />
+            </div>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-foreground tracking-tight">Artículos de Ayuda</h2>
+          </div>
+          <p className="text-lg sm:text-xl text-muted-foreground/80 max-w-2xl mx-auto leading-relaxed">
             Guías detalladas para aprovechar al máximo Fixia
           </p>
         </motion.div>
@@ -275,24 +295,24 @@ function HelpArticles() {
                 transition={{ delay: 0.1 * index }}
                 whileHover={{ y: -4 }}
               >
-                <Card className="glass border-white/10 hover:bg-white/5 transition-all duration-300 cursor-pointer group h-full">
-                  <CardContent className="p-6">
-                    <div className="flex items-start space-x-4">
-                      <div className="h-12 w-12 rounded-lg bg-primary/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <Icon className="h-6 w-6 text-primary" />
+                <Card className="glass-glow border-white/10 hover:bg-white/5 transition-all duration-300 cursor-pointer group h-full card-hover">
+                  <CardContent className="p-8">
+                    <div className="flex items-start space-x-5">
+                      <div className="h-14 w-14 rounded-2xl bg-primary/20 flex items-center justify-center group-hover:scale-110 transition-transform float">
+                        <Icon className="h-7 w-7 text-primary" />
                       </div>
                       <div className="flex-1">
-                        <h3 className="font-semibold mb-2 text-foreground group-hover:text-primary transition-colors">
+                        <h3 className="text-lg sm:text-xl font-bold mb-3 text-foreground group-hover:text-primary transition-colors">
                           {article.title}
                         </h3>
-                        <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+                        <p className="text-base text-muted-foreground/80 mb-4 line-clamp-2 leading-relaxed">
                           {article.description}
                         </p>
                         <div className="flex items-center justify-between">
-                          <Badge variant="secondary" className="text-xs">
+                          <Badge variant="secondary" className="text-sm px-3 py-1">
                             {article.readTime}
                           </Badge>
-                          <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
+                          <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-2 transition-all" />
                         </div>
                       </div>
                     </div>
@@ -317,8 +337,13 @@ function SupportOptions() {
           viewport={{ once: true }}
           className="text-center mb-12"
         >
-          <h2 className="text-3xl font-bold mb-4 text-foreground">¿Necesitas más ayuda?</h2>
-          <p className="text-xl text-muted-foreground">
+          <div className="flex items-center justify-center gap-4 mb-6">
+            <div className="h-14 w-14 rounded-2xl bg-info/20 flex items-center justify-center float">
+              <MessageSquare className="h-7 w-7 text-info" />
+            </div>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-foreground tracking-tight">¿Necesitas más ayuda?</h2>
+          </div>
+          <p className="text-lg sm:text-xl text-muted-foreground/80 max-w-2xl mx-auto leading-relaxed">
             Nuestro equipo está aquí para ayudarte
           </p>
         </motion.div>
@@ -335,19 +360,19 @@ function SupportOptions() {
                 transition={{ delay: 0.1 * index }}
                 whileHover={{ y: -4 }}
               >
-                <Card className="glass border-white/10 hover:bg-white/5 transition-all duration-300 text-center group">
+                <Card className="glass-glow border-white/10 hover:bg-white/5 transition-all duration-300 text-center group card-hover">
                   <CardContent className="p-8">
-                    <div className="h-16 w-16 rounded-2xl bg-primary/20 flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
-                      <Icon className="h-8 w-8 text-primary" />
+                    <div className="h-20 w-20 rounded-3xl bg-primary/20 flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform float">
+                      <Icon className="h-10 w-10 text-primary" />
                     </div>
-                    <h3 className="font-semibold text-lg mb-3">{option.title}</h3>
-                    <p className="text-muted-foreground text-sm mb-4">
+                    <h3 className="font-bold text-xl sm:text-2xl mb-4 text-foreground">{option.title}</h3>
+                    <p className="text-muted-foreground/80 text-base mb-4 leading-relaxed">
                       {option.description}
                     </p>
-                    <div className="text-xs text-muted-foreground mb-6">
+                    <Badge className="mb-6 bg-primary/20 text-primary border-primary/30 text-sm">
                       {option.available}
-                    </div>
-                    <Button className="liquid-gradient w-full group-hover:opacity-90 transition-opacity">
+                    </Badge>
+                    <Button className="liquid-gradient w-full group-hover:opacity-90 hover:scale-105 transition-all px-6 py-6 text-base font-semibold rounded-xl">
                       {option.action}
                     </Button>
                   </CardContent>
@@ -387,17 +412,22 @@ function AllFAQ() {
           viewport={{ once: true }}
           className="text-center mb-12"
         >
-          <h2 className="text-3xl font-bold mb-4 text-foreground">Todas las Preguntas</h2>
-          <p className="text-xl text-muted-foreground">
+          <div className="flex items-center justify-center gap-4 mb-6">
+            <div className="h-14 w-14 rounded-2xl bg-warning/20 flex items-center justify-center float">
+              <FileText className="h-7 w-7 text-warning" />
+            </div>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-foreground tracking-tight">Todas las Preguntas</h2>
+          </div>
+          <p className="text-lg sm:text-xl text-muted-foreground/80 max-w-2xl mx-auto leading-relaxed">
             Explora todas nuestras preguntas frecuentes por categoría
           </p>
         </motion.div>
 
         <div className="max-w-6xl mx-auto">
           <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="w-full">
-            <TabsList className="glass border-white/10 mb-8 grid grid-cols-3 lg:grid-cols-7">
+            <TabsList className="glass-glow border-white/10 mb-10 grid grid-cols-3 lg:grid-cols-7 p-2">
               {categories.map((category) => (
-                <TabsTrigger key={category.id} value={category.id} className="text-xs">
+                <TabsTrigger key={category.id} value={category.id} className="text-xs sm:text-sm font-semibold transition-all">
                   {category.name} ({category.count})
                 </TabsTrigger>
               ))}
@@ -412,21 +442,21 @@ function AllFAQ() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.05 * index }}
                   >
-                    <AccordionItem value={faq.id} className="glass border border-white/10 rounded-lg px-6">
-                      <AccordionTrigger className="text-left hover:no-underline">
+                    <AccordionItem value={faq.id} className="glass-glow border border-white/10 rounded-xl px-6 card-hover">
+                      <AccordionTrigger className="text-left hover:no-underline group">
                         <div className="flex items-center space-x-3">
-                          <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
-                            <HelpCircle className="h-4 w-4 text-primary" />
+                          <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                            <HelpCircle className="h-5 w-5 text-primary" />
                           </div>
-                          <span className="font-medium text-foreground">{faq.question}</span>
+                          <span className="font-semibold text-base sm:text-lg text-foreground">{faq.question}</span>
                           {faq.popular && (
-                            <Badge variant="secondary" className="ml-auto bg-yellow-500/20 text-yellow-600">
+                            <Badge variant="secondary" className="ml-auto bg-yellow-500/20 text-yellow-600 pulse-glow">
                               Popular
                             </Badge>
                           )}
                         </div>
                       </AccordionTrigger>
-                      <AccordionContent className="text-muted-foreground pl-11">
+                      <AccordionContent className="text-muted-foreground/80 pl-13 text-base leading-relaxed">
                         {faq.answer}
                       </AccordionContent>
                     </AccordionItem>
