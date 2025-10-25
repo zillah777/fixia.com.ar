@@ -21,18 +21,20 @@ function HeroSection() {
           transition={{ duration: 1 }}
           className="max-w-4xl mx-auto text-center"
         >
-          <h1 className="text-5xl lg:text-6xl font-bold mb-6 tracking-tight">
-            <span className="bg-gradient-to-r from-white via-white to-white/70 bg-clip-text text-transparent">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold mb-8 tracking-tight leading-tight">
+            <span className="bg-gradient-to-r from-white via-white to-white/80 bg-clip-text text-transparent drop-shadow-sm">
               Cómo Funciona
             </span>{" "}
-            <span className="bg-gradient-to-r from-primary-solid to-purple-400 bg-clip-text text-transparent">
+            <span className="text-gradient-rainbow inline-block">
               Fixia
             </span>
           </h1>
-          
-          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
-            Conectamos clientes con profesionales verificados en un proceso simple, seguro y transparente. 
-            Descubre cómo obtener el servicio perfecto.
+
+          <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground/90 mb-10 max-w-3xl mx-auto leading-relaxed font-medium">
+            Simple, seguro y transparente.
+            <span className="block mt-2 text-base sm:text-lg text-muted-foreground/70">
+              Conectamos clientes con profesionales verificados en 4 pasos sencillos.
+            </span>
           </p>
         </motion.div>
       </div>
@@ -82,11 +84,13 @@ function ClientProcessSection() {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <div className="flex items-center justify-center space-x-3 mb-6">
-            <UserPlus className="h-8 w-8 text-success" />
-            <h2 className="text-4xl font-bold text-foreground">Para Clientes</h2>
+          <div className="flex items-center justify-center gap-4 mb-6">
+            <div className="h-14 w-14 rounded-2xl bg-success/20 flex items-center justify-center">
+              <UserPlus className="h-7 w-7 text-success" />
+            </div>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-foreground tracking-tight">Para Clientes</h2>
           </div>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-lg sm:text-xl text-muted-foreground/80 max-w-2xl mx-auto leading-relaxed">
             Encuentra y contrata profesionales verificados en 4 pasos simples
           </p>
         </motion.div>
@@ -103,18 +107,18 @@ function ClientProcessSection() {
                 transition={{ duration: 0.6, delay: 0.1 * index }}
                 whileHover={{ y: -4 }}
               >
-                <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 h-full">
+                <Card className="glass-glow hover:glass-medium transition-all duration-300 border-white/10 h-full card-hover group">
                   <CardContent className="p-8">
                     <div className="flex items-start space-x-6">
-                      <div className={`h-16 w-16 bg-current/10 rounded-2xl flex items-center justify-center flex-shrink-0 ${step.color}`}>
+                      <div className={`h-16 w-16 bg-current/10 rounded-2xl flex items-center justify-center flex-shrink-0 ${step.color} group-hover:scale-110 transition-transform float`}>
                         <Icon className={`h-8 w-8 ${step.color}`} />
                       </div>
                       <div className="flex-1">
-                        <Badge className="mb-3 bg-primary/20 text-primary border-primary/30">
+                        <Badge className="mb-3 bg-primary/20 text-primary border-primary/30 text-sm font-semibold">
                           {step.step}
                         </Badge>
-                        <h3 className="text-xl font-semibold mb-3 text-foreground">{step.title}</h3>
-                        <p className="text-muted-foreground leading-relaxed">{step.description}</p>
+                        <h3 className="text-xl sm:text-2xl font-bold mb-3 text-foreground">{step.title}</h3>
+                        <p className="text-muted-foreground/80 leading-relaxed text-base">{step.description}</p>
                       </div>
                     </div>
                   </CardContent>
@@ -132,9 +136,9 @@ function ClientProcessSection() {
           className="text-center mt-12"
         >
           <Link to="/register">
-            <Button size="lg" className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg px-6">
-              <UserPlus className="mr-2 h-5 w-5" />
-              Registrarme como Cliente
+            <Button size="lg" className="liquid-gradient hover:opacity-90 hover:scale-105 transition-all duration-300 shadow-2xl hover:shadow-primary/50 px-10 py-6 text-lg font-semibold rounded-2xl group">
+              <UserPlus className="mr-3 h-6 w-6 group-hover:scale-110 transition-transform" />
+              Comenzar Ahora
             </Button>
           </Link>
         </motion.div>
@@ -206,18 +210,18 @@ function ProfessionalProcessSection() {
                 transition={{ duration: 0.6, delay: 0.1 * index }}
                 whileHover={{ y: -4 }}
               >
-                <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 h-full">
+                <Card className="glass-glow hover:glass-medium transition-all duration-300 border-white/10 h-full card-hover group">
                   <CardContent className="p-8">
                     <div className="flex items-start space-x-6">
-                      <div className={`h-16 w-16 bg-current/10 rounded-2xl flex items-center justify-center flex-shrink-0 ${step.color}`}>
+                      <div className={`h-16 w-16 bg-current/10 rounded-2xl flex items-center justify-center flex-shrink-0 ${step.color} group-hover:scale-110 transition-transform float`}>
                         <Icon className={`h-8 w-8 ${step.color}`} />
                       </div>
                       <div className="flex-1">
-                        <Badge className="mb-3 bg-primary/20 text-primary border-primary/30">
+                        <Badge className="mb-3 bg-primary/20 text-primary border-primary/30 text-sm font-semibold">
                           {step.step}
                         </Badge>
-                        <h3 className="text-xl font-semibold mb-3 text-foreground">{step.title}</h3>
-                        <p className="text-muted-foreground leading-relaxed">{step.description}</p>
+                        <h3 className="text-xl sm:text-2xl font-bold mb-3 text-foreground">{step.title}</h3>
+                        <p className="text-muted-foreground/80 leading-relaxed text-base">{step.description}</p>
                       </div>
                     </div>
                   </CardContent>

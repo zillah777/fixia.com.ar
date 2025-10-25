@@ -29,20 +29,22 @@ function HeroSection() {
           transition={{ duration: 1 }}
           className="max-w-4xl mx-auto text-center"
         >
-          <Badge className="mb-6 bg-primary/20 text-primary border-primary/30 px-4 py-2">
-            <HeadphonesIcon className="h-4 w-4 mr-2" />
+          <Badge className="mb-8 bg-primary/20 text-primary border-primary/30 px-5 py-2.5 text-base pulse-glow">
+            <HeadphonesIcon className="h-5 w-5 mr-2" />
             Soporte 24/7 disponible
           </Badge>
-          
-          <h1 className="text-5xl lg:text-6xl font-bold mb-6 tracking-tight">
-            <span className="bg-gradient-to-r from-white via-white to-white/70 bg-clip-text text-transparent">
-              Contáctanos
+
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold mb-8 tracking-tight leading-tight">
+            <span className="bg-gradient-to-r from-white via-white to-white/80 bg-clip-text text-transparent drop-shadow-sm">
+              ¿Necesitas Ayuda?
             </span>
           </h1>
-          
-          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
-            Estamos aquí para ayudarte. Comunícate con nuestro equipo en Chubut 
-            y te responderemos lo antes posible.
+
+          <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground/90 mb-10 max-w-3xl mx-auto leading-relaxed font-medium">
+            Estamos aquí para ayudarte.
+            <span className="block mt-2 text-base sm:text-lg text-muted-foreground/70">
+              Comunícate con nuestro equipo en Chubut y te responderemos en menos de 24 horas.
+            </span>
           </p>
           
           <div className="flex items-center justify-center space-x-8 text-sm text-muted-foreground">
