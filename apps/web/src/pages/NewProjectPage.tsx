@@ -1207,7 +1207,10 @@ export default function NewProjectPage() {
       case 2:
         return projectData.category && projectData.tags.length > 0;
       case 3:
-        return projectData.packages.basic.price > 0 && projectData.packages.standard.price > 0;
+        // Al menos UN paquete debe tener precio configurado
+        return projectData.packages.basic.price > 0 ||
+               projectData.packages.standard.price > 0 ||
+               projectData.packages.premium.price > 0;
       case 4:
         return true; // Media is optional
       case 5:
@@ -1233,24 +1236,33 @@ export default function NewProjectPage() {
 
   const handlePublish = async () => {
     try {
+      // Determinar qué paquete usar (prioridad: standard > basic > premium)
+      let selectedPackage = projectData.packages.standard;
+      if (selectedPackage.price === 0) {
+        selectedPackage = projectData.packages.basic.price > 0
+          ? projectData.packages.basic
+          : projectData.packages.premium;
+      }
+
       // Transform frontend data to backend format
       const serviceData = {
         title: projectData.title,
         description: projectData.description,
-        price: projectData.packages.standard.price, // Use standard package price
+        price: selectedPackage.price,
         category_id: projectData.category, // Will need to map this to actual category ID
         main_image: projectData.images[0] || undefined,
         gallery: projectData.gallery,
         tags: projectData.tags,
-        delivery_time_days: projectData.packages.standard.deliveryTime,
-        revisions_included: projectData.packages.standard.revisions};
+        delivery_time_days: selectedPackage.deliveryTime,
+        revisions_included: selectedPackage.revisions
+      };
 
       console.log('Publishing service:', serviceData);
-      
+
       const createdService = await servicesService.createService(serviceData);
-      
+
       toast.success("¡Servicio publicado correctamente!");
-      
+
       // Redirect to dashboard or service page
       navigate('/dashboard');
     } catch (error: any) {
@@ -1403,7 +1415,7 @@ export default function NewProjectPage() {
               <AlertDescription>
                 {currentStep === 1 && "Completa el título (min. 10 caracteres) y descripción (min. 50 caracteres)"}
                 {currentStep === 2 && "Selecciona una categoría y al menos un tag"}
-                {currentStep === 3 && "Define precios para los paquetes Básico y Estándar"}
+                {currentStep === 3 && "Define precio para al menos UN paquete (Básico, Estándar o Premium)"}
               </AlertDescription>
             </Alert>
           </motion.div>
