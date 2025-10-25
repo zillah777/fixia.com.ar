@@ -10,6 +10,8 @@ import { TrustBadge } from '../components/feedback/TrustBadge';
 import { useSecureAuth } from '../context/SecureAuthContext';
 import { feedbackService, Feedback, TrustScore } from '../lib/services/feedback.service';
 import { toast } from 'sonner';
+import { FixiaNavigation } from '../components/FixiaNavigation';
+import { MobileBottomNavigation } from '../components/MobileBottomNavigation';
 
 export const FeedbackPage: React.FC = () => {
   const { user } = useSecureAuth();
@@ -79,8 +81,10 @@ export const FeedbackPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-primary/5">
-      <div className="container mx-auto px-4 py-8 space-y-8">
+    <div className="min-h-screen bg-background">
+      <FixiaNavigation />
+
+      <div className="container mx-auto px-4 sm:px-6 py-8 pb-24 sm:pb-8 space-y-8">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -91,17 +95,18 @@ export const FeedbackPage: React.FC = () => {
           <Link to="/dashboard">
             <Button variant="ghost" className="gap-2 hover:bg-white/10">
               <ArrowLeft className="h-4 w-4" />
-              Volver al Dashboard
+              <span className="hidden sm:inline">Volver al Dashboard</span>
+              <span className="sm:hidden">Volver</span>
             </Button>
           </Link>
 
           <div className="flex items-center gap-3">
-            <div className="h-12 w-12 rounded-xl liquid-gradient flex items-center justify-center">
-              <Shield className="h-6 w-6 text-white" />
+            <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-xl liquid-gradient flex items-center justify-center">
+              <Shield className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-foreground">Mi Feedback</h1>
-              <p className="text-lg text-foreground/80">
+              <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Mi Feedback</h1>
+              <p className="text-sm sm:text-lg text-foreground/80">
                 Comentarios y confiabilidad en la plataforma
               </p>
             </div>
@@ -111,35 +116,37 @@ export const FeedbackPage: React.FC = () => {
           {trustScore && (
             <Card className="glass border-white/10">
               <CardHeader>
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div>
-                    <CardTitle className="flex items-center gap-2">
+                    <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
                       <TrendingUp className="h-5 w-5 text-primary" />
                       Tu Confiabilidad
                     </CardTitle>
-                    <CardDescription>
+                    <CardDescription className="text-xs sm:text-sm">
                       Basado en {trustScore.totalFeedback} feedback recibidos
                     </CardDescription>
                   </div>
-                  <TrustBadge trustScore={trustScore} size="lg" />
+                  <div className="flex justify-center sm:justify-end">
+                    <TrustBadge trustScore={trustScore} size="lg" />
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                   <div className="flex flex-col items-center p-4 rounded-lg glass-medium border border-blue-500/20">
-                    <ThumbsUp className="h-8 w-8 text-blue-400 mb-2" />
-                    <p className="text-2xl font-bold text-foreground">{trustScore.totalLikes}</p>
-                    <p className="text-sm font-medium text-foreground/70">Likes Positivos</p>
+                    <ThumbsUp className="h-6 w-6 sm:h-8 sm:w-8 text-blue-400 mb-2" />
+                    <p className="text-xl sm:text-2xl font-bold text-foreground">{trustScore.totalLikes}</p>
+                    <p className="text-xs sm:text-sm font-medium text-foreground/70">Likes Positivos</p>
                   </div>
                   <div className="flex flex-col items-center p-4 rounded-lg glass-medium border border-purple-500/20">
-                    <MessageSquare className="h-8 w-8 text-purple-400 mb-2" />
-                    <p className="text-2xl font-bold text-foreground">{trustScore.totalFeedback}</p>
-                    <p className="text-sm font-medium text-foreground/70">Total Feedback</p>
+                    <MessageSquare className="h-6 w-6 sm:h-8 sm:w-8 text-purple-400 mb-2" />
+                    <p className="text-xl sm:text-2xl font-bold text-foreground">{trustScore.totalFeedback}</p>
+                    <p className="text-xs sm:text-sm font-medium text-foreground/70">Total Feedback</p>
                   </div>
                   <div className="flex flex-col items-center p-4 rounded-lg glass-medium border border-green-500/20">
-                    <Shield className="h-8 w-8 text-green-400 mb-2" />
-                    <p className="text-2xl font-bold text-foreground">{trustScore.trustPercentage}%</p>
-                    <p className="text-sm font-medium text-foreground/70">Confiabilidad</p>
+                    <Shield className="h-6 w-6 sm:h-8 sm:w-8 text-green-400 mb-2" />
+                    <p className="text-xl sm:text-2xl font-bold text-foreground">{trustScore.trustPercentage}%</p>
+                    <p className="text-xs sm:text-sm font-medium text-foreground/70">Confiabilidad</p>
                   </div>
                 </div>
               </CardContent>
@@ -149,14 +156,16 @@ export const FeedbackPage: React.FC = () => {
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'received' | 'given')}>
-          <TabsList className="glass border-white/10">
-            <TabsTrigger value="received" className="gap-2">
-              <MessageSquare className="h-4 w-4" />
-              Recibido ({feedbackReceived.length})
+          <TabsList className="glass border-white/10 grid w-full grid-cols-2">
+            <TabsTrigger value="received" className="gap-1 sm:gap-2 text-xs sm:text-sm">
+              <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden xs:inline">Recibido</span>
+              <span className="xs:hidden">Recib.</span>
+              <span>({feedbackReceived.length})</span>
             </TabsTrigger>
-            <TabsTrigger value="given" className="gap-2">
-              <ThumbsUp className="h-4 w-4" />
-              Dado ({feedbackGiven.length})
+            <TabsTrigger value="given" className="gap-1 sm:gap-2 text-xs sm:text-sm">
+              <ThumbsUp className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span>Dado ({feedbackGiven.length})</span>
             </TabsTrigger>
           </TabsList>
 
@@ -192,6 +201,8 @@ export const FeedbackPage: React.FC = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      <MobileBottomNavigation />
     </div>
   );
 };

@@ -8,9 +8,12 @@ import {
 } from "lucide-react";
 import { servicesService, type Service } from "../lib/services/services.service";
 import { favoritesService } from "../lib/services/favorites.service";
+import { feedbackService, type Feedback, type TrustScore } from "../lib/services/feedback.service";
 import { openWhatsAppChat } from "../lib/whatsapp";
 import { toast } from "sonner";
 import { useSecureAuth } from "../context/SecureAuthContext";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 import { Button } from "../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
@@ -117,6 +120,9 @@ export default function ServiceDetailPage() {
   const [favoriteLoading, setFavoriteLoading] = useState(false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
+  const [feedback, setFeedback] = useState<Feedback[]>([]);
+  const [trustScore, setTrustScore] = useState<TrustScore | null>(null);
+  const [feedbackLoading, setFeedbackLoading] = useState(false);
 
   // Fetch service details
   useEffect(() => {
@@ -146,6 +152,32 @@ export default function ServiceDetailPage() {
 
     fetchService();
   }, [id]);
+
+  // Fetch feedback for professional
+  useEffect(() => {
+    const fetchFeedback = async () => {
+      if (!service?.professional?.id) return;
+
+      setFeedbackLoading(true);
+      try {
+        const [feedbackData, scoreData] = await Promise.all([
+          feedbackService.getFeedbackReceivedByUser(service.professional.id),
+          feedbackService.getTrustScore(service.professional.id)
+        ]);
+        setFeedback(feedbackData);
+        setTrustScore(scoreData);
+      } catch (error) {
+        console.error('Error loading feedback:', error);
+        // Silently fail - don't show error to user
+        setFeedback([]);
+        setTrustScore(null);
+      } finally {
+        setFeedbackLoading(false);
+      }
+    };
+
+    fetchFeedback();
+  }, [service?.professional?.id]);
 
   // Check favorite status
   useEffect(() => {
@@ -764,56 +796,112 @@ export default function ServiceDetailPage() {
                 <TabsContent value="reviews" className="mt-6">
                   <Card className="glass border-white/10">
                     <CardHeader>
-                      <CardTitle>Reseñas de clientes</CardTitle>
+                      <CardTitle>Feedback del profesional</CardTitle>
                       <CardDescription>
-                        Lo que otros clientes dicen sobre este servicio
+                        Lo que otros usuarios dicen sobre {service.professional.name}
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
-                      {/* Rating summary */}
-                      <div className="flex items-center gap-8 mb-8 flex-wrap">
-                        <div className="text-center">
-                          <div className="text-5xl font-bold mb-2">
-                            {service.professional.professional_profile?.rating?.toFixed(1) || '5.0'}
-                          </div>
-                          <div className="flex items-center gap-1 justify-center mb-1">
-                            {[...Array(5)].map((_, i) => (
-                              <Star key={i} className="h-5 w-5 fill-warning text-warning" />
-                            ))}
-                          </div>
-                          <div className="text-sm text-muted-foreground">
-                            {service.professional.professional_profile?.review_count || 0} reseñas
-                          </div>
-                        </div>
-
-                        <div className="flex-1 space-y-2 min-w-[200px]">
-                          {[5, 4, 3, 2, 1].map((stars) => (
-                            <div key={stars} className="flex items-center gap-3">
-                              <span className="text-sm w-16">{stars} estrellas</span>
-                              <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
-                                <div
-                                  className="h-full bg-warning"
-                                  style={{ width: stars === 5 ? '80%' : stars === 4 ? '15%' : '5%' }}
-                                />
-                              </div>
-                              <span className="text-sm text-muted-foreground w-8">
-                                {stars === 5 ? '80%' : stars === 4 ? '15%' : '5%'}
-                              </span>
+                      {/* Trust Score Summary */}
+                      {trustScore && (
+                        <div className="flex items-center gap-8 mb-8 flex-wrap">
+                          <div className="text-center">
+                            <div className="text-5xl font-bold mb-2">
+                              {trustScore.trustPercentage}%
                             </div>
-                          ))}
+                            <div className="flex items-center gap-1 justify-center mb-1">
+                              <Shield className="h-6 w-6 text-primary" />
+                            </div>
+                            <div className="text-sm text-muted-foreground">
+                              Confiabilidad
+                            </div>
+                          </div>
+
+                          <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4 min-w-[200px]">
+                            <div className="flex flex-col items-center p-4 glass-medium rounded-lg border border-blue-500/20">
+                              <ThumbsUp className="h-6 w-6 text-blue-400 mb-2" />
+                              <p className="text-2xl font-bold">{trustScore.totalLikes}</p>
+                              <p className="text-xs text-muted-foreground">Likes positivos</p>
+                            </div>
+                            <div className="flex flex-col items-center p-4 glass-medium rounded-lg border border-purple-500/20">
+                              <MessageCircle className="h-6 w-6 text-purple-400 mb-2" />
+                              <p className="text-2xl font-bold">{trustScore.totalFeedback}</p>
+                              <p className="text-xs text-muted-foreground">Total feedback</p>
+                            </div>
+                          </div>
                         </div>
-                      </div>
+                      )}
 
                       <Separator className="my-6" />
 
-                      {/* Reviews list - Placeholder */}
-                      <div className="space-y-6">
+                      {/* Feedback list */}
+                      {feedbackLoading ? (
+                        <div className="flex items-center justify-center py-12">
+                          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                        </div>
+                      ) : feedback.length === 0 ? (
                         <div className="text-center py-8 text-muted-foreground">
                           <MessageCircle className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                          <p>Aún no hay reseñas para este servicio</p>
-                          <p className="text-sm">Sé el primero en dejar una reseña</p>
+                          <p>Aún no hay feedback para este profesional</p>
+                          <p className="text-sm">Sé el primero en dejar feedback</p>
                         </div>
-                      </div>
+                      ) : (
+                        <div className="space-y-4">
+                          {feedback.map((fb) => (
+                            <motion.div
+                              key={fb.id}
+                              initial={{ opacity: 0, y: 20 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              className="p-4 glass-medium rounded-lg"
+                            >
+                              <div className="flex items-start gap-3">
+                                <Avatar className="h-10 w-10 ring-2 ring-primary/20">
+                                  <AvatarImage src={fb.fromUser.avatar} alt={fb.fromUser.name} />
+                                  <AvatarFallback className="glass">
+                                    {fb.fromUser.name?.charAt(0)?.toUpperCase() || 'U'}
+                                  </AvatarFallback>
+                                </Avatar>
+
+                                <div className="flex-1 space-y-2">
+                                  <div className="flex items-center gap-2 flex-wrap">
+                                    <span className="font-semibold">{fb.fromUser.name}</span>
+                                    <Badge variant="outline" className="text-xs">
+                                      {fb.fromUser.userType === 'professional' ? 'Profesional' : 'Cliente'}
+                                    </Badge>
+                                    {fb.hasLike && (
+                                      <Badge className="bg-blue-500/20 text-blue-400 border-blue-400/30">
+                                        <ThumbsUp className="h-3 w-3 mr-1" />
+                                        Like
+                                      </Badge>
+                                    )}
+                                  </div>
+
+                                  {fb.comment && (
+                                    <div className="flex items-start gap-2 text-sm text-foreground/90">
+                                      <MessageCircle className="h-4 w-4 mt-0.5 flex-shrink-0 text-primary" />
+                                      <p className="leading-relaxed">{fb.comment}</p>
+                                    </div>
+                                  )}
+
+                                  <p className="text-xs text-muted-foreground">
+                                    {format(new Date(fb.createdAt), "d 'de' MMMM, yyyy", { locale: es })}
+                                  </p>
+                                </div>
+                              </div>
+                            </motion.div>
+                          ))}
+
+                          {feedback.length > 5 && (
+                            <div className="text-center pt-4">
+                              <Link to={`/profile/${service.professional.id}`}>
+                                <Button variant="outline" className="glass border-white/20 hover:glass-medium">
+                                  Ver todo el feedback ({feedback.length})
+                                </Button>
+                              </Link>
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </CardContent>
                   </Card>
                 </TabsContent>
