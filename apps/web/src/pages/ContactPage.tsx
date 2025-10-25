@@ -21,8 +21,8 @@ import { FixiaNavigation } from "../components/FixiaNavigation";
 
 function HeroSection() {
   return (
-    <section className="py-20 lg:py-28">
-      <div className="container mx-auto px-6">
+    <section className="py-12 sm:py-16 lg:py-20">
+      <div className="container mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -47,18 +47,18 @@ function HeroSection() {
             </span>
           </p>
           
-          <div className="flex items-center justify-center space-x-8 text-sm text-muted-foreground">
-            <div className="flex items-center">
-              <Clock className="h-4 w-4 mr-2 text-primary" />
-              Lun-Vie 9:00-18:00
+          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 lg:gap-8 text-xs sm:text-sm text-muted-foreground">
+            <div className="flex items-center whitespace-nowrap">
+              <Clock className="h-4 w-4 mr-2 text-primary flex-shrink-0" />
+              <span>Lun-Vie 9:00-18:00</span>
             </div>
-            <div className="flex items-center">
-              <MapPin className="h-4 w-4 mr-2 text-success" />
-              Chubut, Argentina
+            <div className="flex items-center whitespace-nowrap">
+              <MapPin className="h-4 w-4 mr-2 text-success flex-shrink-0" />
+              <span>Chubut, Argentina</span>
             </div>
-            <div className="flex items-center">
-              <MessageSquare className="h-4 w-4 mr-2 text-warning" />
-              Respuesta en 24hs
+            <div className="flex items-center whitespace-nowrap">
+              <MessageSquare className="h-4 w-4 mr-2 text-warning flex-shrink-0" />
+              <span>Respuesta en 24hs</span>
             </div>
           </div>
         </motion.div>
@@ -99,8 +99,8 @@ function ContactInfoSection() {
   ];
 
   return (
-    <section className="py-20">
-      <div className="container mx-auto px-6">
+    <section className="py-10 sm:py-12 lg:py-16">
+      <div className="container mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -114,7 +114,7 @@ function ContactInfoSection() {
           </p>
         </motion.div>
 
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
           {contactMethods.map((method, index) => {
             const Icon = method.icon;
             return (
@@ -127,14 +127,14 @@ function ContactInfoSection() {
                 whileHover={{ y: -4 }}
               >
                 <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 h-full text-center">
-                  <CardContent className="p-8">
-                    <div className={`h-16 w-16 bg-current/10 rounded-2xl flex items-center justify-center mx-auto mb-6 ${method.color}`}>
-                      <Icon className={`h-8 w-8 ${method.color}`} />
+                  <CardContent className="p-6 sm:p-8">
+                    <div className={`h-14 w-14 sm:h-16 sm:w-16 bg-current/10 rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6 ${method.color}`}>
+                      <Icon className={`h-7 w-7 sm:h-8 sm:w-8 ${method.color}`} />
                     </div>
-                    <h3 className={`text-xl font-semibold mb-3 ${method.color}`}>{method.title}</h3>
-                    <p className="font-medium mb-1 text-foreground">{method.primary}</p>
-                    <p className="text-sm text-muted-foreground mb-4">{method.secondary}</p>
-                    <p className="text-sm text-muted-foreground mb-6">{method.description}</p>
+                    <h3 className={`text-lg sm:text-xl font-semibold mb-2 sm:mb-3 ${method.color}`}>{method.title}</h3>
+                    <p className="font-medium mb-1 text-sm sm:text-base text-foreground break-words">{method.primary}</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">{method.secondary}</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground mb-4 sm:mb-6 leading-relaxed">{method.description}</p>
                     {method.action && (
                       <a href={method.action}>
                         <Button variant="outline" className="glass border-white/20 hover:glass-medium">
@@ -253,8 +253,8 @@ function ContactFormSection() {
   }
 
   return (
-    <section className="py-20">
-      <div className="container mx-auto px-6">
+    <section className="py-10 sm:py-12 lg:py-16">
+      <div className="container mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -430,8 +430,8 @@ function FAQSection() {
   ];
 
   return (
-    <section className="py-20">
-      <div className="container mx-auto px-6">
+    <section className="py-10 sm:py-12 lg:py-16">
+      <div className="container mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -491,8 +491,8 @@ function FAQSection() {
 
 function SupportHoursSection() {
   return (
-    <section className="py-20">
-      <div className="container mx-auto px-6">
+    <section className="py-10 sm:py-12 lg:py-16">
+      <div className="container mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
