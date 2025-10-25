@@ -211,25 +211,52 @@ async function bootstrap() {
     });
 
     // Enable CORS with production-ready configuration - Updated for actual deployment URLs
+    const allowedOrigins = process.env.NODE_ENV === 'production'
+      ? [
+          // Primary Vercel deployments
+          'https://fixiaweb.vercel.app',
+          'https://fixia.vercel.app',
+          // Custom domains
+          'https://fixia.com.ar',
+          'https://www.fixia.com.ar',
+          'https://fixia.app',
+          'https://www.fixia.app',
+          // Allow all Vercel preview deployments
+          /https:\/\/.*\.vercel\.app$/
+        ]
+      : process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000', 'http://localhost:5173'];
+
+    logger.log(`🌐 CORS enabled for origins: ${JSON.stringify(allowedOrigins)}`);
+
     app.enableCors({
-      origin: process.env.NODE_ENV === 'production'
-        ? [
-            // Primary Vercel deployments
-            'https://fixiaweb.vercel.app',
-            'https://fixia.vercel.app',
-            // Custom domains
-            'https://fixia.com.ar',
-            'https://www.fixia.com.ar',
-            'https://fixia.app',
-            'https://www.fixia.app',
-            // Allow all Vercel preview deployments
-            /https:\/\/.*\.vercel\.app$/
-          ]
-        : process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000', 'http://localhost:5173'],
+      origin: (origin, callback) => {
+        // Allow requests with no origin (mobile apps, Postman, etc.)
+        if (!origin) {
+          return callback(null, true);
+        }
+
+        // Check if origin is allowed
+        const isAllowed = allowedOrigins.some(allowedOrigin => {
+          if (allowedOrigin instanceof RegExp) {
+            return allowedOrigin.test(origin);
+          }
+          return allowedOrigin === origin;
+        });
+
+        if (isAllowed) {
+          logger.log(`✅ CORS allowed for origin: ${origin}`);
+          callback(null, true);
+        } else {
+          logger.warn(`❌ CORS blocked for origin: ${origin}`);
+          callback(new Error('Not allowed by CORS'));
+        }
+      },
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
       allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With', 'X-CSRF-Token'],
+      exposedHeaders: ['Set-Cookie'],
       credentials: true,
-      optionsSuccessStatus: 200 // Para browsers legacy
+      optionsSuccessStatus: 200,
+      preflightContinue: false
     });
 
     // Global error handling and interceptors
