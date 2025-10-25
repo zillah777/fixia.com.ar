@@ -59,6 +59,9 @@ export const FixiaNavigation = memo(function FixiaNavigation() {
                 <Link to="/how-it-works" className="text-foreground/70 hover:text-foreground transition-colors">
                   Cómo Funciona
                 </Link>
+                <Link to="/about" className="text-foreground/70 hover:text-foreground transition-colors">
+                  Acerca de
+                </Link>
                 <Link to="/help" className="text-foreground/70 hover:text-foreground transition-colors">
                   Ayuda
                 </Link>
@@ -73,6 +76,9 @@ export const FixiaNavigation = memo(function FixiaNavigation() {
                 </Link>
                 <Link to="/how-it-works" className="text-foreground hover:text-primary transition-colors font-medium">
                   Cómo Funciona
+                </Link>
+                <Link to="/about" className="text-foreground hover:text-primary transition-colors font-medium">
+                  Acerca de
                 </Link>
                 <Link to="/help" className="text-foreground hover:text-primary transition-colors font-medium">
                   Ayuda
