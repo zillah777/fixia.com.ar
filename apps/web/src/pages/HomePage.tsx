@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import { MobileBottomNavigation } from "../components/MobileBottomNavigation";
 import { SkipNavigation } from "../components/SkipNavigation";
 import { FixiaNavigation } from "../components/FixiaNavigation";
+import { SEOHelmet } from "../components/SEOHelmet";
 
 const featuredServices = [
   {
@@ -733,6 +734,12 @@ function Footer() {
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-background">
+      <SEOHelmet
+        title="Marketplace de Servicios Profesionales en Argentina"
+        description="Conecta con profesionales verificados en Argentina. Encuentra servicios de calidad en diseño, desarrollo, marketing, consultoría y más. Pago seguro y garantía de satisfacción."
+        keywords="servicios profesionales, marketplace, freelancers Argentina, diseño web, desarrollo software, marketing digital, consultoria"
+        type="website"
+      />
       <SkipNavigation />
       <FixiaNavigation />
       <main id="main-content" role="main" aria-label="Contenido principal">

@@ -23,9 +23,15 @@ import { Separator } from "../components/ui/separator";
 import { Dialog, DialogContent, DialogTitle } from "../components/ui/dialog";
 import { FixiaNavigation } from "../components/FixiaNavigation";
 import { MobileBottomNavigation } from "../components/MobileBottomNavigation";
+import { SEOHelmet } from "../components/SEOHelmet";
 
 // Suppress unused imports for later use
 const _unused = { useNavigate };
+
+// Helper function to get category name
+const getCategoryName = (category: string | { id: string; name: string; slug: string; icon?: string }): string => {
+  return typeof category === 'string' ? category : category.name;
+};
 
 // Package interface matching NewProjectPage structure
 interface ServicePackage {
@@ -370,6 +376,14 @@ export default function ServiceDetailPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHelmet
+        title={`${service.title} - ${getCategoryName(service.category)}`}
+        description={service.description.substring(0, 160)}
+        keywords={`${getCategoryName(service.category)}, ${service.tags?.join(', ')}, servicios profesionales, ${service.professional.name}`}
+        image={service.main_image || service.images?.[0]}
+        type="article"
+        author={service.professional.name}
+      />
       <FixiaNavigation />
 
       {/* Lightbox */}
@@ -395,8 +409,8 @@ export default function ServiceDetailPage() {
               Servicios
             </Link>
             <span>/</span>
-            <Link to={`/services?category=${service.category?.name}`} className="hover:text-primary transition-colors">
-              {service.category?.name}
+            <Link to={`/services?category=${getCategoryName(service.category)}`} className="hover:text-primary transition-colors">
+              {getCategoryName(service.category)}
             </Link>
             <span>/</span>
             <span className="text-foreground truncate max-w-[200px]">{service.title}</span>
@@ -484,7 +498,7 @@ export default function ServiceDetailPage() {
                 {/* Category & Featured badges */}
                 <div className="flex flex-wrap items-center gap-2 mb-4">
                   <Badge variant="outline" className="border-primary/30 text-primary bg-primary/5">
-                    {service.category?.name}
+                    {getCategoryName(service.category)}
                   </Badge>
                   {service.featured && (
                     <Badge className="bg-warning/20 text-warning border-warning/30">
