@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
-  Search, Filter, MapPin, Heart, Heart, Share2, Clock, DollarSign,
-  Users, Heart, Zap, ChevronDown, SlidersHorizontal, Grid3X3,
+  Search, Filter, MapPin, Heart, Share2, Clock, DollarSign,
+  Users, Zap, ChevronDown, SlidersHorizontal, Grid3X3,
   List, Map, ArrowRight, CheckCircle, Briefcase, MessageCircle, X, Send
 } from "lucide-react";
 import { servicesService, type Service, type ServiceFilters } from "../lib/services/services.service";
@@ -69,7 +69,7 @@ function SearchAndFilters({
     <div className="space-y-6">
       {/* Main Search */}
       <div className="relative">
-        <div className="flex glass rounded-2xl p-2 border-white/20">
+        <div className="flex glass-glow rounded-2xl p-3 border-white/20">
           <div className="flex-1 flex items-center">
             <Search className="h-5 w-5 text-muted-foreground ml-4 mr-3" />
             <Input
@@ -79,7 +79,7 @@ function SearchAndFilters({
               className="border-0 bg-transparent text-lg placeholder:text-muted-foreground focus-visible:ring-0"
             />
           </div>
-          <Button className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg px-6">
+          <Button className="liquid-gradient hover:opacity-90 hover:scale-105 transition-all duration-300 shadow-lg px-8 py-6 text-base font-semibold rounded-xl">
             Buscar
           </Button>
         </div>
@@ -95,9 +95,9 @@ function SearchAndFilters({
               variant={selectedCategory === category ? "default" : "outline"}
               size="sm"
               onClick={() => setSelectedCategory(category)}
-              className={selectedCategory === category 
-                ? "liquid-gradient hover:opacity-90" 
-                : "glass border-white/20 hover:glass-medium"
+              className={selectedCategory === category
+                ? "liquid-gradient hover:opacity-90 hover:scale-105 transition-all font-semibold"
+                : "glass-glow border-white/20 hover:glass-medium hover:scale-105 transition-all font-medium"
               }
             >
               {category}
@@ -106,12 +106,12 @@ function SearchAndFilters({
           
           <Sheet open={showFilters} onOpenChange={setShowFilters}>
             <SheetTrigger asChild>
-              <Button variant="outline" size="sm" className="glass border-white/20 hover:glass-medium">
+              <Button variant="outline" size="sm" className="glass-glow border-white/20 hover:glass-medium hover:scale-105 transition-all font-medium">
                 <SlidersHorizontal className="h-4 w-4 mr-2" />
                 Más Filtros
               </Button>
             </SheetTrigger>
-            <SheetContent className="glass border-white/10 w-80">
+            <SheetContent className="glass-glow border-white/10 w-80">
               <SheetHeader>
                 <SheetTitle>Filtros Avanzados</SheetTitle>
                 <SheetDescription>
@@ -396,7 +396,7 @@ function ServiceCard({ service, viewMode }: { service: Service, viewMode: string
           whileHover={{ y: -2 }}
           transition={{ duration: 0.3 }}
         >
-          <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 overflow-hidden">
+          <Card className="glass-glow hover:glass-medium transition-all duration-300 border-white/10 overflow-hidden card-hover">
           <div className="flex">
             {/* Image */}
             <div className="relative w-48 h-36 flex-shrink-0">
@@ -531,7 +531,7 @@ function ServiceCard({ service, viewMode }: { service: Service, viewMode: string
           whileHover={{ y: -4 }}
           transition={{ duration: 0.3 }}
         >
-          <Card className="bg-card/50 backdrop-blur-sm hover:bg-card/70 transition-all duration-300 border border-white/10 hover:border-white/20 overflow-hidden group cursor-pointer">
+          <Card className="glass-glow hover:glass-medium transition-all duration-300 border border-white/10 hover:border-white/20 overflow-hidden group cursor-pointer card-hover">
             {/* Image Container */}
             <div className="relative aspect-[4/3] overflow-hidden bg-muted">
               <img
@@ -774,12 +774,24 @@ export default function ServicesPage() {
           transition={{ duration: 0.8 }}
           className="text-center mb-12"
         >
-          <h1 className="text-4xl lg:text-5xl font-bold mb-4 bg-gradient-to-r from-white via-white to-white/70 bg-clip-text text-transparent">
-            Explora Servicios Profesionales
+          <Badge className="mb-8 bg-primary/20 text-primary border-primary/30 px-5 py-2.5 text-base pulse-glow">
+            <Search className="h-5 w-5 mr-2" />
+            Más de {totalServices} servicios disponibles
+          </Badge>
+
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold mb-8 tracking-tight leading-tight">
+            <span className="bg-gradient-to-r from-white via-white to-white/80 bg-clip-text text-transparent drop-shadow-sm">
+              Explora Servicios
+            </span>{" "}
+            <span className="text-gradient-rainbow inline-block">
+              Profesionales
+            </span>
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Descubre profesionales altamente calificados y servicios únicos. 
-            Tu próximo proyecto está a un clic de distancia.
+          <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground/90 mb-10 max-w-3xl mx-auto leading-relaxed font-medium">
+            Descubre profesionales altamente calificados y servicios únicos.
+            <span className="block mt-2 text-base sm:text-lg text-muted-foreground/70">
+              Tu próximo proyecto está a un clic de distancia
+            </span>
           </p>
         </motion.div>
 
@@ -812,11 +824,11 @@ export default function ServicesPage() {
           className="flex items-center justify-between mb-8"
         >
           <div className="flex items-center space-x-4">
-            <h2 className="text-lg font-semibold">
+            <h2 className="text-xl sm:text-2xl font-bold text-foreground">
               {loading ? 'Cargando...' : `${totalServices} servicios encontrados`}
             </h2>
             {selectedCategory !== "Todos" && (
-              <Badge className="bg-primary/20 text-primary border-primary/30">
+              <Badge className="bg-primary/20 text-primary border-primary/30 px-3 py-1 text-sm font-semibold">
                 {selectedCategory}
               </Badge>
             )}
@@ -834,9 +846,9 @@ export default function ServicesPage() {
             animate={{ opacity: 1 }}
             className="flex items-center justify-center py-16"
           >
-            <div className="glass rounded-2xl p-8 flex items-center space-x-4">
-              <div className="animate-spin rounded-full border-2 border-current border-t-transparent h-6 w-6  text-primary" />
-              <span className="text-lg">Cargando servicios...</span>
+            <div className="glass-glow rounded-3xl p-10 flex items-center space-x-4">
+              <div className="animate-spin rounded-full border-2 border-current border-t-transparent h-8 w-8 text-primary" />
+              <span className="text-xl font-semibold">Cargando servicios...</span>
             </div>
           </motion.div>
         )}
@@ -848,15 +860,15 @@ export default function ServicesPage() {
             animate={{ opacity: 1, scale: 1 }}
             className="text-center py-16"
           >
-            <div className="glass rounded-2xl p-12 max-w-lg mx-auto">
-              <div className="h-16 w-16 bg-destructive/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <Search className="h-8 w-8 text-destructive" />
+            <div className="glass-glow rounded-3xl p-12 max-w-lg mx-auto card-hover">
+              <div className="h-20 w-20 bg-destructive/20 rounded-3xl flex items-center justify-center mx-auto mb-8 float">
+                <Search className="h-10 w-10 text-destructive" />
               </div>
-              <h3 className="text-xl font-semibold mb-4">Error al cargar servicios</h3>
-              <p className="text-muted-foreground mb-6">{error}</p>
-              <Button 
+              <h3 className="text-2xl sm:text-3xl font-extrabold mb-4 text-foreground">Error al cargar servicios</h3>
+              <p className="text-lg text-muted-foreground/80 mb-8 leading-relaxed">{error}</p>
+              <Button
                 onClick={() => window.location.reload()}
-                className="liquid-gradient hover:opacity-90"
+                className="liquid-gradient hover:opacity-90 hover:scale-105 transition-all px-8 py-6 text-base font-semibold rounded-xl"
               >
                 Reintentar
               </Button>
@@ -896,21 +908,21 @@ export default function ServicesPage() {
             transition={{ duration: 0.6, delay: 0.6 }}
             className="text-center mt-12"
           >
-            <Button 
-              variant="outline" 
-              className="glass border-white/20 hover:glass-medium"
+            <Button
+              variant="outline"
+              className="glass-glow border-white/20 hover:glass-medium hover:scale-105 transition-all px-8 py-6 text-base font-semibold rounded-xl"
               onClick={() => setCurrentPage(prev => prev + 1)}
               disabled={loading}
             >
               {loading ? (
                 <>
-                  <div className="animate-spin rounded-full border-2 border-current border-t-transparent h-4 w-4 mr-2" />
+                  <div className="animate-spin rounded-full border-2 border-current border-t-transparent h-5 w-5 mr-2" />
                   Cargando...
                 </>
               ) : (
                 <>
                   Cargar Más Servicios
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                  <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                 </>
               )}
             </Button>
@@ -925,22 +937,22 @@ export default function ServicesPage() {
             transition={{ duration: 0.6 }}
             className="text-center py-16"
           >
-            <div className="glass rounded-2xl p-12 max-w-lg mx-auto">
-              <div className="h-16 w-16 liquid-gradient rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <Search className="h-8 w-8 text-white" />
+            <div className="glass-glow rounded-3xl p-12 max-w-lg mx-auto card-hover">
+              <div className="h-20 w-20 liquid-gradient rounded-3xl flex items-center justify-center mx-auto mb-8 float">
+                <Search className="h-10 w-10 text-white" />
               </div>
-              <h3 className="text-xl font-semibold mb-4">No encontramos servicios</h3>
-              <p className="text-muted-foreground mb-6">
+              <h3 className="text-2xl sm:text-3xl font-extrabold mb-4 text-foreground">No encontramos servicios</h3>
+              <p className="text-lg text-muted-foreground/80 mb-8 leading-relaxed">
                 Intenta ajustar tus filtros o buscar con términos diferentes
               </p>
-              <Button 
+              <Button
                 onClick={() => {
                   setSearchQuery("");
                   setSelectedCategory("Todos");
                   setPriceRange([0, 3000]);
                   setCurrentPage(1);
                 }}
-                className="liquid-gradient hover:opacity-90"
+                className="liquid-gradient hover:opacity-90 hover:scale-105 transition-all px-8 py-6 text-base font-semibold rounded-xl"
               >
                 Limpiar Filtros
               </Button>
