@@ -1104,6 +1104,14 @@ export default function DashboardPage() {
       } catch (error: any) {
         console.warn('Dashboard stats fetch failed, using defaults:', error?.message);
 
+        // Check if it's a UUID validation error suggesting stale session
+        const errorMessage = error?.response?.data?.message || error?.message || '';
+        if (errorMessage.includes('uuid') || errorMessage.includes('Validation failed')) {
+          toast.error('Tu sesión necesita actualizarse. Por favor, cierra sesión y vuelve a iniciar sesión.', {
+            duration: 6000,
+          });
+        }
+
         // Set fallback data instead of error - always set client stats (dual role)
         setClientStats({
           open_announcements: 0,
