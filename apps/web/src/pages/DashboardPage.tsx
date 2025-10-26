@@ -27,6 +27,7 @@ import { toast } from "sonner";
 import { useSecureAuth } from "../context/SecureAuthContext";
 import { MobileBottomNavigation } from "../components/MobileBottomNavigation";
 import { FixiaNavigation } from "../components/FixiaNavigation";
+import { OnboardingMessages } from "../components/OnboardingMessages";
 
 function QuickActions({ user }: { user: any }) {
   const isProfessional = user?.userType === 'professional';
@@ -498,8 +499,8 @@ function ClientAnnouncements({
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle>Mis Solicitudes Activas</CardTitle>
-            <p className="text-sm text-muted-foreground mt-1">
+            <CardTitle className="mb-2">Mis Solicitudes Activas</CardTitle>
+            <p className="text-sm text-muted-foreground/80">
               Anuncios y propuestas recibidas
             </p>
           </div>
@@ -549,54 +550,56 @@ function ClientAnnouncements({
 
               return (
                 <Link key={project.id} to="/my-announcements">
-                  <div className="p-4 glass-medium rounded-lg hover:glass-strong transition-all cursor-pointer">
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-2 mb-1">
-                          <h4 className="font-medium">{project.title}</h4>
+                  <div className="p-5 glass-glow rounded-xl hover:glass-medium transition-all duration-300 cursor-pointer border border-white/10 hover:border-primary/30">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-2">
+                          <h4 className="font-semibold text-base truncate">{project.title}</h4>
                           {project.status === 'open' && (
-                            <Badge className="bg-success/20 text-success border-success/30 text-xs">
+                            <Badge className="bg-success/20 text-success border-success/40 text-xs font-medium flex-shrink-0">
                               Abierto
                             </Badge>
                           )}
                         </div>
-                        <p className="text-sm text-muted-foreground line-clamp-1">
+                        <p className="text-sm text-muted-foreground/90 line-clamp-2">
                           {project.description}
                         </p>
                       </div>
                     </div>
 
-                    {hasProposals ? (
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-4">
-                          <div className="flex items-center space-x-1 text-sm">
-                            <Users className="h-4 w-4 text-primary" />
-                            <span className="font-medium text-primary">
-                              {proposalCount} {proposalCount === 1 ? 'propuesta' : 'propuestas'}
-                            </span>
+                    <div className="mt-4 pt-4 border-t border-white/10">
+                      {hasProposals ? (
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-1.5 text-sm font-medium">
+                              <Users className="h-4 w-4 text-primary" />
+                              <span className="text-primary">
+                                {proposalCount} {proposalCount === 1 ? 'propuesta' : 'propuestas'}
+                              </span>
+                            </div>
+                            <div className="text-xs text-muted-foreground/70">
+                              <Clock className="h-3 w-3 inline mr-1" />
+                              {formatTimeAgo(project.created_at)}
+                            </div>
                           </div>
-                          <div className="text-xs text-muted-foreground">
+                          <Button size="sm" className="liquid-gradient text-white font-medium">
+                            <MessageSquare className="h-3.5 w-3.5 mr-1.5" />
+                            Ver Propuestas
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground/80">
+                            <AlertCircle className="h-4 w-4 text-warning" />
+                            <span>Esperando propuestas</span>
+                          </div>
+                          <div className="text-xs text-muted-foreground/70">
                             <Clock className="h-3 w-3 inline mr-1" />
                             {formatTimeAgo(project.created_at)}
                           </div>
                         </div>
-                        <Button size="sm" className="liquid-gradient">
-                          <MessageSquare className="h-3 w-3 mr-1" />
-                          Ver Propuestas
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                          <AlertCircle className="h-4 w-4 text-warning" />
-                          <span>Esperando propuestas</span>
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          <Clock className="h-3 w-3 inline mr-1" />
-                          {formatTimeAgo(project.created_at)}
-                        </div>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
                 </Link>
               );
@@ -1232,6 +1235,20 @@ export default function DashboardPage() {
           <p className="text-lg sm:text-xl text-muted-foreground/80 leading-relaxed">
             Gestiona todo desde tu panel de control
           </p>
+        </motion.div>
+
+        {/* Onboarding Messages */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.15 }}
+          className="mb-8"
+        >
+          <OnboardingMessages
+            user={user}
+            dashboardData={dashboardData}
+            clientStats={clientStats}
+          />
         </motion.div>
 
         {/* Upgrade to Professional Banner - Only for Clients */}
