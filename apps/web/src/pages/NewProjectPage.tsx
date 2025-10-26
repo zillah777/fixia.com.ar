@@ -635,7 +635,15 @@ function MediaStep({ data, setData }: { data: ProjectData; setData: (data: Proje
     setUploading(true);
     try {
       const result = await uploadService.uploadImage(file);
-      setData({ ...data, images: [result.url] });
+      console.log('Main image upload result:', result);
+      console.log('Main image URL:', result.url);
+
+      // Use functional update to avoid stale state issues
+      setData(prevData => ({
+        ...prevData,
+        images: [result.url]
+      }));
+
       toast.success('Imagen principal cargada exitosamente');
     } catch (error: any) {
       console.error('Error uploading main image:', error);
@@ -655,7 +663,15 @@ function MediaStep({ data, setData }: { data: ProjectData; setData: (data: Proje
     setUploadingGallery(true);
     try {
       const result = await uploadService.uploadImage(file);
-      setData({ ...data, gallery: [...data.gallery, result.url] });
+      console.log('Gallery upload result:', result);
+      console.log('Gallery URL:', result.url);
+
+      // Use functional update to avoid stale state issues
+      setData(prevData => ({
+        ...prevData,
+        gallery: [...prevData.gallery, result.url]
+      }));
+
       toast.success('Imagen agregada a la galería');
     } catch (error: any) {
       console.error('Error uploading gallery image:', error);
@@ -1257,7 +1273,13 @@ export default function NewProjectPage() {
         serviceData.main_image = projectData.images[0];
       }
       if (projectData.gallery && projectData.gallery.length > 0) {
-        serviceData.gallery = projectData.gallery;
+        // Filter out any invalid URLs (only include strings that start with http/https)
+        const validGalleryUrls = projectData.gallery.filter(url =>
+          typeof url === 'string' && (url.startsWith('http://') || url.startsWith('https://'))
+        );
+        if (validGalleryUrls.length > 0) {
+          serviceData.gallery = validGalleryUrls;
+        }
       }
       if (projectData.tags && projectData.tags.length > 0) {
         serviceData.tags = projectData.tags;
@@ -1270,6 +1292,7 @@ export default function NewProjectPage() {
       }
 
       console.log('Publishing service:', serviceData);
+      console.log('Gallery data:', projectData.gallery);
 
       const createdService = await servicesService.createService(serviceData);
 
