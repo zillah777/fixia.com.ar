@@ -144,6 +144,16 @@ export class ServicesController {
     return this.servicesService.trackView(id, viewerId, ipAddress, userAgent);
   }
 
+  @Get('my/analytics')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('professional')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Obtener analytics de todos mis servicios' })
+  @ApiResponse({ status: 200, description: 'Analytics de todos los servicios del profesional' })
+  getMyServicesAnalytics(@CurrentUser() user: any) {
+    return this.servicesService.getMyServicesAnalytics(user.sub);
+  }
+
   @Get(':id/analytics')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
@@ -154,15 +164,5 @@ export class ServicesController {
   @ApiResponse({ status: 404, description: 'Servicio no encontrado' })
   getAnalytics(@Param('id', ParseUUIDPipe) id: string, @CurrentUser() user: any) {
     return this.servicesService.getServiceAnalytics(id, user.sub);
-  }
-
-  @Get('my/analytics')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('professional')
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Obtener analytics de todos mis servicios' })
-  @ApiResponse({ status: 200, description: 'Analytics de todos los servicios del profesional' })
-  getMyServicesAnalytics(@CurrentUser() user: any) {
-    return this.servicesService.getMyServicesAnalytics(user.sub);
   }
 }
