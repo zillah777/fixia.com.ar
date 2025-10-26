@@ -1444,6 +1444,7 @@ export default function NewProjectPage() {
         description: projectData.description,
         price: selectedPackage.price,
         category_id: projectData.category,
+        active: data.isActive !== undefined ? data.isActive : true, // Default to active
       };
 
       // Only add optional fields if they have values
@@ -1468,6 +1469,10 @@ export default function NewProjectPage() {
       if (selectedPackage.revisions >= 0) {
         serviceData.revisions_included = selectedPackage.revisions;
       }
+
+      // Add configuration settings from Step 6
+      // Note: allowRevisions and instantDelivery are stored in state but not in backend schema
+      // The revisions_included field already handles the revisions functionality
 
       console.log('Publishing service:', serviceData);
       console.log('Gallery data:', projectData.gallery);
