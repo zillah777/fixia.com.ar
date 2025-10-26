@@ -690,28 +690,78 @@ function ClientAnnouncements({
   );
 }
 
-// Component for PROFESSIONALS - Shows their projects
-function CurrentProjects({
-  projects,
-  loading
+// Component for PROFESSIONALS - Shows their published services
+function MyServices({
+  loading,
+  onRefresh
 }: {
-  projects: CurrentProject[];
   loading: boolean;
+  onRefresh?: () => void;
 }) {
+  const [services, setServices] = useState<any[]>([]);
+  const [servicesLoading, setServicesLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchServices();
+  }, []);
+
+  const fetchServices = async () => {
+    try {
+      setServicesLoading(true);
+      const { servicesService } = await import('../lib/services/services.service');
+      const response = await servicesService.getMyServices();
+      setServices(response.services || []);
+    } catch (error) {
+      console.warn('Failed to fetch services:', error);
+      setServices([]);
+    } finally {
+      setServicesLoading(false);
+    }
+  };
+
+  const handleDeleteService = async (serviceId: string, serviceTitle: string, event: React.MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (!confirm(`¿Estás seguro de eliminar "${serviceTitle}"? Esta acción no se puede deshacer.`)) {
+      return;
+    }
+
+    setActionLoading(serviceId);
+    try {
+      const { servicesService } = await import('../lib/services/services.service');
+      await servicesService.deleteService(serviceId);
+      toast.success('Servicio eliminado exitosamente');
+      await fetchServices();
+      if (onRefresh) onRefresh();
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Error al eliminar servicio');
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
   return (
     <Card className="glass border-white/10">
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle>Proyectos Actuales</CardTitle>
-          <Link to="/jobs">
-            <Button variant="outline" size="sm" className="glass border-white/20 hover:glass-medium">
-              Ver Todos
+          <div>
+            <CardTitle className="mb-2">Mis Servicios Publicados</CardTitle>
+            <p className="text-sm text-muted-foreground/80">
+              Servicios que ofrecés en la plataforma
+            </p>
+          </div>
+          <Link to="/new-project">
+            <Button size="sm" className="liquid-gradient hover:opacity-90">
+              <Plus className="h-4 w-4 mr-2" />
+              Crear Servicio
             </Button>
           </Link>
         </div>
       </CardHeader>
       <CardContent>
-        {loading ? (
+        {servicesLoading ? (
           <div className="space-y-4">
             {Array.from({ length: 3 }).map((_, index) => (
               <div key={index} className="p-4 glass-medium rounded-lg">
@@ -722,58 +772,112 @@ function CurrentProjects({
                   </div>
                   <Skeleton className="h-6 w-20" />
                 </div>
-                <Skeleton className="h-2 w-full" />
               </div>
             ))}
           </div>
-        ) : projects.length === 0 ? (
+        ) : services.length === 0 ? (
           <div className="text-center py-12">
             <div className="h-16 w-16 liquid-gradient rounded-xl flex items-center justify-center mx-auto mb-4 opacity-50">
               <Briefcase className="h-8 w-8 text-white" />
             </div>
-            <h3 className="text-lg font-medium mb-2">No tienes proyectos actuales</h3>
+            <h3 className="text-lg font-medium mb-2">No tienes servicios publicados</h3>
             <p className="text-muted-foreground mb-4">
-              Cuando tengas proyectos activos, aparecerán aquí para que puedas hacer seguimiento de su progreso.
+              Crea tu primer servicio para empezar a recibir clientes y generar ingresos.
             </p>
-            <Link to="/opportunities">
+            <Link to="/new-project">
               <Button className="liquid-gradient hover:opacity-90">
-                <Target className="h-4 w-4 mr-2" />
-                Ver Oportunidades
+                <Plus className="h-4 w-4 mr-2" />
+                Crear Primer Servicio
               </Button>
             </Link>
           </div>
         ) : (
           <div className="space-y-4">
-            {projects.map((project) => (
-              <div key={project.id} className="p-4 glass-medium rounded-lg hover:glass-strong transition-all cursor-pointer">
-                <div className="flex items-center justify-between mb-3">
-                  <div>
-                    <h4 className="font-medium">{project.title}</h4>
-                    <p className="text-sm text-muted-foreground">Cliente: {project.client_name}</p>
+            {services.slice(0, 5).map((service) => (
+              <Link key={service.id} to={`/services/${service.id}`}>
+                <div className="p-5 glass-glow rounded-xl hover:glass-medium transition-all duration-300 border border-white/10 hover:border-primary/30 relative group">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-2">
+                        <h4 className="font-semibold text-base truncate text-white">{service.title}</h4>
+                        {service.active ? (
+                          <Badge className="bg-success/20 text-success border-success/40 text-xs font-medium flex-shrink-0">
+                            Activo
+                          </Badge>
+                        ) : (
+                          <Badge className="bg-muted/20 text-muted-foreground border-muted/40 text-xs font-medium flex-shrink-0">
+                            Pausado
+                          </Badge>
+                        )}
+                      </div>
+                      <p className="text-sm text-muted-foreground/90 line-clamp-2">
+                        {service.description}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2 ml-3">
+                      <span className="text-lg font-bold text-primary">
+                        ${service.price?.toLocaleString('es-AR')}
+                      </span>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                            disabled={actionLoading === service.id}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                            }}
+                          >
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="glass border-white/20">
+                          <Link to={`/services/${service.id}/edit`} onClick={(e) => e.stopPropagation()}>
+                            <DropdownMenuItem className="hover:bg-white/10 cursor-pointer">
+                              <Edit className="mr-2 h-4 w-4" />
+                              Editar servicio
+                            </DropdownMenuItem>
+                          </Link>
+                          <DropdownMenuSeparator className="bg-white/10" />
+                          <DropdownMenuItem
+                            onClick={(e) => handleDeleteService(service.id, service.title, e)}
+                            className="hover:bg-white/10 cursor-pointer text-destructive"
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Eliminar servicio
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <Badge
-                      className={`${dashboardService.getProjectStatusColor(project.status)} text-white`}
-                    >
-                      {dashboardService.getProjectStatusLabel(project.status)}
-                    </Badge>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {new Date(project.deadline).toLocaleDateString('es-AR')}
-                    </p>
+
+                  <div className="flex items-center gap-4 text-sm text-muted-foreground/80">
+                    <span className="flex items-center gap-1">
+                      <Briefcase className="h-4 w-4" />
+                      {service.category}
+                    </span>
+                    {service.delivery_time && (
+                      <span className="flex items-center gap-1">
+                        <Clock className="h-4 w-4" />
+                        {service.delivery_time} días
+                      </span>
+                    )}
                   </div>
                 </div>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between text-sm">
-                    <span>Progreso</span>
-                    <span>{project.progress}%</span>
-                  </div>
-                  <Progress value={project.progress} className="h-2" />
-                </div>
-                <div className="mt-2 text-sm text-muted-foreground">
-                  {dashboardService.formatCurrency(project.price, project.currency)}
-                </div>
-              </div>
+              </Link>
             ))}
+          </div>
+        )}
+
+        {services.length > 5 && (
+          <div className="mt-4">
+            <Link to="/services">
+              <Button variant="outline" className="w-full glass border-white/20 hover:glass-medium">
+                Ver Todos los Servicios ({services.length})
+              </Button>
+            </Link>
           </div>
         )}
       </CardContent>
@@ -791,11 +895,9 @@ export default function DashboardPage() {
     client_rating: number;
   } | null>(null);
   const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
-  const [currentProjects, setCurrentProjects] = useState<CurrentProject[]>([]);
   const [clientProjects, setClientProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [activityLoading, setActivityLoading] = useState(true);
-  const [projectsLoading, setProjectsLoading] = useState(true);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const refreshDashboard = () => {
@@ -929,24 +1031,8 @@ export default function DashboardPage() {
       }
     };
 
-    const fetchCurrentProjects = async () => {
-      if (!user) return;
-
-      try {
-        setProjectsLoading(true);
-        const projects = await dashboardService.getCurrentProjects(5);
-        setCurrentProjects(projects);
-      } catch (error) {
-        console.warn('Current projects fetch failed:', error);
-        setCurrentProjects([]);
-      } finally {
-        setProjectsLoading(false);
-      }
-    };
-
     fetchDashboardData();
     fetchRecentActivity();
-    fetchCurrentProjects();
   }, [user, refreshTrigger]);
 
   return (
@@ -1149,8 +1235,8 @@ export default function DashboardPage() {
           <div className="lg:col-span-2 space-y-8">
             {user?.userType === 'professional' && user?.id && !loading && (
               <>
-                {/* Professional Projects Section */}
-                <CurrentProjects projects={currentProjects} loading={projectsLoading} />
+                {/* My Services Section */}
+                <MyServices loading={loading} onRefresh={refreshDashboard} />
 
                 {/* Client Section (dual role) */}
                 <ClientAnnouncements clientProjects={clientProjects} loading={loading} onRefresh={refreshDashboard} />
