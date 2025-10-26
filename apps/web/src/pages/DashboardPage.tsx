@@ -473,11 +473,15 @@ function StatCards({ dashboardData, loading, userType, clientStats, planType }: 
 // Component for CLIENTS - Shows their announcements
 function ClientAnnouncements({
   clientProjects,
-  loading
+  loading,
+  onRefresh
 }: {
   clientProjects: any[];
   loading: boolean;
+  onRefresh?: () => void;
 }) {
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
+
   const formatTimeAgo = (date: string) => {
     const now = new Date();
     const past = new Date(date);
@@ -487,6 +491,30 @@ function ClientAnnouncements({
     if (diffInHours < 24) return `Hace ${diffInHours} ${diffInHours === 1 ? 'hora' : 'horas'}`;
     const diffInDays = Math.floor(diffInHours / 24);
     return `Hace ${diffInDays} ${diffInDays === 1 ? 'día' : 'días'}`;
+  };
+
+  const handleDeleteAnnouncement = async (projectId: string, projectTitle: string, event: React.MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (!confirm(`¿Estás seguro de eliminar "${projectTitle}"? Esta acción no se puede deshacer.`)) {
+      return;
+    }
+
+    setActionLoading(projectId);
+    try {
+      const { opportunitiesService } = await import('../lib/services/opportunities.service');
+      await opportunitiesService.deleteProject(projectId);
+      toast.success('Anuncio eliminado exitosamente');
+      // Refresh data
+      if (onRefresh) {
+        onRefresh();
+      }
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Error al eliminar anuncio');
+    } finally {
+      setActionLoading(null);
+    }
   };
 
   // Prioritize announcements with proposals
@@ -549,23 +577,56 @@ function ClientAnnouncements({
               const proposalCount = project._count?.proposals || 0;
 
               return (
-                <Link key={project.id} to="/my-announcements">
-                  <div className="p-5 glass-glow rounded-xl hover:glass-medium transition-all duration-300 cursor-pointer border border-white/10 hover:border-primary/30">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-2">
-                          <h4 className="font-semibold text-base truncate">{project.title}</h4>
-                          {project.status === 'open' && (
-                            <Badge className="bg-success/20 text-success border-success/40 text-xs font-medium flex-shrink-0">
-                              Abierto
-                            </Badge>
-                          )}
-                        </div>
-                        <p className="text-sm text-muted-foreground/90 line-clamp-2">
-                          {project.description}
-                        </p>
+                <div key={project.id} className="p-5 glass-glow rounded-xl hover:glass-medium transition-all duration-300 border border-white/10 hover:border-primary/30 relative">
+                  <div className="flex items-start justify-between mb-4">
+                    <Link to="/my-announcements" className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-2">
+                        <h4 className="font-semibold text-base truncate">{project.title}</h4>
+                        {project.status === 'open' && (
+                          <Badge className="bg-success/20 text-success border-success/40 text-xs font-medium flex-shrink-0">
+                            Abierto
+                          </Badge>
+                        )}
                       </div>
+                      <p className="text-sm text-muted-foreground/90 line-clamp-2">
+                        {project.description}
+                      </p>
+                    </Link>
+                    <div className="flex items-center gap-2 ml-3">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 flex-shrink-0"
+                            disabled={actionLoading === project.id}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                            }}
+                          >
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="glass border-white/20">
+                          <Link to={`/edit-opportunity/${project.id}`} onClick={(e) => e.stopPropagation()}>
+                            <DropdownMenuItem className="hover:bg-white/10 cursor-pointer">
+                              <Edit className="mr-2 h-4 w-4" />
+                              Editar anuncio
+                            </DropdownMenuItem>
+                          </Link>
+                          <DropdownMenuSeparator className="bg-white/10" />
+                          <DropdownMenuItem
+                            onClick={(e) => handleDeleteAnnouncement(project.id, project.title, e)}
+                            className="hover:bg-white/10 cursor-pointer text-destructive"
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Eliminar anuncio
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
+                  </div>
 
                     <div className="mt-4 pt-4 border-t border-white/10">
                       {hasProposals ? (
@@ -600,8 +661,7 @@ function ClientAnnouncements({
                         </div>
                       )}
                     </div>
-                  </div>
-                </Link>
+                </div>
               );
             })}
           </div>
@@ -1088,6 +1148,11 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [activityLoading, setActivityLoading] = useState(true);
   const [projectsLoading, setProjectsLoading] = useState(true);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  const refreshDashboard = () => {
+    setRefreshTrigger(prev => prev + 1);
+  };
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -1234,7 +1299,7 @@ export default function DashboardPage() {
     fetchDashboardData();
     fetchRecentActivity();
     fetchCurrentProjects();
-  }, [user]);
+  }, [user, refreshTrigger]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -1443,12 +1508,12 @@ export default function DashboardPage() {
                 <CurrentProjects projects={currentProjects} loading={projectsLoading} />
 
                 {/* Client Section (dual role) */}
-                <ClientAnnouncements clientProjects={clientProjects} loading={loading} />
+                <ClientAnnouncements clientProjects={clientProjects} loading={loading} onRefresh={refreshDashboard} />
               </>
             )}
 
             {user?.userType === 'client' && (
-              <ClientAnnouncements clientProjects={clientProjects} loading={loading} />
+              <ClientAnnouncements clientProjects={clientProjects} loading={loading} onRefresh={refreshDashboard} />
             )}
           </div>
 
