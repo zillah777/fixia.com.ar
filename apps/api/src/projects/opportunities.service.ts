@@ -32,18 +32,35 @@ export class OpportunitiesService {
       throw new ForbiddenException('Only professionals can view opportunities');
     }
 
-    // Get open projects
+    // Get open projects (including own projects to show with warning)
     const projects = await this.prisma.project.findMany({
       where: {
         status: 'open',
-        // Exclude projects where this professional already submitted a proposal
-        NOT: {
-          proposals: {
-            some: {
-              professional_id: userId,
-            },
+        OR: [
+          // Own projects (to show with warning "This is your project")
+          {
+            client_id: userId,
           },
-        },
+          // Other projects where professional hasn't applied yet
+          {
+            AND: [
+              {
+                client_id: {
+                  not: userId,
+                },
+              },
+              {
+                NOT: {
+                  proposals: {
+                    some: {
+                      professional_id: userId,
+                    },
+                  },
+                },
+              },
+            ],
+          },
+        ],
       },
       include: {
         client: {
@@ -71,8 +88,9 @@ export class OpportunitiesService {
 
     // Calculate match scores for each project
     const opportunities: OpportunityMatch[] = projects.map(project => {
-      const matchScore = this.calculateMatchScore(project, user);
-      
+      const isOwn = project.client_id === userId;
+      const matchScore = isOwn ? 0 : this.calculateMatchScore(project, user);
+
       return {
         id: project.id,
         project: {
@@ -93,6 +111,7 @@ export class OpportunitiesService {
           location: project.client.location || 'No especificado',
         },
         matchScore,
+        isOwn, // Flag to indicate this is user's own project
       };
     });
 
