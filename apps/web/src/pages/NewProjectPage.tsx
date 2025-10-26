@@ -1245,17 +1245,29 @@ export default function NewProjectPage() {
       }
 
       // Transform frontend data to backend format
-      const serviceData = {
+      const serviceData: any = {
         title: projectData.title,
         description: projectData.description,
         price: selectedPackage.price,
-        category_id: projectData.category, // Will need to map this to actual category ID
-        main_image: projectData.images[0] || undefined,
-        gallery: projectData.gallery,
-        tags: projectData.tags,
-        delivery_time_days: selectedPackage.deliveryTime,
-        revisions_included: selectedPackage.revisions
+        category_id: projectData.category,
       };
+
+      // Only add optional fields if they have values
+      if (projectData.images[0]) {
+        serviceData.main_image = projectData.images[0];
+      }
+      if (projectData.gallery && projectData.gallery.length > 0) {
+        serviceData.gallery = projectData.gallery;
+      }
+      if (projectData.tags && projectData.tags.length > 0) {
+        serviceData.tags = projectData.tags;
+      }
+      if (selectedPackage.deliveryTime > 0) {
+        serviceData.delivery_time_days = selectedPackage.deliveryTime;
+      }
+      if (selectedPackage.revisions >= 0) {
+        serviceData.revisions_included = selectedPackage.revisions;
+      }
 
       console.log('Publishing service:', serviceData);
 
@@ -1267,7 +1279,26 @@ export default function NewProjectPage() {
       navigate('/dashboard');
     } catch (error: any) {
       console.error('Error publishing service:', error);
-      const errorMessage = error?.response?.data?.message || error?.message || "Error al publicar el servicio";
+
+      // Better error handling
+      let errorMessage = "Error al publicar el servicio";
+
+      if (error?.response?.data?.message) {
+        if (Array.isArray(error.response.data.message)) {
+          errorMessage = error.response.data.message.join(', ');
+        } else {
+          errorMessage = error.response.data.message;
+        }
+      } else if (error?.message) {
+        errorMessage = error.message;
+      }
+
+      console.error('Detailed error:', {
+        status: error?.response?.status,
+        data: error?.response?.data,
+        message: errorMessage
+      });
+
       toast.error(errorMessage);
     }
   };
