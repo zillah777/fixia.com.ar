@@ -633,21 +633,33 @@ function ClientAnnouncements({
 
 // Component for PROFESSIONALS - Service Analytics
 function ServiceAnalytics({
-  loading
+  loading,
+  user
 }: {
   loading: boolean;
+  user: any;
 }) {
   const [analyticsData, setAnalyticsData] = useState<any>(null);
   const [analyticsLoading, setAnalyticsLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 
   const fetchAnalytics = async () => {
+    // Only fetch if user is authenticated and is a professional
+    if (!user || user.userType !== 'professional') {
+      setAnalyticsLoading(false);
+      return;
+    }
+
     try {
       setAnalyticsLoading(true);
       const data = await servicesService.getMyServicesAnalytics();
       setAnalyticsData(data);
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Failed to fetch service analytics:', error);
+      // Only log detailed error in development
+      if (error?.response?.status === 400 || error?.response?.status === 401) {
+        console.warn('Authentication or validation error - user may need to re-login');
+      }
       setAnalyticsData(null);
     } finally {
       setAnalyticsLoading(false);
@@ -656,7 +668,7 @@ function ServiceAnalytics({
 
   useEffect(() => {
     fetchAnalytics();
-  }, []);
+  }, [user]);
 
   const formatViews = (views: number) => {
     if (views >= 1000) {
@@ -1418,7 +1430,7 @@ export default function DashboardPage() {
             {user?.userType === 'professional' && (
               <>
                 {/* Service Analytics Section */}
-                <ServiceAnalytics loading={loading} />
+                <ServiceAnalytics loading={loading} user={user} />
 
                 {/* Professional Projects Section */}
                 <CurrentProjects projects={currentProjects} loading={projectsLoading} />
