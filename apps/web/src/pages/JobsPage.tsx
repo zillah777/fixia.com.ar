@@ -101,6 +101,8 @@ const JobsPage: React.FC = () => {
     );
   }
 
+  const isProfessional = user?.userType === 'professional';
+
   if (error) {
     return (
       <div className="min-h-screen bg-background">
@@ -121,8 +123,6 @@ const JobsPage: React.FC = () => {
       </div>
     );
   }
-
-  const isProfessional = user?.userType === 'professional';
 
   return (
     <div className="min-h-screen bg-background">
