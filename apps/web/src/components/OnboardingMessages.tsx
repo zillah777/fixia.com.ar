@@ -1,5 +1,10 @@
 import { useState, useEffect } from 'react';
-import { X, Lightbulb, TrendingUp, Target, Zap } from 'lucide-react';
+import {
+  X, Lightbulb, TrendingUp, Target, Zap, Star, Users,
+  MessageSquare, Shield, Trophy, Rocket, Heart, Briefcase,
+  CheckCircle, AlertCircle, Camera, Award, ThumbsUp, Eye,
+  Clock, DollarSign, Settings, Bell, Search, Upload
+} from 'lucide-react';
 import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -27,45 +32,219 @@ export function OnboardingMessages({ user, dashboardData, clientStats }: any) {
   }, []);
 
   const messages: OnboardingMessage[] = [
+    // === MENSAJES DE BIENVENIDA ===
     {
-      id: 'welcome',
-      title: '¡Bienvenido a tu Dashboard!',
-      description: 'Aquí puedes ver tus estadísticas, gestionar servicios y revisar propuestas.',
-      icon: Zap,
+      id: 'welcome_client',
+      title: '¡Bienvenido a Fixia! 👋',
+      description: 'Conecta con profesionales verificados en toda Argentina. Publica lo que necesitas y recibe propuestas en minutos.',
+      icon: Rocket,
       color: 'from-blue-500 to-purple-500',
-      condition: (user, stats) => !stats || (stats.open_announcements === 0 && stats.proposals_received === 0),
+      condition: (user, stats) => user?.userType === 'client' && stats?.open_announcements === 0,
       priority: 1
     },
     {
-      id: 'create_first_service',
-      title: 'Crea tu primer servicio',
-      description: 'Los profesionales que publican servicios reciben 3x más contactos.',
+      id: 'welcome_professional',
+      title: '¡Bienvenido Profesional! 🚀',
+      description: 'Tu perfil está listo. Crea servicios, responde a oportunidades y construye tu reputación en Fixia.',
+      icon: Trophy,
+      color: 'from-green-500 to-emerald-500',
+      condition: (user, stats) => user?.userType === 'professional' && (!stats?.total_services || stats.total_services === 0),
+      priority: 1
+    },
+
+    // === MENSAJES PARA CLIENTES ===
+    {
+      id: 'client_first_announcement',
+      title: 'Publica tu primera solicitud',
+      description: '📢 Los anuncios bien detallados reciben un 300% más propuestas. Incluye fotos, presupuesto y plazo estimado.',
+      icon: Lightbulb,
+      color: 'from-yellow-500 to-orange-500',
+      condition: (user, stats) => user?.userType === 'client' && stats?.open_announcements === 0,
+      priority: 2
+    },
+    {
+      id: 'client_explore_services',
+      title: 'Explora el catálogo de servicios',
+      description: '🔍 Encuentra profesionales verificados navegando por categorías. Revisa calificaciones y portafolios antes de contratar.',
+      icon: Search,
+      color: 'from-cyan-500 to-blue-500',
+      condition: (user, stats) => user?.userType === 'client' && stats?.open_announcements === 0,
+      priority: 3
+    },
+    {
+      id: 'client_pending_proposals',
+      title: '¡Tienes propuestas esperando! 📬',
+      description: 'Revisa las ofertas recibidas. Compara precios, tiempos y perfiles antes de decidir.',
+      icon: MessageSquare,
+      color: 'from-purple-500 to-pink-500',
+      condition: (user, stats) => stats?.proposals_received > 0 && stats?.open_announcements > 0,
+      priority: 1
+    },
+    {
+      id: 'client_leave_review',
+      title: 'Ayuda a la comunidad con tu opinión',
+      description: '⭐ Califica a los profesionales que contrataste. Tu feedback ayuda a otros clientes a decidir mejor.',
+      icon: Star,
+      color: 'from-amber-500 to-yellow-500',
+      condition: (user, stats) => stats?.in_progress > 0,
+      priority: 4
+    },
+    {
+      id: 'client_announcement_tips',
+      title: 'Mejora tus solicitudes',
+      description: '💡 Tip: Sé específico con fechas, ubicación y presupuesto. Los anuncios claros atraen mejores profesionales.',
       icon: Target,
+      color: 'from-indigo-500 to-purple-500',
+      condition: (user, stats) => stats?.open_announcements > 0 && stats?.proposals_received < 3,
+      priority: 5
+    },
+    {
+      id: 'client_verify_profile',
+      title: 'Verifica tu cuenta',
+      description: '✅ Usuarios verificados reciben 2x más respuestas. Agrega tu teléfono y completa tu perfil.',
+      icon: Shield,
+      color: 'from-green-500 to-teal-500',
+      condition: (user, stats) => !user?.isVerified,
+      priority: 3
+    },
+
+    // === MENSAJES PARA PROFESIONALES ===
+    {
+      id: 'pro_create_first_service',
+      title: 'Crea tu primer servicio',
+      description: '🎯 Los profesionales con servicios publicados reciben 5x más contactos que los que solo responden anuncios.',
+      icon: Briefcase,
       color: 'from-green-500 to-teal-500',
       condition: (user, stats) => user?.userType === 'professional' && (!stats?.total_services || stats.total_services === 0),
       priority: 2
     },
     {
-      id: 'create_announcement',
-      title: 'Publica tu primer anuncio',
-      description: 'Los clientes que publican anuncios reciben propuestas en menos de 24 horas.',
-      icon: Lightbulb,
-      color: 'from-yellow-500 to-orange-500',
-      condition: (user, stats) => stats?.open_announcements === 0,
+      id: 'pro_add_portfolio',
+      title: 'Agrega fotos a tu portafolio',
+      description: '📸 Servicios con 3+ imágenes profesionales tienen 400% más conversión. Muestra tu mejor trabajo.',
+      icon: Camera,
+      color: 'from-pink-500 to-rose-500',
+      condition: (user, stats) => user?.userType === 'professional' && stats?.total_services > 0,
+      priority: 3
+    },
+    {
+      id: 'pro_explore_opportunities',
+      title: 'Explora oportunidades activas',
+      description: '💼 Hay clientes buscando tus servicios ahora. Revisa anuncios y envía propuestas personalizadas.',
+      icon: TrendingUp,
+      color: 'from-blue-500 to-cyan-500',
+      condition: (user, stats) => user?.userType === 'professional' && stats?.total_services > 0,
+      priority: 4
+    },
+    {
+      id: 'pro_complete_profile',
+      title: 'Completa tu perfil profesional',
+      description: '📝 Agrega experiencia, certificaciones y especialidades. Perfiles completos tienen 3x más visibilidad.',
+      icon: Award,
+      color: 'from-orange-500 to-amber-500',
+      condition: (user, stats) => user?.userType === 'professional' && !user?.bio,
       priority: 2
     },
     {
-      id: 'inactive_user',
-      title: '¿Necesitas ayuda?',
-      description: 'Parece que llevas tiempo inactivo. Explora oportunidades o crea un servicio.',
-      icon: TrendingUp,
-      color: 'from-pink-500 to-red-500',
-      condition: (user, stats) => {
-        // Check if user has been inactive (no activity in last 7 days)
-        // This would need actual activity tracking
-        return false; // Placeholder
-      },
+      id: 'pro_response_time',
+      title: 'Responde rápido = Más contratos',
+      description: '⚡ Los profesionales que responden en menos de 2 horas tienen 80% más probabilidad de ser contratados.',
+      icon: Clock,
+      color: 'from-red-500 to-orange-500',
+      condition: (user, stats) => user?.userType === 'professional',
+      priority: 5
+    },
+    {
+      id: 'pro_pricing_strategy',
+      title: 'Optimiza tus precios',
+      description: '💰 Ofrece 3 paquetes (básico, estándar, premium). Los clientes prefieren tener opciones para elegir.',
+      icon: DollarSign,
+      color: 'from-emerald-500 to-green-500',
+      condition: (user, stats) => user?.userType === 'professional' && stats?.total_services > 0,
+      priority: 6
+    },
+    {
+      id: 'pro_get_verified',
+      title: '¡Verifica tu cuenta profesional!',
+      description: '🏆 Profesionales verificados reciben 10x más confianza. Completa el proceso en 5 minutos.',
+      icon: CheckCircle,
+      color: 'from-blue-500 to-indigo-500',
+      condition: (user, stats) => user?.userType === 'professional' && !user?.isVerified,
+      priority: 1
+    },
+    {
+      id: 'pro_build_reputation',
+      title: 'Construye tu reputación',
+      description: '⭐ Cada trabajo completado suma. Pide a tus clientes que te califiquen para destacar en búsquedas.',
+      icon: ThumbsUp,
+      color: 'from-purple-500 to-pink-500',
+      condition: (user, stats) => user?.userType === 'professional' && stats?.total_reviews < 5,
+      priority: 7
+    },
+    {
+      id: 'pro_service_visibility',
+      title: 'Mejora la visibilidad de tus servicios',
+      description: '👁️ Usa títulos claros, descripciones detalladas y tags relevantes. El SEO interno te posiciona mejor.',
+      icon: Eye,
+      color: 'from-indigo-500 to-purple-500',
+      condition: (user, stats) => user?.userType === 'professional' && stats?.total_services > 0,
+      priority: 8
+    },
+    {
+      id: 'pro_notifications',
+      title: 'Activa las notificaciones',
+      description: '🔔 No pierdas oportunidades. Configura alertas para nuevos anuncios en tus categorías favoritas.',
+      icon: Bell,
+      color: 'from-yellow-500 to-orange-500',
+      condition: (user, stats) => user?.userType === 'professional' && !user?.notifications_projects,
+      priority: 4
+    },
+
+    // === MENSAJES GENERALES Y TIPS ===
+    {
+      id: 'profile_photo_tip',
+      title: 'Agrega una foto de perfil',
+      description: '📷 Perfiles con foto profesional generan 85% más confianza. Usa una imagen clara y amigable.',
+      icon: Upload,
+      color: 'from-cyan-500 to-blue-500',
+      condition: (user, stats) => !user?.avatar,
       priority: 3
+    },
+    {
+      id: 'settings_reminder',
+      title: 'Personaliza tu experiencia',
+      description: '⚙️ Configura tus preferencias, zona horaria y métodos de contacto favoritos en Ajustes.',
+      icon: Settings,
+      color: 'from-gray-500 to-slate-500',
+      condition: (user, stats) => !user?.timezone,
+      priority: 9
+    },
+    {
+      id: 'community_guidelines',
+      title: 'Sé parte de la comunidad',
+      description: '❤️ Respeto, honestidad y profesionalismo. Reporta cualquier conducta inapropiada.',
+      icon: Heart,
+      color: 'from-rose-500 to-pink-500',
+      condition: (user, stats) => true, // Siempre mostrar si no fue cerrado
+      priority: 10
+    },
+    {
+      id: 'whatsapp_contact',
+      title: 'Agrega tu WhatsApp',
+      description: '📱 Clientes prefieren contactar por WhatsApp. Agrégalo en tu perfil para más conversiones.',
+      icon: MessageSquare,
+      color: 'from-green-500 to-emerald-500',
+      condition: (user, stats) => !user?.whatsapp_number,
+      priority: 6
+    },
+    {
+      id: 'dual_role_tip',
+      title: '¿Sabías que puedes ser cliente Y profesional?',
+      description: '🔄 Muchos usuarios publican servicios y también contratan. Aprovecha ambas funcionalidades.',
+      icon: Users,
+      color: 'from-violet-500 to-purple-500',
+      condition: (user, stats) => user?.userType === 'client' && !stats?.has_switched_role,
+      priority: 11
     }
   ];
 
