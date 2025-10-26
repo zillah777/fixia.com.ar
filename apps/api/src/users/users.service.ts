@@ -220,10 +220,12 @@ export class UsersService {
 
   private async getProfessionalDashboard(userId: string): Promise<DashboardStats> {
     // Get services stats
+    console.log('[DEBUG] Getting services for userId:', userId);
     const servicesStats = await this.prisma.service.aggregate({
       where: { professional_id: userId },
       _count: { id: true },
     });
+    console.log('[DEBUG] Services found:', servicesStats._count.id);
 
     const activeServicesStats = await this.prisma.service.aggregate({
       where: { 

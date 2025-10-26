@@ -48,6 +48,14 @@ export class ServicesService {
       throw new NotFoundException('Category not found');
     }
 
+    console.log('[DEBUG] Creating service with data:', {
+      title: createServiceDto.title,
+      main_image: createServiceDto.main_image,
+      gallery: createServiceDto.gallery,
+      has_main_image: !!createServiceDto.main_image,
+      gallery_length: createServiceDto.gallery?.length || 0,
+    });
+
     const service = await this.prisma.service.create({
       data: {
         professional_id: userId,
