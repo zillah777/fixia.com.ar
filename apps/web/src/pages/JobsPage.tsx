@@ -210,24 +210,24 @@ const JobsPage: React.FC = () => {
         </TabsList>
 
         <TabsContent value="active" className="space-y-4">
-          <JobsList 
-            jobs={jobs.filter(job => ['not_started', 'in_progress', 'milestone_review'].includes(job.status))}
+          <JobsList
+            jobs={(jobs || []).filter(job => ['not_started', 'in_progress', 'milestone_review'].includes(job.status))}
             onStatusUpdate={handleStatusUpdate}
             isProfessional={isProfessional}
           />
         </TabsContent>
 
         <TabsContent value="completed" className="space-y-4">
-          <JobsList 
-            jobs={jobs.filter(job => job.status === 'completed')}
+          <JobsList
+            jobs={(jobs || []).filter(job => job.status === 'completed')}
             onStatusUpdate={handleStatusUpdate}
             isProfessional={isProfessional}
           />
         </TabsContent>
 
         <TabsContent value="all" className="space-y-4">
-          <JobsList 
-            jobs={jobs}
+          <JobsList
+            jobs={jobs || []}
             onStatusUpdate={handleStatusUpdate}
             isProfessional={isProfessional}
           />
@@ -338,7 +338,7 @@ const JobCard: React.FC<JobCardProps> = ({ job, onStatusUpdate, isProfessional }
         <p className="text-gray-600 line-clamp-2">{job.description}</p>
 
         {/* Progress Bar */}
-        {job.milestones.length > 0 && (
+        {job.milestones && job.milestones.length > 0 && (
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
               <span>Progreso</span>
