@@ -380,7 +380,7 @@ export default function ServiceDetailPage() {
         title={`${service.title} - ${getCategoryName(service.category)}`}
         description={service.description.substring(0, 160)}
         keywords={`${getCategoryName(service.category)}, ${service.tags?.join(', ')}, servicios profesionales, ${service.professional.name}`}
-        image={service.main_image || service.images?.[0]}
+        image={service.main_image || service.gallery?.[0]}
         type="article"
         author={service.professional.name}
       />
@@ -537,7 +537,7 @@ export default function ServiceDetailPage() {
                       <div className="flex items-center gap-3 text-sm text-muted-foreground">
                         <span className="flex items-center gap-1">
                           <Star className="h-3.5 w-3.5 text-warning fill-warning" />
-                          {service.professional.professional_profile?.rating?.toFixed(1) || '5.0'}
+                          {service.professional.professional_profile?.rating?.toFixed(1) || 'Nuevo'}
                         </span>
                         <span>
                           ({service.professional.professional_profile?.review_count || 0} reseñas)
@@ -972,7 +972,7 @@ export default function ServiceDetailPage() {
                       <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3">
                         <span className="flex items-center gap-1">
                           <Star className="h-4 w-4 text-warning fill-warning" />
-                          {service.professional.professional_profile?.rating?.toFixed(1) || '5.0'}
+                          {service.professional.professional_profile?.rating?.toFixed(1) || 'Nuevo'}
                         </span>
                         <span>•</span>
                         <span>{service.professional.professional_profile?.review_count || 0} reseñas</span>
@@ -1009,7 +1009,7 @@ export default function ServiceDetailPage() {
                     </div>
                     <div className="text-center p-3 glass-light rounded-lg">
                       <div className="text-2xl font-bold text-warning mb-1">
-                        {service.professional.professional_profile?.rating?.toFixed(1) || '5.0'}
+                        {service.professional.professional_profile?.rating?.toFixed(1) || 'Nuevo'}
                       </div>
                       <div className="text-xs text-muted-foreground">Rating</div>
                     </div>
