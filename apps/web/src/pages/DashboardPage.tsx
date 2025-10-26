@@ -711,7 +711,7 @@ function MyServices({
       setServicesLoading(true);
       const { servicesService } = await import('../lib/services/services.service');
       const response = await servicesService.getMyServices();
-      setServices(response.services || []);
+      setServices(response.data || []);
     } catch (error) {
       console.warn('Failed to fetch services:', error);
       setServices([]);

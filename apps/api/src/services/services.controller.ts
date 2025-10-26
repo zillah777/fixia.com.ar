@@ -66,6 +66,15 @@ export class ServicesController {
     return this.servicesService.getCategories();
   }
 
+  @Get('my')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Obtener mis servicios publicados' })
+  @ApiResponse({ status: 200, description: 'Lista de servicios del profesional' })
+  getMyServices(@CurrentUser() user: any) {
+    return this.servicesService.getMyServices(user.sub);
+  }
+
   @Get(':id')
   @Public()
   @ApiOperation({ summary: 'Obtener detalles de un servicio específico' })

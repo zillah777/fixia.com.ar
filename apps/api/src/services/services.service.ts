@@ -763,4 +763,55 @@ export class ServicesService {
       })),
     };
   }
+
+  async getMyServices(userId: string): Promise<PaginatedResponse<any>> {
+    const services = await this.prisma.service.findMany({
+      where: {
+        professional_id: userId,
+      },
+      include: {
+        category: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            icon: true,
+          },
+        },
+        _count: {
+          select: {
+            reviews: true,
+          },
+        },
+      },
+      orderBy: {
+        created_at: 'desc',
+      },
+    });
+
+    return {
+      data: services.map((s) => ({
+        id: s.id,
+        title: s.title,
+        description: s.description,
+        category: s.category.name,
+        price: s.price,
+        currency: s.currency,
+        main_image: s.main_image,
+        gallery: s.gallery,
+        tags: s.tags,
+        delivery_time: s.delivery_time,
+        revisions: s.revisions,
+        active: s.active,
+        featured: s.featured,
+        view_count: s.view_count,
+        created_at: s.created_at,
+        updated_at: s.updated_at,
+      })),
+      total: services.length,
+      page: 1,
+      limit: services.length,
+      totalPages: 1,
+    };
+  }
 }

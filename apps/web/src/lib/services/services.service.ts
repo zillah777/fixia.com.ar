@@ -170,6 +170,10 @@ export const servicesService = {
   async getMyServicesAnalytics(): Promise<any> {
     return api.get('/services/my/analytics');
   },
+
+  async getMyServices(): Promise<PaginatedResponse<Service>> {
+    return api.get('/services/my');
+  },
 };
 
 export default servicesService;
