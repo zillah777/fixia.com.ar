@@ -311,8 +311,7 @@ const JobsPage: React.FC = () => {
         <MobileBottomNavigation />
       </div>
     );
-  };
-}
+};
 
 interface JobsListProps {
   jobs: Job[];
