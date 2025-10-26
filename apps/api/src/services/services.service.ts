@@ -790,6 +790,8 @@ export class ServicesService {
     });
 
     const total = services.length;
+    const page = 1;
+    const limit = total;
 
     return {
       data: services.map((s) => ({
@@ -810,11 +812,13 @@ export class ServicesService {
         created_at: s.created_at,
         updated_at: s.updated_at,
       })),
-      meta: {
+      pagination: {
+        page,
+        limit,
         total,
-        page: 1,
-        limit: total,
-        totalPages: 1,
+        pages: 1,
+        has_next: false,
+        has_prev: false,
       },
     };
   }
