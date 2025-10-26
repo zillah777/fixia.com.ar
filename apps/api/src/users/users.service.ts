@@ -324,6 +324,54 @@ export class UsersService {
   }
 
   async getTopRatedProfessionals(limit: number = 6) {
+    const FEATURED_PROFESSIONAL_ID = '02f82f4a-0b6b-46d8-9b83-3ba2e169dd6b';
+
+    const featuredProfessional = await this.prisma.user.findUnique({
+      where: { id: FEATURED_PROFESSIONAL_ID },
+      select: {
+        id: true,
+        name: true,
+        avatar: true,
+        location: true,
+        verified: true,
+        created_at: true,
+        professional_profile: {
+          select: {
+            bio: true,
+            specialties: true,
+            rating: true,
+            review_count: true,
+            level: true,
+            years_experience: true,
+          },
+        },
+        services: {
+          where: { active: true },
+          select: {
+            id: true,
+            title: true,
+            description: true,
+            price: true,
+            main_image: true,
+            category: {
+              select: {
+                name: true,
+                icon: true,
+              },
+            },
+          },
+          orderBy: { created_at: 'desc' },
+          take: 1,
+        },
+        reviews_received: {
+          select: {
+            rating: true,
+          },
+        },
+      },
+    });
+
+    const remainingLimit = featuredProfessional ? limit - 1 : limit;
     const professionals = await this.prisma.user.findMany({
       where: {
         user_type: 'professional',
@@ -331,6 +379,9 @@ export class UsersService {
         deleted_at: null,
         professional_profile: {
           isNot: null,
+        },
+        NOT: {
+          id: FEATURED_PROFESSIONAL_ID,
         },
       },
       select: {
@@ -366,7 +417,7 @@ export class UsersService {
             },
           },
           orderBy: { created_at: 'desc' },
-          take: 1, // Get the most recent service
+          take: 1,
         },
         reviews_received: {
           select: {
@@ -379,9 +430,11 @@ export class UsersService {
           rating: 'desc',
         },
       },
-      take: limit,
+      take: remainingLimit,
     });
 
-    return professionals;
+    return featuredProfessional
+      ? [featuredProfessional, ...professionals]
+      : professionals;
   }
 }
