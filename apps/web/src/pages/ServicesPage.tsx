@@ -400,8 +400,8 @@ function ServiceCard({ service, viewMode }: { service: Service, viewMode: string
           <div className="flex">
             {/* Image */}
             <div className="relative w-48 h-36 flex-shrink-0">
-              <img 
-                src={service.images?.[0] || "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=300&fit=crop"} 
+              <img
+                src={service.main_image || service.gallery?.[0] || "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=300&fit=crop"}
                 alt={service.title}
                 className="w-full h-full object-cover"
               />
@@ -469,13 +469,13 @@ function ServiceCard({ service, viewMode }: { service: Service, viewMode: string
                 <div className="text-right">
                   <div className="flex items-center space-x-1 mb-2">
                     <Heart className="h-4 w-4 text-warning fill-current" />
-                    <span className="font-medium">{service.averageRating}</span>
-                    <span className="text-muted-foreground text-sm">({service.totalReviews})</span>
+                    <span className="font-medium">{service.professional?.professional_profile?.rating?.toFixed(1) || 'Nuevo'}</span>
+                    <span className="text-muted-foreground text-sm">({service.professional?.professional_profile?.review_count || 0})</span>
                   </div>
                   <div className="text-right">
                     <span className="text-2xl font-bold text-primary">${service.price}</span>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-1">{service.priceType === 'hourly' ? 'Por hora' : service.priceType === 'fixed' ? 'Precio fijo' : 'Negociable'}</p>
+                  <p className="text-xs text-muted-foreground mt-1">{service.price_type === 'hourly' ? 'Por hora' : service.price_type === 'fixed' ? 'Precio fijo' : 'Negociable'}</p>
                 </div>
               </div>
               
@@ -535,7 +535,7 @@ function ServiceCard({ service, viewMode }: { service: Service, viewMode: string
             {/* Image Container */}
             <div className="relative aspect-[4/3] overflow-hidden bg-muted">
               <img
-                src={service.main_image || service.images?.[0] || "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=300&fit=crop"}
+                src={service.main_image || service.gallery?.[0] || "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=300&fit=crop"}
                 alt={service.title}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
@@ -623,15 +623,15 @@ function ServiceCard({ service, viewMode }: { service: Service, viewMode: string
                 <div className="flex items-center gap-1">
                   <Heart className="h-3.5 w-3.5 text-warning fill-warning" />
                   <span className="text-sm font-semibold text-foreground">
-                    {service.professional?.professional_profile?.rating?.toFixed(1) || '4.9'}
+                    {service.professional?.professional_profile?.rating?.toFixed(1) || 'Nuevo'}
                   </span>
                   <span className="text-xs text-muted-foreground">
-                    ({service.professional?.professional_profile?.review_count || 187})
+                    ({service.professional?.professional_profile?.review_count || 0})
                   </span>
                 </div>
                 <span className="text-xs text-muted-foreground flex items-center gap-1">
                   <Clock className="h-3 w-3" />
-                  {service.delivery_time_days || 21} días
+                  {service.delivery_time_days || 'A consultar'} {service.delivery_time_days ? 'días' : ''}
                 </span>
               </div>
 
@@ -776,7 +776,7 @@ export default function ServicesPage() {
         >
           <Badge className="mb-8 bg-primary/20 text-primary border-primary/30 px-5 py-2.5 text-base pulse-glow">
             <Search className="h-5 w-5 mr-2" />
-            Más de {totalServices} servicios disponibles
+            Más de {totalServices || 0} servicios disponibles
           </Badge>
 
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold mb-8 tracking-tight leading-tight">
@@ -825,7 +825,7 @@ export default function ServicesPage() {
         >
           <div className="flex items-center space-x-4">
             <h2 className="text-xl sm:text-2xl font-bold text-foreground">
-              {loading ? 'Cargando...' : `${totalServices} servicios encontrados`}
+              {loading ? 'Cargando...' : `${totalServices || 0} servicios encontrados`}
             </h2>
             {selectedCategory !== "Todos" && (
               <Badge className="bg-primary/20 text-primary border-primary/30 px-3 py-1 text-sm font-semibold">
@@ -833,9 +833,9 @@ export default function ServicesPage() {
               </Badge>
             )}
           </div>
-          
+
           <div className="text-sm text-muted-foreground">
-            {loading ? 'Cargando servicios...' : `Mostrando ${services.length} de ${totalServices} servicios`}
+            {loading ? 'Cargando servicios...' : `Mostrando ${services.length} de ${totalServices || 0} servicios`}
           </div>
         </motion.div>
 
