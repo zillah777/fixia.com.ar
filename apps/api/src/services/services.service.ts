@@ -789,29 +789,33 @@ export class ServicesService {
       },
     });
 
+    const total = services.length;
+
     return {
       data: services.map((s) => ({
         id: s.id,
         title: s.title,
         description: s.description,
-        category: s.category.name,
+        category: s.category?.name || 'Sin categoría',
         price: s.price,
         currency: s.currency,
         main_image: s.main_image,
         gallery: s.gallery,
         tags: s.tags,
-        delivery_time: s.delivery_time,
-        revisions: s.revisions,
+        delivery_time: s.delivery_time_days,
+        revisions: s.revisions_included,
         active: s.active,
         featured: s.featured,
         view_count: s.view_count,
         created_at: s.created_at,
         updated_at: s.updated_at,
       })),
-      total: services.length,
-      page: 1,
-      limit: services.length,
-      totalPages: 1,
+      meta: {
+        total,
+        page: 1,
+        limit: total,
+        totalPages: 1,
+      },
     };
   }
 }
