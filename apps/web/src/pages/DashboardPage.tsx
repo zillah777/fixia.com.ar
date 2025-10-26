@@ -644,9 +644,10 @@ function ServiceAnalytics({
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 
   const fetchAnalytics = async () => {
-    // Only fetch if user is authenticated and is a professional
-    if (!user || user.userType !== 'professional') {
+    // Critical check: Ensure user is fully loaded with valid ID
+    if (!user || !user.id || user.userType !== 'professional') {
       setAnalyticsLoading(false);
+      setAnalyticsData(null);
       return;
     }
 
@@ -667,8 +668,14 @@ function ServiceAnalytics({
   };
 
   useEffect(() => {
-    fetchAnalytics();
-  }, [user]);
+    // Only run effect if user object has been loaded with ID
+    if (user && user.id) {
+      fetchAnalytics();
+    } else {
+      setAnalyticsLoading(false);
+      setAnalyticsData(null);
+    }
+  }, [user?.id, user?.userType]); // Depend on specific properties to avoid infinite loops
 
   const formatViews = (views: number) => {
     if (views >= 1000) {
@@ -1427,7 +1434,7 @@ export default function DashboardPage() {
         >
           {/* Projects Section - Show both for professionals (dual role) */}
           <div className="lg:col-span-2 space-y-8">
-            {user?.userType === 'professional' && (
+            {user?.userType === 'professional' && user?.id && !loading && (
               <>
                 {/* Service Analytics Section */}
                 <ServiceAnalytics loading={loading} user={user} />
