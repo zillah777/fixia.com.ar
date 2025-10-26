@@ -372,7 +372,7 @@ export default function ServiceDetailPage() {
   }
 
   const currentPackage = getCurrentPackage();
-  const images = service.gallery || [];
+  const images = Array.isArray(service.gallery) ? service.gallery : [];
 
   return (
     <div className="min-h-screen bg-background">
@@ -599,7 +599,7 @@ export default function ServiceDetailPage() {
                       <Separator />
 
                       {/* Tags */}
-                      {service.tags && service.tags.length > 0 && (
+                      {service.tags && Array.isArray(service.tags) && service.tags.length > 0 && (
                         <div>
                           <h3 className="font-semibold mb-3">Tecnologías y habilidades</h3>
                           <div className="flex flex-wrap gap-2">
