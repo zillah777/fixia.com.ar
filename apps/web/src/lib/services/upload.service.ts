@@ -29,11 +29,17 @@ class UploadService {
 
       // Upload to backend (which uploads to Cloudinary)
       const endpoint = type === 'avatar' ? '/upload/avatar' : '/upload/image';
-      const response = await api.post<UploadResponse>(endpoint, formData, {
+      const response = await api.post<any>(endpoint, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
+
+      // Backend returns { success, message, data: { url, ... } }
+      // Extract the data object
+      if (response.data) {
+        return response.data as UploadResponse;
+      }
 
       return response;
     } catch (error: any) {
