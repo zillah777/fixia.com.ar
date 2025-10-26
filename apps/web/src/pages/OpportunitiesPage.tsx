@@ -966,21 +966,7 @@ export default function OpportunitiesPage() {
             Encuentra proyectos que impulsen tu carrera al siguiente nivel.
           </p>
           
-          {/* Quick Stats */}
-          <div className="flex items-center justify-center space-x-8 mt-8">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-primary">250+</div>
-              <div className="text-sm text-muted-foreground">Proyectos Activos</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-success">$2.5M+</div>
-              <div className="text-sm text-muted-foreground">Pagados Este Mes</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-warning">4.9★</div>
-              <div className="text-sm text-muted-foreground">Rating Promedio</div>
-            </div>
-          </div>
+          {/* Quick Stats - removed mock data */}
         </motion.div>
 
         {/* Search and Filters */}

@@ -516,7 +516,7 @@ export default function ServiceDetailPage() {
                 {/* Professional Info */}
                 <div className="flex items-center justify-between flex-wrap gap-4">
                   <Link
-                    to={`/professional/${service.professional.id}`}
+                    to={`/profile/${service.professional.id}`}
                     className="flex items-center gap-3 group"
                   >
                     <Avatar className="h-12 w-12 border-2 border-white/20">
@@ -579,7 +579,6 @@ export default function ServiceDetailPage() {
               <Tabs defaultValue="about" className="w-full">
                 <TabsList className="glass w-full justify-start overflow-x-auto">
                   <TabsTrigger value="about">Descripción</TabsTrigger>
-                  <TabsTrigger value="packages">Paquetes</TabsTrigger>
                   <TabsTrigger value="reviews">Reseñas</TabsTrigger>
                   <TabsTrigger value="faq">Preguntas</TabsTrigger>
                 </TabsList>
@@ -1021,7 +1020,7 @@ export default function ServiceDetailPage() {
                     </div>
                   </div>
 
-                  <Link to={`/professional/${service.professional.id}`}>
+                  <Link to={`/profile/${service.professional.id}`}>
                     <Button variant="outline" className="w-full glass border-white/20">
                       Ver perfil completo
                     </Button>
