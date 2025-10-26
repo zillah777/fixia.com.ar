@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { useSecureAuth } from '../context/SecureAuthContext';
 import { jobsService, Job, JobStats, ConversionAnalytics } from '../lib/services/jobs.service';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
@@ -7,17 +8,21 @@ import { Button } from '../components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { Progress } from '../components/ui/progress';
 import { Alert, AlertDescription } from '../components/ui/alert';
-import { 
-  Briefcase, 
-  TrendingUp, 
-  MessageCircle, 
-  CheckCircle, 
-  Clock, 
+import { Skeleton } from '../components/ui/skeleton';
+import { FixiaNavigation } from '../components/FixiaNavigation';
+import { MobileBottomNavigation } from '../components/MobileBottomNavigation';
+import {
+  Briefcase,
+  TrendingUp,
+  MessageCircle,
+  CheckCircle,
+  Clock,
   DollarSign,
   Users,
   ArrowRight,
   Calendar,
-  AlertTriangle
+  AlertTriangle,
+  Sparkles
 } from 'lucide-react';
 
 const JobsPage: React.FC = () => {
@@ -73,31 +78,46 @@ const JobsPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid gap-6 md:grid-cols-3">
-          {[...Array(6)].map((_, i) => (
-            <Card key={i} className="animate-pulse">
-              <CardHeader>
-                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                <div className="h-3 bg-gray-200 rounded w-1/2"></div>
-              </CardHeader>
-              <CardContent>
-                <div className="h-16 bg-gray-200 rounded"></div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+      <div className="min-h-screen bg-background">
+        <FixiaNavigation />
+        <main className="container mx-auto px-6 py-8">
+          <div className="mb-8">
+            <Skeleton className="h-12 w-64 mb-4" />
+            <Skeleton className="h-6 w-96" />
+          </div>
+          <div className="grid gap-6 md:grid-cols-4 mb-8">
+            {[...Array(4)].map((_, i) => (
+              <Card key={i} className="glass border-white/10">
+                <CardHeader>
+                  <Skeleton className="h-4 w-24 mb-2" />
+                  <Skeleton className="h-8 w-16" />
+                </CardHeader>
+              </Card>
+            ))}
+          </div>
+        </main>
+        <MobileBottomNavigation />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <Alert variant="destructive">
-          <AlertTriangle className="h-4 w-4" />
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
+      <div className="min-h-screen bg-background">
+        <FixiaNavigation />
+        <main className="container mx-auto px-6 py-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <Alert variant="destructive" className="glass border-destructive/50">
+              <AlertTriangle className="h-4 w-4" />
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          </motion.div>
+        </main>
+        <MobileBottomNavigation />
       </div>
     );
   }
@@ -105,137 +125,194 @@ const JobsPage: React.FC = () => {
   const isProfessional = user?.userType === 'professional';
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          {isProfessional ? 'Mis Trabajos' : 'Trabajos Contratados'}
-        </h1>
-        <p className="text-gray-600">
-          {isProfessional 
-            ? 'Gestiona tus trabajos activos y historial de proyectos' 
-            : 'Seguimiento de los trabajos que has contratado'
-          }
-        </p>
-      </div>
+    <div className="min-h-screen bg-background">
+      <FixiaNavigation />
 
-      {/* Stats Cards */}
-      {stats && (
-        <div className="grid gap-6 md:grid-cols-4 mb-8">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Trabajos</CardTitle>
-              <Briefcase className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.totalJobs}</div>
-            </CardContent>
-          </Card>
+      <main className="container mx-auto px-6 py-8">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="mb-10"
+        >
+          <div className="flex items-center gap-3 mb-3">
+            <div className="h-12 w-12 liquid-gradient rounded-xl flex items-center justify-center">
+              <Briefcase className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <h1 className="text-4xl sm:text-5xl font-extrabold text-white tracking-tight">
+                {isProfessional ? 'Mis Trabajos' : 'Trabajos Contratados'}
+              </h1>
+            </div>
+          </div>
+          <p className="text-lg sm:text-xl text-muted-foreground/80 leading-relaxed">
+            {isProfessional
+              ? 'Gestiona tus trabajos activos y historial de proyectos'
+              : 'Seguimiento de los trabajos que has contratado'
+            }
+          </p>
+        </motion.div>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Activos</CardTitle>
-              <Clock className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {(stats.jobsByStatus.in_progress || 0) + (stats.jobsByStatus.not_started || 0)}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Completados</CardTitle>
-              <CheckCircle className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.jobsByStatus.completed || 0}</div>
-            </CardContent>
-          </Card>
-
-          {isProfessional && (
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Ingresos Totales</CardTitle>
-                <DollarSign className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {jobsService.formatCurrency(stats.totalEarnings)}
+        {/* Stats Cards */}
+        {stats && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="grid gap-6 md:grid-cols-4 mb-8"
+          >
+            <Card className="glass-glow border-white/10 hover:glass-medium transition-all duration-300">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Total Trabajos</p>
+                    <p className="text-3xl font-bold mt-2 text-gradient">{stats.totalJobs}</p>
+                  </div>
+                  <div className="h-12 w-12 bg-primary/20 rounded-xl flex items-center justify-center">
+                    <Briefcase className="h-6 w-6 text-primary" />
+                  </div>
                 </div>
               </CardContent>
             </Card>
-          )}
-        </div>
-      )}
 
-      {/* Analytics for Professionals */}
-      {isProfessional && analytics && (
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5" />
-              Análisis de Conversión
-            </CardTitle>
-            <CardDescription>
-              Estadísticas de contactos y conversiones
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid gap-6 md:grid-cols-3">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">{analytics.totalContacts}</div>
-                <p className="text-sm text-gray-600">Total Contactos</p>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-green-600">{analytics.convertedContacts}</div>
-                <p className="text-sm text-gray-600">Convertidos</p>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-orange-600">{analytics.conversionRate}%</div>
-                <p className="text-sm text-gray-600">Tasa de Conversión</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+            <Card className="glass-glow border-white/10 hover:glass-medium transition-all duration-300">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Activos</p>
+                    <p className="text-3xl font-bold mt-2 text-gradient">
+                      {(stats.jobsByStatus.in_progress || 0) + (stats.jobsByStatus.not_started || 0)}
+                    </p>
+                  </div>
+                  <div className="h-12 w-12 bg-warning/20 rounded-xl flex items-center justify-center">
+                    <Clock className="h-6 w-6 text-warning" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
-      {/* Jobs List */}
-      <Tabs defaultValue="active" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="active">Activos</TabsTrigger>
-          <TabsTrigger value="completed">Completados</TabsTrigger>
-          <TabsTrigger value="all">Todos</TabsTrigger>
-        </TabsList>
+            <Card className="glass-glow border-white/10 hover:glass-medium transition-all duration-300">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Completados</p>
+                    <p className="text-3xl font-bold mt-2 text-gradient">{stats.jobsByStatus.completed || 0}</p>
+                  </div>
+                  <div className="h-12 w-12 bg-success/20 rounded-xl flex items-center justify-center">
+                    <CheckCircle className="h-6 w-6 text-success" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
-        <TabsContent value="active" className="space-y-4">
-          <JobsList
-            jobs={(jobs || []).filter(job => ['not_started', 'in_progress', 'milestone_review'].includes(job.status))}
-            onStatusUpdate={handleStatusUpdate}
-            isProfessional={isProfessional}
-          />
-        </TabsContent>
+            {isProfessional && (
+              <Card className="glass-glow border-white/10 hover:glass-medium transition-all duration-300">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-muted-foreground">Ingresos Totales</p>
+                      <p className="text-3xl font-bold mt-2 text-gradient">
+                        {jobsService.formatCurrency(stats.totalEarnings)}
+                      </p>
+                    </div>
+                    <div className="h-12 w-12 bg-success/20 rounded-xl flex items-center justify-center">
+                      <DollarSign className="h-6 w-6 text-success" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </motion.div>
+        )}
 
-        <TabsContent value="completed" className="space-y-4">
-          <JobsList
-            jobs={(jobs || []).filter(job => job.status === 'completed')}
-            onStatusUpdate={handleStatusUpdate}
-            isProfessional={isProfessional}
-          />
-        </TabsContent>
+        {/* Analytics for Professionals */}
+        {isProfessional && analytics && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+          >
+            <Card className="glass border-white/10 mb-8">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-white">
+                  <TrendingUp className="h-5 w-5 text-primary" />
+                  Análisis de Conversión
+                </CardTitle>
+                <CardDescription className="text-muted-foreground/80">
+                  Estadísticas de contactos y conversiones
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid gap-6 md:grid-cols-3">
+                  <div className="text-center p-4 glass-medium rounded-lg">
+                    <div className="text-3xl font-bold text-info mb-2">{analytics.totalContacts}</div>
+                    <p className="text-sm text-muted-foreground">Total Contactos</p>
+                  </div>
+                  <div className="text-center p-4 glass-medium rounded-lg">
+                    <div className="text-3xl font-bold text-success mb-2">{analytics.convertedContacts}</div>
+                    <p className="text-sm text-muted-foreground">Convertidos</p>
+                  </div>
+                  <div className="text-center p-4 glass-medium rounded-lg">
+                    <div className="text-3xl font-bold text-warning mb-2">{analytics.conversionRate}%</div>
+                    <p className="text-sm text-muted-foreground">Tasa de Conversión</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
 
-        <TabsContent value="all" className="space-y-4">
-          <JobsList
-            jobs={jobs || []}
-            onStatusUpdate={handleStatusUpdate}
-            isProfessional={isProfessional}
-          />
-        </TabsContent>
-      </Tabs>
-    </div>
-  );
-};
+        {/* Jobs List */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+        >
+            <Tabs defaultValue="active" className="w-full">
+              <TabsList className="glass w-full grid grid-cols-3 p-1">
+                <TabsTrigger value="active" className="data-[state=active]:glass-medium">
+                  Activos
+                </TabsTrigger>
+                <TabsTrigger value="completed" className="data-[state=active]:glass-medium">
+                  Completados
+                </TabsTrigger>
+                <TabsTrigger value="all" className="data-[state=active]:glass-medium">
+                  Todos
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="active" className="space-y-4 mt-6">
+                <JobsList
+                  jobs={(jobs || []).filter(job => ['not_started', 'in_progress', 'milestone_review'].includes(job.status))}
+                  onStatusUpdate={handleStatusUpdate}
+                  isProfessional={isProfessional}
+                />
+              </TabsContent>
+
+              <TabsContent value="completed" className="space-y-4 mt-6">
+                <JobsList
+                  jobs={(jobs || []).filter(job => job.status === 'completed')}
+                  onStatusUpdate={handleStatusUpdate}
+                  isProfessional={isProfessional}
+                />
+              </TabsContent>
+
+              <TabsContent value="all" className="space-y-4 mt-6">
+                <JobsList
+                  jobs={jobs || []}
+                  onStatusUpdate={handleStatusUpdate}
+                  isProfessional={isProfessional}
+                />
+              </TabsContent>
+            </Tabs>
+          </motion.div>
+        </main>
+        <MobileBottomNavigation />
+      </div>
+    );
+  };
+}
 
 interface JobsListProps {
   jobs: Job[];
@@ -246,12 +323,14 @@ interface JobsListProps {
 const JobsList: React.FC<JobsListProps> = ({ jobs, onStatusUpdate, isProfessional }) => {
   if (jobs.length === 0) {
     return (
-      <Card>
-        <CardContent className="flex flex-col items-center justify-center py-12">
-          <Briefcase className="h-12 w-12 text-gray-400 mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No hay trabajos</h3>
-          <p className="text-gray-500 text-center">
-            {isProfessional 
+      <Card className="glass border-white/10">
+        <CardContent className="flex flex-col items-center justify-center py-16">
+          <div className="h-16 w-16 liquid-gradient rounded-xl flex items-center justify-center mx-auto mb-4 opacity-50">
+            <Briefcase className="h-8 w-8 text-white" />
+          </div>
+          <h3 className="text-lg font-medium text-white mb-2">No hay trabajos</h3>
+          <p className="text-muted-foreground/80 text-center max-w-md">
+            {isProfessional
               ? 'Cuando recibas propuestas aceptadas, aparecerán aquí'
               : 'Los trabajos que contrates aparecerán aquí'
             }
@@ -263,13 +342,19 @@ const JobsList: React.FC<JobsListProps> = ({ jobs, onStatusUpdate, isProfessiona
 
   return (
     <div className="grid gap-6">
-      {jobs.map((job) => (
-        <JobCard 
-          key={job.id} 
-          job={job} 
-          onStatusUpdate={onStatusUpdate}
-          isProfessional={isProfessional}
-        />
+      {jobs.map((job, index) => (
+        <motion.div
+          key={job.id}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: index * 0.05 }}
+        >
+          <JobCard
+            job={job}
+            onStatusUpdate={onStatusUpdate}
+            isProfessional={isProfessional}
+          />
+        </motion.div>
       ))}
     </div>
   );
@@ -290,26 +375,28 @@ const JobCard: React.FC<JobCardProps> = ({ job, onStatusUpdate, isProfessional }
     switch (job.status) {
       case 'not_started':
         return (
-          <Button 
+          <Button
             onClick={() => onStatusUpdate(job.id, 'in_progress', 'Trabajo iniciado')}
             size="sm"
+            className="liquid-gradient hover:opacity-90"
           >
             Iniciar Trabajo
           </Button>
         );
       case 'in_progress':
         return (
-          <Button 
+          <Button
             onClick={() => onStatusUpdate(job.id, 'milestone_review', 'Solicitar revisión')}
             size="sm"
             variant="outline"
+            className="glass border-white/20 hover:glass-medium"
           >
             Solicitar Revisión
           </Button>
         );
       case 'milestone_review':
         return (
-          <Badge variant="outline" className="text-yellow-600">
+          <Badge className="bg-warning/20 text-warning border-warning/40">
             Esperando revisión del cliente
           </Badge>
         );
@@ -319,60 +406,60 @@ const JobCard: React.FC<JobCardProps> = ({ job, onStatusUpdate, isProfessional }
   };
 
   return (
-    <Card className="hover:shadow-md transition-shadow">
+    <Card className="glass-glow border-white/10 hover:glass-medium transition-all duration-300">
       <CardHeader>
-        <div className="flex justify-between items-start">
-          <div>
-            <CardTitle className="text-lg">{job.title}</CardTitle>
-            <CardDescription>
+        <div className="flex justify-between items-start gap-4">
+          <div className="flex-1 min-w-0">
+            <CardTitle className="text-xl text-white mb-2">{job.title}</CardTitle>
+            <CardDescription className="text-muted-foreground/80">
               {isProfessional ? `Cliente: ${job.client.name}` : `Profesional: ${job.professional.name}`}
             </CardDescription>
           </div>
-          <Badge className={jobsService.getJobStatusColor(job.status)}>
+          <Badge className={`${jobsService.getJobStatusColor(job.status)} flex-shrink-0`}>
             {jobsService.getJobStatusLabel(job.status)}
           </Badge>
         </div>
       </CardHeader>
 
       <CardContent className="space-y-4">
-        <p className="text-gray-600 line-clamp-2">{job.description}</p>
+        <p className="text-muted-foreground/90 line-clamp-2">{job.description}</p>
 
         {/* Progress Bar */}
         {job.milestones && job.milestones.length > 0 && (
-          <div className="space-y-2">
-            <div className="flex justify-between text-sm">
-              <span>Progreso</span>
-              <span>{progress}%</span>
+          <div className="space-y-2 p-4 glass-medium rounded-lg">
+            <div className="flex justify-between text-sm text-white">
+              <span className="font-medium">Progreso</span>
+              <span className="font-bold">{progress}%</span>
             </div>
-            <Progress value={progress} className="w-full" />
-            <p className="text-xs text-gray-500">
+            <Progress value={progress} className="w-full h-2" />
+            <p className="text-xs text-muted-foreground/80">
               {job.milestones.filter(m => m.completed).length} de {job.milestones.length} hitos completados
             </p>
           </div>
         )}
 
         {/* Job Info */}
-        <div className="grid grid-cols-2 gap-4 text-sm">
-          <div>
-            <span className="font-medium">Precio acordado:</span>
-            <p className="text-green-600 font-medium">
+        <div className="grid grid-cols-2 gap-4">
+          <div className="p-4 glass-medium rounded-lg">
+            <span className="text-sm text-muted-foreground/80 block mb-1">Precio acordado</span>
+            <p className="text-lg font-bold text-success">
               {jobsService.formatCurrency(job.agreed_price)}
             </p>
           </div>
-          <div>
-            <span className="font-medium">Fecha de entrega:</span>
-            <p className="flex items-center gap-2">
-              <Calendar className="h-4 w-4" />
-              {job.delivery_date ? new Date(job.delivery_date).toLocaleDateString() : 'Sin fecha'}
+          <div className="p-4 glass-medium rounded-lg">
+            <span className="text-sm text-muted-foreground/80 block mb-1">Fecha de entrega</span>
+            <p className="text-lg font-bold text-white flex items-center gap-2">
+              <Calendar className="h-4 w-4 text-primary" />
+              {job.delivery_date ? new Date(job.delivery_date).toLocaleDateString('es-AR') : 'Sin fecha'}
             </p>
           </div>
         </div>
 
         {/* Actions */}
-        <div className="flex justify-between items-center pt-4 border-t">
-          <div className="flex gap-2">
+        <div className="flex flex-wrap justify-between items-center gap-3 pt-4 border-t border-white/10">
+          <div className="flex gap-2 flex-wrap">
             {getStatusActions()}
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" className="glass border-white/20 hover:glass-medium">
               Ver Detalles
               <ArrowRight className="h-4 w-4 ml-1" />
             </Button>
@@ -380,22 +467,24 @@ const JobCard: React.FC<JobCardProps> = ({ job, onStatusUpdate, isProfessional }
 
           {/* Contact Button */}
           {isProfessional ? (
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               size="sm"
+              className="hover:glass-medium"
               onClick={() => window.open(`https://wa.me/${job.client.whatsapp_number}`, '_blank')}
             >
-              <MessageCircle className="h-4 w-4 mr-1" />
-              Contactar Cliente
+              <MessageCircle className="h-4 w-4 mr-2 text-success" />
+              <span className="text-white">Contactar Cliente</span>
             </Button>
           ) : (
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               size="sm"
+              className="hover:glass-medium"
               onClick={() => window.open(`https://wa.me/${job.professional.whatsapp_number}`, '_blank')}
             >
-              <MessageCircle className="h-4 w-4 mr-1" />
-              Contactar Profesional
+              <MessageCircle className="h-4 w-4 mr-2 text-success" />
+              <span className="text-white">Contactar Profesional</span>
             </Button>
           )}
         </div>
