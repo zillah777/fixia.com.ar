@@ -30,6 +30,7 @@ import { useDebouncedCallback } from "../hooks/useDebounce";
 import { uploadService } from "../lib/services/upload.service";
 import { toast } from "sonner";
 import { api } from "../lib/api";
+import { UpgradeToProfessionalCard } from "../components/UpgradeToProfessionalCard";
 
 // Navigation component
 function Navigation() {
@@ -520,6 +521,12 @@ function SettingsSection() {
 
   return (
     <div className="space-y-6">
+      {/* Upgrade to Professional Card - Only shown to clients */}
+      <UpgradeToProfessionalCard
+        userType={user?.userType || 'client'}
+        onUpgradeSuccess={refreshUserData}
+      />
+
       {/* Personal Information */}
       <Card className="glass border-white/10">
         <CardHeader>
