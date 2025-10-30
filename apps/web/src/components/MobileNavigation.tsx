@@ -158,6 +158,7 @@ export const MobileNavigation = memo<MobileNavigationProps>(({ className }) => {
         <div className="flex flex-col h-full">
           {/* Header */}
           <SheetHeader className="p-6 pb-4">
+            <SheetTitle className="sr-only">Menú de Navegación</SheetTitle>
             <div className="flex items-center justify-between">
               <Link to="/" onClick={handleClose} className="flex items-center space-x-3">
                 <motion.div 

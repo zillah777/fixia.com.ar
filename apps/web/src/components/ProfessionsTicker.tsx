@@ -30,7 +30,6 @@ const defaultProfessions: CategoryStat[] = [
 
 export const ProfessionsTicker = memo(function ProfessionsTicker() {
   const [categories, setCategories] = useState<CategoryStat[]>(defaultProfessions);
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -42,8 +41,6 @@ export const ProfessionsTicker = memo(function ProfessionsTicker() {
       } catch (error) {
         console.error('Error fetching category stats:', error);
         // Keep default professions on error
-      } finally {
-        setIsLoading(false);
       }
     };
 
@@ -65,7 +62,7 @@ export const ProfessionsTicker = memo(function ProfessionsTicker() {
             x: {
               repeat: Infinity,
               repeatType: "loop",
-              duration: 60,
+              duration: 42,
               ease: "linear"
             }
           }}

@@ -336,36 +336,28 @@ function StatCards({ dashboardData, loading, userType, clientStats, planType }: 
   // Stats for PROFESSIONALS
   const professionalStatsCards = [
     {
-      title: "Ingresos Totales",
-      value: dashboardData?.total_earnings ? `$${dashboardData.total_earnings.toLocaleString()}` : "$0",
-      change: "+12.3%",
-      changeType: "positive",
-      icon: TrendingUp,
-      description: "acumulados"
-    },
-    {
       title: "Servicios Totales",
       value: planType === 'basic'
         ? `${dashboardData?.total_services || 0}/5`
         : dashboardData?.total_services?.toString() || "0",
-      change: planType === 'basic' ? '' : '+2',
-      changeType: "positive",
+      change: '',
+      changeType: "neutral",
       icon: Briefcase,
       description: planType === 'basic' ? 'límite plan Basic' : planType === 'premium' ? 'ilimitados' : 'servicios creados'
     },
     {
       title: "Proyectos Activos",
       value: dashboardData?.active_projects?.toString() || "0",
-      change: "+8",
-      changeType: "positive",
+      change: '',
+      changeType: "neutral",
       icon: Users,
       description: "en progreso"
     },
     {
       title: "Rating Promedio",
       value: dashboardData?.average_rating?.toFixed(1) || "0.0",
-      change: "+0.2",
-      changeType: "positive",
+      change: '',
+      changeType: "neutral",
       icon: Heart,
       description: `de ${dashboardData?.review_count || 0} reseñas`
     }
