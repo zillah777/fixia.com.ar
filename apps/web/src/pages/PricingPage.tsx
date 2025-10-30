@@ -202,7 +202,7 @@ function PricingCardsSection() {
   return (
     <section className="py-10 sm:py-12 lg:py-16">
       <div className="container mx-auto px-4 sm:px-6">
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 max-w-6xl mx-auto">
+        <div className="grid md:grid-cols-2 gap-4 sm:gap-6 max-w-4xl mx-auto">
           {/* Plan Gratis */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -257,18 +257,21 @@ function PricingCardsSection() {
             </Card>
           </motion.div>
 
-          {/* Plan Basic */}
+          {/* Plan Profesional - RECOMENDADO */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.1 }}
           >
-            <Card className="glass border-blue-500/30 bg-blue-500/5 h-full">
-              <CardHeader className="text-center pb-3 sm:pb-4 pt-4 sm:pt-6">
-                <Zap className="h-8 w-8 sm:h-10 sm:w-10 text-blue-400 mx-auto mb-2" />
-                <CardTitle className="text-lg sm:text-xl">Basic</CardTitle>
-                <div className="text-2xl sm:text-3xl font-bold mt-2 text-blue-400">$2,999</div>
+            <Card className="glass border-primary/50 bg-primary/10 h-full relative">
+              <Badge className="absolute -top-2.5 sm:-top-3 left-1/2 -translate-x-1/2 bg-primary text-white border-0 text-xs sm:text-sm px-2 sm:px-3 py-1">
+                RECOMENDADO
+              </Badge>
+              <CardHeader className="text-center pb-3 sm:pb-4 pt-6 sm:pt-8">
+                <Crown className="h-8 w-8 sm:h-10 sm:w-10 text-primary mx-auto mb-2" />
+                <CardTitle className="text-lg sm:text-xl">Profesional</CardTitle>
+                <div className="text-2xl sm:text-3xl font-bold mt-2 text-primary">$3,900</div>
                 <div className="text-xs sm:text-sm text-muted-foreground">ARS/mes</div>
               </CardHeader>
               <CardContent className="space-y-3 p-4 sm:p-6">
@@ -283,48 +286,10 @@ function PricingCardsSection() {
                 <Button
                   onClick={() => handleSelectPlan('basic')}
                   disabled={isProcessing === 'basic'}
-                  className="w-full bg-blue-600 hover:bg-blue-700"
-                  size="sm"
-                >
-                  {isProcessing === 'basic' ? 'Procesando...' : 'Seleccionar Basic'}
-                </Button>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          {/* Plan Premium - RECOMENDADO */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            <Card className="glass border-primary/50 bg-primary/10 h-full relative">
-              <Badge className="absolute -top-2.5 sm:-top-3 left-1/2 -translate-x-1/2 bg-primary text-white border-0 text-xs sm:text-sm px-2 sm:px-3 py-1">
-                RECOMENDADO
-              </Badge>
-              <CardHeader className="text-center pb-3 sm:pb-4 pt-6 sm:pt-8">
-                <Crown className="h-8 w-8 sm:h-10 sm:w-10 text-primary mx-auto mb-2" />
-                <CardTitle className="text-lg sm:text-xl">Premium</CardTitle>
-                <div className="text-2xl sm:text-3xl font-bold mt-2 text-primary">$5,999</div>
-                <div className="text-xs sm:text-sm text-muted-foreground">ARS/mes</div>
-              </CardHeader>
-              <CardContent className="space-y-3 p-4 sm:p-6">
-                <div className="space-y-2 text-xs sm:text-sm">
-                  {SUBSCRIPTION_PLANS.premium.features.map((feature, idx) => (
-                    <div key={idx} className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-success flex-shrink-0" />
-                      <span>{feature}</span>
-                    </div>
-                  ))}
-                </div>
-                <Button
-                  onClick={() => handleSelectPlan('premium')}
-                  disabled={isProcessing === 'premium'}
                   className="w-full liquid-gradient hover:opacity-90"
                   size="sm"
                 >
-                  {isProcessing === 'premium' ? 'Procesando...' : 'Seleccionar Premium'}
+                  {isProcessing === 'basic' ? 'Procesando...' : 'Seleccionar Plan Profesional'}
                 </Button>
               </CardContent>
             </Card>
@@ -346,7 +311,7 @@ function ComparisonTableSection() {
           transition={{ duration: 0.8 }}
           className="text-center mb-8 sm:mb-12 lg:mb-16"
         >
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">Comparación Detallada</h2>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4 text-foreground">Comparación Detallada</h2>
           <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
             Todas las funcionalidades lado a lado para que elijas el plan perfecto
           </p>
@@ -437,7 +402,7 @@ function FAQSection() {
     },
     {
       question: "¿Cómo funciona la promoción de 2 meses gratis?",
-      answer: "Los primeros 200 profesionales que se registren obtienen 2 meses completamente gratis del Plan Profesional. Después se cobra la tarifa regular de $4500 ARS/mes."
+      answer: "Los primeros 200 profesionales que se registren obtienen 2 meses completamente gratis del Plan Profesional. Después se cobra la tarifa regular de $3,900 ARS/mes."
     },
     {
       question: "¿Cobran comisiones por los servicios?",
