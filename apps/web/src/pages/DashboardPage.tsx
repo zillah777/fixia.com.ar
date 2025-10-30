@@ -792,10 +792,83 @@ function MyServices({
             </Link>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {services.slice(0, 5).map((service) => (
               <Link key={service.id} to={`/services/${service.id}`}>
-                <div className="p-5 glass-glow rounded-xl hover:glass-medium transition-all duration-300 border border-white/10 hover:border-primary/30 relative group">
+                <div className="p-4 sm:p-5 glass-glow rounded-xl hover:glass-medium transition-all duration-300 border border-white/10 hover:border-primary/30 relative group">
+                  {/* Mobile Layout */}
+                  <div className="block sm:hidden space-y-3">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-semibold text-sm leading-tight text-white mb-1.5">
+                          {service.title}
+                        </h4>
+                        <p className="text-xs text-muted-foreground/90 line-clamp-2 mb-2">
+                          {service.description}
+                        </p>
+                      </div>
+                      {service.active ? (
+                        <Badge className="bg-success/20 text-success border-success/40 text-xs font-medium flex-shrink-0">
+                          Activo
+                        </Badge>
+                      ) : (
+                        <Badge className="bg-muted/20 text-muted-foreground border-muted/40 text-xs font-medium flex-shrink-0">
+                          Pausado
+                        </Badge>
+                      )}
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-lg font-bold text-primary">
+                        ${service.price?.toLocaleString('es-AR')}
+                      </span>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 flex-shrink-0"
+                            disabled={actionLoading === service.id}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                            }}
+                          >
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="glass border-white/20">
+                          <Link to={`/services/${service.id}/edit`} onClick={(e) => e.stopPropagation()}>
+                            <DropdownMenuItem className="hover:bg-white/10 cursor-pointer">
+                              <Edit className="mr-2 h-4 w-4" />
+                              Editar
+                            </DropdownMenuItem>
+                          </Link>
+                          <DropdownMenuSeparator className="bg-white/10" />
+                          <DropdownMenuItem
+                            className="hover:bg-destructive/10 cursor-pointer text-destructive"
+                            disabled={actionLoading === service.id}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              handleDeleteService(service.id);
+                            }}
+                          >
+                            {actionLoading === service.id ? (
+                              <span className="flex items-center">Eliminando...</span>
+                            ) : (
+                              <>
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                Eliminar
+                              </>
+                            )}
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                  </div>
+
+                  {/* Desktop Layout */}
+                  <div className="hidden sm:block">
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-2">
@@ -853,7 +926,7 @@ function MyServices({
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-4 text-sm text-muted-foreground/80">
+                  <div className="hidden sm:flex items-center gap-4 text-sm text-muted-foreground/80">
                     <span className="flex items-center gap-1">
                       <Briefcase className="h-4 w-4" />
                       {service.category}
@@ -864,6 +937,7 @@ function MyServices({
                         {service.delivery_time} días
                       </span>
                     )}
+                  </div>
                   </div>
                 </div>
               </Link>
@@ -1036,10 +1110,10 @@ export default function DashboardPage() {
   }, [user, refreshTrigger]);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background overflow-x-hidden">
       <FixiaNavigation />
 
-      <main className="container mx-auto px-6 py-8">
+      <main className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 max-w-full overflow-x-hidden">
         {/* Welcome Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -1229,7 +1303,7 @@ export default function DashboardPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.4 }}
-          className="grid lg:grid-cols-3 gap-8"
+          className="grid lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8"
         >
           {/* Projects Section - Show both for professionals (dual role) */}
           <div className="lg:col-span-2 space-y-8">
