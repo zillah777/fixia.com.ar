@@ -6,7 +6,7 @@ import {
   Image, FileText, DollarSign, Tag, Settings,
   Eye, Save, AlertCircle, Info, Heart, Briefcase, Globe,
   Camera, Trash2, Zap, Shield, Loader2, Search, CheckCircle,
-  HelpCircle, Lightbulb, Package
+  HelpCircle, Lightbulb, Package, Calendar, Clock
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -56,14 +56,14 @@ const getIconComponent = (iconName: string) => {
 };
 
 const skillSuggestions = {
-  "web-development": ["React", "Vue.js", "Angular", "Node.js", "Python", "PHP", "WordPress", "Shopify"],
-  "mobile-development": ["Flutter", "React Native", "Swift", "Kotlin", "iOS", "Android"],
-  "graphic-design": ["Photoshop", "Illustrator", "Figma", "InDesign", "After Effects"],
-  "digital-marketing": ["SEO", "Google Ads", "Facebook Ads", "Analytics", "Social Media"],
-  "writing": ["Blog Posts", "Copywriting", "Technical Writing", "SEO Content"],
-  "video-animation": ["After Effects", "Premiere Pro", "Motion Graphics", "3D Animation"],
-  "consulting": ["Strategy", "Business Plan", "Market Research", "Process Optimization"],
-  "cybersecurity": ["Pentesting", "Security Audit", "ISO 27001", "GDPR Compliance"]
+  "peluqueria": ["Corte de Cabello", "Maquillaje", "Peinado", "Coloración", "Tratamientos", "A Domicilio", "Alisado", "Permanente"],
+  "belleza": ["Manicura", "Pedicura", "Depilación", "Masajes", "Tratamientos Faciales", "Cejas y Pestañas", "A Domicilio"],
+  "mascotas": ["Peluquería Canina", "Paseo de Perros", "Adiestramiento", "Cuidado a Domicilio", "Veterinaria", "Grooming"],
+  "construccion": ["Albañilería", "Pintura", "Electricidad", "Plomería", "Reparaciones", "Refacciones", "Presupuesto Gratis"],
+  "limpieza": ["Limpieza de Hogar", "Limpieza Profunda", "A Domicilio", "Post Obra", "Oficinas", "Alfombras"],
+  "cocina": ["Comida a Domicilio", "Catering", "Eventos", "Repostería", "Viandas", "Menú Semanal"],
+  "jardineria": ["Corte de Césped", "Poda", "Mantenimiento", "Diseño de Jardines", "Riego", "Fumigación"],
+  "mecanica": ["Mecánica General", "Electricidad Automotriz", "Diagnóstico", "A Domicilio", "Cambio de Aceite", "Frenos"]
 };
 
 interface ProjectData {
@@ -76,24 +76,24 @@ interface ProjectData {
   
   // Pricing
   packages: {
-    basic: { name: string; price: number; description: string; deliveryTime: number; revisions: number; features: string[] };
-    standard: { name: string; price: number; description: string; deliveryTime: number; revisions: number; features: string[] };
-    premium: { name: string; price: number; description: string; deliveryTime: number; revisions: number; features: string[] };
+    basic: { name: string; price: number; description: string; deliveryTime: number; features: string[]; immediateAvailability: boolean; scheduledAvailability: boolean };
+    standard: { name: string; price: number; description: string; deliveryTime: number; features: string[]; immediateAvailability: boolean; scheduledAvailability: boolean };
+    premium: { name: string; price: number; description: string; deliveryTime: number; features: string[]; immediateAvailability: boolean; scheduledAvailability: boolean };
   };
-  
+
   // Media
   images: string[];
   gallery: string[];
-  
+  videoUrl: string;
+
   // Requirements
   requirements: string[];
-  
+
   // FAQ
   faqs: { question: string; answer: string }[];
-  
+
   // Settings
   isActive: boolean;
-  allowRevisions: boolean;
   instantDelivery: boolean;
 }
 
@@ -116,29 +116,22 @@ function Navigation() {
         </button>
         
         <Link to="/dashboard" className="flex items-center space-x-3">
-          <motion.div 
+          <motion.div
             className="relative"
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 400, damping: 10 }}
           >
-            <div className="h-10 w-10 liquid-gradient rounded-xl flex items-center justify-center shadow-lg">
-              <span className="text-white font-bold text-lg">F</span>
-            </div>
-            <div className="absolute -inset-1 liquid-gradient rounded-xl blur opacity-20 animate-pulse-slow"></div>
+            <img
+              src="/logo.png"
+              alt="Fixia Logo"
+              className="h-10 w-10 object-contain drop-shadow-lg"
+            />
+            <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-blue-500/20 rounded-xl blur opacity-30 animate-pulse-slow"></div>
           </motion.div>
           <span className="text-xl font-semibold tracking-tight text-white">Fixia</span>
         </Link>
-        
-        <div className="flex items-center space-x-2">
-          <Button variant="ghost" size="sm">
-            <Eye className="h-4 w-4 mr-2" />
-            Previsualizar
-          </Button>
-          <Button variant="ghost" size="sm">
-            <Save className="h-4 w-4 mr-2" />
-            Guardar Borrador
-          </Button>
-        </div>
+
+        <div className="w-32"></div>
       </div>
     </motion.header>
   );
@@ -724,7 +717,7 @@ function PricingStep({ data, setData }: { data: ProjectData; setData: (data: Pro
                   </div>
                   
                   {/* Delivery Time */}
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-4">
                     <div className="space-y-2">
                       <Label>Días de Entrega</Label>
                       <Input
@@ -735,16 +728,33 @@ function PricingStep({ data, setData }: { data: ProjectData; setData: (data: Pro
                         className="glass border-white/20"
                       />
                     </div>
-                    
-                    <div className="space-y-2">
-                      <Label>Revisiones</Label>
-                      <Input
-                        type="number"
-                        placeholder="2"
-                        value={data.packages[packageType].revisions}
-                        onChange={(e) => updatePackage(packageType, 'revisions', parseInt(e.target.value) || 0)}
-                        className="glass border-white/20"
-                      />
+
+                    <div className="space-y-3">
+                      <Label>Disponibilidad</Label>
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id={`immediate-${packageType}`}
+                          checked={data.packages[packageType].immediateAvailability}
+                          onChange={(e) => updatePackage(packageType, 'immediateAvailability', e.target.checked)}
+                          className="h-4 w-4 rounded border-white/20 bg-background text-primary focus:ring-2 focus:ring-primary"
+                        />
+                        <Label htmlFor={`immediate-${packageType}`} className="text-sm font-normal cursor-pointer">
+                          Disponibilidad Inmediata
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id={`scheduled-${packageType}`}
+                          checked={data.packages[packageType].scheduledAvailability}
+                          onChange={(e) => updatePackage(packageType, 'scheduledAvailability', e.target.checked)}
+                          className="h-4 w-4 rounded border-white/20 bg-background text-primary focus:ring-2 focus:ring-primary"
+                        />
+                        <Label htmlFor={`scheduled-${packageType}`} className="text-sm font-normal cursor-pointer">
+                          Disponibilidad de Acuerdo a Agenda
+                        </Label>
+                      </div>
                     </div>
                   </div>
                   
@@ -1249,25 +1259,12 @@ function FinalStep({ data, setData }: { data: ProjectData; setData: (data: Proje
                   onCheckedChange={(checked) => setData({ ...data, isActive: checked })}
                 />
               </div>
-              
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="font-medium">Permitir revisiones</div>
-                  <div className="text-sm text-muted-foreground">
-                    Los clientes pueden solicitar cambios según el paquete
-                  </div>
-                </div>
-                <Switch
-                  checked={data.allowRevisions}
-                  onCheckedChange={(checked) => setData({ ...data, allowRevisions: checked })}
-                />
-              </div>
-              
+
               <div className="flex items-center justify-between">
                 <div>
                   <div className="font-medium">Entrega instantánea</div>
                   <div className="text-sm text-muted-foreground">
-                    Para servicios digitales que se entregan inmediatamente
+                    Para servicios que se entregan inmediatamente
                   </div>
                 </div>
                 <Switch
@@ -1287,6 +1284,17 @@ function FinalStep({ data, setData }: { data: ProjectData; setData: (data: Proje
             <Card className="glass border-white/10">
               <CardContent className="p-6">
                 <div className="space-y-4">
+                  {/* Imagen Principal */}
+                  {data.images.length > 0 && (
+                    <div className="relative w-full h-48 rounded-lg overflow-hidden bg-muted">
+                      <img
+                        src={data.images[0]}
+                        alt={data.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  )}
+
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <h3 className="text-lg font-semibold mb-2">{data.title || 'Título del servicio'}</h3>
@@ -1294,7 +1302,7 @@ function FinalStep({ data, setData }: { data: ProjectData; setData: (data: Proje
                         {data.description || 'Descripción del servicio aparecerá aquí...'}
                       </p>
                     </div>
-                    <div className="text-right">
+                    <div className="text-right ml-4">
                       <div className="text-2xl font-bold text-primary">
                         ${data.packages.standard.price || 0}
                       </div>
@@ -1303,7 +1311,7 @@ function FinalStep({ data, setData }: { data: ProjectData; setData: (data: Proje
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="flex flex-wrap gap-2">
                     {data.tags.map((tag) => (
                       <Badge key={tag} variant="outline" className="glass border-white/20 text-xs">
@@ -1311,13 +1319,26 @@ function FinalStep({ data, setData }: { data: ProjectData; setData: (data: Proje
                       </Badge>
                     ))}
                   </div>
-                  
-                  <div className="flex items-center justify-between text-sm text-muted-foreground">
-                    <span>Entrega: {data.packages.standard.deliveryTime || 0} días</span>
-                    <span>Revisiones: {data.packages.standard.revisions || 0}</span>
-                    <Badge className={data.isActive ? "bg-success/20 text-success" : "bg-muted"}>
-                      {data.isActive ? 'Activo' : 'Borrador'}
-                    </Badge>
+
+                  <div className="flex items-center justify-between text-sm">
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <Clock className="h-4 w-4" />
+                      <span>Entrega: {data.packages.standard.deliveryTime || 0} días</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {data.packages.standard.immediateAvailability && (
+                        <Badge variant="outline" className="bg-success/10 text-success border-success/20 text-xs">
+                          <Zap className="h-3 w-3 mr-1" />
+                          Disponibilidad Inmediata
+                        </Badge>
+                      )}
+                      {data.packages.standard.scheduledAvailability && (
+                        <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20 text-xs">
+                          <Calendar className="h-3 w-3 mr-1" />
+                          Según Agenda
+                        </Badge>
+                      )}
+                    </div>
                   </div>
                 </div>
               </CardContent>
@@ -1352,16 +1373,16 @@ export default function NewProjectPage() {
     subcategory: '',
     tags: [],
     packages: {
-      basic: { name: 'Básico', price: 0, description: '', deliveryTime: 7, revisions: 1, features: [] },
-      standard: { name: 'Estándar', price: 0, description: '', deliveryTime: 14, revisions: 2, features: [] },
-      premium: { name: 'Premium', price: 0, description: '', deliveryTime: 21, revisions: 3, features: [] }
+      basic: { name: 'Básico', price: 0, description: '', deliveryTime: 7, features: [], immediateAvailability: false, scheduledAvailability: true },
+      standard: { name: 'Estándar', price: 0, description: '', deliveryTime: 14, features: [], immediateAvailability: false, scheduledAvailability: true },
+      premium: { name: 'Premium', price: 0, description: '', deliveryTime: 21, features: [], immediateAvailability: false, scheduledAvailability: true }
     },
     images: [],
     gallery: [],
+    videoUrl: '',
     requirements: [],
     faqs: [],
     isActive: false,
-    allowRevisions: true,
     instantDelivery: false
   });
 
@@ -1466,13 +1487,19 @@ export default function NewProjectPage() {
       if (selectedPackage.deliveryTime > 0) {
         serviceData.delivery_time_days = selectedPackage.deliveryTime;
       }
-      if (selectedPackage.revisions >= 0) {
-        serviceData.revisions_included = selectedPackage.revisions;
+
+      // Add availability settings
+      if (selectedPackage.immediateAvailability) {
+        serviceData.immediate_availability = true;
+      }
+      if (selectedPackage.scheduledAvailability) {
+        serviceData.scheduled_availability = true;
       }
 
       // Add configuration settings from Step 6
-      // Note: allowRevisions and instantDelivery are stored in state but not in backend schema
-      // The revisions_included field already handles the revisions functionality
+      if (projectData.videoUrl) {
+        serviceData.video_url = projectData.videoUrl;
+      }
 
       console.log('Publishing service:', serviceData);
       console.log('Gallery data:', projectData.gallery);
