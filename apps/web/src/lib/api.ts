@@ -186,10 +186,15 @@ apiClient.interceptors.response.use(
           toast.error(message || 'Solicitud inválida. Verifica los datos enviados.');
           break;
         case 401:
-          // 401 errors are handled by interceptors - don't show toast for login attempts
-          if (!error.config?.url?.includes('/auth/login')) {
+          // Silent auth check for public pages - don't show errors
+          const isPublicAuthCheck = error.config?.url?.includes('/auth/verify') ||
+                                   error.config?.url?.includes('/favorites/') ||
+                                   error.config?.url?.includes('/auth/login');
+
+          if (!isPublicAuthCheck) {
             console.info('Authentication required - redirecting to login');
           }
+          // Suppress console logs for expected 401s on public pages
           break;
         case 403:
           toast.error('No tienes permisos para realizar esta acción.');

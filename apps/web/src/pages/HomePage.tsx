@@ -12,7 +12,7 @@ import {
   Palette, Code, PenTool, Camera, Briefcase, HeadphonesIcon,
   Play, ChevronRight, MessageSquare, Heart, Bell, MapPin,
   Crown, Phone, Mail, Gift, CreditCard, Building, User,
-  GraduationCap, Scissors, Leaf, Truck, Flame
+  GraduationCap, Scissors, Leaf, Truck, Flame, Star
 } from "lucide-react";
 import { servicesService, Service } from "../lib/services";
 import { toast } from "sonner";
@@ -445,71 +445,99 @@ function FeaturedServicesSection() {
                   transition={{ duration: 0.6, delay: 0.1 * index }}
                   whileHover={{ y: -4 }}
                 >
-                  <Link to={`/users/${professional.id}`}>
-                    <Card className="frosted hover:glass-medium transition-all duration-300 border-white/10 overflow-hidden group cursor-pointer card-hover spotlight">
-                      <div className="relative aspect-video overflow-hidden">
+                  <Link to={`/profile/${professional.id}`}>
+                    <Card className="glass-glow hover:border-primary/40 transition-all duration-300 border-2 border-white/10 overflow-hidden group cursor-pointer relative">
+                      {/* Background Image con Overlay */}
+                      <div className="relative h-48 overflow-hidden">
                         <img
                           src={serviceImage}
                           alt={professional.name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                           onError={(e) => {
-                            (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=300&fit=crop";
+                            (e.target as HTMLImageElement).src = "/placeholder-service.jpg";
                           }}
                         />
-                        <div className="absolute top-4 left-4">
-                          <Badge className="bg-primary/20 text-primary border-primary/30">
+                        {/* Gradient Overlay para contraste */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+
+                        {/* Badges superiores */}
+                        <div className="absolute top-3 left-3 right-3 flex items-start justify-between">
+                          <Badge className="bg-primary text-white border-0 shadow-lg font-semibold">
                             {category}
                           </Badge>
-                        </div>
-                        <div className="absolute top-4 right-4">
-                          <Badge className="bg-success/20 text-success border-success/30">
+                          <Badge className="bg-green-500 text-white border-0 shadow-lg font-semibold">
                             <CheckCircle className="h-3 w-3 mr-1" />
                             Verificado
                           </Badge>
                         </div>
+
+                        {/* Avatar prominente en centro-inferior */}
+                        <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2">
+                          <Avatar className="h-24 w-24 ring-4 ring-white shadow-2xl border-4 border-background">
+                            <AvatarImage src={professional.avatar} />
+                            <AvatarFallback className="text-2xl font-bold">{professional.name.charAt(0)}</AvatarFallback>
+                          </Avatar>
+                        </div>
                       </div>
 
-                      <CardContent className="p-6">
-                        <div className="flex items-center space-x-3 mb-4">
-                          <Avatar className="h-12 w-12 ring-2 ring-primary/20">
-                            <AvatarImage src={professional.avatar} />
-                            <AvatarFallback>{professional.name.charAt(0)}</AvatarFallback>
-                          </Avatar>
-                          <div className="flex-1">
-                            <div className="flex items-center space-x-2">
-                              <span className="font-semibold">{professional.name}</span>
-                              {professional.verified && (
-                                <CheckCircle className="h-4 w-4 text-success" />
-                              )}
-                            </div>
-                            <div className="flex items-center space-x-1 text-xs text-muted-foreground">
-                              <MapPin className="h-3 w-3" />
-                              <span>{professional.location || "Chubut, Argentina"}</span>
-                            </div>
+                      <CardContent className="pt-16 pb-6 px-6 text-center">
+                        {/* Nombre y ubicación */}
+                        <div className="mb-4">
+                          <div className="flex items-center justify-center space-x-2 mb-2">
+                            <h3 className="text-xl font-bold text-foreground">{professional.name}</h3>
+                            {professional.verified && (
+                              <CheckCircle className="h-5 w-5 text-green-500" />
+                            )}
+                          </div>
+                          <div className="flex items-center justify-center space-x-1 text-sm text-muted-foreground">
+                            <MapPin className="h-4 w-4" />
+                            <span>{professional.location || "Chubut, Argentina"}</span>
                           </div>
                         </div>
 
+                        {/* Especialidades en chips */}
+                        {professional.professional_profile?.specialties && professional.professional_profile.specialties.length > 0 && (
+                          <div className="flex flex-wrap gap-2 justify-center mb-4">
+                            {professional.professional_profile.specialties.slice(0, 3).map((specialty, idx) => (
+                              <Badge key={idx} variant="outline" className="text-xs">
+                                {specialty}
+                              </Badge>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Descripción */}
                         {service && (
                           <>
-                            <h3 className="font-semibold mb-2 line-clamp-2">{service.title}</h3>
+                            <h4 className="font-semibold mb-2 line-clamp-1 text-foreground">{service.title}</h4>
                             <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{service.description}</p>
                           </>
                         )}
 
                         {professional.professional_profile?.bio && !service && (
-                          <p className="text-sm text-muted-foreground mb-4 line-clamp-3">{professional.professional_profile.bio}</p>
+                          <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{professional.professional_profile.bio}</p>
                         )}
 
-                        <div className="flex items-center justify-between">
+                        {/* Rating y Precio */}
+                        <div className="flex items-center justify-between pt-4 border-t border-white/10">
                           <div className="flex items-center space-x-1">
-                            <Heart className="h-4 w-4 text-warning fill-current" />
-                            <span className="font-bold">{rating.toFixed(1)}</span>
-                            <span className="text-muted-foreground text-sm">({reviewCount} reseñas)</span>
+                            <Star className="h-5 w-5 text-amber-400 fill-amber-400" />
+                            <span className="font-bold text-lg">{rating.toFixed(1)}</span>
+                            <span className="text-muted-foreground text-sm">({reviewCount})</span>
                           </div>
                           {service?.price && (
-                            <span className="text-lg font-bold text-primary">${service.price.toLocaleString()}</span>
+                            <div className="text-right">
+                              <div className="text-xs text-muted-foreground">Desde</div>
+                              <span className="text-xl font-bold text-primary">${service.price.toLocaleString()}</span>
+                            </div>
                           )}
                         </div>
+
+                        {/* CTA Button */}
+                        <Button className="w-full mt-4 liquid-gradient text-white font-semibold shadow-lg hover:shadow-primary/50 transition-all">
+                          Ver Perfil Completo
+                          <ArrowRight className="h-4 w-4 ml-2" />
+                        </Button>
                       </CardContent>
                     </Card>
                   </Link>
