@@ -404,7 +404,7 @@ function ServiceCard({ service, viewMode }: { service: Service, viewMode: string
             {/* Image */}
             <div className="relative w-48 h-36 flex-shrink-0">
               <img
-                src={service.main_image || service.gallery?.[0] || "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=300&fit=crop"}
+                src={service.mainImage || service.main_image || service.gallery?.[0] || "/placeholder-service.jpg"}
                 alt={service.title}
                 className="w-full h-full object-cover"
               />
@@ -538,7 +538,7 @@ function ServiceCard({ service, viewMode }: { service: Service, viewMode: string
             {/* Image Container */}
             <div className="relative aspect-[4/3] overflow-hidden bg-muted">
               <img
-                src={service.main_image || service.gallery?.[0] || "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=300&fit=crop"}
+                src={service.mainImage || service.main_image || service.gallery?.[0] || "/placeholder-service.jpg"}
                 alt={service.title}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
@@ -747,7 +747,15 @@ export default function ServicesPage() {
           setServices(prev => [...prev, ...response.data]);
         }
         
-        setTotalServices(response.total);
+        // Handle pagination response structure
+        if (response.pagination?.total) {
+          setTotalServices(response.pagination.total);
+        } else if (response.total) {
+          setTotalServices(response.total);
+        } else {
+          // Fallback: use current data length if total not available
+          setTotalServices(response.data?.length || 0);
+        }
       } catch (err) {
         setError('Error al cargar los servicios. Por favor, intenta nuevamente.');
         console.error('Error fetching services:', err);
