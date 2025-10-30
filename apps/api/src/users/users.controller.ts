@@ -65,6 +65,14 @@ export class UsersController {
     return this.usersService.getTopRatedProfessionals(limit);
   }
 
+  @Get('stats/public')
+  @Public()
+  @ApiOperation({ summary: 'Obtener estadísticas públicas de la plataforma' })
+  @ApiResponse({ status: 200, description: 'Estadísticas públicas' })
+  async getPublicStats() {
+    return this.usersService.getPublicStats();
+  }
+
   @Get('users/:userId')
   @Public()
   @ApiOperation({ summary: 'Obtener perfil público de un usuario' })

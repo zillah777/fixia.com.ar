@@ -20,6 +20,7 @@ import { MobileBottomNavigation } from "../components/MobileBottomNavigation";
 import { SkipNavigation } from "../components/SkipNavigation";
 import { FixiaNavigation } from "../components/FixiaNavigation";
 import { SEOHelmet } from "../components/SEOHelmet";
+import { getPublicStats, PublicStats } from "../lib/api";
 
 const featuredServices = [
   {
@@ -86,6 +87,23 @@ const categories = [
 
 
 function HeroSection() {
+  const [stats, setStats] = useState<PublicStats | null>(null);
+  const [loadingStats, setLoadingStats] = useState(true);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const data = await getPublicStats();
+        setStats(data);
+      } catch (error) {
+        console.error('Error fetching stats:', error);
+      } finally {
+        setLoadingStats(false);
+      }
+    };
+    fetchStats();
+  }, []);
+
   return (
     <section className="relative mobile-section overflow-hidden gradient-mesh">
       <div className="container mx-auto mobile-container">
@@ -97,8 +115,18 @@ function HeroSection() {
           >
             <Badge className="mb-4 sm:mb-6 bg-success/20 text-success border-success/30 px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm">
               <MapPin className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-              <span className="hidden sm:inline">Chubut, Argentina • +500 profesionales activos</span>
-              <span className="sm:hidden">+500 profesionales</span>
+              {loadingStats ? (
+                <span>Cargando...</span>
+              ) : (
+                <>
+                  <span className="hidden sm:inline">
+                    Chubut, Argentina • {stats?.activeProfessionals || 0}+ profesionales activos
+                  </span>
+                  <span className="sm:hidden">
+                    +{stats?.activeProfessionals || 0} profesionales
+                  </span>
+                </>
+              )}
             </Badge>
             
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extrabold mb-6 sm:mb-8 tracking-tight leading-[1.1]">
@@ -133,25 +161,27 @@ function HeroSection() {
               </CardContent>
             </Card>
             
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-5 mb-10 sm:mb-14">
-              <Link to="/services" className="w-full sm:w-auto">
-                <Button
-                  size="lg"
-                  className="liquid-gradient hover:opacity-90 hover:scale-105 transition-all duration-300 shadow-2xl hover:shadow-primary/50 px-8 py-6 sm:px-10 sm:py-7 text-base sm:text-lg font-semibold w-full sm:w-auto glow-hover rounded-2xl group"
-                >
-                  <Search className="mr-3 h-5 w-5 sm:h-6 sm:w-6 group-hover:rotate-12 transition-transform" />
-                  Explorar Profesionales
-                  <ArrowRight className="ml-3 h-5 w-5 sm:h-6 sm:w-6 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </Link>
-              <Link to="/register?type=professional" className="w-full sm:w-auto">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-5 sm:gap-5 mb-10 sm:mb-14">
+              <Link to="/how-it-works" className="w-full sm:w-auto">
                 <Button
                   size="lg"
                   variant="outline"
                   className="glass border-white/30 hover:glass-medium hover:border-white/50 hover:scale-105 px-8 py-6 sm:px-10 sm:py-7 text-base sm:text-lg font-semibold w-full sm:w-auto neon-border rounded-2xl transition-all duration-300 group"
                 >
-                  <Crown className="mr-3 h-5 w-5 sm:h-6 sm:w-6 text-warning group-hover:text-warning/80 transition-colors" />
-                  Ofrecer Servicios
+                  <Search className="mr-3 h-5 w-5 sm:h-6 sm:w-6 group-hover:rotate-12 transition-transform" />
+                  <span className="hidden sm:inline">Ver Proceso Completo</span>
+                  <span className="sm:hidden">Cómo Funciona</span>
+                </Button>
+              </Link>
+              <Link to="/register" className="w-full sm:w-auto">
+                <Button
+                  size="lg"
+                  className="liquid-gradient hover:opacity-90 hover:scale-105 transition-all duration-300 shadow-2xl hover:shadow-primary/50 px-8 py-6 sm:px-10 sm:py-7 text-base sm:text-lg font-semibold w-full sm:w-auto glow-hover rounded-2xl group"
+                >
+                  <Gift className="mr-3 h-5 w-5 sm:h-6 sm:w-6" />
+                  <span className="hidden sm:inline">Comenzar Ahora Gratis</span>
+                  <span className="sm:hidden">Únete Gratis</span>
+                  <ArrowRight className="ml-3 h-5 w-5 sm:h-6 sm:w-6 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
             </div>

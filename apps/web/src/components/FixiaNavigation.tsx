@@ -10,6 +10,7 @@ import { motion } from "framer-motion";
 import { useSecureAuth } from "../context/SecureAuthContext";
 import { MobileNavigation } from "./MobileNavigation";
 import { NotificationBell } from "./notifications/NotificationBell";
+import { ProfessionsTicker } from "./ProfessionsTicker";
 
 // Navigation component - Heart icon removed to fix bundling issue
 export const FixiaNavigation = memo(function FixiaNavigation() {
@@ -28,24 +29,27 @@ export const FixiaNavigation = memo(function FixiaNavigation() {
     }
   }, [logout, navigate]);
   return (
-    <motion.header
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      className="sticky top-0 z-50 w-full backdrop-blur-xl bg-background/80 border-b border-white/10 shadow-lg shadow-black/5"
-    >
-      <div className="container mx-auto flex h-16 sm:h-20 items-center justify-between px-4 sm:px-6">
+    <>
+      <motion.header
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        className="sticky top-0 z-50 w-full backdrop-blur-xl bg-background/80 border-b border-white/10 shadow-lg shadow-black/5"
+      >
+        <div className="container mx-auto flex h-16 sm:h-20 items-center justify-between px-4 sm:px-6">
         {/* Logo and Navigation Links */}
         <div className="flex items-center space-x-4 sm:space-x-8">
           <Link to="/" className="flex items-center space-x-2 sm:space-x-3">
-            <motion.div 
+            <motion.div
               className="relative"
               whileHover={{ scale: 1.05 }}
               transition={{ type: "spring", stiffness: 400, damping: 10 }}
             >
-              <div className="h-8 w-8 sm:h-10 sm:w-10 liquid-gradient rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg">
-                <span className="text-white font-bold text-base sm:text-lg">F</span>
-              </div>
-              <div className="absolute -inset-1 liquid-gradient rounded-lg sm:rounded-xl blur opacity-20 animate-pulse-slow"></div>
+              <img
+                src="/logo.png"
+                alt="Fixia Logo"
+                className="h-8 w-8 sm:h-10 sm:w-10 object-contain drop-shadow-lg"
+              />
+              <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-blue-500/20 rounded-lg sm:rounded-xl blur opacity-30 animate-pulse-slow"></div>
             </motion.div>
             <div className="hidden sm:flex flex-col">
               <span className="text-lg sm:text-xl font-semibold tracking-tight text-foreground">Fixia</span>
@@ -297,6 +301,9 @@ export const FixiaNavigation = memo(function FixiaNavigation() {
           <MobileNavigation />
         </div>
       </div>
-    </motion.header>
+      </motion.header>
+      {/* Ticker LED de profesiones en demanda */}
+      <ProfessionsTicker />
+    </>
   );
 });

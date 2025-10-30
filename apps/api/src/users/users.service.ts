@@ -437,4 +437,48 @@ export class UsersService {
       ? [featuredProfessional, ...professionals]
       : professionals;
   }
+
+  async getPublicStats() {
+    const [
+      totalProfessionals,
+      activeProfessionals,
+      totalClients,
+      totalServices,
+    ] = await Promise.all([
+      this.prisma.user.count({
+        where: {
+          user_type: 'professional',
+          deleted_at: null,
+        },
+      }),
+      this.prisma.user.count({
+        where: {
+          user_type: 'professional',
+          deleted_at: null,
+          professional_profile: {
+            isNot: null,
+          },
+        },
+      }),
+      this.prisma.user.count({
+        where: {
+          user_type: 'client',
+          deleted_at: null,
+        },
+      }),
+      this.prisma.service.count({
+        where: {
+          active: true,
+        },
+      }),
+    ]);
+
+    return {
+      totalProfessionals,
+      activeProfessionals,
+      totalClients,
+      totalServices,
+      totalUsers: totalProfessionals + totalClients,
+    };
+  }
 }

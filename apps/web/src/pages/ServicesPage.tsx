@@ -30,15 +30,18 @@ import { SkipNavigation } from "../components/SkipNavigation";
 
 const categories = [
   "Todos",
-  "Desarrollo Web",
-  "Diseño Gráfico", 
-  "Desarrollo Móvil",
-  "Marketing Digital",
-  "Video y Animación",
-  "Ciberseguridad",
-  "Redacción",
-  "Traducción",
-  "Consultoría"
+  "Albañilería",
+  "Peluquería",
+  "Jardinería",
+  "Electricidad",
+  "Plomería",
+  "Carpintería",
+  "Mecánica",
+  "Limpieza",
+  "Gasista",
+  "Pintura",
+  "Niñera",
+  "Mudanzas"
 ];
 
 const sortOptions = [
@@ -122,7 +125,7 @@ function SearchAndFilters({
               <div className="space-y-6 mt-6">
                 {/* Price Range */}
                 <div className="space-y-3">
-                  <label className="font-medium">Rango de Precio</label>
+                  <label className="font-medium text-foreground">Rango de Precio</label>
                   <div className="space-y-3">
                     <Slider
                       value={priceRange}
@@ -132,42 +135,42 @@ function SearchAndFilters({
                       step={50}
                       className="w-full"
                     />
-                    <div className="flex justify-between text-sm text-muted-foreground">
+                    <div className="flex justify-between text-sm text-foreground/70">
                       <span>${priceRange[0]}</span>
                       <span>${priceRange[1]}</span>
                     </div>
                   </div>
                 </div>
-                
-                <Separator />
-                
+
+                <Separator className="bg-white/10" />
+
                 {/* Professional Level */}
                 <div className="space-y-3">
-                  <label className="font-medium">Nivel del Profesional</label>
+                  <label className="font-medium text-foreground">Nivel del Profesional</label>
                   <div className="space-y-2">
                     {["Rising Talent", "Pro", "Expert", "Top Rated", "Top Rated Plus"].map((level) => (
                       <div key={level} className="flex items-center space-x-2">
                         <Checkbox id={level} />
-                        <label htmlFor={level} className="text-sm">{level}</label>
+                        <label htmlFor={level} className="text-sm text-foreground cursor-pointer">{level}</label>
                       </div>
                     ))}
                   </div>
                 </div>
-                
-                <Separator />
-                
+
+                <Separator className="bg-white/10" />
+
                 {/* Delivery Time */}
                 <div className="space-y-3">
-                  <label className="font-medium">Tiempo de Entrega</label>
+                  <label className="font-medium text-foreground">Tiempo de Entrega</label>
                   <Select>
-                    <SelectTrigger className="glass border-white/20">
+                    <SelectTrigger className="glass border-white/20 text-foreground">
                       <SelectValue placeholder="Seleccionar tiempo" />
                     </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="1-7">1-7 días</SelectItem>
-                      <SelectItem value="8-14">1-2 semanas</SelectItem>
-                      <SelectItem value="15-30">2-4 semanas</SelectItem>
-                      <SelectItem value="30+">Más de 1 mes</SelectItem>
+                    <SelectContent className="glass border-white/10">
+                      <SelectItem value="1-7" className="text-foreground">1-7 días</SelectItem>
+                      <SelectItem value="8-14" className="text-foreground">1-2 semanas</SelectItem>
+                      <SelectItem value="15-30" className="text-foreground">2-4 semanas</SelectItem>
+                      <SelectItem value="30+" className="text-foreground">Más de 1 mes</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

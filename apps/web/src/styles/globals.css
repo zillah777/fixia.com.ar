@@ -127,15 +127,29 @@
     box-sizing: border-box;
   }
 
+  html, body {
+    background-color: #0a0a0b;
+    overscroll-behavior: none;
+    overscroll-behavior-y: none;
+  }
+
   body {
     background-color: var(--background);
     color: var(--foreground);
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', system-ui, sans-serif;
     background: var(--background);
-    background-image: 
+    background-image:
       radial-gradient(circle at 20% 50%, rgba(102, 126, 234, 0.1) 0%, transparent 50%),
       radial-gradient(circle at 80% 20%, rgba(118, 75, 162, 0.1) 0%, transparent 50%),
       radial-gradient(circle at 40% 80%, rgba(240, 147, 251, 0.1) 0%, transparent 50%);
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+  }
+
+  #root {
+    background-color: #0a0a0b;
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
   }
 }
 

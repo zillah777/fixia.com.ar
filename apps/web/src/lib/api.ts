@@ -317,4 +317,17 @@ export const api = {
   },
 };
 
+// Public Stats API
+export interface PublicStats {
+  totalProfessionals: number;
+  activeProfessionals: number;
+  totalClients: number;
+  totalServices: number;
+  totalUsers: number;
+}
+
+export const getPublicStats = async (): Promise<PublicStats> => {
+  return api.get<PublicStats>('/stats/public');
+};
+
 export default api;

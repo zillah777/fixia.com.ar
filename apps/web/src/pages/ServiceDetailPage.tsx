@@ -1083,17 +1083,30 @@ export default function ServiceDetailPage() {
                   <Separator />
 
                   {/* Contact button */}
-                  <Button
-                    className="w-full liquid-gradient hover:opacity-90 h-12 text-base font-semibold"
-                    size="lg"
-                    onClick={handleContactWhatsApp}
-                  >
-                    <MessageCircle className="mr-2 h-5 w-5" />
-                    Contactar via WhatsApp
-                  </Button>
+                  {user ? (
+                    <Button
+                      className="w-full liquid-gradient hover:opacity-90 h-12 text-base font-semibold"
+                      size="lg"
+                      onClick={handleContactWhatsApp}
+                    >
+                      <MessageCircle className="mr-2 h-5 w-5" />
+                      Contactar via WhatsApp
+                    </Button>
+                  ) : (
+                    <Link to="/login?redirect=/services/${id}">
+                      <Button
+                        className="w-full glass border-primary/30 hover:glass-medium h-12 text-base font-semibold"
+                        size="lg"
+                        variant="outline"
+                      >
+                        <MessageCircle className="mr-2 h-5 w-5" />
+                        Inicia sesión para contactar
+                      </Button>
+                    </Link>
+                  )}
 
                   <div className="text-xs text-center text-muted-foreground">
-                    Comunícate directamente con el profesional
+                    {user ? 'Comunícate directamente con el profesional' : 'Debes iniciar sesión para contactar al profesional'}
                   </div>
                 </CardContent>
               </Card>

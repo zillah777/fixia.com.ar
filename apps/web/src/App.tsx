@@ -66,16 +66,14 @@ function LoadingScreen() {
         className="flex flex-col items-center space-y-4"
       >
         <div className="relative">
-          <div className="h-16 w-16 liquid-gradient rounded-2xl flex items-center justify-center shadow-2xl">
-            <motion.span
-              className="text-white font-bold text-2xl"
-              animate={{ rotate: 360 }}
-              transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-            >
-              F
-            </motion.span>
-          </div>
-          <div className="absolute -inset-2 liquid-gradient rounded-2xl blur opacity-30 animate-pulse-slow"></div>
+          <motion.img
+            src="/logo.png"
+            alt="Fixia"
+            className="h-16 w-16 object-contain drop-shadow-2xl"
+            animate={{ scale: [1, 1.1, 1] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          />
+          <div className="absolute -inset-2 bg-gradient-to-r from-primary/30 to-blue-500/30 rounded-2xl blur opacity-30 animate-pulse-slow"></div>
         </div>
         <div className="text-center">
           <div className="text-xl font-semibold text-foreground">Fixia</div>
@@ -96,15 +94,13 @@ function PageLoadingSpinner() {
         className="flex flex-col items-center space-y-3"
       >
         <div className="relative">
-          <div className="h-12 w-12 liquid-gradient rounded-xl flex items-center justify-center">
-            <motion.span
-              className="text-white font-bold text-lg"
-              animate={{ rotate: 360 }}
-              transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
-            >
-              F
-            </motion.span>
-          </div>
+          <motion.img
+            src="/logo.png"
+            alt="Fixia"
+            className="h-12 w-12 object-contain drop-shadow-lg"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+          />
         </div>
         <div className="text-sm text-muted-foreground">Cargando...</div>
       </motion.div>
