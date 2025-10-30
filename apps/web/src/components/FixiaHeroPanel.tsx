@@ -29,19 +29,26 @@ const chartConfig = {
 export function FixiaHeroPanel() {
   return (
     <div className="space-y-8">
-      {/* Welcome Section */}
-      <motion.div 
+      {/* Welcome Section - Modern High-Contrast Design */}
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="flex flex-col space-y-3"
+        className="relative overflow-hidden rounded-2xl p-6 border-2 border-primary shadow-2xl shadow-primary/20"
       >
-        <div className="flex items-center justify-between">
+        {/* Animated Gradient Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-blue-500/20 to-purple-500/20 backdrop-blur-xl" />
+
+        {/* Subtle animated shine effect */}
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-100%] animate-shimmer" />
+
+        {/* Content */}
+        <div className="relative z-10 flex items-center justify-between">
           <div>
-            <h1 className="bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent">
+            <h1 className="text-4xl font-extrabold mb-2 text-white tracking-tight drop-shadow-lg">
               ¡Hola Juan! 👋
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-lg text-white/90 font-medium">
               Tu tiempo vale. Fixia lo cuida. Aquí está tu resumen de actividad.
             </p>
           </div>

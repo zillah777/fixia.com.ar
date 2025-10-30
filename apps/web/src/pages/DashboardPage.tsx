@@ -1106,19 +1106,30 @@ export default function DashboardPage() {
       <FixiaNavigation />
 
       <main className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 max-w-full overflow-x-hidden">
-        {/* Welcome Header */}
+        {/* Welcome Header - Modern High-Contrast Design */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           className="mb-10"
         >
-          <h1 className="text-4xl sm:text-5xl font-extrabold mb-3 text-white tracking-tight">
-            ¡Hola {user?.name}! 👋
-          </h1>
-          <p className="text-lg sm:text-xl text-muted-foreground/80 leading-relaxed">
-            Gestiona todo desde tu panel de control
-          </p>
+          <div className="relative overflow-hidden rounded-2xl p-8 border-2 border-primary shadow-2xl shadow-primary/20">
+            {/* Animated Gradient Background */}
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-blue-500/20 to-purple-500/20 backdrop-blur-xl" />
+
+            {/* Subtle animated shine effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-100%] animate-shimmer" />
+
+            {/* Content */}
+            <div className="relative z-10">
+              <h1 className="text-4xl sm:text-5xl font-extrabold mb-3 text-white tracking-tight drop-shadow-lg">
+                ¡Hola {user?.name}! 👋
+              </h1>
+              <p className="text-lg sm:text-xl text-white/90 leading-relaxed font-medium">
+                Gestiona todo desde tu panel de control
+              </p>
+            </div>
+          </div>
         </motion.div>
 
         {/* Onboarding Messages */}
