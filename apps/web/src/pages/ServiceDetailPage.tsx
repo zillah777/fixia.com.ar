@@ -429,7 +429,7 @@ export default function ServiceDetailPage() {
               <Card className="frosted border-white/10 overflow-hidden shimmer">
                 <div className="relative aspect-video bg-muted">
                   <img
-                    src={service.main_image || images[0] || "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&h=600&fit=crop"}
+                    src={service.main_image || service.images?.[0] || images[0] || "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&h=600&fit=crop"}
                     alt={service.title}
                     className="w-full h-full object-cover cursor-pointer hover:opacity-95 transition-opacity"
                     onClick={() => images.length > 0 && openLightbox(0)}

@@ -99,6 +99,10 @@ export const userService = {
       responseType: 'blob',
     });
   },
+
+  async getPublicProfile(userId: string): Promise<User> {
+    return api.get<User>(`/users/${userId}`);
+  },
 };
 
 export default userService;

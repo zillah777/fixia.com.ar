@@ -447,21 +447,17 @@ function FeaturedServicesSection() {
                 >
                   <Link to={`/profile/${professional.id}`}>
                     <Card className="glass-glow hover:border-primary/40 transition-all duration-300 border-2 border-white/10 overflow-hidden group cursor-pointer relative">
-                      {/* Background Image con Overlay */}
-                      <div className="relative h-48 overflow-hidden">
-                        <img
-                          src={serviceImage}
-                          alt={professional.name}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).src = "/placeholder-service.jpg";
-                          }}
-                        />
-                        {/* Gradient Overlay para contraste */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+                      <CardContent className="pt-8 pb-6 px-6 text-center">
+                        {/* Avatar prominente en el centro superior */}
+                        <div className="mb-6">
+                          <Avatar className="h-24 w-24 ring-4 ring-primary/30 shadow-2xl border-4 border-background mx-auto group-hover:scale-110 transition-transform duration-300">
+                            <AvatarImage src={professional.avatar} />
+                            <AvatarFallback className="text-2xl font-bold">{professional.name.charAt(0)}</AvatarFallback>
+                          </Avatar>
+                        </div>
 
                         {/* Badges superiores */}
-                        <div className="absolute top-3 left-3 right-3 flex items-start justify-between">
+                        <div className="flex items-center justify-center gap-2 mb-4">
                           <Badge className="bg-primary text-white border-0 shadow-lg font-semibold">
                             {category}
                           </Badge>
@@ -470,17 +466,6 @@ function FeaturedServicesSection() {
                             Verificado
                           </Badge>
                         </div>
-
-                        {/* Avatar prominente en centro-inferior */}
-                        <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2">
-                          <Avatar className="h-24 w-24 ring-4 ring-white shadow-2xl border-4 border-background">
-                            <AvatarImage src={professional.avatar} />
-                            <AvatarFallback className="text-2xl font-bold">{professional.name.charAt(0)}</AvatarFallback>
-                          </Avatar>
-                        </div>
-                      </div>
-
-                      <CardContent className="pt-16 pb-6 px-6 text-center">
                         {/* Nombre y ubicación */}
                         <div className="mb-4">
                           <div className="flex items-center justify-center space-x-2 mb-2">

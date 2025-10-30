@@ -83,6 +83,8 @@ export interface ServiceFilters {
   sortOrder?: 'asc' | 'desc';
   page?: number;
   limit?: number;
+  professionalId?: string;
+  active?: boolean;
 }
 
 export const servicesService = {

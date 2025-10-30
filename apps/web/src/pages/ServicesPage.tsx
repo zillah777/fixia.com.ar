@@ -404,7 +404,7 @@ function ServiceCard({ service, viewMode }: { service: Service, viewMode: string
             {/* Image */}
             <div className="relative w-48 h-36 flex-shrink-0">
               <img
-                src={service.mainImage || service.main_image || service.gallery?.[0] || "/placeholder-service.jpg"}
+                src={service.main_image || service.images?.[0] || service.gallery?.[0] || "/placeholder-service.jpg"}
                 alt={service.title}
                 className="w-full h-full object-cover"
               />
@@ -538,7 +538,7 @@ function ServiceCard({ service, viewMode }: { service: Service, viewMode: string
             {/* Image Container */}
             <div className="relative aspect-[4/3] overflow-hidden bg-muted">
               <img
-                src={service.mainImage || service.main_image || service.gallery?.[0] || "/placeholder-service.jpg"}
+                src={service.main_image || service.images?.[0] || service.gallery?.[0] || "/placeholder-service.jpg"}
                 alt={service.title}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
