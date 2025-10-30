@@ -3,6 +3,7 @@ import {
   Get,
   Put,
   Delete,
+  Post,
   Body,
   Param,
   Query,
@@ -14,6 +15,7 @@ import {
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import { UpgradeToProfessionalDto } from './dto/upgrade-to-professional.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { Public } from '../auth/decorators/public.decorator';
@@ -90,5 +92,23 @@ export class UsersController {
   @ApiResponse({ status: 200, description: 'Cuenta eliminada exitosamente' })
   async deleteAccount(@CurrentUser() user: any) {
     return this.usersService.deleteUser(user.sub, user.sub);
+  }
+
+  @Post('users/upgrade-to-professional')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Actualizar cuenta de cliente a profesional DUAL',
+    description: 'Permite a un cliente convertirse en profesional manteniendo sus datos de cliente. Crea una cuenta DUAL que puede actuar como cliente y profesional.'
+  })
+  @ApiResponse({ status: 200, description: 'Cuenta actualizada exitosamente a profesional DUAL' })
+  @ApiResponse({ status: 400, description: 'Datos de entrada inválidos o campos requeridos faltantes' })
+  @ApiResponse({ status: 404, description: 'Usuario no encontrado' })
+  @ApiResponse({ status: 409, description: 'El usuario ya tiene una cuenta profesional' })
+  async upgradeToProfessional(
+    @CurrentUser() user: any,
+    @Body() upgradeDto: UpgradeToProfessionalDto,
+  ) {
+    return this.usersService.upgradeToProfessional(user.sub, upgradeDto);
   }
 }

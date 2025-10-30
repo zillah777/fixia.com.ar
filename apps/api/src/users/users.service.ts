@@ -1,6 +1,7 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException, BadRequestException, ConflictException } from '@nestjs/common';
 import { PrismaService } from '../common/prisma.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import { UpgradeToProfessionalDto } from './dto/upgrade-to-professional.dto';
 import { DashboardStats } from '@fixia/types';
 
 @Injectable()
@@ -479,6 +480,84 @@ export class UsersService {
       totalClients,
       totalServices,
       totalUsers: totalProfessionals + totalClients,
+    };
+  }
+
+  async upgradeToProfessional(userId: string, upgradeDto: UpgradeToProfessionalDto) {
+    // Get current user
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId, deleted_at: null },
+      include: { professional_profile: true },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Usuario no encontrado');
+    }
+
+    // Check if user already has professional features
+    if (user.user_type === 'professional' || user.user_type === 'dual') {
+      throw new ConflictException('El usuario ya tiene una cuenta profesional');
+    }
+
+    if (user.professional_profile) {
+      throw new ConflictException('El usuario ya tiene un perfil profesional');
+    }
+
+    // Validate required fields
+    if (!upgradeDto.bio || upgradeDto.bio.trim().length === 0) {
+      throw new BadRequestException('La biografía es requerida');
+    }
+
+    if (!upgradeDto.specialties || upgradeDto.specialties.length === 0) {
+      throw new BadRequestException('Debe especificar al menos una especialidad');
+    }
+
+    // Upgrade user to dual type and create professional profile
+    const upgradedUser = await this.prisma.$transaction(async (tx) => {
+      // Update user type to 'dual' - maintains client data, adds professional capabilities
+      const updatedUser = await tx.user.update({
+        where: { id: userId },
+        data: {
+          user_type: 'dual',
+          is_professional_active: true,
+          professional_since: new Date(),
+        },
+      });
+
+      // Create professional profile
+      const professionalProfile = await tx.professionalProfile.create({
+        data: {
+          user_id: userId,
+          bio: upgradeDto.bio,
+          specialties: upgradeDto.specialties,
+          years_experience: upgradeDto.years_experience || 0,
+          level: 'Nuevo',
+          rating: 0.0,
+          review_count: 0,
+          total_earnings: 0.0,
+          availability_status: 'available',
+          response_time_hours: 24,
+        },
+      });
+
+      return {
+        user: updatedUser,
+        professional_profile: professionalProfile,
+      };
+    });
+
+    return {
+      message: '¡Felicitaciones! Tu cuenta ha sido actualizada a Profesional DUAL',
+      description: 'Ahora puedes publicar servicios y recibir propuestas, manteniendo tu capacidad de contratar servicios como cliente.',
+      user: {
+        id: upgradedUser.user.id,
+        email: upgradedUser.user.email,
+        name: upgradedUser.user.name,
+        user_type: upgradedUser.user.user_type,
+        is_professional_active: upgradedUser.user.is_professional_active,
+        professional_since: upgradedUser.user.professional_since,
+      },
+      professional_profile: upgradedUser.professional_profile,
     };
   }
 }

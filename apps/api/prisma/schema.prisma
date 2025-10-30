@@ -700,6 +700,7 @@ model RoleTrustScore {
 enum UserType {
   client
   professional
+  dual
 }
 
 enum ProfessionalLevel {

@@ -192,10 +192,11 @@ export class SubscriptionService {
     expiryDate.setMonth(expiryDate.getMonth() + 1); // 1 month subscription
 
     // Update user with subscription details
+    // Use 'dual' type to maintain client capabilities while adding professional features
     await this.prisma.user.update({
       where: { id: userId },
       data: {
-        user_type: 'professional', // Change userType to professional
+        user_type: 'dual', // DUAL account: can act as both client and professional
         is_professional_active: true,
         professional_since: user.professional_since || startDate,
         subscription_type: subscriptionType,
