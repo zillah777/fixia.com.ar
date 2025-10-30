@@ -328,4 +328,51 @@ export class OpportunitiesService {
 
     return durationMap[duration] || 30;
   }
+
+  async getCategoriesWithActiveAnnouncements(): Promise<any[]> {
+    // Get all active/open projects with their categories
+    const projects = await this.prisma.project.findMany({
+      where: {
+        status: 'open',
+        category_id: {
+          not: null,
+        },
+      },
+      include: {
+        category: {
+          select: {
+            name: true,
+            slug: true,
+          },
+        },
+      },
+    });
+
+    // Group by category and count
+    const categoryMap = new Map<string, { category: string; slug: string; count: number }>();
+
+    projects.forEach((project) => {
+      if (!project.category_id || !project.category) {
+        return;
+      }
+
+      const existing = categoryMap.get(project.category_id);
+      if (existing) {
+        existing.count += 1;
+      } else {
+        categoryMap.set(project.category_id, {
+          category: project.category.name,
+          slug: project.category.slug,
+          count: 1,
+        });
+      }
+    });
+
+    // Convert to array and sort by count (descending)
+    const result = Array.from(categoryMap.values())
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 15); // Top 15 categories
+
+    return result;
+  }
 }

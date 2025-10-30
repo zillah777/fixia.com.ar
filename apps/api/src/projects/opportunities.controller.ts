@@ -13,17 +13,29 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { Public } from '../auth/decorators/public.decorator';
 
 @ApiTags('Oportunidades')
 @Controller('opportunities')
-@UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('professional')
-@ApiBearerAuth()
 export class OpportunitiesController {
   constructor(private readonly opportunitiesService: OpportunitiesService) {}
 
+  @Get('categories-stats')
+  @Public()
+  @ApiOperation({
+    summary: 'Obtener estadísticas de categorías con anuncios activos',
+    description: 'Retorna categorías con cantidad de anuncios/oportunidades activas. Público para mostrar en ticker LED.'
+  })
+  @ApiResponse({ status: 200, description: 'Estadísticas de categorías con anuncios activos' })
+  getCategoriesStats() {
+    return this.opportunitiesService.getCategoriesWithActiveAnnouncements();
+  }
+
   @Get()
-  @ApiOperation({ 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('professional')
+  @ApiBearerAuth()
+  @ApiOperation({
     summary: 'Listar oportunidades para profesionales',
     description: 'Obtiene proyectos abiertos ordenados por relevancia según el perfil del profesional'
   })
@@ -34,6 +46,9 @@ export class OpportunitiesController {
   }
 
   @Get('stats')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('professional')
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Obtener estadísticas de oportunidades del profesional' })
   @ApiResponse({ status: 200, description: 'Estadísticas de oportunidades y propuestas' })
   @ApiResponse({ status: 403, description: 'Solo profesionales pueden ver estadísticas' })
@@ -42,6 +57,9 @@ export class OpportunitiesController {
   }
 
   @Post(':opportunityId/apply')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('professional')
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Aplicar a una oportunidad' })
   @ApiParam({ name: 'opportunityId', description: 'ID de la oportunidad', type: 'string' })
   @ApiResponse({ status: 201, description: 'Propuesta enviada exitosamente' })
