@@ -720,6 +720,11 @@ export default function ServiceDetailPage() {
                         }
                       }[pkg];
 
+                      // Skip if packageData is undefined or features is not an array
+                      if (!packageData || !Array.isArray(packageData.features)) {
+                        return null;
+                      }
+
                       const isPopular = pkg === 'standard';
 
                       return (
