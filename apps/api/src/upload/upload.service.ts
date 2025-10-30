@@ -170,4 +170,35 @@ export class UploadService {
       );
     }
   }
+
+  /**
+   * Validate document file (for verification: DNI, passport, etc.)
+   */
+  validateDocumentFile(file: Express.Multer.File): void {
+    // Check if file exists
+    if (!file) {
+      throw new BadRequestException('No se proporcionó ningún documento');
+    }
+
+    // Validate MIME type - images and PDFs allowed for documents
+    const allowedMimeTypes = [
+      'image/jpeg',
+      'image/png',
+      'image/webp',
+      'application/pdf'
+    ];
+    if (!allowedMimeTypes.includes(file.mimetype)) {
+      throw new BadRequestException(
+        'Formato de documento no válido. Solo se permiten: JPG, PNG, WebP, PDF'
+      );
+    }
+
+    // Validate file size (max 10MB for documents)
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    if (file.size > maxSize) {
+      throw new BadRequestException(
+        `El documento es demasiado grande. Tamaño máximo: 10MB`
+      );
+    }
+  }
 }

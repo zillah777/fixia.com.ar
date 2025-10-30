@@ -85,6 +85,37 @@ export class UploadController {
     };
   }
 
+  @Post('verification-document')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Upload verification document (DNI, passport, etc.)' })
+  @ApiConsumes('multipart/form-data')
+  @ApiResponse({ status: 200, description: 'Document uploaded successfully' })
+  @ApiResponse({ status: 400, description: 'Invalid file or upload error' })
+  @Throttle({ default: { limit: 5, ttl: 60000 } }) // 5 document uploads per minute
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadVerificationDocument(@UploadedFile() file: Express.Multer.File) {
+    if (!file) {
+      throw new BadRequestException('No file uploaded');
+    }
+
+    // Validate file (images or PDFs for documents)
+    this.uploadService.validateDocumentFile(file);
+
+    // Upload to Cloudinary in verification folder (private/secure)
+    const result = await this.uploadService.uploadImage(file, 'verification');
+
+    return {
+      success: true,
+      message: 'Verification document uploaded successfully',
+      data: {
+        url: result.secure_url,
+        public_id: result.public_id,
+        format: result.format,
+        size: result.bytes,
+      },
+    };
+  }
+
   @Delete('image/:publicId')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Delete an image from Cloudinary' })
