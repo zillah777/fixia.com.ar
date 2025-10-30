@@ -43,7 +43,7 @@ const faqData: FAQItem[] = [
   {
     id: "2",
     question: "¿Cuánto cuesta usar Fixia?",
-    answer: "Para clientes es completamente gratis. Los profesionales pagan $4500 ARS/mes para acceder a todas las funciones profesionales. Los primeros 200 profesionales obtienen 2 meses gratis.",
+    answer: "Para clientes es completamente gratis. Los profesionales pagan $3,900 ARS/mes para acceder a todas las funciones profesionales. Los primeros 200 profesionales obtienen 2 meses gratis.",
     category: "pricing",
     popular: true
   },
