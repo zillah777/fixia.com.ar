@@ -1469,12 +1469,12 @@ export default function NewProjectPage() {
       };
 
       // Only add optional fields if they have values
-      if (projectData.images[0]) {
-        serviceData.main_image = projectData.images[0];
+      if (data.images && data.images[0]) {
+        serviceData.main_image = data.images[0];
       }
-      if (projectData.gallery && projectData.gallery.length > 0) {
+      if (data.gallery && data.gallery.length > 0) {
         // Filter out any invalid URLs (only include strings that start with http/https)
-        const validGalleryUrls = projectData.gallery.filter(url =>
+        const validGalleryUrls = data.gallery.filter(url =>
           typeof url === 'string' && (url.startsWith('http://') || url.startsWith('https://'))
         );
         if (validGalleryUrls.length > 0) {
