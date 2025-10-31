@@ -355,7 +355,7 @@
   }
   
   .liquid-gradient {
-    background: var(--primary);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   }
   
   .animate-float {
@@ -507,6 +507,19 @@
   
   .z-tooltip {
     z-index: 10000;
+  }
+
+  /* Dropdown menu fixes */
+  [data-slot="dropdown-menu-content"] {
+    z-index: 10001 !important;
+    background: hsl(var(--popover)) !important;
+    color: hsl(var(--popover-foreground)) !important;
+  }
+
+  /* Sheet/Mobile menu fixes */
+  [data-radix-dialog-content] {
+    background: hsl(var(--background)) !important;
+    color: hsl(var(--foreground)) !important;
   }
 
   /* Mobile-specific utilities */
