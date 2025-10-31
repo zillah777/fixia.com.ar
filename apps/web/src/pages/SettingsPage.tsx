@@ -126,7 +126,7 @@ function ProfileTab() {
         <CardContent className="space-y-3 sm:space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div className="space-y-2">
-              <Label htmlFor="fullName">Nombre Completo</Label>
+              <Label htmlFor="fullName" className="font-medium">Nombre Completo</Label>
               <Input
                 id="fullName"
                 value={formData.fullName}
@@ -140,7 +140,7 @@ function ProfileTab() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">Correo Electrónico</Label>
+              <Label htmlFor="email" className="font-medium">Correo Electrónico</Label>
               <Input
                 id="email"
                 type="email"
@@ -151,10 +151,10 @@ function ProfileTab() {
               />
             </div>
           </div>
-          
-          <div className="grid md:grid-cols-2 gap-4">
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div className="space-y-2">
-              <Label htmlFor="phone">Teléfono</Label>
+              <Label htmlFor="phone" className="font-medium">Teléfono</Label>
               <Input
                 id="phone"
                 value={formData.phone}
@@ -164,7 +164,7 @@ function ProfileTab() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="location">Ubicación</Label>
+              <Label htmlFor="location" className="font-medium">Ubicación</Label>
               <Select 
                 value={formData.location} 
                 onValueChange={(value) => setFormData({ ...formData, location: value })}
@@ -186,14 +186,14 @@ function ProfileTab() {
 
           {user?.userType === 'professional' && (
             <div className="space-y-2">
-              <Label htmlFor="description">Descripción Profesional</Label>
+              <Label htmlFor="description" className="font-medium">Descripción Profesional</Label>
               <textarea
                 id="description"
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 disabled={!isEditing}
                 rows={4}
-                className="w-full px-3 py-2 bg-input border border-border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
+                className="w-full px-3 py-2 glass border-white/20 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
                 placeholder="Describe tu experiencia profesional y servicios que ofreces..."
               />
             </div>
@@ -212,24 +212,24 @@ function ProfileTab() {
           <div className="flex items-center space-x-3">
             {user?.isVerified ? (
               <>
-                <div className="h-12 w-12 bg-green-500/20 rounded-full flex items-center justify-center">
-                  <Check className="h-6 w-6 text-green-500" />
+                <div className="h-12 w-12 bg-success/20 rounded-full flex items-center justify-center">
+                  <Check className="h-6 w-6 text-success" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-green-500">Perfil Verificado</h3>
+                  <h3 className="font-semibold text-success">Perfil Verificado</h3>
                   <p className="text-sm text-muted-foreground">Tu perfil ha sido verificado exitosamente</p>
                 </div>
-                <Badge className="ml-auto bg-green-500/20 text-green-500">
+                <Badge className="ml-auto bg-success/20 text-success">
                   Verificado
                 </Badge>
               </>
             ) : (
               <>
-                <div className="h-12 w-12 bg-yellow-500/20 rounded-full flex items-center justify-center">
-                  <AlertCircle className="h-6 w-6 text-yellow-500" />
+                <div className="h-12 w-12 bg-warning/20 rounded-full flex items-center justify-center">
+                  <AlertCircle className="h-6 w-6 text-warning" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-yellow-500">Verificación Pendiente</h3>
+                  <h3 className="font-semibold text-warning">Verificación Pendiente</h3>
                   <p className="text-sm text-muted-foreground">Completa tu verificación para obtener más beneficios</p>
                 </div>
                 <Link to="/verification">
@@ -335,64 +335,64 @@ function SecurityTab() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="currentPassword">Contraseña Actual</Label>
-            <div className="relative">
+            <Label htmlFor="currentPassword" className="font-medium">Contraseña Actual</Label>
+            <div className="relative flex items-center">
               <Input
                 id="currentPassword"
                 type={showCurrentPassword ? "text" : "password"}
                 value={formData.currentPassword}
                 onChange={(e) => setFormData({ ...formData, currentPassword: e.target.value })}
-                className="glass border-white/20 pr-10"
+                className="glass border-white/20 pr-12"
               />
               <Button
                 type="button"
                 variant="ghost"
-                size="icon"
-                className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                size="sm"
+                className="absolute right-2 hover:bg-transparent"
                 onClick={() => setShowCurrentPassword(!showCurrentPassword)}
               >
                 {showCurrentPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </Button>
             </div>
           </div>
-          
+
           <div className="space-y-2">
-            <Label htmlFor="newPassword">Nueva Contraseña</Label>
-            <div className="relative">
+            <Label htmlFor="newPassword" className="font-medium">Nueva Contraseña</Label>
+            <div className="relative flex items-center">
               <Input
                 id="newPassword"
                 type={showNewPassword ? "text" : "password"}
                 value={formData.newPassword}
                 onChange={(e) => setFormData({ ...formData, newPassword: e.target.value })}
-                className="glass border-white/20 pr-10"
+                className="glass border-white/20 pr-12"
               />
               <Button
                 type="button"
                 variant="ghost"
-                size="icon"
-                className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                size="sm"
+                className="absolute right-2 hover:bg-transparent"
                 onClick={() => setShowNewPassword(!showNewPassword)}
               >
                 {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </Button>
             </div>
           </div>
-          
+
           <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Confirmar Nueva Contraseña</Label>
-            <div className="relative">
+            <Label htmlFor="confirmPassword" className="font-medium">Confirmar Nueva Contraseña</Label>
+            <div className="relative flex items-center">
               <Input
                 id="confirmPassword"
                 type={showConfirmPassword ? "text" : "password"}
                 value={formData.confirmPassword}
                 onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                className="glass border-white/20 pr-10"
+                className="glass border-white/20 pr-12"
               />
               <Button
                 type="button"
                 variant="ghost"
-                size="icon"
-                className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                size="sm"
+                className="absolute right-2 hover:bg-transparent"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               >
                 {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -400,10 +400,11 @@ function SecurityTab() {
             </div>
           </div>
           
-          <Button 
+          <Button
             onClick={handleChangePassword}
             disabled={isChanging || !formData.currentPassword || !formData.newPassword || !formData.confirmPassword}
-            className="liquid-gradient"
+            className="liquid-gradient w-full sm:w-auto text-sm sm:text-base"
+            size="lg"
           >
             {isChanging ? (
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
@@ -480,15 +481,15 @@ function SecurityTab() {
           </DialogHeader>
 
           <div className="space-y-4 py-4">
-            <Alert className="border-red-500/50 bg-red-950/20">
-              <AlertCircle className="h-4 w-4 text-red-500" />
-              <AlertDescription className="text-red-400">
+            <Alert className="border-red-500/50 bg-red-950/40">
+              <AlertCircle className="h-4 w-4 text-red-400" />
+              <AlertDescription className="text-red-300 font-medium">
                 Escribe tu contraseña para confirmar que deseas eliminar tu cuenta.
               </AlertDescription>
             </Alert>
 
             <div className="space-y-2">
-              <Label htmlFor="deletePassword">Contraseña</Label>
+              <Label htmlFor="deletePassword" className="font-medium">Contraseña</Label>
               <Input
                 id="deletePassword"
                 type="password"
@@ -501,7 +502,7 @@ function SecurityTab() {
             </div>
           </div>
 
-          <DialogFooter>
+          <DialogFooter className="gap-3">
             <Button
               variant="outline"
               onClick={() => {
@@ -509,7 +510,7 @@ function SecurityTab() {
                 setDeletePassword('');
               }}
               disabled={isDeletingAccount}
-              className="glass border-white/20"
+              className="glass border-white/20 text-sm sm:text-base"
             >
               Cancelar
             </Button>
@@ -517,14 +518,14 @@ function SecurityTab() {
               variant="destructive"
               onClick={handleDeleteAccount}
               disabled={isDeletingAccount || !deletePassword.trim()}
-              className="bg-red-600 hover:bg-red-700 text-white"
+              className="bg-destructive hover:bg-destructive/90 text-white text-sm sm:text-base"
             >
               {isDeletingAccount ? (
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
               ) : (
                 <Trash2 className="h-4 w-4 mr-2" />
               )}
-              Eliminar Permanentemente
+              Eliminar
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -883,19 +884,19 @@ function SubscriptionTab() {
                 <h4 className="font-medium">Beneficios incluidos:</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                   <div className="flex items-center space-x-2">
-                    <Check className="h-4 w-4 text-green-500" />
+                    <Check className="h-4 w-4 text-success" />
                     <span className="text-sm">Perfil verificado</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Check className="h-4 w-4 text-green-500" />
+                    <Check className="h-4 w-4 text-success" />
                     <span className="text-sm">Sin comisiones por servicios</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Check className="h-4 w-4 text-green-500" />
+                    <Check className="h-4 w-4 text-success" />
                     <span className="text-sm">Estadísticas avanzadas</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Check className="h-4 w-4 text-green-500" />
+                    <Check className="h-4 w-4 text-success" />
                     <span className="text-sm">Soporte prioritario</span>
                   </div>
                 </div>
@@ -913,8 +914,8 @@ function SubscriptionTab() {
           ) : (
             <div className="space-y-4">
               <div className="flex items-center space-x-4">
-                <div className="h-16 w-16 bg-gray-500/20 rounded-2xl flex items-center justify-center">
-                  <User className="h-8 w-8 text-gray-500" />
+                <div className="h-16 w-16 bg-muted/40 rounded-2xl flex items-center justify-center">
+                  <User className="h-8 w-8 text-muted-foreground" />
                 </div>
                 <div className="flex-1">
                   <h3 className="font-semibold text-xl">Plan Gratuito</h3>
@@ -1043,26 +1044,26 @@ export default function SettingsPage() {
 
         <div className="max-w-4xl mx-auto">
           <Tabs defaultValue="profile" className="w-full">
-            <TabsList className="glass border-white/10 mb-6 sm:mb-8 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-1 sm:gap-2 w-full overflow-x-auto">
-              <TabsTrigger value="profile" className="text-xs sm:text-sm px-2 sm:px-3">
-                <User className="h-4 w-4 sm:mr-2" />
-                <span className="hidden sm:inline">Perfil</span>
+            <TabsList className="glass border-white/10 mb-6 sm:mb-8 flex flex-wrap items-center gap-2 w-full">
+              <TabsTrigger value="profile" className="text-xs sm:text-sm px-2 sm:px-3 py-2 flex items-center space-x-1">
+                <User className="h-4 w-4 flex-shrink-0" />
+                <span className="font-medium">Perfil</span>
               </TabsTrigger>
-              <TabsTrigger value="security" className="text-xs sm:text-sm px-2 sm:px-3">
-                <Lock className="h-4 w-4 sm:mr-2" />
-                <span className="hidden sm:inline">Seguridad</span>
+              <TabsTrigger value="security" className="text-xs sm:text-sm px-2 sm:px-3 py-2 flex items-center space-x-1">
+                <Lock className="h-4 w-4 flex-shrink-0" />
+                <span className="font-medium">Seguridad</span>
               </TabsTrigger>
-              <TabsTrigger value="notifications" className="text-xs sm:text-sm px-2 sm:px-3">
-                <Bell className="h-4 w-4 sm:mr-2" />
-                <span className="hidden md:inline">Notificaciones</span>
+              <TabsTrigger value="notifications" className="text-xs sm:text-sm px-2 sm:px-3 py-2 flex items-center space-x-1">
+                <Bell className="h-4 w-4 flex-shrink-0" />
+                <span className="font-medium">Notificaciones</span>
               </TabsTrigger>
-              <TabsTrigger value="subscription" className="text-xs sm:text-sm px-2 sm:px-3">
-                <CreditCard className="h-4 w-4 sm:mr-2" />
-                <span className="hidden lg:inline">Suscripción</span>
+              <TabsTrigger value="subscription" className="text-xs sm:text-sm px-2 sm:px-3 py-2 flex items-center space-x-1">
+                <CreditCard className="h-4 w-4 flex-shrink-0" />
+                <span className="font-medium">Suscripción</span>
               </TabsTrigger>
-              <TabsTrigger value="danger" className="text-xs sm:text-sm px-2 sm:px-3">
-                <AlertCircle className="h-4 w-4 sm:mr-2" />
-                <span className="hidden lg:inline">Cuenta</span>
+              <TabsTrigger value="danger" className="text-xs sm:text-sm px-2 sm:px-3 py-2 flex items-center space-x-1">
+                <AlertCircle className="h-4 w-4 flex-shrink-0" />
+                <span className="font-medium">Cuenta</span>
               </TabsTrigger>
             </TabsList>
             
