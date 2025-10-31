@@ -13,36 +13,35 @@ const Toaster = ({ ...props }: ToasterProps) => {
       toastOptions={{
         unstyled: true,
         classNames: {
-          // Base toast - Premium glass with EXCELLENT contrast
+          // Base toast - Compact and subtle
           toast: `
             group toast
-            bg-gradient-to-br from-white/95 via-white/90 to-white/95
-            dark:from-[rgba(30,30,35,0.95)] dark:via-[rgba(35,35,40,0.95)] dark:to-[rgba(30,30,35,0.95)]
-            backdrop-blur-[40px] backdrop-saturate-[200%]
-            border-2 border-black/10 dark:border-white/20
-            shadow-[0_20px_50px_rgba(0,0,0,0.15),0_0_0_1px_rgba(0,0,0,0.05)_inset]
-            dark:shadow-[0_20px_50px_rgba(0,0,0,0.6),0_0_0_1px_rgba(255,255,255,0.15)_inset]
-            rounded-xl sm:rounded-2xl
-            p-4 sm:p-5
-            min-h-[70px] sm:min-h-[80px]
-            max-w-[340px] sm:max-w-[400px]
+            bg-gradient-to-br from-white/90 via-white/85 to-white/90
+            dark:from-[rgba(30,30,35,0.92)] dark:via-[rgba(35,35,40,0.92)] dark:to-[rgba(30,30,35,0.92)]
+            backdrop-blur-[30px] backdrop-saturate-[180%]
+            border border-black/8 dark:border-white/15
+            shadow-[0_8px_16px_rgba(0,0,0,0.1),0_0_0_0.5px_rgba(0,0,0,0.05)_inset]
+            dark:shadow-[0_8px_16px_rgba(0,0,0,0.4),0_0_0_0.5px_rgba(255,255,255,0.1)_inset]
+            rounded-lg
+            px-3 py-2
+            min-h-[44px]
+            max-w-[320px] sm:max-w-[380px]
           `,
 
-          // Title - High contrast and bold
+          // Title - Compact text
           title: `
-            text-sm sm:text-base md:text-lg
-            font-extrabold
+            text-xs sm:text-sm
+            font-bold
             text-gray-900 dark:text-white
-            leading-tight
-            mb-1
+            leading-snug
           `,
 
-          // Description - Clear and readable
+          // Description - Smaller and more subtle
           description: `
-            text-xs sm:text-sm
-            text-gray-700 dark:text-gray-200
+            text-[11px] sm:text-xs
+            text-gray-700 dark:text-gray-300
             font-medium
-            leading-relaxed
+            leading-snug
           `,
 
           // Error variant - Strong red with excellent visibility
@@ -81,43 +80,43 @@ const Toaster = ({ ...props }: ToasterProps) => {
             dark:shadow-[0_20px_50px_rgba(59,130,246,0.4),0_0_30px_rgba(59,130,246,0.2)_inset]
           `,
 
-          // Action button - Strong contrast
+          // Action button - Compact
           actionButton: `
             bg-gray-900 dark:bg-white
             text-white dark:text-gray-900
             hover:bg-gray-800 dark:hover:bg-gray-100
-            border-2 border-gray-900 dark:border-white
-            font-bold
-            shadow-lg
-            transition-all duration-200
-            rounded-lg
-            px-4 py-2
-            text-sm
+            border border-gray-900 dark:border-white
+            font-semibold
+            shadow-md
+            transition-all duration-150
+            rounded-md
+            px-2.5 py-1.5
+            text-xs sm:text-xs
           `,
 
-          // Cancel button - Subtle but visible
+          // Cancel button - Subtle
           cancelButton: `
             bg-gray-100 dark:bg-gray-700
             text-gray-900 dark:text-white
             hover:bg-gray-200 dark:hover:bg-gray-600
-            border-2 border-gray-300 dark:border-gray-600
-            font-semibold
-            transition-all duration-200
-            rounded-lg
-            px-4 py-2
-            text-sm
+            border border-gray-300 dark:border-gray-600
+            font-medium
+            transition-all duration-150
+            rounded-md
+            px-2.5 py-1.5
+            text-xs sm:text-xs
           `,
 
-          // Close button - Clear and accessible
+          // Close button - Minimal
           closeButton: `
-            bg-gray-100 dark:bg-white/10
+            bg-transparent dark:bg-transparent
             hover:bg-gray-200 dark:hover:bg-white/20
-            border-2 border-gray-200 dark:border-white/30
+            border-none
             text-gray-900 dark:text-white
             font-bold
-            transition-all duration-200
-            rounded-lg
-            !w-7 !h-7 sm:!w-8 sm:!h-8
+            transition-all duration-150
+            rounded
+            !w-5 !h-5 sm:!w-6 sm:!h-6
             flex items-center justify-center
           `,
         },

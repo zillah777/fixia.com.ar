@@ -79,6 +79,8 @@ export default function MyAnnouncementsPage() {
   const [loading, setLoading] = useState(true);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [showProposals, setShowProposals] = useState(false);
+  const [deleteProjectId, setDeleteProjectId] = useState<string | null>(null);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   // Redirect if not authenticated (professionals with dual role can access as clients)
   useEffect(() => {
@@ -107,17 +109,28 @@ export default function MyAnnouncementsPage() {
     }
   };
 
-  const handleDelete = async (projectId: string) => {
-    if (!confirm('¿Estás seguro de que quieres eliminar este anuncio?')) return;
+  const handleDeleteClick = (projectId: string) => {
+    setDeleteProjectId(projectId);
+    setShowDeleteDialog(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteProjectId) return;
 
     try {
-      await opportunitiesService.deleteProject(projectId);
+      await opportunitiesService.deleteProject(deleteProjectId);
       toast.success('Anuncio eliminado correctamente');
+      setShowDeleteDialog(false);
+      setDeleteProjectId(null);
       loadProjects();
     } catch (error: any) {
       console.error('Error deleting project:', error);
       toast.error('Error al eliminar el anuncio');
     }
+  };
+
+  const handleEdit = (projectId: string) => {
+    navigate(`/new-opportunity?edit=${projectId}`);
   };
 
   const handleViewProposals = async (project: Project) => {
@@ -340,12 +353,17 @@ export default function MyAnnouncementsPage() {
 
                               {/* Skills */}
                               {project.skills_required && project.skills_required.length > 0 && (
-                                <div className="flex flex-wrap gap-2">
-                                  {project.skills_required.map((skill) => (
-                                    <Badge key={skill} variant="outline" className="glass border-white/20 text-xs">
+                                <div className="flex flex-wrap gap-1 sm:gap-2">
+                                  {project.skills_required.slice(0, 4).map((skill) => (
+                                    <Badge key={skill} variant="secondary" className="text-xs px-2 py-1 whitespace-nowrap">
                                       {skill}
                                     </Badge>
                                   ))}
+                                  {project.skills_required.length > 4 && (
+                                    <Badge variant="outline" className="text-xs px-2 py-1">
+                                      +{project.skills_required.length - 4} más
+                                    </Badge>
+                                  )}
                                 </div>
                               )}
 
@@ -397,14 +415,22 @@ export default function MyAnnouncementsPage() {
                                 </div>
 
                                 <div className="flex items-center space-x-2">
-                                  <Button variant="ghost" size="sm">
-                                    <Edit className="h-4 w-4" />
-                                  </Button>
                                   {project.status === 'open' && (
                                     <Button
                                       variant="ghost"
                                       size="sm"
-                                      onClick={() => handleDelete(project.id)}
+                                      onClick={() => handleEdit(project.id)}
+                                      title="Editar anuncio"
+                                    >
+                                      <Edit className="h-4 w-4" />
+                                    </Button>
+                                  )}
+                                  {project.status === 'open' && (
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => handleDeleteClick(project.id)}
+                                      title="Eliminar anuncio"
                                     >
                                       <Trash2 className="h-4 w-4 text-destructive" />
                                     </Button>
@@ -454,6 +480,32 @@ export default function MyAnnouncementsPage() {
         open={showProposals}
         onOpenChange={setShowProposals}
       />
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent className="glass border-white/10">
+          <DialogHeader>
+            <DialogTitle>Eliminar Anuncio</DialogTitle>
+            <DialogDescription>
+              Esta acción no se puede deshacer. El anuncio será eliminado permanentemente.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex items-center justify-end gap-3 pt-4">
+            <Button
+              variant="outline"
+              onClick={() => setShowDeleteDialog(false)}
+            >
+              Cancelar
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={confirmDelete}
+            >
+              Eliminar Anuncio
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -733,12 +733,12 @@ function Footer() {
                 <img
                   src="/logo.png"
                   alt="Fixia Logo"
-                  className="h-10 w-10 object-contain drop-shadow-lg"
+                  className="h-14 w-14 object-contain drop-shadow-lg"
                 />
                 <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-blue-500/20 rounded-xl blur opacity-30 animate-pulse-slow"></div>
               </motion.div>
-              <div className="flex flex-col">
-                <span className="text-xl font-semibold text-foreground">Fixia</span>
+              <div className="flex flex-col justify-center">
+                <span className="text-2xl font-semibold text-foreground">Fixia</span>
                 <span className="text-xs text-muted-foreground">Conecta. Confía. Resuelve.</span>
               </div>
             </Link>

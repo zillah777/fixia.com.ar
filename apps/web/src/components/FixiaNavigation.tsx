@@ -47,13 +47,13 @@ export const FixiaNavigation = memo(function FixiaNavigation() {
               <img
                 src="/logo.png"
                 alt="Fixia Logo"
-                className="h-8 w-8 sm:h-10 sm:w-10 object-contain drop-shadow-lg"
+                className="h-11 w-11 sm:h-14 sm:w-14 md:h-16 md:w-16 object-contain drop-shadow-lg"
               />
               <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-blue-500/20 rounded-lg sm:rounded-xl blur opacity-30 animate-pulse-slow"></div>
             </motion.div>
-            <div className="flex flex-col">
-              <span className="text-base sm:text-lg md:text-xl font-semibold tracking-tight text-foreground">Fixia</span>
-              <span className="text-[10px] sm:text-xs text-muted-foreground -mt-0.5 sm:-mt-1">Conecta. Confía. Resuelve.</span>
+            <div className="flex flex-col justify-center">
+              <span className="text-lg sm:text-xl md:text-2xl font-semibold tracking-tight text-foreground">Fixia</span>
+              <span className="text-xs sm:text-sm text-muted-foreground -mt-1 sm:-mt-1">Conecta. Confía. Resuelve.</span>
             </div>
           </Link>
           

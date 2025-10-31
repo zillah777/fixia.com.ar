@@ -161,13 +161,13 @@ export const MobileNavigation = memo<MobileNavigationProps>(({ className }) => {
                   <img
                     src="/logo.png"
                     alt="Fixia Logo"
-                    className="h-8 w-8 object-contain drop-shadow-lg relative z-10"
+                    className="h-11 w-11 object-contain drop-shadow-lg relative z-10"
                   />
                   <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-blue-500/20 rounded-xl blur opacity-30 animate-pulse-slow"></div>
                 </motion.div>
-                <div className="flex flex-col">
-                  <span className="text-base font-semibold tracking-tight text-foreground">Fixia</span>
-                  <span className="text-[10px] text-muted-foreground -mt-0.5">
+                <div className="flex flex-col justify-center">
+                  <span className="text-lg font-semibold tracking-tight text-foreground">Fixia</span>
+                  <span className="text-xs text-muted-foreground -mt-0.5">
                     Conecta. Confía. Resuelve.
                   </span>
                 </div>

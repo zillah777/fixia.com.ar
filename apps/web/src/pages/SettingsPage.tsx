@@ -73,35 +73,35 @@ function ProfileTab() {
   return (
     <div className="space-y-6">
       <Card className="glass border-white/10">
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div>
-            <CardTitle className="flex items-center space-x-2">
-              <User className="h-5 w-5" />
+        <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center sm:justify-between gap-4 sm:gap-0">
+          <div className="flex-1">
+            <CardTitle className="flex items-center space-x-2 text-base sm:text-lg">
+              <User className="h-5 w-5 flex-shrink-0" />
               <span>Información Personal</span>
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-xs sm:text-sm">
               Gestiona tu información de perfil
             </CardDescription>
           </div>
-          
-          <div className="flex space-x-2">
+
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
             {isEditing ? (
               <>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={handleCancel}
                   disabled={isSaving}
-                  className="glass border-white/20"
+                  className="glass border-white/20 w-full sm:w-auto text-xs sm:text-sm"
                 >
                   <X className="h-4 w-4 mr-1" />
                   Cancelar
                 </Button>
-                <Button 
-                  size="sm" 
-                  onClick={handleSave} 
+                <Button
+                  size="sm"
+                  onClick={handleSave}
                   disabled={isSaving}
-                  className="liquid-gradient"
+                  className="liquid-gradient w-full sm:w-auto text-xs sm:text-sm"
                 >
                   {isSaving ? (
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-1"></div>
@@ -112,19 +112,19 @@ function ProfileTab() {
                 </Button>
               </>
             ) : (
-              <Button 
-                variant="outline" 
-                size="sm" 
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => setIsEditing(true)}
-                className="glass border-white/20"
+                className="glass border-white/20 w-full sm:w-auto text-xs sm:text-sm"
               >
                 Editar
               </Button>
             )}
           </div>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid md:grid-cols-2 gap-4">
+        <CardContent className="space-y-3 sm:space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div className="space-y-2">
               <Label htmlFor="fullName">Nombre Completo</Label>
               <Input
@@ -1025,44 +1025,44 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-24 lg:pb-0">
       <FixiaNavigation />
-      
-      <div className="container mx-auto px-6 py-8">
+
+      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
+          className="mb-6 sm:mb-8"
         >
-          <h1 className="text-4xl font-bold mb-2 text-foreground">Configuración</h1>
-          <p className="text-xl text-muted-foreground">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 text-foreground">Configuración</h1>
+          <p className="text-base sm:text-lg md:text-xl text-muted-foreground">
             Gestiona tu cuenta y preferencias
           </p>
         </motion.div>
 
         <div className="max-w-4xl mx-auto">
           <Tabs defaultValue="profile" className="w-full">
-            <TabsList className="glass border-white/10 mb-8 grid grid-cols-2 lg:grid-cols-5">
-              <TabsTrigger value="profile">
-                <User className="h-4 w-4 mr-2" />
-                Perfil
+            <TabsList className="glass border-white/10 mb-6 sm:mb-8 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-1 sm:gap-2 w-full overflow-x-auto">
+              <TabsTrigger value="profile" className="text-xs sm:text-sm px-2 sm:px-3">
+                <User className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Perfil</span>
               </TabsTrigger>
-              <TabsTrigger value="security">
-                <Lock className="h-4 w-4 mr-2" />
-                Seguridad
+              <TabsTrigger value="security" className="text-xs sm:text-sm px-2 sm:px-3">
+                <Lock className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Seguridad</span>
               </TabsTrigger>
-              <TabsTrigger value="notifications">
-                <Bell className="h-4 w-4 mr-2" />
-                Notificaciones
+              <TabsTrigger value="notifications" className="text-xs sm:text-sm px-2 sm:px-3">
+                <Bell className="h-4 w-4 sm:mr-2" />
+                <span className="hidden md:inline">Notificaciones</span>
               </TabsTrigger>
-              <TabsTrigger value="subscription">
-                <CreditCard className="h-4 w-4 mr-2" />
-                Suscripción
+              <TabsTrigger value="subscription" className="text-xs sm:text-sm px-2 sm:px-3">
+                <CreditCard className="h-4 w-4 sm:mr-2" />
+                <span className="hidden lg:inline">Suscripción</span>
               </TabsTrigger>
-              <TabsTrigger value="danger">
-                <AlertCircle className="h-4 w-4 mr-2" />
-                Cuenta
+              <TabsTrigger value="danger" className="text-xs sm:text-sm px-2 sm:px-3">
+                <AlertCircle className="h-4 w-4 sm:mr-2" />
+                <span className="hidden lg:inline">Cuenta</span>
               </TabsTrigger>
             </TabsList>
             
