@@ -1155,47 +1155,90 @@ export default function DashboardPage() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="mb-8"
+            className="mb-6 sm:mb-8"
           >
             <Link to="/pricing">
               <Card className="glass border-white/10 bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-pink-600/20 hover:scale-[1.02] transition-all duration-300 cursor-pointer group">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-6">
-                      <div className="h-16 w-16 rounded-2xl liquid-gradient flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                        <Zap className="h-8 w-8 text-white" />
+                <CardContent className="p-4 sm:p-5 md:p-6">
+                  {/* Mobile Layout */}
+                  <div className="flex flex-col sm:hidden space-y-3">
+                    <div className="flex items-start gap-3">
+                      <div className="h-12 w-12 rounded-xl liquid-gradient flex items-center justify-center flex-shrink-0">
+                        <Zap className="h-6 w-6 text-white" />
                       </div>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <h3 className="text-2xl font-bold text-white">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                          <h3 className="text-base font-bold text-white truncate">
                             🚀 Conviértete en Profesional
                           </h3>
-                          <Badge className="liquid-gradient text-white border-0">
+                          <Badge className="liquid-gradient text-white border-0 text-[10px] px-1.5 py-0.5 flex-shrink-0">
                             NUEVO
                           </Badge>
                         </div>
-                        <p className="text-white/90 text-lg mb-2">
+                        <p className="text-white/90 text-xs mb-2 line-clamp-2">
                           Ofrece tus servicios y gana dinero en Fixia
                         </p>
-                        <div className="flex items-center gap-4 text-sm text-white/80">
-                          <div className="flex items-center gap-1">
-                            <CheckCircle className="h-4 w-4 text-green-400" />
-                            <span>Doble rol: Cliente + Profesional</span>
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-2 text-xs text-white/80">
+                      <div className="flex items-center gap-1.5">
+                        <CheckCircle className="h-3.5 w-3.5 text-green-400 flex-shrink-0" />
+                        <span className="truncate">Doble rol Cliente + Profesional</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <CheckCircle className="h-3.5 w-3.5 text-green-400 flex-shrink-0" />
+                        <span className="truncate">Trust Scores separados</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <CheckCircle className="h-3.5 w-3.5 text-green-400 flex-shrink-0" />
+                        <span className="truncate">Desde $2,999/mes</span>
+                      </div>
+                    </div>
+                    <Button className="liquid-gradient hover:opacity-90 transition-all w-full text-sm h-9">
+                      Ver Planes
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </div>
+
+                  {/* Desktop Layout */}
+                  <div className="hidden sm:flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-4 md:gap-6 flex-1 min-w-0">
+                      <div className="h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 rounded-xl sm:rounded-2xl liquid-gradient flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                        <Zap className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 text-white" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2 flex-wrap">
+                          <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-white truncate">
+                            🚀 Conviértete en Profesional
+                          </h3>
+                          <Badge className="liquid-gradient text-white border-0 text-xs flex-shrink-0">
+                            NUEVO
+                          </Badge>
+                        </div>
+                        <p className="text-white/90 text-sm sm:text-base md:text-lg mb-1 sm:mb-2 line-clamp-1">
+                          Ofrece tus servicios y gana dinero en Fixia
+                        </p>
+                        <div className="flex items-center gap-2 sm:gap-3 md:gap-4 text-xs sm:text-sm text-white/80 flex-wrap">
+                          <div className="flex items-center gap-1 whitespace-nowrap">
+                            <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-green-400 flex-shrink-0" />
+                            <span className="hidden md:inline">Doble rol: Cliente + Profesional</span>
+                            <span className="md:hidden">Doble rol</span>
                           </div>
-                          <div className="flex items-center gap-1">
-                            <CheckCircle className="h-4 w-4 text-green-400" />
-                            <span>Trust Scores separados</span>
+                          <div className="flex items-center gap-1 whitespace-nowrap">
+                            <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-green-400 flex-shrink-0" />
+                            <span className="hidden md:inline">Trust Scores separados</span>
+                            <span className="md:hidden">2 Trust Scores</span>
                           </div>
-                          <div className="flex items-center gap-1">
-                            <CheckCircle className="h-4 w-4 text-green-400" />
+                          <div className="flex items-center gap-1 whitespace-nowrap">
+                            <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-green-400 flex-shrink-0" />
                             <span>Desde $2,999/mes</span>
                           </div>
                         </div>
                       </div>
                     </div>
-                    <Button className="liquid-gradient hover:opacity-90 transition-all group-hover:scale-105 px-8">
+                    <Button className="liquid-gradient hover:opacity-90 transition-all group-hover:scale-105 px-4 sm:px-6 md:px-8 text-sm sm:text-base flex-shrink-0 whitespace-nowrap">
                       Ver Planes
-                      <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                      <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform" />
                     </Button>
                   </div>
                 </CardContent>
