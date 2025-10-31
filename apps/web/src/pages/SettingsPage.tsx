@@ -4,13 +4,14 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import {
   User, Lock, Bell, CreditCard, Shield,
-  Eye, EyeOff, Check, X, AlertCircle, Crown,
+  Check, X, AlertCircle, Crown,
   Mail, Phone, MapPin, Save, Trash2, LogOut,
   Settings, Smartphone, Globe, Calendar
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
+import { PasswordToggleButton } from "../components/inputs/PasswordToggleButton";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
@@ -344,15 +345,11 @@ function SecurityTab() {
                 onChange={(e) => setFormData({ ...formData, currentPassword: e.target.value })}
                 className="glass border-white/20 pr-12"
               />
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                className="absolute right-2 hover:bg-transparent"
-                onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-              >
-                {showCurrentPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              </Button>
+              <PasswordToggleButton
+                showPassword={showCurrentPassword}
+                onToggle={() => setShowCurrentPassword(!showCurrentPassword)}
+                ariaLabel={showCurrentPassword ? "Ocultar contraseña actual" : "Mostrar contraseña actual"}
+              />
             </div>
           </div>
 
@@ -366,15 +363,11 @@ function SecurityTab() {
                 onChange={(e) => setFormData({ ...formData, newPassword: e.target.value })}
                 className="glass border-white/20 pr-12"
               />
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                className="absolute right-2 hover:bg-transparent"
-                onClick={() => setShowNewPassword(!showNewPassword)}
-              >
-                {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              </Button>
+              <PasswordToggleButton
+                showPassword={showNewPassword}
+                onToggle={() => setShowNewPassword(!showNewPassword)}
+                ariaLabel={showNewPassword ? "Ocultar nueva contraseña" : "Mostrar nueva contraseña"}
+              />
             </div>
           </div>
 
@@ -388,15 +381,11 @@ function SecurityTab() {
                 onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                 className="glass border-white/20 pr-12"
               />
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                className="absolute right-2 hover:bg-transparent"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              >
-                {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              </Button>
+              <PasswordToggleButton
+                showPassword={showConfirmPassword}
+                onToggle={() => setShowConfirmPassword(!showConfirmPassword)}
+                ariaLabel={showConfirmPassword ? "Ocultar confirmación de contraseña" : "Mostrar confirmación de contraseña"}
+              />
             </div>
           </div>
           

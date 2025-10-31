@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Eye, EyeOff, Mail, Lock, ArrowLeft, AlertCircle, RefreshCw, CheckCircle2 } from "lucide-react";
+import { Mail, Lock, ArrowLeft, AlertCircle, RefreshCw, CheckCircle2 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { SecureInput } from "../components/SecureInput";
 import { PasswordInput } from "../components/forms/PasswordInput";
+import { PasswordToggleButton } from "../components/inputs/PasswordToggleButton";
 import { Label } from "../components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Checkbox } from "../components/ui/checkbox";
@@ -188,19 +189,10 @@ export default function LoginPage() {
                       className="pl-10 pr-10 glass border-white/20 focus:border-primary/50 focus:ring-primary/30 h-11 text-base"
                       required
                     />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors p-1"
-                      aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
-                      tabIndex={-1}
-                    >
-                      {showPassword ? (
-                        <EyeOff className="h-4 w-4" />
-                      ) : (
-                        <Eye className="h-4 w-4" />
-                      )}
-                    </button>
+                    <PasswordToggleButton
+                      showPassword={showPassword}
+                      onToggle={() => setShowPassword(!showPassword)}
+                    />
                   </div>
                 </div>
 

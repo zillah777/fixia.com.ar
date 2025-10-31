@@ -420,9 +420,9 @@ export default function MyAnnouncementsPage() {
                                       variant="ghost"
                                       size="sm"
                                       onClick={() => handleEdit(project.id)}
-                                      title="Editar anuncio"
+                                      aria-label="Editar anuncio"
                                     >
-                                      <Edit className="h-4 w-4" />
+                                      <Edit className="h-4 w-4" aria-hidden="true" />
                                     </Button>
                                   )}
                                   {project.status === 'open' && (
@@ -430,9 +430,9 @@ export default function MyAnnouncementsPage() {
                                       variant="ghost"
                                       size="sm"
                                       onClick={() => handleDeleteClick(project.id)}
-                                      title="Eliminar anuncio"
+                                      aria-label="Eliminar anuncio"
                                     >
-                                      <Trash2 className="h-4 w-4 text-destructive" />
+                                      <Trash2 className="h-4 w-4 text-destructive" aria-hidden="true" />
                                     </Button>
                                   )}
                                 </div>

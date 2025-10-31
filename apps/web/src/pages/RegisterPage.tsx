@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, Eye, EyeOff, CheckCircle, AlertCircle, Crown, UserPlus, FileText, CreditCard, X, Hash, Plus } from "lucide-react";
+import { ArrowLeft, CheckCircle, AlertCircle, Crown, UserPlus, FileText, CreditCard, X, Hash, Plus } from "lucide-react";
+import { PasswordToggleButton } from "../components/inputs/PasswordToggleButton";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { SecureInput } from "../components/SecureInput";
@@ -162,14 +163,10 @@ function ClientRegistrationForm({
                   placeholder="••••••••"
                   required
                 />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon" className="absolute right-2 top-1/2 -translate-y-1/2 h-9 w-9"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </Button>
+                <PasswordToggleButton
+                  showPassword={showPassword}
+                  onToggle={() => setShowPassword(!showPassword)}
+                />
               </div>
             </div>
             <div className="space-y-2">
@@ -183,14 +180,11 @@ function ClientRegistrationForm({
                   placeholder="••••••••"
                   required
                 />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon" className="absolute right-2 top-1/2 -translate-y-1/2 h-9 w-9"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                >
-                  {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </Button>
+                <PasswordToggleButton
+                  showPassword={showConfirmPassword}
+                  onToggle={() => setShowConfirmPassword(!showConfirmPassword)}
+                  ariaLabel={showConfirmPassword ? "Ocultar confirmación de contraseña" : "Mostrar confirmación de contraseña"}
+                />
               </div>
             </div>
           </div>
@@ -642,14 +636,10 @@ function ProfessionalRegistrationForm({
                     placeholder="••••••••"
                     required
                   />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon" className="absolute right-2 top-1/2 -translate-y-1/2 h-9 w-9"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </Button>
+                  <PasswordToggleButton
+                    showPassword={showPassword}
+                    onToggle={() => setShowPassword(!showPassword)}
+                  />
                 </div>
               </div>
               <div className="space-y-2">
@@ -663,14 +653,11 @@ function ProfessionalRegistrationForm({
                     placeholder="••••••••"
                     required
                   />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon" className="absolute right-2 top-1/2 -translate-y-1/2 h-9 w-9"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  >
-                    {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </Button>
+                  <PasswordToggleButton
+                    showPassword={showConfirmPassword}
+                    onToggle={() => setShowConfirmPassword(!showConfirmPassword)}
+                    ariaLabel={showConfirmPassword ? "Ocultar confirmación de contraseña" : "Mostrar confirmación de contraseña"}
+                  />
                 </div>
               </div>
             </div>
