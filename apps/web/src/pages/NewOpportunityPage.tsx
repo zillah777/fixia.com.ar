@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { 
-  ArrowLeft, Send, DollarSign, Calendar, MapPin, Target, 
+import {
+  ArrowLeft, Send, DollarSign, Calendar, MapPin, Target,
   Clock, Heart, Tag, AlertCircle, CheckCircle2, Users
 } from "lucide-react";
+import { FixiaNavigation } from "../components/FixiaNavigation";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
@@ -27,44 +28,6 @@ interface OpportunityFormData {
   deadline: string;
   location: string;
   skills_required: string[];
-}
-
-function Navigation() {
-  const navigate = useNavigate();
-
-  return (
-    <motion.header 
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      className="sticky top-0 z-50 w-full glass border-b border-white/10"
-    >
-      <div className="container mx-auto flex h-16 items-center justify-between px-6">
-        <button 
-          onClick={() => navigate(-1)}
-          className="flex items-center space-x-2 text-muted-foreground hover:text-primary transition-colors"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Volver
-        </button>
-        
-        <Link to="/dashboard" className="flex items-center space-x-3">
-          <motion.div 
-            className="relative"
-            whileHover={{ scale: 1.05 }}
-            transition={{ type: "spring", stiffness: 400, damping: 10 }}
-          >
-            <div className="h-10 w-10 liquid-gradient rounded-xl flex items-center justify-center shadow-lg">
-              <span className="text-white font-bold text-lg">F</span>
-            </div>
-            <div className="absolute -inset-1 liquid-gradient rounded-xl blur opacity-20 animate-pulse-slow"></div>
-          </motion.div>
-          <span className="text-xl font-semibold tracking-tight text-white">Fixia</span>
-        </Link>
-        
-        <div className="w-20" /> {/* Spacer for balance */}
-      </div>
-    </motion.header>
-  );
 }
 
 export default function NewOpportunityPage() {
@@ -253,8 +216,8 @@ export default function NewOpportunityPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation />
-      
+      <FixiaNavigation />
+
       <main className="container mx-auto px-6 py-8 max-w-4xl">
         {/* Header */}
         <motion.div

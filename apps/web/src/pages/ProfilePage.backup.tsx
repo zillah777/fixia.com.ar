@@ -1,14 +1,15 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { 
-  User, Mail, Phone, MapPin, Calendar, Settings, Shield, 
-  Edit3, Save, X, Plus, Heart, Heart, Briefcase, Eye, Heart, 
-  MessageSquare, DollarSign, TrendingUp, Clock, CheckCircle, 
+import {
+  User, Mail, Phone, MapPin, Calendar, Settings, Shield,
+  Edit3, Save, X, Plus, Heart, Heart, Briefcase, Eye, Heart,
+  MessageSquare, DollarSign, TrendingUp, Clock, CheckCircle,
   Upload, FileText, Globe, Linkedin, Twitter, Instagram, Github,
   Bell, Lock, CreditCard, LogOut, Trash2, ExternalLink,
   BarChart3, Users, Target, Zap, AlertTriangle, Camera
 } from "lucide-react";
+import { FixiaNavigation } from "../components/FixiaNavigation";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Textarea } from "../components/ui/textarea";
@@ -94,55 +95,6 @@ const userReviews = [
     date: "Hace 1 mes"
   }
 ];
-
-function Navigation() {
-  const { logout } = useSecureAuth();
-
-  return (
-    <motion.header 
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      className="sticky top-0 z-50 w-full glass border-b border-white/10"
-    >
-      <div className="container mx-auto flex h-16 items-center justify-between px-6">
-        <Link to="/dashboard" className="flex items-center space-x-3">
-          <motion.div 
-            className="relative"
-            whileHover={{ scale: 1.05 }}
-            transition={{ type: "spring", stiffness: 400, damping: 10 }}
-          >
-            <div className="h-10 w-10 liquid-gradient rounded-xl flex items-center justify-center shadow-lg">
-              <span className="text-white font-bold text-lg">F</span>
-            </div>
-            <div className="absolute -inset-1 liquid-gradient rounded-xl blur opacity-20 animate-pulse-slow"></div>
-          </motion.div>
-          <span className="text-xl font-semibold tracking-tight text-white">Fixia</span>
-        </Link>
-        
-        <nav className="hidden md:flex items-center space-x-6">
-          <Link to="/dashboard" className="text-muted-foreground hover:text-primary transition-colors">
-            Dashboard
-          </Link>
-          <Link to="/services" className="text-muted-foreground hover:text-primary transition-colors">
-            Explorar
-          </Link>
-          <Link to="/profile" className="text-primary font-medium">
-            Mi Perfil
-          </Link>
-        </nav>
-        
-        <Button 
-          variant="ghost"
-          onClick={logout}
-          className="text-muted-foreground hover:text-destructive"
-        >
-          <LogOut className="h-4 w-4 mr-2" />
-          Salir
-        </Button>
-      </div>
-    </motion.header>
-  );
-}
 
 function ProfileHeader({ user, isEditing, setIsEditing }: any) {
   const [profileData, setProfileData] = useState({
@@ -942,8 +894,8 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation />
-      
+      <FixiaNavigation />
+
       <main className="container mx-auto px-6 py-8">
         <div className="space-y-8">
           {/* Profile Header */}

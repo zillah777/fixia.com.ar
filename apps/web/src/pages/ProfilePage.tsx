@@ -1,15 +1,16 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { 
-  User, Mail, Phone, MapPin, Calendar, Settings, Shield, 
-  Edit3, Save, X, Plus, Heart, Heart, Briefcase, Eye, Heart, 
-  MessageSquare, DollarSign, TrendingUp, Clock, CheckCircle, 
+import {
+  User, Mail, Phone, MapPin, Calendar, Settings, Shield,
+  Edit3, Save, X, Plus, Heart, Heart, Briefcase, Eye, Heart,
+  MessageSquare, DollarSign, TrendingUp, Clock, CheckCircle,
   Upload, FileText, Globe, Linkedin, Twitter, Instagram, Github,
   Bell, Lock, CreditCard, LogOut, Trash2, ExternalLink,
   BarChart3, Users, Target, Zap, AlertTriangle, Camera,
   Download, ArrowLeft
 } from "lucide-react";
+import { FixiaNavigation } from "../components/FixiaNavigation";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Textarea } from "../components/ui/textarea";
@@ -31,97 +32,6 @@ import { uploadService } from "../lib/services/upload.service";
 import { toast } from "sonner";
 import { api } from "../lib/api";
 import { UpgradeToProfessionalCard } from "../components/UpgradeToProfessionalCard";
-
-// Navigation component
-function Navigation() {
-  const { user, logout } = useSecureAuth();
-  const navigate = useNavigate();
-
-  return (
-    <motion.header 
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      className="sticky top-0 z-50 w-full glass border-b border-white/10"
-    >
-      <div className="container mx-auto flex h-16 items-center justify-between px-6">
-        <div className="flex items-center space-x-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          
-          <Link to="/dashboard" className="flex items-center space-x-3">
-            <motion.div 
-              className="relative"
-              whileHover={{ scale: 1.05 }}
-              transition={{ type: "spring", stiffness: 400, damping: 10 }}
-            >
-              <div className="h-10 w-10 liquid-gradient rounded-xl flex items-center justify-center shadow-lg">
-                <span className="text-white font-bold text-lg">F</span>
-              </div>
-              <div className="absolute -inset-1 liquid-gradient rounded-xl blur opacity-20 animate-pulse-slow"></div>
-            </motion.div>
-            <span className="text-xl font-semibold tracking-tight text-white">Fixia</span>
-          </Link>
-        </div>
-        
-        <nav className="hidden md:flex items-center space-x-6">
-          <Link to="/dashboard" className="text-muted-foreground hover:text-primary transition-colors">
-            Dashboard
-          </Link>
-          <Link to="/services" className="text-muted-foreground hover:text-primary transition-colors">
-            Explorar
-          </Link>
-          <Link to="/profile" className="text-primary font-medium">
-            Mi Perfil
-          </Link>
-        </nav>
-        
-        {/* Avatar con Dropdown */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-              <Avatar key={user?.avatar} className="h-8 w-8 cursor-pointer ring-2 ring-primary/20 hover:ring-primary/40 transition-all">
-                <AvatarImage
-                  src={user?.avatar ? `${user.avatar}?t=${new Date().getTime()}` : undefined}
-                />
-                <AvatarFallback>{user?.name?.charAt(0) || 'U'}</AvatarFallback>
-              </Avatar>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56" align="end">
-            <DropdownMenuLabel className="font-normal">
-              <div className="flex flex-col space-y-2">
-                <p className="text-sm font-medium">{user?.name || 'Usuario'}</p>
-                <p className="text-xs text-muted-foreground">{user?.email}</p>
-                <p className="text-xs text-muted-foreground capitalize">
-                  {user?.userType === 'professional' ? 'Profesional' : 'Cliente'}
-                </p>
-              </div>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link to="/profile" className="flex items-center">
-                <User className="mr-2 h-4 w-4" />
-                Mi Perfil
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link to="/settings" className="flex items-center">
-                <Settings className="mr-2 h-4 w-4" />
-                Configuración
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={logout} className="text-destructive focus:text-destructive">
-              <LogOut className="mr-2 h-4 w-4" />
-              Cerrar Sesión
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-    </motion.header>
-  );
-}
 
 // Profile Header component
 function ProfileHeader({ user, onUserUpdate }: any) {
@@ -914,8 +824,8 @@ export default function ProfilePageFixed() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation />
-      
+      <FixiaNavigation />
+
       <main className="container mx-auto px-6 py-8">
         <div className="space-y-8">
           {/* Profile Header */}

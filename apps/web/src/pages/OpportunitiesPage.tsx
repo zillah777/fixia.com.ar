@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { FixiaNavigation } from "../components/FixiaNavigation";
 import { 
   Search, Filter, MapPin, Clock, DollarSign, Users, Heart, Zap,
   ChevronDown, SlidersHorizontal, Grid3X3, List, Eye, ArrowRight,
@@ -201,55 +202,6 @@ const sortOptions = [
   { label: "Deadline próximo", value: "deadline" },
   { label: "Clientes mejor valorados", value: "client_rating" }
 ];
-
-function Navigation() {
-  const { user, logout } = useSecureAuth();
-
-  return (
-    <motion.header 
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      className="sticky top-0 z-50 w-full glass border-b border-white/10"
-    >
-      <div className="container mx-auto flex h-16 items-center justify-between px-6">
-        <Link to="/dashboard" className="flex items-center space-x-3">
-          <div className="h-8 w-8 liquid-gradient rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold">F</span>
-          </div>
-          <span className="font-semibold">Fixia</span>
-        </Link>
-        
-        <nav className="hidden md:flex items-center space-x-6">
-          <Link to="/dashboard" className="text-muted-foreground hover:text-primary transition-colors">
-            Dashboard
-          </Link>
-          <Link to="/opportunities" className="text-primary font-medium">
-            Oportunidades
-          </Link>
-          <Link to="/services" className="text-muted-foreground hover:text-primary transition-colors">
-            Explorar
-          </Link>
-          <Link to="/profile" className="text-muted-foreground hover:text-primary transition-colors">
-            Mi Perfil
-          </Link>
-        </nav>
-        
-        <div className="flex items-center space-x-3">
-          <Button variant="ghost" className="relative">
-            <Bookmark className="h-4 w-4" />
-            <span className="absolute -top-1 -right-1 h-5 w-5 bg-primary rounded-full flex items-center justify-center text-xs text-white">
-              3
-            </span>
-          </Button>
-          <Button variant="outline" className="glass border-white/20">
-            <Settings className="h-4 w-4 mr-2" />
-            Alertas
-          </Button>
-        </div>
-      </div>
-    </motion.header>
-  );
-}
 
 function SearchAndFilters({ 
   searchQuery, 
@@ -948,8 +900,8 @@ export default function OpportunitiesPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation />
-      
+      <FixiaNavigation />
+
       <main className="container mx-auto px-6 py-8">
         {/* Hero Section */}
         <motion.div

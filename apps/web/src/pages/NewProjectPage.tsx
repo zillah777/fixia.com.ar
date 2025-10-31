@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { FixiaNavigation } from "../components/FixiaNavigation";
 import {
   ArrowLeft, ArrowRight, Check, Upload, X, Plus,
   Image, FileText, DollarSign, Tag, Settings,
@@ -95,46 +96,6 @@ interface ProjectData {
   // Settings
   isActive: boolean;
   instantDelivery: boolean;
-}
-
-function Navigation() {
-  const navigate = useNavigate();
-
-  return (
-    <motion.header 
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      className="sticky top-0 z-50 w-full glass border-b border-white/10"
-    >
-      <div className="container mx-auto flex h-16 items-center justify-between px-6">
-        <button 
-          onClick={() => navigate(-1)}
-          className="flex items-center space-x-2 text-muted-foreground hover:text-primary transition-colors"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Volver
-        </button>
-        
-        <Link to="/dashboard" className="flex items-center space-x-3">
-          <motion.div
-            className="relative"
-            whileHover={{ scale: 1.05 }}
-            transition={{ type: "spring", stiffness: 400, damping: 10 }}
-          >
-            <img
-              src="/logo.png"
-              alt="Fixia Logo"
-              className="h-10 w-10 object-contain drop-shadow-lg"
-            />
-            <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-blue-500/20 rounded-xl blur opacity-30 animate-pulse-slow"></div>
-          </motion.div>
-          <span className="text-xl font-semibold tracking-tight text-white">Fixia</span>
-        </Link>
-
-        <div className="w-32"></div>
-      </div>
-    </motion.header>
-  );
 }
 
 function StepProgress({ currentStep, totalSteps }: { currentStep: number; totalSteps: number }) {
@@ -1590,8 +1551,8 @@ export default function NewProjectPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation />
-      
+      <FixiaNavigation />
+
       <main className="container mx-auto px-6 py-8 max-w-6xl">
         {/* Header */}
         <motion.div

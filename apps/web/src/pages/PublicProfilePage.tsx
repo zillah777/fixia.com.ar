@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { FixiaNavigation } from "../components/FixiaNavigation";
 import {
   Heart, MapPin, Calendar, MessageSquare,
   Share2, CheckCircle, ArrowLeft, Flag,
@@ -20,40 +21,6 @@ import { User } from "../context/SecureAuthContext";
 
 interface ProfileHeaderProps {
   profile: User;
-}
-
-function Navigation() {
-  return (
-    <motion.header
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      className="sticky top-0 z-50 w-full glass border-b border-white/10"
-    >
-      <div className="container mx-auto flex h-16 items-center justify-between px-6">
-        <Link to="/services" className="flex items-center space-x-2 text-muted-foreground hover:text-primary transition-colors">
-          <ArrowLeft className="h-4 w-4" />
-          Volver a servicios
-        </Link>
-
-        <Link to="/" className="flex items-center space-x-3">
-          <div className="h-8 w-8 liquid-gradient rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold">F</span>
-          </div>
-          <span className="font-semibold">Fixia</span>
-        </Link>
-
-        <div className="flex items-center space-x-2">
-          <Button variant="ghost" size="sm">
-            <Share2 className="h-4 w-4 mr-2" />
-            Compartir
-          </Button>
-          <Button variant="ghost" size="sm">
-            <Flag className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
-    </motion.header>
-  );
 }
 
 function ProfileHeader({ profile }: ProfileHeaderProps) {
@@ -431,7 +398,7 @@ function StatsSection({ profile }: { profile: User }) {
 function LoadingSkeleton() {
   return (
     <div className="min-h-screen bg-background">
-      <Navigation />
+      <FixiaNavigation />
 
       <main className="container mx-auto px-6 py-8">
         <div className="space-y-8">
@@ -456,7 +423,7 @@ function ErrorState({ message }: { message: string }) {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation />
+      <FixiaNavigation />
 
       <main className="container mx-auto px-6 py-8">
         <div className="space-y-8">
@@ -560,7 +527,7 @@ export default function PublicProfilePage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation />
+      <FixiaNavigation />
 
       <main className="container mx-auto px-6 py-8">
         <div className="space-y-8">

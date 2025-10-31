@@ -184,52 +184,52 @@ function RecentActivity({
 
   return (
     <Card className="glass border-white/10">
-      <CardHeader>
-        <CardTitle>Actividad Reciente</CardTitle>
+      <CardHeader className="p-4 sm:p-6">
+        <CardTitle className="text-base sm:text-lg md:text-xl">Actividad Reciente</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-4 sm:p-6">
         {loading ? (
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {Array.from({ length: 3 }).map((_, index) => (
-              <div key={index} className="flex items-start space-x-4 p-3">
-                <Skeleton className="h-10 w-10 rounded-full" />
-                <div className="flex-1 space-y-2">
-                  <Skeleton className="h-4 w-3/4" />
-                  <Skeleton className="h-3 w-1/2" />
-                  <Skeleton className="h-3 w-1/4" />
+              <div key={index} className="flex items-start space-x-2 sm:space-x-4 p-2 sm:p-3">
+                <Skeleton className="h-8 w-8 sm:h-10 sm:w-10 rounded-full flex-shrink-0" />
+                <div className="flex-1 space-y-2 min-w-0">
+                  <Skeleton className="h-3 sm:h-4 w-3/4" />
+                  <Skeleton className="h-2.5 sm:h-3 w-1/2" />
+                  <Skeleton className="h-2.5 sm:h-3 w-1/4" />
                 </div>
               </div>
             ))}
           </div>
         ) : activities.length === 0 ? (
-          <div className="text-center py-8">
-            <div className="h-12 w-12 liquid-gradient rounded-xl flex items-center justify-center mx-auto mb-3 opacity-50">
-              <Clock className="h-6 w-6 text-white" />
+          <div className="text-center py-6 sm:py-8 px-4">
+            <div className="h-10 w-10 sm:h-12 sm:w-12 liquid-gradient rounded-lg sm:rounded-xl flex items-center justify-center mx-auto mb-2 sm:mb-3 opacity-50">
+              <Clock className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
             </div>
-            <h3 className="font-medium mb-2">Sin actividad reciente</h3>
-            <p className="text-sm text-muted-foreground">
+            <h3 className="font-medium mb-1 sm:mb-2 text-sm sm:text-base">Sin actividad reciente</h3>
+            <p className="text-xs sm:text-sm text-muted-foreground max-w-sm mx-auto">
               Tu actividad aparecerá aquí cuando comiences a usar la plataforma.
             </p>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {activities.slice(0, 3).map((activity) => {
               const Icon = getActivityIcon(activity.type);
               const color = getActivityColor(activity.type);
               const timeFormatted = dashboardService.formatActivityTime(activity.created_at);
 
               return (
-                <div key={activity.id} className="flex items-start space-x-4 p-3 glass-medium rounded-lg hover:glass-strong transition-all cursor-pointer">
-                  <div className={`h-10 w-10 rounded-full bg-muted flex items-center justify-center ${color}`}>
-                    <Icon className="h-5 w-5" />
+                <div key={activity.id} className="flex items-start space-x-2 sm:space-x-3 md:space-x-4 p-2 sm:p-3 glass-medium rounded-lg hover:glass-strong transition-all cursor-pointer">
+                  <div className={`h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-muted flex items-center justify-center flex-shrink-0 ${color}`}>
+                    <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
                   </div>
-                  <div className="flex-1">
-                    <h4 className="font-medium">{activity.title}</h4>
-                    <p className="text-sm text-muted-foreground">{activity.description}</p>
-                    <span className="text-xs text-muted-foreground">{timeFormatted}</span>
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-medium text-xs sm:text-sm md:text-base truncate">{activity.title}</h4>
+                    <p className="text-[10px] sm:text-xs md:text-sm text-muted-foreground line-clamp-2">{activity.description}</p>
+                    <span className="text-[9px] sm:text-[10px] md:text-xs text-muted-foreground">{timeFormatted}</span>
                   </div>
                   {activity.status === 'new' && (
-                    <Badge className="bg-success/20 text-success border-success/30">Nuevo</Badge>
+                    <Badge className="bg-success/20 text-success border-success/30 flex-shrink-0 text-[9px] sm:text-[10px] md:text-xs whitespace-nowrap">Nuevo</Badge>
                   )}
                 </div>
               );
@@ -237,8 +237,8 @@ function RecentActivity({
           </div>
         )}
         {activities.length > 0 && (
-          <div className="mt-4">
-            <Button variant="outline" className="w-full glass border-white/20 hover:glass-medium">
+          <div className="mt-3 sm:mt-4">
+            <Button variant="outline" className="w-full glass border-white/20 hover:glass-medium text-xs sm:text-sm">
               Ver Todo el Historial
             </Button>
           </div>
