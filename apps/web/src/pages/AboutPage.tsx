@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
 import {
   ArrowLeft, Target, Zap, Shield, Clock, Users,
   CheckCircle, Search, Bell, Heart, TrendingUp,
@@ -11,9 +12,23 @@ import { Button } from "../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { FixiaNavigation } from "../components/FixiaNavigation";
+import { api } from "../lib/api";
 
 
-function HeroSection() {
+interface Stats {
+  totalProfessionals: number;
+  activeProfessionals: number;
+  totalClients: number;
+  totalServices: number;
+  totalUsers?: number;
+  isLoading: boolean;
+}
+
+interface HeroSectionProps {
+  stats: Stats;
+}
+
+function HeroSection({ stats }: HeroSectionProps) {
   return (
     <section className="py-20 lg:py-28">
       <div className="container mx-auto px-6">
@@ -43,7 +58,7 @@ function HeroSection() {
               Conectamos profesionales con clientes de manera inteligente y moderna
             </span>
           </p>
-          
+
           <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-8 md:gap-10 text-sm sm:text-base">
             <div className="flex items-center gap-3 group">
               <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -55,7 +70,9 @@ function HeroSection() {
               <div className="h-10 w-10 rounded-full bg-success/20 flex items-center justify-center group-hover:scale-110 transition-transform">
                 <Users className="h-5 w-5 text-success" />
               </div>
-              <span className="font-medium text-white/90">+500 profesionales</span>
+              <span className="font-medium text-white/90">
+                {stats.isLoading ? "Cargando..." : `+${stats.totalProfessionals} profesionales`}
+              </span>
             </div>
             <div className="flex items-center gap-3 group">
               <div className="h-10 w-10 rounded-full bg-warning/20 flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -652,10 +669,39 @@ function CTASection() {
 }
 
 export default function AboutPage() {
+  const [stats, setStats] = useState<Stats>({
+    totalProfessionals: 0,
+    activeProfessionals: 0,
+    totalClients: 0,
+    totalServices: 0,
+    isLoading: true
+  });
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await api.get('/stats/public');
+        setStats({
+          ...response.data,
+          isLoading: false
+        });
+      } catch (error) {
+        console.error('Error fetching stats:', error);
+        // Set fallback values if API fails
+        setStats(prev => ({
+          ...prev,
+          isLoading: false
+        }));
+      }
+    };
+
+    fetchStats();
+  }, []);
+
   return (
     <div className="min-h-screen bg-background">
       <FixiaNavigation />
-      <HeroSection />
+      <HeroSection stats={stats} />
       <MissionSection />
       <WhatIsFixiaSection />
       <ApproachSection />
