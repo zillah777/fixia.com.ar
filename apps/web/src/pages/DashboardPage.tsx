@@ -829,7 +829,7 @@ function MyServices({
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="glass border-white/20">
-                          <Link to={`/services/${service.id}/edit`} onClick={(e) => e.stopPropagation()}>
+                          <Link to={`/new-project?edit=${service.id}`} onClick={(e) => e.stopPropagation()}>
                             <DropdownMenuItem className="hover:bg-white/10 cursor-pointer">
                               <Edit className="mr-2 h-4 w-4" />
                               Editar
@@ -842,7 +842,7 @@ function MyServices({
                             onClick={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
-                              handleDeleteService(service.id);
+                              handleDeleteService(service.id, service.title, e);
                             }}
                           >
                             {actionLoading === service.id ? (
@@ -899,7 +899,7 @@ function MyServices({
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="glass border-white/20">
-                          <Link to={`/services/${service.id}/edit`} onClick={(e) => e.stopPropagation()}>
+                          <Link to={`/new-project?edit=${service.id}`} onClick={(e) => e.stopPropagation()}>
                             <DropdownMenuItem className="hover:bg-white/10 cursor-pointer">
                               <Edit className="mr-2 h-4 w-4" />
                               Editar servicio
