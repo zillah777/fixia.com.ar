@@ -161,12 +161,12 @@ function HeroSection() {
               </CardContent>
             </Card>
             
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-5 mb-10 sm:mb-14">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-5 mb-10 sm:mb-14 w-full px-4 sm:px-0">
               <Link to="/how-it-works" className="w-full sm:w-auto">
                 <Button
                   size="lg"
                   variant="outline"
-                  className="glass border-white/30 hover:glass-medium hover:border-white/50 hover:scale-105 px-8 py-6 sm:px-10 sm:py-7 text-base sm:text-lg font-semibold w-full sm:w-auto neon-border rounded-2xl transition-all duration-300 group"
+                  className="glass border-white/30 hover:glass-medium hover:border-white/50 hover:scale-105 px-6 sm:px-10 py-6 sm:py-7 text-base sm:text-lg font-semibold w-full sm:w-auto neon-border rounded-2xl transition-all duration-300 group"
                 >
                   <Search className="mr-3 h-5 w-5 sm:h-6 sm:w-6 group-hover:rotate-12 transition-transform" />
                   <span className="hidden sm:inline">Ver Proceso Completo</span>
@@ -176,7 +176,7 @@ function HeroSection() {
               <Link to="/register" className="w-full sm:w-auto">
                 <Button
                   size="lg"
-                  className="liquid-gradient hover:opacity-90 hover:scale-105 transition-all duration-300 shadow-2xl hover:shadow-primary/50 px-8 py-6 sm:px-10 sm:py-7 text-base sm:text-lg font-semibold w-full sm:w-auto glow-hover rounded-2xl group"
+                  className="liquid-gradient hover:opacity-90 hover:scale-105 transition-all duration-300 shadow-2xl hover:shadow-primary/50 px-6 sm:px-10 py-6 sm:py-7 text-base sm:text-lg font-semibold w-full sm:w-auto glow-hover rounded-2xl group"
                 >
                   <Gift className="mr-3 h-5 w-5 sm:h-6 sm:w-6" />
                   <span className="hidden sm:inline">Comenzar Ahora Gratis</span>
