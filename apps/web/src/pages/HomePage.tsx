@@ -161,7 +161,7 @@ function HeroSection() {
               </CardContent>
             </Card>
             
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-5 sm:gap-5 mb-10 sm:mb-14">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-5 mb-10 sm:mb-14">
               <Link to="/how-it-works" className="w-full sm:w-auto">
                 <Button
                   size="lg"
@@ -725,9 +725,18 @@ function Footer() {
           {/* Logo and Description */}
           <div className="space-y-4">
             <Link to="/" className="flex items-center space-x-3">
-              <div className="h-10 w-10 liquid-gradient rounded-xl flex items-center justify-center">
-                <span className="text-white font-bold text-lg">F</span>
-              </div>
+              <motion.div
+                className="relative"
+                whileHover={{ scale: 1.05 }}
+                transition={{ type: "spring", stiffness: 400, damping: 10 }}
+              >
+                <img
+                  src="/logo.png"
+                  alt="Fixia Logo"
+                  className="h-10 w-10 object-contain drop-shadow-lg"
+                />
+                <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-blue-500/20 rounded-xl blur opacity-30 animate-pulse-slow"></div>
+              </motion.div>
               <div className="flex flex-col">
                 <span className="text-xl font-semibold text-foreground">Fixia</span>
                 <span className="text-xs text-muted-foreground">Conecta. Confía. Resuelve.</span>
@@ -767,18 +776,15 @@ function Footer() {
             </div>
           </div>
 
-          {/* Categories */}
+          {/* Support */}
           <div>
-            <h4 className="font-semibold mb-4 text-foreground">Categorías Populares</h4>
+            <h4 className="font-semibold mb-4 text-foreground">Soporte</h4>
             <div className="space-y-2">
-              <Link to="/services?category=Desarrollo Web" className="block text-muted-foreground hover:text-primary transition-colors">
-                Desarrollo Web
+              <Link to="/help" className="block text-muted-foreground hover:text-primary transition-colors">
+                Centro de Ayuda
               </Link>
-              <Link to="/services?category=Reparaciones" className="block text-muted-foreground hover:text-primary transition-colors">
-                Reparaciones
-              </Link>
-              <Link to="/services?category=Limpieza" className="block text-muted-foreground hover:text-primary transition-colors">
-                Limpieza
+              <Link to="/contact" className="block text-muted-foreground hover:text-primary transition-colors">
+                Contacto
               </Link>
             </div>
           </div>
