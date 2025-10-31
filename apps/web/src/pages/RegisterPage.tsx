@@ -161,6 +161,7 @@ function ClientRegistrationForm({
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   placeholder="••••••••"
+                  aria-describedby={formData.password.length > 0 ? "password-feedback" : undefined}
                   required
                 />
                 <PasswordToggleButton
@@ -178,6 +179,7 @@ function ClientRegistrationForm({
                   value={formData.confirmPassword}
                   onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                   placeholder="••••••••"
+                  aria-describedby={formData.confirmPassword ? "confirm-password-feedback" : undefined}
                   required
                 />
                 <PasswordToggleButton
@@ -200,7 +202,7 @@ function ClientRegistrationForm({
                 <div className="space-y-2">
                   {/* Password errors */}
                   {passwordValidation.errors.length > 0 && (
-                    <div className="text-sm space-y-2">
+                    <div id="password-feedback" className="text-sm space-y-2">
                       <p className="text-red-500 font-medium">Errores:</p>
                       {passwordValidation.errors.map((error, index) => (
                         <div key={index} className="flex items-center space-x-2 text-red-500">
@@ -225,7 +227,7 @@ function ClientRegistrationForm({
                   )}
                 </div>
                 
-                <div className="space-y-2">
+                <div className="space-y-2" id="confirm-password-feedback">
                   {/* Password match validation */}
                   {formData.confirmPassword && !passwordsMatch && (
                     <div className="flex items-center space-x-2 text-red-500 text-sm">
@@ -634,6 +636,7 @@ function ProfessionalRegistrationForm({
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                     placeholder="••••••••"
+                    aria-describedby={formData.password.length > 0 ? "pro-password-feedback" : undefined}
                     required
                   />
                   <PasswordToggleButton
@@ -651,6 +654,7 @@ function ProfessionalRegistrationForm({
                     value={formData.confirmPassword}
                     onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                     placeholder="••••••••"
+                    aria-describedby={formData.confirmPassword ? "pro-confirm-password-feedback" : undefined}
                     required
                   />
                   <PasswordToggleButton
@@ -673,10 +677,10 @@ function ProfessionalRegistrationForm({
                   <div className="space-y-2">
                     {/* Password errors */}
                     {passwordValidation.errors.length > 0 && (
-                      <div className="text-sm space-y-2">
-                        <p className="text-red-500 font-medium">Errores:</p>
+                      <div id="pro-password-feedback" className="text-sm space-y-2">
+                        <p className="text-destructive font-medium">Errores:</p>
                         {passwordValidation.errors.map((error, index) => (
-                          <div key={index} className="flex items-center space-x-2 text-red-500">
+                          <div key={index} className="flex items-center space-x-2 text-destructive">
                             <AlertCircle className="h-3 w-3" />
                             <span>{error}</span>
                           </div>
@@ -687,9 +691,9 @@ function ProfessionalRegistrationForm({
                     {/* Password warnings */}
                     {passwordValidation.warnings.length > 0 && (
                       <div className="text-sm space-y-2">
-                        <p className="text-orange-500 font-medium">Recomendaciones:</p>
+                        <p className="text-warning font-medium">Recomendaciones:</p>
                         {passwordValidation.warnings.map((warning, index) => (
-                          <div key={index} className="flex items-center space-x-2 text-orange-500">
+                          <div key={index} className="flex items-center space-x-2 text-warning">
                             <AlertCircle className="h-3 w-3" />
                             <span>{warning}</span>
                           </div>
@@ -698,16 +702,16 @@ function ProfessionalRegistrationForm({
                     )}
                   </div>
                   
-                  <div className="space-y-2">
+                  <div id="pro-confirm-password-feedback" className="space-y-2">
                     {/* Password match validation */}
                     {formData.confirmPassword && !passwordsMatch && (
-                      <div className="flex items-center space-x-2 text-red-500 text-sm">
+                      <div className="flex items-center space-x-2 text-destructive text-sm">
                         <AlertCircle className="h-3 w-3" />
                         <span>Las contraseñas no coinciden</span>
                       </div>
                     )}
                     {formData.confirmPassword && passwordsMatch && formData.password && (
-                      <div className="flex items-center space-x-2 text-green-500 text-sm">
+                      <div className="flex items-center space-x-2 text-success text-sm">
                         <CheckCircle className="h-3 w-3" />
                         <span>Las contraseñas coinciden</span>
                       </div>
