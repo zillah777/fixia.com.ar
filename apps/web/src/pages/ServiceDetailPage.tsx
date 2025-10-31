@@ -397,7 +397,7 @@ export default function ServiceDetailPage() {
         />
       )}
 
-      <main className="container mx-auto px-4 sm:px-6 py-4 sm:py-8">
+      <main className="container mx-auto px-4 sm:px-6 py-4 sm:py-8 pb-24 lg:pb-8">
         {/* Breadcrumb */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}

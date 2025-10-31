@@ -80,7 +80,7 @@ const JobsPage: React.FC = () => {
     return (
       <div className="min-h-screen bg-background">
         <FixiaNavigation />
-        <main className="container mx-auto px-6 py-8">
+        <main className="container mx-auto px-6 py-8 pb-24 lg:pb-8">
           <div className="mb-8">
             <Skeleton className="h-12 w-64 mb-4" />
             <Skeleton className="h-6 w-96" />
@@ -107,7 +107,7 @@ const JobsPage: React.FC = () => {
     return (
       <div className="min-h-screen bg-background">
         <FixiaNavigation />
-        <main className="container mx-auto px-6 py-8">
+        <main className="container mx-auto px-6 py-8 pb-24 lg:pb-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -128,7 +128,7 @@ const JobsPage: React.FC = () => {
     <div className="min-h-screen bg-background">
       <FixiaNavigation />
 
-      <main className="container mx-auto px-6 py-8">
+      <main className="container mx-auto px-6 py-8 pb-24 lg:pb-8">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}

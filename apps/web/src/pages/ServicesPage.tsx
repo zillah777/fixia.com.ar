@@ -777,7 +777,7 @@ export default function ServicesPage() {
       <SkipNavigation />
       <FixiaNavigation />
       
-      <main id="main-content" role="main" aria-label="Servicios disponibles" className="container mx-auto px-6 py-8">
+      <main id="main-content" role="main" aria-label="Servicios disponibles" className="container mx-auto px-6 py-8 pb-24 lg:pb-8">
         {/* Hero Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}

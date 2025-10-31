@@ -35,7 +35,7 @@ export default function TermsPage() {
             </p>
             <Badge className="bg-primary/20 text-primary border-primary/30">
               <MapPin className="h-4 w-4 mr-2" />
-              Fixia.com.ar • Chubut, Argentina
+              Fixia • Chubut, Argentina
             </Badge>
           </div>
 
@@ -49,13 +49,13 @@ export default function TermsPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-muted-foreground leading-relaxed">
-                <strong>FIXIA.COM.AR</strong> es un <strong>ANUNCIANTE AUTOMATIZADO</strong> con features modernos que funciona como:
+                <strong>Fixia</strong> es un marketplace de microservicios profesionales con features modernos que funciona como:
               </p>
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="space-y-3">
                   <div className="flex items-start space-x-3">
                     <Search className="h-5 w-5 text-primary mt-0.5" />
-                    <span className="text-sm">Matchmaking inteligente entre AS (oferentes) y Exploradores (demandantes)</span>
+                    <span className="text-sm">Matchmaking inteligente entre Profesionales (oferentes) y Clientes (demandantes)</span>
                   </div>
                   <div className="flex items-start space-x-3">
                     <Bell className="h-5 w-5 text-warning mt-0.5" />
@@ -63,7 +63,7 @@ export default function TermsPage() {
                   </div>
                   <div className="flex items-start space-x-3">
                     <Zap className="h-5 w-5 text-success mt-0.5" />
-                    <span className="text-sm">Notificaciones automáticas urgentes para AS disponibles</span>
+                    <span className="text-sm">Notificaciones automáticas urgentes para Profesionales disponibles</span>
                   </div>
                 </div>
                 <div className="space-y-3">
@@ -121,7 +121,7 @@ export default function TermsPage() {
                     <CardContent className="p-4 text-center">
                       <Crown className="h-8 w-8 text-primary mx-auto mb-2" />
                       <h5 className="font-medium mb-1">Plan Mensual</h5>
-                      <p className="text-xs text-muted-foreground">Acceso completo - $5000/mes</p>
+                      <p className="text-xs text-muted-foreground">Acceso completo - $3,900 ARS/mes</p>
                     </CardContent>
                   </Card>
                   <Card className="glass-medium border-success/30">

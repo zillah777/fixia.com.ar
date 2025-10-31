@@ -839,7 +839,7 @@ export default function HomePage() {
       />
       <SkipNavigation />
       <FixiaNavigation />
-      <main id="main-content" role="main" aria-label="Contenido principal">
+      <main id="main-content" role="main" aria-label="Contenido principal" className="pb-24 lg:pb-0">
         <HeroSection />
         <CategoriesSection />
         <FeaturedServicesSection />

@@ -1,10 +1,10 @@
 import React, { memo, useState, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Menu, X, Home, Search, Briefcase, User, Bell, Settings, 
+import {
+  Menu, X, Home, Search, Briefcase, User, Bell, Settings,
   LogOut, Heart, Gift, Shield, HelpCircle, Plus, Crown,
-  MessageSquare, Target, TrendingUp
+  MessageSquare, Target, TrendingUp, Info
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
@@ -51,6 +51,7 @@ export const MobileNavigation = memo<MobileNavigationProps>(({ className }) => {
   const publicNavigation: NavigationItem[] = [
     { label: 'Inicio', href: '/', icon: <Home className="h-5 w-5" /> },
     { label: 'Servicios', href: '/services', icon: <Search className="h-5 w-5" /> },
+    { label: 'Sobre Nosotros', href: '/about', icon: <Info className="h-5 w-5" /> },
     { label: 'Ayuda', href: '/help', icon: <HelpCircle className="h-5 w-5" /> }
   ];
 

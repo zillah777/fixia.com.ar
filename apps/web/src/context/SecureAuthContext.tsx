@@ -108,6 +108,8 @@ interface SecureAuthContextType {
   login: (email: string, password: string) => Promise<void>;
   register: (userData: RegisterRequest) => Promise<RegisterResponse>;
   logout: () => Promise<void>;
+  changePassword: (currentPassword: string, newPassword: string, confirmPassword: string) => Promise<any>;
+  deleteAccount: (password: string) => Promise<boolean>;
   updateProfile: (userData: Partial<User>) => Promise<void>;
   refreshUserData: () => Promise<void>;
   updateAvailability: (status: 'available' | 'busy' | 'offline') => Promise<void>;
@@ -619,6 +621,43 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  // Cambiar contraseña con validación
+  const changePassword = async (currentPassword: string, newPassword: string, confirmPassword: string) => {
+    if (!user) throw new Error('Usuario no autenticado');
+
+    // Validar que las contraseñas nuevas coincidan
+    if (newPassword !== confirmPassword) {
+      throw new Error('Las contraseñas nuevas no coinciden');
+    }
+
+    // Validar contraseña nueva
+    const passwordValidation = validatePassword(newPassword);
+    if (!passwordValidation.isValid) {
+      throw new Error(passwordValidation.errors.join(', '));
+    }
+
+    // Validar que la contraseña sea diferente
+    if (currentPassword === newPassword) {
+      throw new Error('La nueva contraseña debe ser diferente a la actual');
+    }
+
+    try {
+      const response = await api.post('/auth/change-password', {
+        currentPassword: sanitizeInput(currentPassword, 'plainText'),
+        newPassword: sanitizeInput(newPassword, 'plainText'),
+      });
+
+      toast.success('Contraseña actualizada correctamente');
+      return response;
+    } catch (error: any) {
+      console.error('Error cambiando contraseña:', error);
+      if (error.response?.status === 401) {
+        throw new Error('Contraseña actual incorrecta');
+      }
+      throw new Error(error.message || 'Error al cambiar la contraseña');
+    }
+  };
+
   // Actualizar perfil con sanitización
   const updateProfile = async (userData: Partial<User>) => {
     if (!user) throw new Error('Usuario no autenticado');
@@ -646,6 +685,34 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
       console.error('Error actualizando perfil:', error);
       toast.error(error.message || 'Error al actualizar el perfil');
       throw error;
+    }
+  };
+
+  // Eliminar cuenta del usuario
+  const deleteAccount = async (password: string) => {
+    if (!user) throw new Error('Usuario no autenticado');
+
+    try {
+      await api.delete('/user/account', {
+        data: {
+          password: sanitizeInput(password, 'plainText')
+        }
+      });
+
+      // Clear local storage and auth state
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('user');
+      setUser(null);
+      setIsAuthenticated(false);
+
+      toast.success('Cuenta eliminada correctamente');
+      return true;
+    } catch (error: any) {
+      console.error('Error eliminando cuenta:', error);
+      if (error.response?.status === 401) {
+        throw new Error('Contraseña incorrecta');
+      }
+      throw new Error(error.message || 'Error al eliminar la cuenta');
     }
   };
 
@@ -739,6 +806,8 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
     login,
     register,
     logout,
+    changePassword,
+    deleteAccount,
     updateProfile,
     refreshUserData,
     updateAvailability,

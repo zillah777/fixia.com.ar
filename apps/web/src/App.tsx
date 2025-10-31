@@ -26,6 +26,7 @@ const PricingPage = lazy(() => import("./pages/PricingPage"));
 const Error404Page = lazy(() => import("./pages/Error404Page"));
 const FavoritesPage = lazy(() => import("./pages/FavoritesPage"));
 const HelpPage = lazy(() => import("./pages/HelpPage"));
+const HelpArticleDetailPage = lazy(() => import("./pages/HelpArticleDetailPage"));
 const NotificationsPage = lazy(() => import("./pages/NotificationsPage"));
 const SettingsPage = lazy(() => import("./pages/SettingsPage"));
 const JobsPage = lazy(() => import("./pages/JobsPage"));
@@ -224,7 +225,12 @@ function AppRoutes() {
                     <HelpPage />
                   </RouteErrorBoundary>
                 } />
-            
+                <Route path="/help/:articleId" element={
+                  <RouteErrorBoundary routeName="Artículo de Ayuda" fallbackRoute="/help">
+                    <HelpArticleDetailPage />
+                  </RouteErrorBoundary>
+                } />
+
                 {/* Auth Routes */}
                 <Route 
                   path="/login" 

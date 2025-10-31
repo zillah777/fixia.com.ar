@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
-import { 
-  User, Lock, Bell, CreditCard, Shield, 
-  Eye, EyeOff, Check, X, AlertCircle, Crown, 
+import { toast } from "sonner";
+import {
+  User, Lock, Bell, CreditCard, Shield,
+  Eye, EyeOff, Check, X, AlertCircle, Crown,
   Mail, Phone, MapPin, Save, Trash2, LogOut,
   Settings, Smartphone, Globe, Calendar
 } from "lucide-react";
@@ -17,6 +18,14 @@ import { Switch } from "../components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import { Alert, AlertDescription } from "../components/ui/alert";
 import { Separator } from "../components/ui/separator";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter
+} from "../components/ui/dialog";
 import { FixiaNavigation } from "../components/FixiaNavigation";
 import { useSecureAuth } from "../context/SecureAuthContext";
 
@@ -238,32 +247,77 @@ function ProfileTab() {
 }
 
 function SecurityTab() {
+  const navigate = useNavigate();
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isChanging, setIsChanging] = useState(false);
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [deletePassword, setDeletePassword] = useState('');
   const [formData, setFormData] = useState({
     currentPassword: '',
     newPassword: '',
     confirmPassword: ''
   });
 
+  const { changePassword, deleteAccount } = useSecureAuth();
+
   const handleChangePassword = async () => {
+    if (!formData.currentPassword.trim()) {
+      toast.error('Por favor ingresa tu contraseña actual');
+      return;
+    }
+
+    if (!formData.newPassword.trim()) {
+      toast.error('Por favor ingresa una nueva contraseña');
+      return;
+    }
+
+    if (!formData.confirmPassword.trim()) {
+      toast.error('Por favor confirma tu nueva contraseña');
+      return;
+    }
+
     if (formData.newPassword !== formData.confirmPassword) {
-      alert('Las contraseñas no coinciden');
+      toast.error('Las contraseñas nuevas no coinciden');
       return;
     }
 
     setIsChanging(true);
     try {
-      // Simular cambio de contraseña
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await changePassword(formData.currentPassword, formData.newPassword, formData.confirmPassword);
       setFormData({ currentPassword: '', newPassword: '', confirmPassword: '' });
-      alert('Contraseña actualizada exitosamente');
-    } catch (error) {
+      toast.success('Contraseña actualizada correctamente');
+    } catch (error: any) {
+      toast.error(error.message || 'Error al cambiar la contraseña');
       console.error('Error changing password:', error);
     } finally {
       setIsChanging(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!deletePassword.trim()) {
+      toast.error('Por favor ingresa tu contraseña para confirmar');
+      return;
+    }
+
+    setIsDeletingAccount(true);
+    try {
+      await deleteAccount(deletePassword);
+      setShowDeleteDialog(false);
+      setDeletePassword('');
+
+      // Redirect to home after successful deletion
+      setTimeout(() => {
+        navigate('/');
+      }, 1000);
+    } catch (error: any) {
+      toast.error(error.message || 'Error al eliminar la cuenta');
+      console.error('Error deleting account:', error);
+    } finally {
+      setIsDeletingAccount(false);
     }
   };
 
@@ -381,23 +435,228 @@ function SecurityTab() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Dangerous Zone - Account Deletion */}
+      <Card className="glass border-red-900/30 bg-red-950/10">
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2 text-red-500">
+            <AlertCircle className="h-5 w-5" />
+            <span>Zona Peligrosa</span>
+          </CardTitle>
+          <CardDescription>
+            Acciones que no se pueden deshacer
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <h4 className="font-medium text-red-500">Eliminar Cuenta</h4>
+            <p className="text-sm text-muted-foreground">
+              Eliminar tu cuenta de forma permanente. Esta acción no se puede deshacer.
+              Se eliminarán todos tus datos, proyectos, mensajes e historial.
+            </p>
+          </div>
+          <Button
+            variant="destructive"
+            onClick={() => setShowDeleteDialog(true)}
+            className="bg-red-600 hover:bg-red-700 text-white"
+          >
+            <Trash2 className="h-4 w-4 mr-2" />
+            Eliminar Cuenta Permanentemente
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Delete Account Confirmation Dialog */}
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent className="glass border-white/10 max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center space-x-2 text-red-500">
+              <AlertCircle className="h-5 w-5" />
+              <span>Confirmar Eliminación de Cuenta</span>
+            </DialogTitle>
+            <DialogDescription>
+              Esta acción es permanente e irreversible. Se eliminarán todos tus datos.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            <Alert className="border-red-500/50 bg-red-950/20">
+              <AlertCircle className="h-4 w-4 text-red-500" />
+              <AlertDescription className="text-red-400">
+                Escribe tu contraseña para confirmar que deseas eliminar tu cuenta.
+              </AlertDescription>
+            </Alert>
+
+            <div className="space-y-2">
+              <Label htmlFor="deletePassword">Contraseña</Label>
+              <Input
+                id="deletePassword"
+                type="password"
+                placeholder="Ingresa tu contraseña"
+                value={deletePassword}
+                onChange={(e) => setDeletePassword(e.target.value)}
+                disabled={isDeletingAccount}
+                className="glass border-white/20"
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowDeleteDialog(false);
+                setDeletePassword('');
+              }}
+              disabled={isDeletingAccount}
+              className="glass border-white/20"
+            >
+              Cancelar
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDeleteAccount}
+              disabled={isDeletingAccount || !deletePassword.trim()}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              {isDeletingAccount ? (
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+              ) : (
+                <Trash2 className="h-4 w-4 mr-2" />
+              )}
+              Eliminar Permanentemente
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
 
 function NotificationsTab() {
+  const { user, updateProfile } = useSecureAuth();
+  const [isSaving, setIsSaving] = useState(false);
+  const [isPushSaving, setIsPushSaving] = useState(false);
+  const debounceTimer = useRef<NodeJS.Timeout | null>(null);
+  const pushDebounceTimer = useRef<NodeJS.Timeout | null>(null);
+
+  // Initialize from user context
   const [emailNotifications, setEmailNotifications] = useState({
-    newOpportunities: true,
-    messages: true,
-    marketing: false,
-    security: true
+    messages: user?.notifications_messages !== false,
+    orders: user?.notifications_orders !== false,
+    projects: user?.notifications_projects !== false,
+    newsletter: user?.notifications_newsletter === true
   });
 
-  const [pushNotifications, setPushNotifications] = useState({
-    newOpportunities: true,
-    messages: true,
-    reminders: false
+  // Initialize push notifications from localStorage
+  const [pushNotifications, setPushNotifications] = useState(() => {
+    const stored = localStorage.getItem('pushNotifications');
+    if (stored) {
+      try {
+        return JSON.parse(stored);
+      } catch {
+        return {
+          newOpportunities: true,
+          messages: true,
+          reminders: false
+        };
+      }
+    }
+    return {
+      newOpportunities: true,
+      messages: true,
+      reminders: false
+    };
   });
+
+  // Debounced save function for email notifications
+  const saveEmailNotifications = useCallback(
+    async (data: typeof emailNotifications) => {
+      setIsSaving(true);
+      try {
+        await updateProfile({
+          notifications_messages: data.messages,
+          notifications_orders: data.orders,
+          notifications_projects: data.projects,
+          notifications_newsletter: data.newsletter
+        });
+        toast.success('Preferencias de notificaciones guardadas');
+      } catch (error) {
+        console.error('Error saving notifications:', error);
+        toast.error('Error al guardar las preferencias');
+      } finally {
+        setIsSaving(false);
+      }
+    },
+    [updateProfile]
+  );
+
+  // Handle email notification changes with debounce
+  const handleEmailNotificationChange = useCallback(
+    (field: keyof typeof emailNotifications, checked: boolean) => {
+      const newNotifications = { ...emailNotifications, [field]: checked };
+      setEmailNotifications(newNotifications);
+
+      // Clear existing timer
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current);
+      }
+
+      // Set new timer for debounced save (500ms)
+      debounceTimer.current = setTimeout(() => {
+        saveEmailNotifications(newNotifications);
+      }, 500);
+    },
+    [emailNotifications, saveEmailNotifications]
+  );
+
+  // Save push notifications to localStorage
+  const savePushNotifications = useCallback(
+    async (data: typeof pushNotifications) => {
+      setIsPushSaving(true);
+      try {
+        localStorage.setItem('pushNotifications', JSON.stringify(data));
+        toast.success('Preferencias de notificaciones push guardadas');
+      } catch (error) {
+        console.error('Error saving push notifications:', error);
+        toast.error('Error al guardar las preferencias');
+      } finally {
+        setIsPushSaving(false);
+      }
+    },
+    []
+  );
+
+  // Handle push notification changes with debounce
+  const handlePushNotificationChange = useCallback(
+    (field: keyof typeof pushNotifications, checked: boolean) => {
+      const newNotifications = { ...pushNotifications, [field]: checked };
+      setPushNotifications(newNotifications);
+
+      // Clear existing timer
+      if (pushDebounceTimer.current) {
+        clearTimeout(pushDebounceTimer.current);
+      }
+
+      // Set new timer for debounced save (500ms)
+      pushDebounceTimer.current = setTimeout(() => {
+        savePushNotifications(newNotifications);
+      }, 500);
+    },
+    [pushNotifications, savePushNotifications]
+  );
+
+  // Cleanup timers on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current);
+      }
+      if (pushDebounceTimer.current) {
+        clearTimeout(pushDebounceTimer.current);
+      }
+    };
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -419,12 +678,16 @@ function NotificationsTab() {
                 Cuando hay trabajos que coinciden con tu perfil
               </p>
             </div>
-            <Switch 
-              checked={emailNotifications.newOpportunities}
-              onCheckedChange={(checked) => 
-                setEmailNotifications({ ...emailNotifications, newOpportunities: checked })
-              }
-            />
+            <div className="flex items-center gap-2">
+              {isSaving && <div className="h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin"></div>}
+              <Switch
+                checked={emailNotifications.orders}
+                onCheckedChange={(checked) =>
+                  handleEmailNotificationChange('orders', checked)
+                }
+                disabled={isSaving}
+              />
+            </div>
           </div>
 
           <Separator className="bg-white/10" />
@@ -436,12 +699,16 @@ function NotificationsTab() {
                 Cuando alguien te contacta o te envía un mensaje
               </p>
             </div>
-            <Switch 
-              checked={emailNotifications.messages}
-              onCheckedChange={(checked) => 
-                setEmailNotifications({ ...emailNotifications, messages: checked })
-              }
-            />
+            <div className="flex items-center gap-2">
+              {isSaving && <div className="h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin"></div>}
+              <Switch
+                checked={emailNotifications.messages}
+                onCheckedChange={(checked) =>
+                  handleEmailNotificationChange('messages', checked)
+                }
+                disabled={isSaving}
+              />
+            </div>
           </div>
 
           <Separator className="bg-white/10" />
@@ -453,12 +720,16 @@ function NotificationsTab() {
                 Promociones, noticias y tips de Fixia
               </p>
             </div>
-            <Switch 
-              checked={emailNotifications.marketing}
-              onCheckedChange={(checked) => 
-                setEmailNotifications({ ...emailNotifications, marketing: checked })
-              }
-            />
+            <div className="flex items-center gap-2">
+              {isSaving && <div className="h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin"></div>}
+              <Switch
+                checked={emailNotifications.newsletter}
+                onCheckedChange={(checked) =>
+                  handleEmailNotificationChange('newsletter', checked)
+                }
+                disabled={isSaving}
+              />
+            </div>
           </div>
 
           <Separator className="bg-white/10" />
@@ -470,12 +741,16 @@ function NotificationsTab() {
                 Inicios de sesión y cambios importantes en tu cuenta
               </p>
             </div>
-            <Switch 
-              checked={emailNotifications.security}
-              onCheckedChange={(checked) => 
-                setEmailNotifications({ ...emailNotifications, security: checked })
-              }
-            />
+            <div className="flex items-center gap-2">
+              {isSaving && <div className="h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin"></div>}
+              <Switch
+                checked={emailNotifications.projects}
+                onCheckedChange={(checked) =>
+                  handleEmailNotificationChange('projects', checked)
+                }
+                disabled={isSaving}
+              />
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -498,12 +773,16 @@ function NotificationsTab() {
                 Notificación inmediata de trabajos relevantes
               </p>
             </div>
-            <Switch 
-              checked={pushNotifications.newOpportunities}
-              onCheckedChange={(checked) => 
-                setPushNotifications({ ...pushNotifications, newOpportunities: checked })
-              }
-            />
+            <div className="flex items-center gap-2">
+              {isPushSaving && <div className="h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin"></div>}
+              <Switch
+                checked={pushNotifications.newOpportunities}
+                onCheckedChange={(checked) =>
+                  handlePushNotificationChange('newOpportunities', checked)
+                }
+                disabled={isPushSaving}
+              />
+            </div>
           </div>
 
           <Separator className="bg-white/10" />
@@ -515,12 +794,16 @@ function NotificationsTab() {
                 Cuando recibes un mensaje directo
               </p>
             </div>
-            <Switch 
-              checked={pushNotifications.messages}
-              onCheckedChange={(checked) => 
-                setPushNotifications({ ...pushNotifications, messages: checked })
-              }
-            />
+            <div className="flex items-center gap-2">
+              {isPushSaving && <div className="h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin"></div>}
+              <Switch
+                checked={pushNotifications.messages}
+                onCheckedChange={(checked) =>
+                  handlePushNotificationChange('messages', checked)
+                }
+                disabled={isPushSaving}
+              />
+            </div>
           </div>
 
           <Separator className="bg-white/10" />
@@ -532,12 +815,16 @@ function NotificationsTab() {
                 Recordatorios de trabajos pendientes y citas
               </p>
             </div>
-            <Switch 
-              checked={pushNotifications.reminders}
-              onCheckedChange={(checked) => 
-                setPushNotifications({ ...pushNotifications, reminders: checked })
-              }
-            />
+            <div className="flex items-center gap-2">
+              {isPushSaving && <div className="h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin"></div>}
+              <Switch
+                checked={pushNotifications.reminders}
+                onCheckedChange={(checked) =>
+                  handlePushNotificationChange('reminders', checked)
+                }
+                disabled={isPushSaving}
+              />
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -546,8 +833,23 @@ function NotificationsTab() {
 }
 
 function SubscriptionTab() {
-  const { user } = useSecureAuth();
+  const navigate = useNavigate();
+  const { user, upgradeToPremium } = useSecureAuth();
+  const [isProcessing, setIsProcessing] = useState(false);
   const isProfessional = user?.userType === 'professional';
+
+  const handleUpgradeClick = async () => {
+    setIsProcessing(true);
+    try {
+      // Call the context method which handles MercadoPago integration
+      await upgradeToPremium();
+    } catch (error: any) {
+      console.error('Error initiating payment:', error);
+      // Error toast is already shown by the context method
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -628,9 +930,17 @@ function SubscriptionTab() {
                 </AlertDescription>
               </Alert>
               
-              <Button className="liquid-gradient w-full">
-                <Crown className="h-4 w-4 mr-2" />
-                Actualizar a Profesional
+              <Button
+                className="liquid-gradient w-full"
+                onClick={handleUpgradeClick}
+                disabled={isProcessing}
+              >
+                {isProcessing ? (
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                ) : (
+                  <Crown className="h-4 w-4 mr-2" />
+                )}
+                {isProcessing ? 'Procesando...' : 'Actualizar a Profesional'}
               </Button>
             </div>
           )}

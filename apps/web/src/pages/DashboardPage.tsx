@@ -1107,7 +1107,7 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-background overflow-x-hidden">
       <FixiaNavigation />
 
-      <main className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 max-w-full overflow-x-hidden">
+      <main className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 pb-24 lg:pb-8 max-w-full overflow-x-hidden">
         {/* Welcome Header - Modern High-Contrast Design */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}

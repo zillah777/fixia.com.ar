@@ -30,6 +30,8 @@ interface HelpArticle {
   category: string;
   readTime: string;
   icon: React.ComponentType<any>;
+  content?: string;
+  sections?: { title: string; content: string }[];
 }
 
 const faqData: FAQItem[] = [
@@ -93,7 +95,21 @@ const helpArticles: HelpArticle[] = [
     description: "Todo lo que necesitas saber para comenzar en Fixia",
     category: "getting-started",
     readTime: "5 min",
-    icon: BookOpen
+    icon: BookOpen,
+    sections: [
+      {
+        title: "Bienvenido a Fixia",
+        content: "Fixia es el marketplace #1 de microservicios profesionales en la Provincia del Chubut. Conectamos clientes con profesionales verificados en diversas categorías como diseño, desarrollo, marketing, consultoría y más."
+      },
+      {
+        title: "Crear tu cuenta",
+        content: "1. Haz clic en 'Únete Gratis' en la página principal\n2. Completa tu información básica (nombre, email, contraseña)\n3. Verifica tu email haciendo clic en el enlace de confirmación\n4. Completa tu perfil con foto y descripción\n5. ¡Listo! Ya puedes explorar servicios profesionales"
+      },
+      {
+        title: "Tipos de usuarios",
+        content: "CLIENTE: Busca y contrata servicios profesionales. Es completamente gratis.\n\nPROFESIONAL: Ofrece servicios y genera ingresos. Requiere suscripción de $3,900 ARS/mes sin comisiones.\n\nDUAL: Sé cliente y profesional simultáneamente manteniendo perfiles separados y trust scores independientes."
+      }
+    ]
   },
   {
     id: "2",
@@ -101,7 +117,21 @@ const helpArticles: HelpArticle[] = [
     description: "Aprende a comunicarte efectivamente con los profesionales",
     category: "clients",
     readTime: "3 min",
-    icon: MessageSquare
+    icon: MessageSquare,
+    sections: [
+      {
+        title: "Encontrar profesionales",
+        content: "1. Ve a la sección 'Servicios'\n2. Usa la búsqueda o filtra por categoría\n3. Lee las reseñas y verifica el badge de verificación\n4. Revisa su experiencia y trust score\n5. Selecciona el profesional que mejor se ajuste a tus necesidades"
+      },
+      {
+        title: "Contactar por WhatsApp",
+        content: "Todos nuestros profesionales están disponibles por WhatsApp para consultas. Al hacer clic en 'Contactar', serás redirigido a WhatsApp donde podrás:\n\n• Hacer preguntas específicas\n• Solicitar presupuestos\n• Acordar detalles del proyecto\n• Negociar plazos y términos"
+      },
+      {
+        title: "Mejores prácticas",
+        content: "✓ Sé claro y específico en tu consulta\n✓ Proporciona detalles relevantes del proyecto\n✓ Pregunta sobre disponibilidad y experiencia\n✓ Solicita referencias o ejemplos de trabajo anterior\n✓ Revisa los términos antes de contratar"
+      }
+    ]
   },
   {
     id: "3",
@@ -109,7 +139,25 @@ const helpArticles: HelpArticle[] = [
     description: "Tips para destacar tu perfil y conseguir más clientes",
     category: "professionals",
     readTime: "7 min",
-    icon: Crown
+    icon: Crown,
+    sections: [
+      {
+        title: "Información profesional básica",
+        content: "Completa estos campos para que los clientes te encuentren:\n\n• Nombre completo y foto profesional\n• Descripción clara de tu especialidad\n• Años de experiencia\n• Servicios que ofreces\n• Categoría principal y subcategorías\n• Ubicación (provincia/zona)"
+      },
+      {
+        title: "Tu descripción profesional",
+        content: "Crea una descripción que:\n\n✓ Sea clara y concisa (máx 500 caracteres)\n✓ Destaque tu propuesta de valor única\n✓ Mencione especialidades clave\n✓ Incluya tu experiencia relevante\n✓ Refleje tu personalidad profesional\n\nEjemplo: 'Diseñador web especializado en ecommerce con 8 años de experiencia. Creo sitios hermosos y funcionales que venden.'"
+      },
+      {
+        title: "Foto y verificación",
+        content: "FOTO: Usa una foto profesional clara donde se vea tu cara. Las fotos de perfil claras aumentan la confianza en 40%.\n\nVERIFICACIÓN: Obtén el badge de verificación completando:\n• Validación de email\n• Validación de teléfono\n• Documento de identidad\n• Comprobante de domicilio\n\nLos profesionales verificados reciben 3x más consultas."
+      },
+      {
+        title: "Trust Score y reseñas",
+        content: "Tu Trust Score se calcula basado en:\n\n• Calificaciones de clientes (★★★★★)\n• Número de trabajos completados\n• Puntualidad y calidad\n• Respuesta a mensajes\n• Antigüedad en la plataforma\n\nMantén un score alto siendo profesional, cumpliendo plazos y ofreciendo excelente servicio."
+      }
+    ]
   },
   {
     id: "4",
@@ -117,7 +165,21 @@ const helpArticles: HelpArticle[] = [
     description: "Cómo obtener la verificación y qué beneficios tiene",
     category: "verification",
     readTime: "4 min",
-    icon: Shield
+    icon: Shield,
+    sections: [
+      {
+        title: "¿Por qué verificarse?",
+        content: "La verificación en Fixia:\n\n✓ Aumenta tu credibilidad ante clientes\n✓ Te destaca con un badge especial\n✓ Incrementa las consultas en 3x\n✓ Mejora tu posicionamiento en búsquedas\n✓ Demuestra que eres profesional serio\n\nEs gratuito y es uno de los factores clave para obtener más trabajo."
+      },
+      {
+        title: "Pasos para verificarse",
+        content: "1. Ve a tu perfil > Configuración > Verificación\n2. Completa validación de email (automática)\n3. Completa validación de teléfono (SMS)\n4. Sube foto de tu documento de identidad\n5. Sube comprobante de domicilio (factura de servicios)\n6. Espera la aprobación (48-72 horas)\n7. ¡Recibe tu badge de verificación!"
+      },
+      {
+        title: "Documentos requeridos",
+        content: "IDENTIDAD:\n• DNI/Cédula/Pasaporte (Foto clara frente y dorso)\n• Debe ser válido y legible\n\nDOMICILIO:\n• Factura de agua, luz, gas o teléfono (últimos 3 meses)\n• Contrato de alquiler o escritura\n• A nombre del propietario"
+      }
+    ]
   },
   {
     id: "5",
@@ -125,7 +187,25 @@ const helpArticles: HelpArticle[] = [
     description: "Todo sobre suscripciones, pagos y facturación",
     category: "billing",
     readTime: "6 min",
-    icon: CreditCard
+    icon: CreditCard,
+    sections: [
+      {
+        title: "Planes y precios",
+        content: "CLIENTES: Completamente gratis\n\nPROFESIONALES:\n• Plan Básico: $3,900 ARS/mes (5 servicios activos)\n• Plan Premium: $7,900 ARS/mes (servicios ilimitados)\n• Plan Profesional: $14,900 ARS/mes (todas las features + soporte prioritario)\n\nPROMOCIÓN: Primeros 200 profesionales obtienen 2 MESES GRATIS."
+      },
+      {
+        title: "Cómo suscribirse",
+        content: "1. Inicia sesión en tu cuenta\n2. Ve a Configuración > Plan Actual\n3. Haz clic en 'Actualizar a Profesional'\n4. Selecciona el plan que deseas\n5. Ingresa datos de tu tarjeta de crédito\n6. Completa el pago\n7. ¡Acceso inmediato a todas las features!\n\nAceptamos: Visa, Mastercard, American Express"
+      },
+      {
+        title: "Sin comisiones, solo suscripción",
+        content: "A diferencia de otros marketplaces:\n\n✓ No cobramos comisiones por servicios\n✓ El 100% del dinero que cobres es tuyo\n✓ Solo pagas la suscripción mensual\n✓ Puedes cancelar en cualquier momento\n✓ No hay costos ocultos\n\nEsto significa que ganancia desde tu primer cliente."
+      },
+      {
+        title: "Facturación y comprobantes",
+        content: "• Recibe factura automática después de cada pago\n• Descargable desde tu cuenta > Facturación\n• Válido para impuestos y deducciones\n• Historial completo de transacciones\n• Soporte fiscal disponible"
+      }
+    ]
   },
   {
     id: "6",
@@ -133,7 +213,25 @@ const helpArticles: HelpArticle[] = [
     description: "Conoce nuestras políticas y términos de uso",
     category: "policies",
     readTime: "8 min",
-    icon: FileText
+    icon: FileText,
+    sections: [
+      {
+        title: "Términos de servicio",
+        content: "Al usar Fixia, aceptas:\n\n✓ Proporcionar información veraz y completa\n✓ No ofrecer servicios ilegales o prohibidos\n✓ Respetar la propiedad intelectual\n✓ No acosar, discriminar o ofender otros usuarios\n✓ Cumplir con leyes y regulaciones locales\n✓ No intentar hackear o interferir con el sistema\n\nLos términos completos están disponibles en /terms"
+      },
+      {
+        title: "Política de privacidad",
+        content: "Tu privacidad es importante:\n\n✓ No compartimos datos con terceros sin consentimiento\n✓ Usamos encriptación para proteger información\n✓ Los datos se almacenan de forma segura\n✓ Puedes acceder, modificar o eliminar tus datos\n✓ Cumplimos con regulaciones de protección de datos\n\nLa política completa está en /privacy"
+      },
+      {
+        title: "Conducta y seguridad",
+        content: "Reservamos el derecho a:\n\n• Suspender cuentas que violen políticas\n• Remover contenido inapropiado\n• Investigar fraude o comportamiento malicioso\n• Colaborar con autoridades si es necesario\n\nTodos los usuarios deben cumplir con nuestros estándares de seguridad y conducta profesional."
+      },
+      {
+        title: "Resolver disputas",
+        content: "Si tienes un problema con otro usuario:\n\n1. Intenta resolver directamente por WhatsApp\n2. Contacta a soporte si persiste\n3. Proporciona evidencia de la disputa\n4. Esperamos resolverlo en 48 horas\n5. Decisión final de Fixia\n\nNuestro equipo de soporte mediará conflictos de forma justa e imparcial."
+      }
+    ]
   }
 ];
 
@@ -287,16 +385,16 @@ function HelpArticles() {
           {helpArticles.map((article, index) => {
             const Icon = article.icon;
             return (
-              <motion.div
-                key={article.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.1 * index }}
-                whileHover={{ y: -4 }}
-              >
-                <Card className="glass-glow border-white/10 hover:bg-white/5 transition-all duration-300 cursor-pointer group h-full card-hover">
-                  <CardContent className="p-8">
+              <Link to={`/help/${article.id}`} key={article.id}>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.1 * index }}
+                  whileHover={{ y: -4 }}
+                >
+                  <Card className="glass-glow border-white/10 hover:bg-white/5 transition-all duration-300 cursor-pointer group h-full card-hover">
+                    <CardContent className="p-8">
                     <div className="flex items-start space-x-5">
                       <div className="h-14 w-14 rounded-2xl bg-primary/20 flex items-center justify-center group-hover:scale-110 transition-transform float">
                         <Icon className="h-7 w-7 text-primary" />
@@ -316,9 +414,10 @@ function HelpArticles() {
                         </div>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              </Link>
             );
           })}
         </div>
