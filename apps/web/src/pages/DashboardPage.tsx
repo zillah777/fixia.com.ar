@@ -32,19 +32,19 @@ function QuickActions({ user }: { user: any }) {
   const isProfessional = user?.userType === 'professional';
 
   return (
-    <div className={`grid md:grid-cols-2 lg:grid-cols-${isProfessional ? '3' : '4'} gap-4`}>
+    <div className={`grid grid-cols-2 md:grid-cols-2 lg:grid-cols-${isProfessional ? '3' : '4'} gap-3 sm:gap-4`}>
       {/* Professional Actions - Show for professionals with dual role */}
       {isProfessional && (
         <>
           <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.2 }}>
             <Link to="/new-project">
               <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 cursor-pointer group">
-                <CardContent className="p-6 text-center">
-                  <div className="h-12 w-12 liquid-gradient rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                    <Plus className="h-6 w-6 text-white" />
+                <CardContent className="p-3 sm:p-4 md:p-6 text-center">
+                  <div className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 liquid-gradient rounded-lg sm:rounded-xl flex items-center justify-center mx-auto mb-2 sm:mb-3 md:mb-4 group-hover:scale-110 transition-transform duration-300">
+                    <Plus className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-white" />
                   </div>
-                  <h3 className="font-semibold mb-2">Crear Servicio</h3>
-                  <p className="text-sm text-muted-foreground">
+                  <h3 className="text-xs sm:text-sm md:text-base font-semibold mb-1 sm:mb-2">Crear Servicio</h3>
+                  <p className="text-[10px] sm:text-xs md:text-sm text-muted-foreground line-clamp-2">
                     Publica un nuevo servicio y empieza a generar ingresos
                   </p>
                 </CardContent>
@@ -55,12 +55,12 @@ function QuickActions({ user }: { user: any }) {
           <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.2 }}>
             <Link to="/opportunities">
               <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 cursor-pointer group">
-                <CardContent className="p-6 text-center">
-                  <div className="h-12 w-12 bg-success/20 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                    <Target className="h-6 w-6 text-success" />
+                <CardContent className="p-3 sm:p-4 md:p-6 text-center">
+                  <div className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 bg-success/20 rounded-lg sm:rounded-xl flex items-center justify-center mx-auto mb-2 sm:mb-3 md:mb-4 group-hover:scale-110 transition-transform duration-300">
+                    <Target className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-success" />
                   </div>
-                  <h3 className="font-semibold mb-2">Ver Oportunidades</h3>
-                  <p className="text-sm text-muted-foreground">
+                  <h3 className="text-xs sm:text-sm md:text-base font-semibold mb-1 sm:mb-2">Ver Oportunidades</h3>
+                  <p className="text-[10px] sm:text-xs md:text-sm text-muted-foreground line-clamp-2">
                     Encuentra proyectos que se ajusten a tus habilidades
                   </p>
                 </CardContent>
@@ -74,12 +74,12 @@ function QuickActions({ user }: { user: any }) {
       <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.2 }}>
         <Link to="/new-opportunity">
           <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 cursor-pointer group">
-            <CardContent className="p-6 text-center">
-              <div className="h-12 w-12 bg-purple-500/20 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                <Plus className="h-6 w-6 text-purple-400" />
+            <CardContent className="p-3 sm:p-4 md:p-6 text-center">
+              <div className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 bg-purple-500/20 rounded-lg sm:rounded-xl flex items-center justify-center mx-auto mb-2 sm:mb-3 md:mb-4 group-hover:scale-110 transition-transform duration-300">
+                <Plus className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-purple-400" />
               </div>
-              <h3 className="font-semibold mb-2">Crear Anuncio</h3>
-              <p className="text-sm text-muted-foreground">
+              <h3 className="text-xs sm:text-sm md:text-base font-semibold mb-1 sm:mb-2">Crear Anuncio</h3>
+              <p className="text-[10px] sm:text-xs md:text-sm text-muted-foreground line-clamp-2">
                 Publica lo que necesitas y conecta con profesionales
               </p>
             </CardContent>
@@ -90,12 +90,12 @@ function QuickActions({ user }: { user: any }) {
       <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.2 }}>
         <Link to="/my-announcements">
           <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 cursor-pointer group">
-            <CardContent className="p-6 text-center">
-              <div className="h-12 w-12 bg-info/20 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                <Briefcase className="h-6 w-6 text-info" />
+            <CardContent className="p-3 sm:p-4 md:p-6 text-center">
+              <div className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 bg-info/20 rounded-lg sm:rounded-xl flex items-center justify-center mx-auto mb-2 sm:mb-3 md:mb-4 group-hover:scale-110 transition-transform duration-300">
+                <Briefcase className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-info" />
               </div>
-              <h3 className="font-semibold mb-2">Mis Anuncios</h3>
-              <p className="text-sm text-muted-foreground">
+              <h3 className="text-xs sm:text-sm md:text-base font-semibold mb-1 sm:mb-2">Mis Anuncios</h3>
+              <p className="text-[10px] sm:text-xs md:text-sm text-muted-foreground line-clamp-2">
                 Revisa tus anuncios y las propuestas recibidas
               </p>
             </CardContent>
@@ -107,12 +107,12 @@ function QuickActions({ user }: { user: any }) {
       <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.2 }}>
         <Link to="/services">
           <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 cursor-pointer group">
-            <CardContent className="p-6 text-center">
-              <div className="h-12 w-12 bg-warning/20 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                <Search className="h-6 w-6 text-warning" />
+            <CardContent className="p-3 sm:p-4 md:p-6 text-center">
+              <div className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 bg-warning/20 rounded-lg sm:rounded-xl flex items-center justify-center mx-auto mb-2 sm:mb-3 md:mb-4 group-hover:scale-110 transition-transform duration-300">
+                <Search className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-warning" />
               </div>
-              <h3 className="font-semibold mb-2">Explorar</h3>
-              <p className="text-sm text-muted-foreground">
+              <h3 className="text-xs sm:text-sm md:text-base font-semibold mb-1 sm:mb-2">Explorar</h3>
+              <p className="text-[10px] sm:text-xs md:text-sm text-muted-foreground line-clamp-2">
                 Descubre servicios y profesionales destacados
               </p>
             </CardContent>
@@ -123,12 +123,12 @@ function QuickActions({ user }: { user: any }) {
       <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.2 }}>
         <Link to="/profile">
           <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 cursor-pointer group">
-            <CardContent className="p-6 text-center">
-              <div className="h-12 w-12 bg-blue-500/20 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                <Settings className="h-6 w-6 text-blue-400" />
+            <CardContent className="p-3 sm:p-4 md:p-6 text-center">
+              <div className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 bg-blue-500/20 rounded-lg sm:rounded-xl flex items-center justify-center mx-auto mb-2 sm:mb-3 md:mb-4 group-hover:scale-110 transition-transform duration-300">
+                <Settings className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-blue-400" />
               </div>
-              <h3 className="font-semibold mb-2">Mi Perfil</h3>
-              <p className="text-sm text-muted-foreground">
+              <h3 className="text-xs sm:text-sm md:text-base font-semibold mb-1 sm:mb-2">Mi Perfil</h3>
+              <p className="text-[10px] sm:text-xs md:text-sm text-muted-foreground line-clamp-2">
                 Gestiona tu información y configuración
               </p>
             </CardContent>
@@ -375,7 +375,7 @@ function StatCards({ dashboardData, loading, userType, clientStats, planType }: 
             <Briefcase className="h-5 w-5 text-primary" />
             <h3 className="text-lg font-semibold text-white">Estadísticas Profesionales</h3>
           </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
             {professionalStatsCards.map((stat, index) => {
               const Icon = stat.icon;
               return (
@@ -386,22 +386,22 @@ function StatCards({ dashboardData, loading, userType, clientStats, planType }: 
                   transition={{ duration: 0.6, delay: 0.1 * index }}
                 >
                   <Card className="glass-glow hover:glass-medium transition-all duration-300 border-white/10 card-hover">
-                    <CardContent className="p-6">
+                    <CardContent className="p-3 sm:p-4 md:p-6">
                       <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-sm text-muted-foreground">{stat.title}</p>
-                          <p className="text-3xl font-bold mt-2 text-gradient">{stat.value}</p>
-                          <div className="flex items-center mt-2 space-x-2">
-                            <span className={`text-sm ${
+                        <div className="min-w-0 flex-1">
+                          <p className="text-[10px] sm:text-xs md:text-sm text-muted-foreground truncate">{stat.title}</p>
+                          <p className="text-xl sm:text-2xl md:text-3xl font-bold mt-1 sm:mt-2 text-gradient">{stat.value}</p>
+                          <div className="flex items-center mt-1 sm:mt-2 space-x-1 sm:space-x-2">
+                            <span className={`text-[10px] sm:text-xs md:text-sm ${
                               stat.changeType === 'positive' ? 'text-success' : 'text-destructive'
                             }`}>
                               {stat.change}
                             </span>
-                            <span className="text-xs text-muted-foreground">{stat.description}</span>
+                            <span className="text-[9px] sm:text-[10px] md:text-xs text-muted-foreground truncate">{stat.description}</span>
                           </div>
                         </div>
-                        <div className="h-12 w-12 bg-primary/20 rounded-xl flex items-center justify-center float">
-                          <Icon className="h-6 w-6 text-primary" />
+                        <div className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 bg-primary/20 rounded-lg sm:rounded-xl flex items-center justify-center float ml-2">
+                          <Icon className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-primary" />
                         </div>
                       </div>
                     </CardContent>
@@ -421,7 +421,7 @@ function StatCards({ dashboardData, loading, userType, clientStats, planType }: 
             <h3 className="text-lg font-semibold text-white">Estadísticas de Cliente</h3>
           </div>
         )}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
           {clientStatsCards.map((stat, index) => {
             const Icon = stat.icon;
             return (
@@ -432,22 +432,22 @@ function StatCards({ dashboardData, loading, userType, clientStats, planType }: 
                 transition={{ duration: 0.6, delay: showBothStats ? 0.4 + 0.1 * index : 0.1 * index }}
               >
                 <Card className="glass-glow hover:glass-medium transition-all duration-300 border-white/10 card-hover">
-                  <CardContent className="p-6">
+                  <CardContent className="p-3 sm:p-4 md:p-6">
                     <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm text-muted-foreground">{stat.title}</p>
-                        <p className="text-3xl font-bold mt-2 text-gradient">{stat.value}</p>
-                        <div className="flex items-center mt-2 space-x-2">
-                          <span className={`text-sm ${
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[10px] sm:text-xs md:text-sm text-muted-foreground truncate">{stat.title}</p>
+                        <p className="text-xl sm:text-2xl md:text-3xl font-bold mt-1 sm:mt-2 text-gradient">{stat.value}</p>
+                        <div className="flex items-center mt-1 sm:mt-2 space-x-1 sm:space-x-2">
+                          <span className={`text-[10px] sm:text-xs md:text-sm ${
                             stat.changeType === 'positive' ? 'text-success' : 'text-destructive'
                           }`}>
                             {stat.change}
                           </span>
-                          <span className="text-xs text-muted-foreground">{stat.description}</span>
+                          <span className="text-[9px] sm:text-[10px] md:text-xs text-muted-foreground truncate">{stat.description}</span>
                         </div>
                       </div>
-                      <div className="h-12 w-12 bg-info/20 rounded-xl flex items-center justify-center float">
-                        <Icon className="h-6 w-6 text-info" />
+                      <div className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 bg-info/20 rounded-lg sm:rounded-xl flex items-center justify-center float ml-2">
+                        <Icon className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-info" />
                       </div>
                     </div>
                   </CardContent>
