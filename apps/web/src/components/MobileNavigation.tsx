@@ -58,71 +58,85 @@ export const MobileNavigation = memo<MobileNavigationProps>(({ className }) => {
   ];
 
   const authenticatedNavigation: NavigationItem[] = [
-    { 
-      label: 'Dashboard', 
-      href: '/dashboard', 
+    {
+      label: 'Dashboard',
+      href: '/dashboard',
       icon: <TrendingUp className="h-5 w-5" />,
-      requiresAuth: true 
+      requiresAuth: true
     },
-    { 
-      label: 'Mi Perfil', 
-      href: '/profile', 
+    {
+      label: 'Mi Perfil',
+      href: '/profile',
       icon: <User className="h-5 w-5" />,
-      requiresAuth: true 
+      requiresAuth: true
     },
-    { 
-      label: 'Oportunidades', 
-      href: '/opportunities', 
-      icon: <Target className="h-5 w-5" />,
-      requiresAuth: true,
-      userType: 'professional' 
-    },
-    { 
-      label: 'Mis Trabajos', 
-      href: '/jobs', 
-      icon: <Shield className="h-5 w-5" />,
-      requiresAuth: true,
-      userType: 'both' 
-    },
-    { 
-      label: 'Mis Reseñas', 
-      href: '/reviews', 
-      icon: <Heart className="h-5 w-5" />,
-      requiresAuth: true,
-      userType: 'professional' 
-    },
-    { 
-      label: 'Verificación', 
-      href: '/verification', 
-      icon: <Shield className="h-5 w-5" />,
-      requiresAuth: true,
-      userType: 'professional' 
-    },
-    { 
-      label: 'Nuevo Proyecto', 
-      href: '/new-project', 
+    {
+      label: 'Crear Anuncio',
+      href: '/new-opportunity',
       icon: <Plus className="h-5 w-5" />,
       requiresAuth: true,
-      userType: 'client' 
+      userType: 'client'
     },
-    { 
-      label: 'Favoritos', 
-      href: '/favorites', 
+    {
+      label: 'Mis Anuncios',
+      href: '/my-announcements',
+      icon: <Briefcase className="h-5 w-5" />,
+      requiresAuth: true,
+      userType: 'client'
+    },
+    {
+      label: 'Nuevo Servicio',
+      href: '/new-project',
+      icon: <Plus className="h-5 w-5" />,
+      requiresAuth: true,
+      userType: 'professional'
+    },
+    {
+      label: 'Oportunidades',
+      href: '/opportunities',
+      icon: <Target className="h-5 w-5" />,
+      requiresAuth: true,
+      userType: 'professional'
+    },
+    {
+      label: 'Mis Trabajos',
+      href: '/jobs',
+      icon: <Shield className="h-5 w-5" />,
+      requiresAuth: true,
+      userType: 'both'
+    },
+    {
+      label: 'Mi Feedback',
+      href: '/feedback',
+      icon: <MessageSquare className="h-5 w-5" />,
+      requiresAuth: true
+    },
+    {
+      label: 'Verificación',
+      href: '/verification',
+      icon: <Shield className="h-5 w-5" />,
+      requiresAuth: true,
+      userType: 'professional'
+    },
+    {
+      label: 'Favoritos',
+      href: '/favorites',
       icon: <Heart className="h-5 w-5" />,
-      requiresAuth: true 
+      requiresAuth: true,
+      userType: 'client'
     },
-    { 
-      label: 'Notificaciones', 
-      href: '/notifications', 
+    {
+      label: 'Notificaciones',
+      href: '/notifications',
       icon: <Bell className="h-5 w-5" />,
       badge: unreadCount > 0 ? unreadCount : undefined,
-      requiresAuth: true 
+      requiresAuth: true
     },
-    { 
-      label: 'Configuración', 
-      href: '/settings', 
+    {
+      label: 'Configuración',
+      href: '/settings',
       icon: <Settings className="h-5 w-5" />,
-      requiresAuth: true 
+      requiresAuth: true
     }
   ];
 
@@ -161,15 +175,17 @@ export const MobileNavigation = memo<MobileNavigationProps>(({ className }) => {
             <SheetTitle className="sr-only">Menú de Navegación</SheetTitle>
             <div className="flex items-center justify-between">
               <Link to="/" onClick={handleClose} className="flex items-center space-x-3">
-                <motion.div 
+                <motion.div
                   className="relative"
                   whileHover={{ scale: 1.05 }}
                   transition={{ type: "spring", stiffness: 400, damping: 10 }}
                 >
-                  <div className="h-10 w-10 liquid-gradient rounded-xl flex items-center justify-center shadow-lg">
-                    <span className="text-white font-bold text-lg">F</span>
-                  </div>
-                  <div className="absolute -inset-1 liquid-gradient rounded-xl blur opacity-20 animate-pulse-slow"></div>
+                  <img
+                    src="/logo.png"
+                    alt="Fixia Logo"
+                    className="h-10 w-10 object-contain drop-shadow-lg relative z-10"
+                  />
+                  <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-blue-500/20 rounded-xl blur opacity-30 animate-pulse-slow"></div>
                 </motion.div>
                 <div className="flex flex-col">
                   <span className="text-xl font-semibold tracking-tight text-foreground">Fixia</span>

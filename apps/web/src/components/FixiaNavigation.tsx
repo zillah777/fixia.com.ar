@@ -145,7 +145,18 @@ export const FixiaNavigation = memo(function FixiaNavigation() {
                 </Link>
               </div>
 
-              {/* User Avatar Dropdown - Hidden on mobile, shown on desktop */}
+              {/* Avatar - Visual only on mobile (no menu), clickable dropdown on desktop */}
+              <div className="lg:hidden">
+                {/* Mobile: Visual avatar only, no interaction */}
+                <Avatar className="h-8 w-8 ring-2 ring-primary/20">
+                  <AvatarImage src={user?.avatar} alt={user?.name || 'Usuario'} />
+                  <AvatarFallback className="glass text-sm">
+                    {user?.name?.charAt(0)?.toUpperCase() || 'U'}
+                  </AvatarFallback>
+                </Avatar>
+              </div>
+
+              {/* Desktop: User Avatar Dropdown Menu */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative h-8 w-8 sm:h-10 sm:w-10 rounded-full hover:glass-medium transition-all duration-300 hidden lg:flex">
