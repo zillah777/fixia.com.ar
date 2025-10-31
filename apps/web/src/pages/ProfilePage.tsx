@@ -365,7 +365,9 @@ function SettingsSection() {
   // Auto-save function with debounce
   const autoSaveImplementation = async (field: string, value: any) => {
     try {
-      await api.put('/user/profile', { [field]: value });
+      const updatedUser = await api.put('/user/profile', { [field]: value });
+      // Refresh user context to ensure UI stays in sync with backend
+      await refreshUserData();
       toast.success('✓ Cambio guardado', {
         description: 'Se guardó automáticamente',
         duration: 2000});
