@@ -122,9 +122,9 @@ export const FixiaNavigation = memo(function FixiaNavigation() {
                 </div>
               )}
 
-              {/* Quick Actions */}
-              <div className="flex items-center space-x-1 sm:space-x-2">
-                {/* New Project/Announcement Button - Responsive */}
+              {/* Quick Actions - Hidden on mobile (< lg), all functionality in hamburger menu */}
+              <div className="hidden lg:flex items-center space-x-1 sm:space-x-2">
+                {/* New Project/Announcement Button */}
                 <Link to={user?.userType === 'professional' ? "/new-project" : "/new-opportunity"}>
                   <Button size="sm" className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg">
                     <Plus className="h-4 w-4 sm:mr-2" />
@@ -137,18 +137,18 @@ export const FixiaNavigation = memo(function FixiaNavigation() {
                 {/* Notifications */}
                 <NotificationBell className="hover:bg-white/10 transition-all duration-300" />
 
-                {/* Favorites - Hidden on small screens */}
-                <Link to="/favorites" className="hidden sm:block">
+                {/* Favorites */}
+                <Link to="/favorites">
                   <Button variant="ghost" size="icon" className="hover:bg-white/10 transition-all duration-300">
                     <Heart className="h-4 w-4" />
                   </Button>
                 </Link>
               </div>
 
-              {/* User Avatar Dropdown */}
+              {/* User Avatar Dropdown - Hidden on mobile, shown on desktop */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-8 w-8 sm:h-10 sm:w-10 rounded-full hover:glass-medium transition-all duration-300">
+                  <Button variant="ghost" className="relative h-8 w-8 sm:h-10 sm:w-10 rounded-full hover:glass-medium transition-all duration-300 hidden lg:flex">
                     <Avatar className="h-8 w-8 sm:h-10 sm:w-10 ring-2 ring-primary/20">
                       <AvatarImage src={user?.avatar} alt={user?.name || 'Usuario'} />
                       <AvatarFallback className="glass text-sm">
