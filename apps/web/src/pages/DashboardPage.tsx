@@ -515,22 +515,23 @@ function ClientAnnouncements({
 
   return (
     <Card className="glass border-white/10">
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="mb-2">Mis Solicitudes Activas</CardTitle>
-            <p className="text-sm text-muted-foreground/80">
+      <CardHeader className="p-4 sm:p-6">
+        <div className="flex items-center justify-between gap-2 sm:gap-4">
+          <div className="min-w-0 flex-1">
+            <CardTitle className="mb-1 sm:mb-2 text-base sm:text-lg md:text-xl truncate">Mis Solicitudes Activas</CardTitle>
+            <p className="text-xs sm:text-sm text-muted-foreground/80 line-clamp-1">
               Anuncios y propuestas recibidas
             </p>
           </div>
-          <Link to="/my-announcements">
-            <Button variant="outline" size="sm" className="glass border-white/20 hover:glass-medium">
-              Ver Todos
+          <Link to="/my-announcements" className="flex-shrink-0">
+            <Button variant="outline" size="sm" className="glass border-white/20 hover:glass-medium text-xs sm:text-sm">
+              <span className="hidden sm:inline">Ver Todos</span>
+              <span className="sm:hidden">Ver</span>
             </Button>
           </Link>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-4 sm:p-6">
         {loading ? (
           <div className="space-y-4">
             {Array.from({ length: 3 }).map((_, index) => (
@@ -546,72 +547,72 @@ function ClientAnnouncements({
             ))}
           </div>
         ) : displayProjects.length === 0 ? (
-          <div className="text-center py-12">
-            <div className="h-16 w-16 liquid-gradient rounded-xl flex items-center justify-center mx-auto mb-4 opacity-50">
-              <Briefcase className="h-8 w-8 text-white" />
+          <div className="text-center py-8 sm:py-12 px-4">
+            <div className="h-12 w-12 sm:h-16 sm:w-16 liquid-gradient rounded-lg sm:rounded-xl flex items-center justify-center mx-auto mb-3 sm:mb-4 opacity-50">
+              <Briefcase className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
             </div>
-            <h3 className="text-lg font-medium mb-2">No tienes anuncios activos</h3>
-            <p className="text-muted-foreground mb-4">
+            <h3 className="text-sm sm:text-base md:text-lg font-medium mb-2">No tienes anuncios activos</h3>
+            <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4 max-w-md mx-auto">
               Publica tu primer anuncio para conectar con profesionales verificados
             </p>
             <Link to="/new-opportunity">
-              <Button className="liquid-gradient hover:opacity-90">
-                <Plus className="h-4 w-4 mr-2" />
+              <Button className="liquid-gradient hover:opacity-90 text-xs sm:text-sm">
+                <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-2" />
                 Crear Primer Anuncio
               </Button>
             </Link>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {displayProjects.map((project) => {
               const hasProposals = project._count?.proposals > 0;
               const proposalCount = project._count?.proposals || 0;
 
               return (
-                <div key={project.id} className="p-5 glass-glow rounded-xl hover:glass-medium transition-all duration-300 border border-white/10 hover:border-primary/30 relative">
-                  <div className="flex items-start justify-between mb-4">
+                <div key={project.id} className="p-3 sm:p-4 md:p-5 glass-glow rounded-lg sm:rounded-xl hover:glass-medium transition-all duration-300 border border-white/10 hover:border-primary/30 relative">
+                  <div className="flex items-start justify-between mb-3 sm:mb-4 gap-2">
                     <Link to="/my-announcements" className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-2">
-                        <h4 className="font-semibold text-base truncate">{project.title}</h4>
+                      <div className="flex items-center gap-2 mb-1 sm:mb-2 flex-wrap">
+                        <h4 className="font-semibold text-sm sm:text-base line-clamp-1">{project.title}</h4>
                         {project.status === 'open' && (
-                          <Badge className="bg-success/20 text-success border-success/40 text-xs font-medium flex-shrink-0">
+                          <Badge className="bg-success/20 text-success border-success/40 text-[10px] sm:text-xs font-medium flex-shrink-0">
                             Abierto
                           </Badge>
                         )}
                       </div>
-                      <p className="text-sm text-muted-foreground/90 line-clamp-2">
+                      <p className="text-xs sm:text-sm text-muted-foreground/90 line-clamp-2">
                         {project.description}
                       </p>
                     </Link>
-                    <div className="flex items-center gap-2 ml-3">
+                    <div className="flex items-center gap-1 sm:gap-2 ml-2 sm:ml-3 flex-shrink-0">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 flex-shrink-0"
+                            className="h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0"
                             disabled={actionLoading === project.id}
                             onClick={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
                             }}
                           >
-                            <MoreVertical className="h-4 w-4" />
+                            <MoreVertical className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="glass border-white/20">
                           <Link to={`/edit-opportunity/${project.id}`} onClick={(e) => e.stopPropagation()}>
-                            <DropdownMenuItem className="hover:bg-white/10 cursor-pointer">
-                              <Edit className="mr-2 h-4 w-4" />
+                            <DropdownMenuItem className="hover:bg-white/10 cursor-pointer text-xs sm:text-sm">
+                              <Edit className="mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4" />
                               Editar anuncio
                             </DropdownMenuItem>
                           </Link>
                           <DropdownMenuSeparator className="bg-white/10" />
                           <DropdownMenuItem
                             onClick={(e) => handleDeleteAnnouncement(project.id, project.title, e)}
-                            className="hover:bg-white/10 cursor-pointer text-destructive"
+                            className="hover:bg-white/10 cursor-pointer text-destructive text-xs sm:text-sm"
                           >
-                            <Trash2 className="mr-2 h-4 w-4" />
+                            <Trash2 className="mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4" />
                             Eliminar anuncio
                           </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -619,35 +620,36 @@ function ClientAnnouncements({
                     </div>
                   </div>
 
-                    <div className="mt-4 pt-4 border-t border-white/10">
+                    <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-white/10">
                       {hasProposals ? (
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <div className="flex items-center gap-1.5 text-sm font-medium">
-                              <Users className="h-4 w-4 text-primary" />
-                              <span className="text-primary">
+                        <div className="flex items-center justify-between gap-2 flex-wrap">
+                          <div className="flex items-center gap-2 sm:gap-3">
+                            <div className="flex items-center gap-1 sm:gap-1.5 text-xs sm:text-sm font-medium">
+                              <Users className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary flex-shrink-0" />
+                              <span className="text-primary whitespace-nowrap">
                                 {proposalCount} {proposalCount === 1 ? 'propuesta' : 'propuestas'}
                               </span>
                             </div>
-                            <div className="text-xs text-muted-foreground/70">
-                              <Clock className="h-3 w-3 inline mr-1" />
-                              {formatTimeAgo(project.created_at)}
+                            <div className="text-[10px] sm:text-xs text-muted-foreground/70 flex items-center gap-1">
+                              <Clock className="h-3 w-3 flex-shrink-0" />
+                              <span className="truncate">{formatTimeAgo(project.created_at)}</span>
                             </div>
                           </div>
-                          <Button size="sm" className="liquid-gradient text-white font-medium">
-                            <MessageSquare className="h-3.5 w-3.5 mr-1.5" />
-                            Ver Propuestas
+                          <Button size="sm" className="liquid-gradient text-white font-medium text-[10px] sm:text-xs whitespace-nowrap">
+                            <MessageSquare className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1 sm:mr-1.5" />
+                            <span className="hidden sm:inline">Ver Propuestas</span>
+                            <span className="sm:hidden">Propuestas</span>
                           </Button>
                         </div>
                       ) : (
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground/80">
-                            <AlertCircle className="h-4 w-4 text-warning" />
-                            <span>Esperando propuestas</span>
+                        <div className="flex items-center justify-between gap-2 flex-wrap">
+                          <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-muted-foreground/80">
+                            <AlertCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-warning flex-shrink-0" />
+                            <span className="whitespace-nowrap">Esperando propuestas</span>
                           </div>
-                          <div className="text-xs text-muted-foreground/70">
-                            <Clock className="h-3 w-3 inline mr-1" />
-                            {formatTimeAgo(project.created_at)}
+                          <div className="text-[10px] sm:text-xs text-muted-foreground/70 flex items-center gap-1">
+                            <Clock className="h-3 w-3 flex-shrink-0" />
+                            <span className="truncate">{formatTimeAgo(project.created_at)}</span>
                           </div>
                         </div>
                       )}

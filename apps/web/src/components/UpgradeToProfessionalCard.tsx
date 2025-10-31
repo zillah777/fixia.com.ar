@@ -100,90 +100,90 @@ export function UpgradeToProfessionalCard({ userType, onUpgradeSuccess }: Upgrad
         {/* Gradient background effect */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-blue-500/5 to-purple-500/5 pointer-events-none" />
 
-        <CardHeader className="relative">
-          <div className="flex items-start justify-between">
-            <div className="space-y-2">
+        <CardHeader className="relative p-4 sm:p-6">
+          <div className="flex items-start justify-between gap-2">
+            <div className="space-y-1 sm:space-y-2 min-w-0 flex-1">
               <div className="flex items-center space-x-2">
-                <Sparkles className="h-5 w-5 text-primary animate-pulse" />
-                <CardTitle className="text-xl">Conviértete en Profesional</CardTitle>
+                <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-primary animate-pulse flex-shrink-0" />
+                <CardTitle className="text-base sm:text-lg md:text-xl truncate">Conviértete en Profesional</CardTitle>
               </div>
-              <CardDescription className="text-base">
+              <CardDescription className="text-xs sm:text-sm md:text-base line-clamp-2">
                 Ofrece tus servicios y genera ingresos manteniendo tu cuenta de cliente
               </CardDescription>
             </div>
-            <Badge variant="secondary" className="glass">
-              <Star className="h-3 w-3 mr-1" />
+            <Badge variant="secondary" className="glass flex-shrink-0 text-[10px] sm:text-xs">
+              <Star className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-0.5 sm:mr-1" />
               DUAL
             </Badge>
           </div>
         </CardHeader>
 
-        <CardContent className="relative space-y-6">
+        <CardContent className="relative space-y-4 sm:space-y-6 p-4 sm:p-6">
           {/* Benefits grid */}
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <motion.div
               whileHover={{ scale: 1.02 }}
-              className="flex items-start space-x-3 p-3 rounded-lg glass border border-white/10"
+              className="flex items-start space-x-2 sm:space-x-3 p-2.5 sm:p-3 rounded-lg glass border border-white/10"
             >
-              <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                <TrendingUp className="h-5 w-5 text-primary" />
+              <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
               </div>
-              <div>
-                <h4 className="font-medium text-sm">Genera Ingresos</h4>
-                <p className="text-xs text-muted-foreground">Vende tus servicios profesionales</p>
+              <div className="min-w-0 flex-1">
+                <h4 className="font-medium text-xs sm:text-sm">Genera Ingresos</h4>
+                <p className="text-[10px] sm:text-xs text-muted-foreground">Vende tus servicios profesionales</p>
               </div>
             </motion.div>
 
             <motion.div
               whileHover={{ scale: 1.02 }}
-              className="flex items-start space-x-3 p-3 rounded-lg glass border border-white/10"
+              className="flex items-start space-x-2 sm:space-x-3 p-2.5 sm:p-3 rounded-lg glass border border-white/10"
             >
-              <div className="h-10 w-10 rounded-full bg-blue-500/10 flex items-center justify-center flex-shrink-0">
-                <Users className="h-5 w-5 text-blue-500" />
+              <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-blue-500/10 flex items-center justify-center flex-shrink-0">
+                <Users className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500" />
               </div>
-              <div>
-                <h4 className="font-medium text-sm">Amplía tu Red</h4>
-                <p className="text-xs text-muted-foreground">Conecta con más clientes</p>
+              <div className="min-w-0 flex-1">
+                <h4 className="font-medium text-xs sm:text-sm">Amplía tu Red</h4>
+                <p className="text-[10px] sm:text-xs text-muted-foreground">Conecta con más clientes</p>
               </div>
             </motion.div>
 
             <motion.div
               whileHover={{ scale: 1.02 }}
-              className="flex items-start space-x-3 p-3 rounded-lg glass border border-white/10"
+              className="flex items-start space-x-2 sm:space-x-3 p-2.5 sm:p-3 rounded-lg glass border border-white/10"
             >
-              <div className="h-10 w-10 rounded-full bg-purple-500/10 flex items-center justify-center flex-shrink-0">
-                <Briefcase className="h-5 w-5 text-purple-500" />
+              <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-purple-500/10 flex items-center justify-center flex-shrink-0">
+                <Briefcase className="h-4 w-4 sm:h-5 sm:w-5 text-purple-500" />
               </div>
-              <div>
-                <h4 className="font-medium text-sm">Cuenta DUAL</h4>
-                <p className="text-xs text-muted-foreground">Cliente + Profesional en una</p>
+              <div className="min-w-0 flex-1">
+                <h4 className="font-medium text-xs sm:text-sm">Cuenta DUAL</h4>
+                <p className="text-[10px] sm:text-xs text-muted-foreground">Cliente + Profesional en una</p>
               </div>
             </motion.div>
 
             <motion.div
               whileHover={{ scale: 1.02 }}
-              className="flex items-start space-x-3 p-3 rounded-lg glass border border-white/10"
+              className="flex items-start space-x-2 sm:space-x-3 p-2.5 sm:p-3 rounded-lg glass border border-white/10"
             >
-              <div className="h-10 w-10 rounded-full bg-green-500/10 flex items-center justify-center flex-shrink-0">
-                <Zap className="h-5 w-5 text-green-500" />
+              <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-green-500/10 flex items-center justify-center flex-shrink-0">
+                <Zap className="h-4 w-4 sm:h-5 sm:w-5 text-green-500" />
               </div>
-              <div>
-                <h4 className="font-medium text-sm">100% Gratis</h4>
-                <p className="text-xs text-muted-foreground">Sin costos de actualización</p>
+              <div className="min-w-0 flex-1">
+                <h4 className="font-medium text-xs sm:text-sm">100% Gratis</h4>
+                <p className="text-[10px] sm:text-xs text-muted-foreground">Sin costos de actualización</p>
               </div>
             </motion.div>
           </div>
 
           <Button
             onClick={() => setShowUpgradeDialog(true)}
-            className="w-full liquid-gradient text-white font-medium shadow-lg hover:shadow-primary/50 transition-all"
-            size="lg"
+            className="w-full liquid-gradient text-white font-medium shadow-lg hover:shadow-primary/50 transition-all text-xs sm:text-sm"
+            size="default"
           >
-            <Sparkles className="h-4 w-4 mr-2" />
-            Actualizar a Profesional DUAL
+            <Sparkles className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-2" />
+            <span className="truncate">Actualizar a Profesional DUAL</span>
           </Button>
 
-          <p className="text-xs text-center text-muted-foreground">
+          <p className="text-[10px] sm:text-xs text-center text-muted-foreground px-2">
             Mantén tu capacidad de contratar servicios + Ofrece tus propios servicios
           </p>
         </CardContent>
