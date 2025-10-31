@@ -147,9 +147,9 @@ export default function LoginPage() {
                   transition={{ duration: 0.5 }}
                   className="mb-6"
                 >
-                  <Alert className="border-green-500/50 bg-green-500/10">
-                    <CheckCircle2 className="h-4 w-4 text-green-500" />
-                    <AlertDescription className="text-green-700 dark:text-green-300">
+                  <Alert className="border-success/50 bg-success/10">
+                    <CheckCircle2 className="h-4 w-4 text-success" />
+                    <AlertDescription className="text-success/70 dark:text-success/80">
                       {welcomeMessage}
                     </AlertDescription>
                   </Alert>

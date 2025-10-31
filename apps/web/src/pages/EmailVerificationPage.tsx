@@ -175,7 +175,7 @@ function EmailVerificationPage() {
           {/* Background */}
           <div className="absolute inset-0 bg-background">
             <div className="absolute top-1/4 -left-32 w-64 h-64 liquid-gradient rounded-full blur-3xl opacity-20 animate-float"></div>
-            <div className="absolute bottom-1/4 -right-32 w-64 h-64 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full blur-3xl opacity-20 animate-float" style={{ animationDelay: '2s' }}></div>
+            <div className="absolute bottom-1/4 -right-32 w-64 h-64 bg-gradient-to-r from-success to-emerald-500 rounded-full blur-3xl opacity-20 animate-float" style={{ animationDelay: '2s' }}></div>
           </div>
 
           <div className="relative w-full max-w-md z-10">
@@ -193,10 +193,10 @@ function EmailVerificationPage() {
                     className="mx-auto mb-4"
                   >
                     <div className="relative">
-                      <div className="h-20 w-20 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center mx-auto shadow-2xl">
+                      <div className="h-20 w-20 bg-gradient-to-r from-success to-emerald-500 rounded-full flex items-center justify-center mx-auto shadow-2xl">
                         <CheckCircle2 className="h-10 w-10 text-white" />
                       </div>
-                      <div className="absolute -inset-2 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full blur opacity-30 animate-pulse"></div>
+                      <div className="absolute -inset-2 bg-gradient-to-r from-success to-emerald-500 rounded-full blur opacity-30 animate-pulse"></div>
                     </div>
                   </motion.div>
                   
@@ -214,19 +214,19 @@ function EmailVerificationPage() {
                       transition={{ delay: 0.5 }}
                       className="flex items-center space-x-3 glass-medium rounded-lg p-3"
                     >
-                      <Shield className="h-5 w-5 text-green-500" />
+                      <Shield className="h-5 w-5 text-success" />
                       <span className="text-sm text-muted-foreground">
                         Cuenta verificada y segura
                       </span>
                     </motion.div>
-                    
+
                     <motion.div
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.7 }}
                       className="flex items-center space-x-3 glass-medium rounded-lg p-3"
                     >
-                      <CheckCircle2 className="h-5 w-5 text-green-500" />
+                      <CheckCircle2 className="h-5 w-5 text-success" />
                       <span className="text-sm text-muted-foreground">
                         Acceso completo habilitado
                       </span>

@@ -461,7 +461,7 @@ function FeaturedServicesSection() {
                           <Badge className="bg-primary text-white border-0 shadow-lg font-semibold">
                             {category}
                           </Badge>
-                          <Badge className="bg-green-500 text-white border-0 shadow-lg font-semibold">
+                          <Badge className="bg-success text-white border-0 shadow-lg font-semibold">
                             <CheckCircle className="h-3 w-3 mr-1" />
                             Verificado
                           </Badge>
@@ -471,7 +471,7 @@ function FeaturedServicesSection() {
                           <div className="flex items-center justify-center space-x-2 mb-2">
                             <h3 className="text-xl font-bold text-foreground">{professional.name}</h3>
                             {professional.verified && (
-                              <CheckCircle className="h-5 w-5 text-green-500" />
+                              <CheckCircle className="h-5 w-5 text-success" />
                             )}
                           </div>
                           <div className="flex items-center justify-center space-x-1 text-sm text-muted-foreground">

@@ -174,13 +174,13 @@ function SuggestionsSection() {
                     <CardContent className="p-6 text-center">
                       <div className={`h-16 w-16 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform ${
                         suggestion.color === 'primary' ? 'bg-primary/20' :
-                        suggestion.color === 'success' ? 'bg-green-500/20' :
-                        suggestion.color === 'warning' ? 'bg-yellow-500/20' : 'bg-secondary/20'
+                        suggestion.color === 'success' ? 'bg-success/20' :
+                        suggestion.color === 'warning' ? 'bg-warning/20' : 'bg-secondary/20'
                       }`}>
                         <Icon className={`h-8 w-8 ${
                           suggestion.color === 'primary' ? 'text-primary' :
-                          suggestion.color === 'success' ? 'text-green-500' :
-                          suggestion.color === 'warning' ? 'text-yellow-500' : 'text-foreground'
+                          suggestion.color === 'success' ? 'text-success' :
+                          suggestion.color === 'warning' ? 'text-warning' : 'text-foreground'
                         }`} />
                       </div>
                       <h3 className="font-semibold mb-2 text-foreground">{suggestion.title}</h3>

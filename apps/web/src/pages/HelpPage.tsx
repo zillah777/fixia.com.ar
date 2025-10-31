@@ -549,7 +549,7 @@ function AllFAQ() {
                           </div>
                           <span className="font-semibold text-base sm:text-lg text-foreground">{faq.question}</span>
                           {faq.popular && (
-                            <Badge variant="secondary" className="ml-auto bg-yellow-500/20 text-yellow-600 pulse-glow">
+                            <Badge variant="secondary" className="ml-auto bg-warning/20 text-warning pulse-glow">
                               Popular
                             </Badge>
                           )}

@@ -140,7 +140,7 @@ function ServiceCard({ service }: { service: FavoriteService }) {
               variant="secondary"
               size="icon" className="h-9 w-9 bg-white/20 hover:bg-white/30 backdrop-blur-sm"
             >
-              <Heart className="h-4 w-4 fill-red-500 text-red-500" />
+              <Heart className="h-4 w-4 fill-destructive text-destructive" />
             </Button>
           </div>
           <Badge className="absolute top-3 left-3 bg-primary/90 text-white">
@@ -241,9 +241,9 @@ function ServiceCard({ service }: { service: FavoriteService }) {
 
 function ProfessionalCard({ professional }: { professional: FavoriteProfessional }) {
   const statusColors = {
-    available: "text-green-500",
-    busy: "text-yellow-500",
-    offline: "text-gray-400"
+    available: "text-success",
+    busy: "text-warning",
+    offline: "text-muted-foreground"
   };
 
   return (
@@ -326,8 +326,8 @@ function ProfessionalCard({ professional }: { professional: FavoriteProfessional
             </div>
             <div className="flex items-center space-x-2">
               <div className={`h-2 w-2 rounded-full ${
-                professional.availability === 'available' ? 'bg-green-500' :
-                professional.availability === 'busy' ? 'bg-yellow-500' : 'bg-gray-400'
+                professional.availability === 'available' ? 'bg-success' :
+                professional.availability === 'busy' ? 'bg-warning' : 'bg-muted-foreground'
               }`} />
               <span className={statusColors[professional.availability as keyof typeof statusColors]}>
                 {professional.availability === 'available' ? 'Disponible' :

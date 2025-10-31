@@ -143,8 +143,8 @@ export const FeedbackPage: React.FC = () => {
                     <p className="text-xl sm:text-2xl font-bold text-foreground">{trustScore.totalFeedback}</p>
                     <p className="text-xs sm:text-sm font-medium text-foreground/70">Total Feedback</p>
                   </div>
-                  <div className="flex flex-col items-center p-4 rounded-lg glass-medium border border-green-500/20">
-                    <Shield className="h-6 w-6 sm:h-8 sm:w-8 text-green-400 mb-2" />
+                  <div className="flex flex-col items-center p-4 rounded-lg glass-medium border border-success/20">
+                    <Shield className="h-6 w-6 sm:h-8 sm:w-8 text-success mb-2" />
                     <p className="text-xl sm:text-2xl font-bold text-foreground">{trustScore.trustPercentage}%</p>
                     <p className="text-xs sm:text-sm font-medium text-foreground/70">Confiabilidad</p>
                   </div>
