@@ -47,13 +47,10 @@ export const MobileNavigation = memo<MobileNavigationProps>(({ className }) => {
     }
   }, [logout, handleClose]);
 
-  // Navigation items configuration
+  // Navigation items configuration - Optimized for mobile
   const publicNavigation: NavigationItem[] = [
     { label: 'Inicio', href: '/', icon: <Home className="h-5 w-5" /> },
     { label: 'Servicios', href: '/services', icon: <Search className="h-5 w-5" /> },
-    { label: 'Cómo Funciona', href: '/how-it-works', icon: <HelpCircle className="h-5 w-5" /> },
-    { label: 'Precios', href: '/pricing', icon: <Crown className="h-5 w-5" /> },
-    { label: 'Contacto', href: '/contact', icon: <MessageSquare className="h-5 w-5" /> },
     { label: 'Ayuda', href: '/help', icon: <HelpCircle className="h-5 w-5" /> }
   ];
 
@@ -95,26 +92,6 @@ export const MobileNavigation = memo<MobileNavigationProps>(({ className }) => {
       label: 'Oportunidades',
       href: '/opportunities',
       icon: <Target className="h-5 w-5" />,
-      requiresAuth: true,
-      userType: 'professional'
-    },
-    {
-      label: 'Mis Trabajos',
-      href: '/jobs',
-      icon: <Shield className="h-5 w-5" />,
-      requiresAuth: true,
-      userType: 'both'
-    },
-    {
-      label: 'Mi Feedback',
-      href: '/feedback',
-      icon: <MessageSquare className="h-5 w-5" />,
-      requiresAuth: true
-    },
-    {
-      label: 'Verificación',
-      href: '/verification',
-      icon: <Shield className="h-5 w-5" />,
       requiresAuth: true,
       userType: 'professional'
     },
@@ -170,11 +147,11 @@ export const MobileNavigation = memo<MobileNavigationProps>(({ className }) => {
       
       <SheetContent side="left" className="w-80 p-0">
         <div className="flex flex-col h-full">
-          {/* Header */}
-          <SheetHeader className="p-6 pb-4">
+          {/* Header - Compact */}
+          <SheetHeader className="p-4 pb-3">
             <SheetTitle className="sr-only">Menú de Navegación</SheetTitle>
             <div className="flex items-center justify-between">
-              <Link to="/" onClick={handleClose} className="flex items-center space-x-3">
+              <Link to="/" onClick={handleClose} className="flex items-center space-x-2">
                 <motion.div
                   className="relative"
                   whileHover={{ scale: 1.05 }}
@@ -183,13 +160,13 @@ export const MobileNavigation = memo<MobileNavigationProps>(({ className }) => {
                   <img
                     src="/logo.png"
                     alt="Fixia Logo"
-                    className="h-10 w-10 object-contain drop-shadow-lg relative z-10"
+                    className="h-8 w-8 object-contain drop-shadow-lg relative z-10"
                   />
                   <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-blue-500/20 rounded-xl blur opacity-30 animate-pulse-slow"></div>
                 </motion.div>
                 <div className="flex flex-col">
-                  <span className="text-xl font-semibold tracking-tight text-foreground">Fixia</span>
-                  <span className="text-xs text-muted-foreground -mt-1">
+                  <span className="text-base font-semibold tracking-tight text-foreground">Fixia</span>
+                  <span className="text-[10px] text-muted-foreground -mt-0.5">
                     Conecta. Confía. Resuelve.
                   </span>
                 </div>
@@ -197,38 +174,35 @@ export const MobileNavigation = memo<MobileNavigationProps>(({ className }) => {
             </div>
           </SheetHeader>
 
-          {/* User Info */}
+          {/* User Info - Compact */}
           {isAuthenticated && user && (
-            <div className="px-6 py-4 border-b border-border">
-              <div className="flex items-center space-x-3">
-                <Avatar className="h-12 w-12">
+            <div className="px-4 py-3 border-b border-border">
+              <div className="flex items-center space-x-2">
+                <Avatar className="h-10 w-10">
                   <AvatarImage src={user.avatar} />
-                  <AvatarFallback className="text-sm">
+                  <AvatarFallback className="text-xs">
                     {user.name?.charAt(0)?.toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-medium text-foreground truncate">
-                      {user.name} {user.lastName}
+                  <div className="flex items-center gap-1.5">
+                    <h3 className="text-sm font-medium text-foreground truncate">
+                      {user.name}
                     </h3>
                     {user.isVerified && (
-                      <Shield className="h-4 w-4 text-primary flex-shrink-0" />
+                      <Shield className="h-3 w-3 text-primary flex-shrink-0" />
                     )}
                   </div>
-                  <p className="text-sm text-muted-foreground truncate">
-                    {user.email}
-                  </p>
-                  <div className="flex items-center gap-2 mt-1">
-                    <Badge 
-                      variant={user.userType === 'professional' ? 'default' : 'secondary'} 
-                      className="text-xs"
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    <Badge
+                      variant={user.userType === 'professional' ? 'default' : 'secondary'}
+                      className="text-[10px] px-1.5 py-0"
                     >
-                      {user.userType === 'professional' ? 'Profesional' : 'Cliente'}
+                      {user.userType === 'professional' ? 'Pro' : 'Cliente'}
                     </Badge>
                     {user.planType === 'premium' && (
-                      <Badge variant="outline" className="text-xs">
-                        <Crown className="h-3 w-3 mr-1" />
+                      <Badge variant="outline" className="text-[10px] px-1.5 py-0">
+                        <Crown className="h-2.5 w-2.5 mr-0.5" />
                         Premium
                       </Badge>
                     )}

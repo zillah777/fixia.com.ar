@@ -1113,9 +1113,9 @@ export default function DashboardPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="mb-10"
+          className="mb-6 sm:mb-8 md:mb-10"
         >
-          <div className="relative overflow-hidden rounded-2xl p-8 border-2 border-primary shadow-2xl shadow-primary/20">
+          <div className="relative overflow-hidden rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 border border-primary sm:border-2 shadow-xl sm:shadow-2xl shadow-primary/20">
             {/* Animated Gradient Background */}
             <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-blue-500/20 to-purple-500/20 backdrop-blur-xl" />
 
@@ -1124,10 +1124,10 @@ export default function DashboardPage() {
 
             {/* Content */}
             <div className="relative z-10">
-              <h1 className="text-4xl sm:text-5xl font-extrabold mb-3 text-white tracking-tight drop-shadow-lg">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold mb-2 sm:mb-3 text-white tracking-tight drop-shadow-lg">
                 ¡Hola {user?.name}! 👋
               </h1>
-              <p className="text-lg sm:text-xl text-white/90 leading-relaxed font-medium">
+              <p className="text-sm sm:text-base md:text-lg lg:text-xl text-white/90 leading-relaxed font-medium">
                 Gestiona todo desde tu panel de control
               </p>
             </div>
@@ -1253,26 +1253,26 @@ export default function DashboardPage() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.1 }}
-            className="mb-6"
+            className="mb-4 sm:mb-6"
           >
             <Card className="glass border-warning/20 bg-gradient-to-r from-warning/10 to-transparent">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <AlertCircle className="h-5 w-5 text-warning flex-shrink-0" />
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-foreground">
+              <CardContent className="p-3 sm:p-4">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
+                  <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 text-warning flex-shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs sm:text-sm font-medium text-foreground truncate">
                       {dashboardData.total_services === 5
                         ? '¡Has alcanzado el límite de servicios!'
                         : '¡Casi alcanzas el límite de servicios!'}
                     </p>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-2">
                       {dashboardData.total_services === 5
                         ? 'Tienes 5/5 servicios activos. Actualiza a Premium para servicios ilimitados.'
                         : `Tienes ${dashboardData.total_services}/5 servicios activos. Actualiza a Premium para no tener límites.`}
                     </p>
                   </div>
-                  <Link to="/pricing">
-                    <Button size="sm" className="bg-warning hover:bg-warning/90 text-warning-foreground">
+                  <Link to="/pricing" className="w-full sm:w-auto">
+                    <Button size="sm" className="w-full sm:w-auto bg-warning hover:bg-warning/90 text-warning-foreground text-xs whitespace-nowrap">
                       Actualizar a Premium
                     </Button>
                   </Link>
@@ -1288,19 +1288,19 @@ export default function DashboardPage() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.1 }}
-            className="mb-6"
+            className="mb-4 sm:mb-6"
           >
             <Link to="/pricing">
               <Card className="glass border-primary/20 bg-gradient-to-r from-primary/5 to-transparent hover:border-primary/40 transition-all cursor-pointer group">
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <Crown className="h-5 w-5 text-primary flex-shrink-0" />
-                      <div>
-                        <p className="text-sm font-medium text-foreground">
+                <CardContent className="p-3 sm:p-4">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-3">
+                    <div className="flex items-start gap-2 sm:gap-3 flex-1 min-w-0">
+                      <Crown className="h-4 w-4 sm:h-5 sm:w-5 text-primary flex-shrink-0 mt-0.5" />
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs sm:text-sm font-medium text-foreground line-clamp-1">
                           Desbloquea servicios ilimitados con <span className="text-primary font-bold">Premium</span>
                         </p>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-2">
                           Badge destacado, prioridad en búsquedas y estadísticas avanzadas
                         </p>
                       </div>
@@ -1308,10 +1308,10 @@ export default function DashboardPage() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="text-primary hover:text-primary/90 group-hover:translate-x-1 transition-transform"
+                      className="w-full sm:w-auto text-primary hover:text-primary/90 group-hover:translate-x-1 transition-transform text-xs whitespace-nowrap"
                     >
                       Mejorar
-                      <ArrowRight className="ml-1 h-4 w-4" />
+                      <ArrowRight className="ml-1 h-3.5 w-3.5 sm:h-4 sm:w-4" />
                     </Button>
                   </div>
                 </CardContent>
@@ -1381,32 +1381,54 @@ export default function DashboardPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.5 }}
-          className="mt-12"
+          className="mt-8 sm:mt-10 md:mt-12"
         >
           <Card className="glass border-white/10 text-center">
-            <CardContent className="p-8">
+            <CardContent className="p-4 sm:p-6 md:p-8">
               <div className="max-w-2xl mx-auto">
-                <h3 className="text-2xl font-bold mb-4">
+                <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-2 sm:mb-3 md:mb-4">
                   ¿Listo para crecer en Fixia?
                 </h3>
-                <p className="text-muted-foreground mb-6">
-                  Crea nuevos servicios, explora oportunidades y conecta con más clientes. 
-                  Tu próximo proyecto te está esperando.
+                <p className="text-xs sm:text-sm md:text-base text-muted-foreground mb-4 sm:mb-5 md:mb-6 line-clamp-3">
+                  {user?.userType === 'professional'
+                    ? 'Crea nuevos servicios, explora oportunidades y conecta con más clientes. Tu próximo proyecto te está esperando.'
+                    : 'Encuentra profesionales verificados, publica tus necesidades y conecta con expertos. Tu solución está a un clic.'
+                  }
                 </p>
-                <div className="flex items-center justify-center space-x-4">
-                  <Link to="/new-project">
-                    <Button className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg">
-                      <Plus className="h-4 w-4 mr-2" />
-                      Crear Nuevo Servicio
-                    </Button>
-                  </Link>
-                  <Link to="/opportunities">
-                    <Button variant="outline" className="glass border-white/20 hover:glass-medium">
-                      <Target className="h-4 w-4 mr-2" />
-                      Ver Oportunidades
-                      <ArrowRight className="h-4 w-4 ml-2" />
-                    </Button>
-                  </Link>
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
+                  {user?.userType === 'professional' ? (
+                    <>
+                      <Link to="/new-project" className="w-full sm:w-auto">
+                        <Button className="w-full sm:w-auto liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg text-xs sm:text-sm md:text-base h-9 sm:h-10 md:h-11">
+                          <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
+                          <span className="truncate">Crear Nuevo Servicio</span>
+                        </Button>
+                      </Link>
+                      <Link to="/opportunities" className="w-full sm:w-auto">
+                        <Button variant="outline" className="w-full sm:w-auto glass border-white/20 hover:glass-medium text-xs sm:text-sm md:text-base h-9 sm:h-10 md:h-11">
+                          <Target className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
+                          <span className="truncate">Ver Oportunidades</span>
+                          <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 ml-1.5 sm:ml-2" />
+                        </Button>
+                      </Link>
+                    </>
+                  ) : (
+                    <>
+                      <Link to="/new-opportunity" className="w-full sm:w-auto">
+                        <Button className="w-full sm:w-auto liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg text-xs sm:text-sm md:text-base h-9 sm:h-10 md:h-11">
+                          <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
+                          <span className="truncate">Crear Anuncio</span>
+                        </Button>
+                      </Link>
+                      <Link to="/services" className="w-full sm:w-auto">
+                        <Button variant="outline" className="w-full sm:w-auto glass border-white/20 hover:glass-medium text-xs sm:text-sm md:text-base h-9 sm:h-10 md:h-11">
+                          <Search className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
+                          <span className="truncate">Explorar Servicios</span>
+                          <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 ml-1.5 sm:ml-2" />
+                        </Button>
+                      </Link>
+                    </>
+                  )}
                 </div>
               </div>
             </CardContent>
