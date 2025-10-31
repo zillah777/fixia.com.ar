@@ -18,7 +18,6 @@ export default function PaymentTestPage() {
   const [professionalId] = useState('test-professional-456');
 
   const handlePaymentSuccess = (paymentId: string) => {
-    console.log('Payment successful:', paymentId);
     alert(`¡Pago exitoso! ID: ${paymentId}`);
   };
 
@@ -30,7 +29,6 @@ export default function PaymentTestPage() {
   const testPaymentMethods = async () => {
     try {
       const methods = await paymentsService.getPaymentMethods();
-      console.log('Available payment methods:', methods);
     } catch (error) {
       console.error('Error fetching payment methods:', error);
     }
@@ -216,8 +214,7 @@ export default function PaymentTestPage() {
                             serviceId,
                             professionalId,
                           });
-                          console.log('Preference created:', preference);
-                          alert('Preference creada exitosamente! Ver consola.');
+                          alert('Preference creada exitosamente!');
                         } catch (error) {
                           console.error('Error:', error);
                           alert('Error creando preference');

@@ -1050,19 +1050,7 @@ export default function RegisterPage() {
     try {
       // Sanitize form data before submission
       const sanitizedData = FormSanitizers.REGISTRATION(formData);
-      
-      console.log('Attempting registration with data:', {
-        email: sanitizedData.email,
-        fullName: sanitizedData.fullName,
-        phone: sanitizedData.phone,
-        location: sanitizedData.location,
-        birthdate: sanitizedData.birthdate,
-        userType: currentTab as 'client' | 'professional',
-        serviceCategories: sanitizedData.serviceCategories,
-        hasPassword: !!sanitizedData.password
-      });
-      
-      console.log('About to call register function...');
+
       const result = await register({
         email: sanitizedData.email,
         password: sanitizedData.password,
@@ -1079,9 +1067,7 @@ export default function RegisterPage() {
         portfolio: sanitizedData.portfolio,
         certifications: sanitizedData.certifications
       });
-      
-      console.log('Registration completed successfully!', result);
-      
+
       // Handle different registration outcomes
       if (result?.requiresVerification) {
         // New flow: Email verification required
@@ -1091,9 +1077,7 @@ export default function RegisterPage() {
             description: result.message || `Revisa tu bandeja de entrada en ${formData.email} para verificar tu cuenta.`,
             duration: 8000}
         );
-        
-        console.log(`About to navigate to: /verify-email?email=${encodeURIComponent(formData.email)}`);
-        
+
         // Redirect to email verification page
         navigate(`/verify-email?email=${encodeURIComponent(formData.email)}`);
       } else {
@@ -1109,14 +1093,10 @@ export default function RegisterPage() {
         navigate('/dashboard');
       }
     } catch (error: any) {
-      console.error('Registration error:', error);
-      
       // Extract error details from API response
       const errorMessage = error.response?.data?.message || error.message || '';
       const statusCode = error.response?.status;
-      
-      console.log('Error details:', { errorMessage, statusCode, error: error.response });
-      
+
       // Handle specific error cases with user-friendly messages
       if (statusCode === 409 || errorMessage?.toLowerCase().includes('already exists') || errorMessage?.toLowerCase().includes('ya existe') || errorMessage?.toLowerCase().includes('duplicate')) {
         toast.error(

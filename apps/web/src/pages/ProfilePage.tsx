@@ -123,14 +123,10 @@ function ProfileHeader({ user, onUserUpdate }: any) {
         throw new Error('No se recibió la URL de la imagen');
       }
 
-      console.log('[ProfilePage] Avatar upload successful:', { avatarUrl });
-
       // Update user profile with new avatar
       const updatedUser = await api.put('/user/profile', {
         avatar: avatarUrl
       });
-
-      console.log('[ProfilePage] Profile updated with avatar:', updatedUser);
 
       await onUserUpdate(updatedUser);
 

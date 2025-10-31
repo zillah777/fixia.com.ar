@@ -144,8 +144,7 @@ export default function ServiceDetailPage() {
 
         // Track view after successfully loading service
         // Do this asynchronously without blocking the UI
-        servicesService.trackView(id).catch((err) => {
-          console.log('View tracking failed:', err);
+        servicesService.trackView(id).catch(() => {
           // Silently fail - don't show error to user
         });
       } catch (err) {

@@ -784,8 +784,6 @@ function MediaStep({ data, setData }: { data: ProjectData; setData: (data: Proje
     setUploading(true);
     try {
       const result = await uploadService.uploadImage(file);
-      console.log('Main image upload result:', result);
-      console.log('Main image URL:', result.url);
 
       // Use functional update to avoid stale state issues
       setData(prevData => ({
@@ -812,8 +810,6 @@ function MediaStep({ data, setData }: { data: ProjectData; setData: (data: Proje
     setUploadingGallery(true);
     try {
       const result = await uploadService.uploadImage(file);
-      console.log('Gallery upload result:', result);
-      console.log('Gallery URL:', result.url);
 
       // Use functional update to avoid stale state issues
       setData(prevData => ({
@@ -1461,9 +1457,6 @@ export default function NewProjectPage() {
       if (projectData.videoUrl) {
         serviceData.video_url = projectData.videoUrl;
       }
-
-      console.log('Publishing service:', serviceData);
-      console.log('Gallery data:', projectData.gallery);
 
       const createdService = await servicesService.createService(serviceData);
 
