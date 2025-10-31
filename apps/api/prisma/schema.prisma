@@ -302,7 +302,7 @@ model ServiceView {
   ip_address String?
   user_agent String?
   viewed_at  DateTime @default(now())
-  service    Service  @relation(fields: [service_id], references: [id])
+  service    Service  @relation(fields: [service_id], references: [id], onDelete: Cascade)
   viewer     User?    @relation(fields: [viewer_id], references: [id])
 
   @@map("service_views")
@@ -665,7 +665,7 @@ model Feedback {
   to_user_role String   @default("client")
   from_user    User     @relation("FeedbackGiven", fields: [from_user_id], references: [id], onDelete: Cascade)
   job          Job?     @relation(fields: [job_id], references: [id])
-  service      Service? @relation(fields: [service_id], references: [id])
+  service      Service? @relation(fields: [service_id], references: [id], onDelete: Cascade)
   to_user      User     @relation("FeedbackReceived", fields: [to_user_id], references: [id], onDelete: Cascade)
 
   @@unique([from_user_id, to_user_id, job_id])

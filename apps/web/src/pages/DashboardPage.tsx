@@ -373,7 +373,7 @@ function StatCards({ dashboardData, loading, userType, clientStats, planType }: 
         <>
           <div className="flex items-center gap-2 mb-4">
             <Briefcase className="h-5 w-5 text-primary" />
-            <h3 className="text-lg font-semibold">Estadísticas Profesionales</h3>
+            <h3 className="text-lg font-semibold text-white">Estadísticas Profesionales</h3>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {professionalStatsCards.map((stat, index) => {
@@ -418,7 +418,7 @@ function StatCards({ dashboardData, loading, userType, clientStats, planType }: 
         {showBothStats && (
           <div className="flex items-center gap-2 mb-4 mt-8">
             <Users className="h-5 w-5 text-info" />
-            <h3 className="text-lg font-semibold">Estadísticas de Cliente</h3>
+            <h3 className="text-lg font-semibold text-white">Estadísticas de Cliente</h3>
           </div>
         )}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
