@@ -438,7 +438,7 @@ export default function FavoritesPage() {
     return (
       <div className="min-h-screen bg-background">
         <FixiaNavigation />
-        <div className="container mx-auto px-6 py-20">
+        <div className="container mx-auto px-4 sm:px-6 py-20">
           <Card className="glass border-white/10 max-w-md mx-auto">
             <CardContent className="p-8 text-center">
               <Heart className="h-16 w-16 text-muted-foreground mx-auto mb-4" />

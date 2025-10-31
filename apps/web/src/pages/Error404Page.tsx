@@ -12,7 +12,7 @@ import { FixiaNavigation } from "../components/FixiaNavigation";
 function HeroSection() {
   return (
     <section className="py-20 lg:py-32">
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -143,7 +143,7 @@ function SuggestionsSection() {
 
   return (
     <section className="py-16">
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -222,7 +222,7 @@ function PopularLinks() {
 
   return (
     <section className="py-16">
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -269,7 +269,7 @@ function PopularLinks() {
 function CTASection() {
   return (
     <section className="py-16">
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
