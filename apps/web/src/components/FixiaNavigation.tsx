@@ -51,9 +51,9 @@ export const FixiaNavigation = memo(function FixiaNavigation() {
               />
               <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-blue-500/20 rounded-lg sm:rounded-xl blur opacity-30 animate-pulse-slow"></div>
             </motion.div>
-            <div className="hidden sm:flex flex-col">
-              <span className="text-lg sm:text-xl font-semibold tracking-tight text-foreground">Fixia</span>
-              <span className="text-xs text-muted-foreground -mt-1">Conecta. Confía. Resuelve.</span>
+            <div className="flex flex-col">
+              <span className="text-base sm:text-lg md:text-xl font-semibold tracking-tight text-foreground">Fixia</span>
+              <span className="text-[10px] sm:text-xs text-muted-foreground -mt-0.5 sm:-mt-1">Conecta. Confía. Resuelve.</span>
             </div>
           </Link>
           
