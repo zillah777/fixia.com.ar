@@ -509,11 +509,35 @@
     z-index: 10000;
   }
 
-  /* Dropdown menu fixes */
+  /* Dropdown menu fixes - Glass effect with transparency */
   [data-slot="dropdown-menu-content"] {
     z-index: 10001 !important;
-    background: hsl(var(--popover)) !important;
+    background: rgba(10, 10, 11, 0.85) !important;
+    backdrop-filter: blur(40px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(40px) saturate(180%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5),
+                0 0 0 1px rgba(255, 255, 255, 0.1) inset !important;
     color: hsl(var(--popover-foreground)) !important;
+  }
+
+  /* Dropdown menu item hover effect */
+  [data-slot="dropdown-menu-item"]:hover,
+  [data-slot="dropdown-menu-item"]:focus {
+    background: rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+  }
+
+  /* Dropdown menu separator */
+  [data-slot="dropdown-menu-separator"] {
+    background: rgba(255, 255, 255, 0.15) !important;
+  }
+
+  /* Dropdown menu label (header section) */
+  [data-slot="dropdown-menu-label"] {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-radius: 0.375rem;
   }
 
   /* Sheet/Mobile menu fixes */
