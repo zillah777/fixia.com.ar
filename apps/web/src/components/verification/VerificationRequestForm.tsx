@@ -7,12 +7,13 @@ import { Textarea } from '../ui/textarea';
 import { Label } from '../ui/label';
 import { Alert, AlertDescription } from '../ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { 
-  verificationService, 
+import {
+  verificationService,
   VerificationType,
   CreateVerificationRequestDto,
   VerificationGuide
 } from '../../lib/services/verification.service';
+import { extractErrorMessage } from '../../utils/errorHandler';
 
 interface VerificationRequestFormProps {
   verificationType?: VerificationType | null;
@@ -113,8 +114,8 @@ export const VerificationRequestForm = memo<VerificationRequestFormProps>(({
 
       await verificationService.createVerificationRequest(requestData, files);
       onSuccess();
-    } catch (error: any) {
-      setError(error.response?.data?.message || 'Error al crear la solicitud de verificación');
+    } catch (error: unknown) {
+      setError(extractErrorMessage(error, 'Error al crear la solicitud de verificación'));
     } finally {
       setIsLoading(false);
     }

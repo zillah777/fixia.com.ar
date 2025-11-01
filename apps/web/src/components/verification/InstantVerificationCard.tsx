@@ -7,6 +7,7 @@ import { Input } from '../ui/input';
 import { Badge } from '../ui/badge';
 import { Alert, AlertDescription } from '../ui/alert';
 import { verificationService, VerificationType } from '../../lib/services/verification.service';
+import { extractErrorMessage } from '../../utils/errorHandler';
 
 interface InstantVerificationCardProps {
   type: VerificationType.PHONE | VerificationType.EMAIL;
@@ -51,8 +52,8 @@ export const InstantVerificationCard = memo<InstantVerificationCardProps>(({
         setSuccessMessage(result.message);
         setStep('verify');
       }
-    } catch (error: any) {
-      setError(error.response?.data?.message || 'Error al enviar verificación');
+    } catch (error: unknown) {
+      setError(extractErrorMessage(error, 'Error al enviar verificación'));
     } finally {
       setIsLoading(false);
     }
@@ -84,8 +85,8 @@ export const InstantVerificationCard = memo<InstantVerificationCardProps>(({
       } else {
         setError('Código de verificación inválido');
       }
-    } catch (error: any) {
-      setError(error.response?.data?.message || 'Error al verificar código');
+    } catch (error: unknown) {
+      setError(extractErrorMessage(error, 'Error al verificar código'));
     } finally {
       setIsLoading(false);
     }

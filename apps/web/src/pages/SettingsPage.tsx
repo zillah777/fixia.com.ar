@@ -29,6 +29,8 @@ import {
 } from "../components/ui/dialog";
 import { FixiaNavigation } from "../components/FixiaNavigation";
 import { useSecureAuth } from "../context/SecureAuthContext";
+import { subscriptionService } from "../lib/services/subscription.service";
+import { extractErrorMessage } from "../utils/errorHandler";
 
 function ProfileTab() {
   const { user, updateProfile } = useSecureAuth();
@@ -854,6 +856,8 @@ function SubscriptionTab() {
   const navigate = useNavigate();
   const { user, upgradeToPremium } = useSecureAuth();
   const [isProcessing, setIsProcessing] = useState(false);
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
+  const [isCancelling, setIsCancelling] = useState(false);
   const isProfessional = user?.userType === 'professional';
 
   const handleUpgradeClick = async () => {
@@ -875,10 +879,23 @@ function SubscriptionTab() {
     // window.location.href = '/billing'; // Uncomment when billing portal is ready
   };
 
-  const handleCancelSubscription = () => {
-    // TODO: Implement subscription cancellation flow
-    toast.info('Función de cancelación de suscripción en desarrollo');
-    // For now, just show a message. Should open a dialog with confirmation.
+  const handleCancelSubscription = async () => {
+    setIsCancelling(true);
+    try {
+      await subscriptionService.cancelSubscription();
+      toast.success('Suscripción cancelada correctamente');
+      setShowCancelDialog(false);
+      // Refresh the page to update subscription status
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
+    } catch (error: unknown) {
+      const errorMessage = extractErrorMessage(error, 'Error al cancelar la suscripción');
+      console.error('Error cancelling subscription:', error);
+      toast.error(errorMessage);
+    } finally {
+      setIsCancelling(false);
+    }
   };
 
   return (
@@ -942,7 +959,8 @@ function SubscriptionTab() {
                 <Button
                   variant="outline"
                   className="glass border-white/20 text-destructive text-sm sm:text-base"
-                  onClick={handleCancelSubscription}
+                  onClick={() => setShowCancelDialog(true)}
+                  disabled={isCancelling}
                 >
                   Cancelar Suscripción
                 </Button>
@@ -984,6 +1002,65 @@ function SubscriptionTab() {
           )}
         </CardContent>
       </Card>
+
+      {/* Cancel Subscription Dialog */}
+      <Dialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
+        <DialogContent className="glass border-white/10 max-w-[90vw] sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center space-x-2 text-destructive">
+              <AlertCircle className="h-5 w-5" />
+              <span>Cancelar Suscripción</span>
+            </DialogTitle>
+            <DialogDescription>
+              ¿Estás seguro de que deseas cancelar tu suscripción profesional?
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            <Alert className="border-warning/50 bg-warning/10">
+              <AlertCircle className="h-4 w-4 text-warning" />
+              <AlertDescription className="text-warning">
+                Al cancelar tu suscripción, perderás acceso a las funcionalidades premium después del período de facturación actual.
+              </AlertDescription>
+            </Alert>
+
+            <div className="space-y-3 text-sm text-muted-foreground">
+              <p>Se perderá acceso a:</p>
+              <ul className="list-disc list-inside space-y-1 ml-2">
+                <li>Servicios ilimitados</li>
+                <li>Badge "Premium" destacado</li>
+                <li>Prioridad en búsquedas</li>
+                <li>Estadísticas avanzadas</li>
+                <li>Soporte prioritario</li>
+              </ul>
+            </div>
+          </div>
+
+          <DialogFooter className="gap-3">
+            <Button
+              variant="outline"
+              onClick={() => setShowCancelDialog(false)}
+              disabled={isCancelling}
+              className="glass border-white/20 text-sm sm:text-base"
+            >
+              Mantener Suscripción
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleCancelSubscription}
+              disabled={isCancelling}
+              className="bg-destructive hover:bg-destructive/90 text-white text-sm sm:text-base"
+            >
+              {isCancelling ? (
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+              ) : (
+                <X className="h-4 w-4 mr-2" />
+              )}
+              Cancelar Suscripción
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

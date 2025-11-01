@@ -10,6 +10,17 @@ import { cn } from '../ui/utils';
 import { useNotifications } from '../../context/NotificationContext';
 import { toast } from 'sonner';
 
+interface Notification {
+  id: string;
+  type: 'message' | 'order' | 'payment' | 'review' | 'system' | 'promotion';
+  title: string;
+  message: string;
+  read: boolean;
+  timestamp: Date;
+  actionUrl?: string;
+  metadata?: Record<string, unknown>;
+}
+
 interface NotificationBellProps {
   className?: string;
 }
@@ -29,7 +40,7 @@ export function NotificationBell({ className }: NotificationBellProps) {
 
 
   // Handle notification click
-  const handleNotificationClick = (notification: any) => {
+  const handleNotificationClick = (notification: Notification): void => {
     if (!notification.read) {
       markAsRead(notification.id);
     }

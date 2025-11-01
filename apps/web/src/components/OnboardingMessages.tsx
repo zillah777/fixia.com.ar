@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, ReactNode } from 'react';
+import { LucideIcon } from 'lucide-react';
 import {
   X, Lightbulb, TrendingUp, Target, Zap, Star, Users,
   MessageSquare, Shield, Trophy, Rocket, Heart, Briefcase,
@@ -8,18 +9,36 @@ import {
 import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
+import { User } from '../context/SecureAuthContext';
+import { DashboardStats } from '../lib/services/dashboard.service';
+
+interface ClientStats {
+  open_announcements?: number;
+  proposals_received?: number;
+  in_progress?: number;
+  client_rating?: number;
+  total_services?: number;
+  total_reviews?: number;
+  has_switched_role?: boolean;
+}
 
 interface OnboardingMessage {
   id: string;
   title: string;
   description: string;
-  icon: any;
+  icon: LucideIcon;
   color: string;
-  condition: (user: any, stats: any) => boolean;
+  condition: (user: User | null | undefined, stats: DashboardStats & ClientStats) => boolean;
   priority: number;
 }
 
-export function OnboardingMessages({ user, dashboardData, clientStats }: any) {
+interface OnboardingMessagesProps {
+  user: User | null | undefined;
+  dashboardData?: DashboardStats | null;
+  clientStats?: ClientStats;
+}
+
+export function OnboardingMessages({ user, dashboardData, clientStats }: OnboardingMessagesProps): ReactNode {
   const [dismissedMessages, setDismissedMessages] = useState<string[]>([]);
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
 
@@ -248,9 +267,22 @@ export function OnboardingMessages({ user, dashboardData, clientStats }: any) {
     }
   ];
 
+  const mergedStats: DashboardStats & ClientStats = {
+    total_services: 0,
+    active_projects: 0,
+    total_earnings: 0,
+    average_rating: 0,
+    review_count: 0,
+    profile_views: 0,
+    messages_count: 0,
+    pending_proposals: 0,
+    ...dashboardData,
+    ...clientStats
+  };
+
   const activeMessages = messages
     .filter(msg => !dismissedMessages.includes(msg.id))
-    .filter(msg => msg.condition(user, { ...dashboardData, ...clientStats }))
+    .filter(msg => msg.condition(user, mergedStats))
     .sort((a, b) => a.priority - b.priority);
 
   const handleDismiss = (messageId: string) => {

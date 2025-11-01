@@ -10,6 +10,7 @@ import { Badge } from "./ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "./ui/dialog";
 import { toast } from "sonner";
 import { api } from "../lib/api";
+import { extractErrorMessage } from "../utils/errorHandler";
 
 interface UpgradeToProfessionalCardProps {
   userType: string;
@@ -86,9 +87,10 @@ export function UpgradeToProfessionalCard({ userType, onUpgradeSuccess }: Upgrad
       setTimeout(() => {
         window.location.reload();
       }, 1500);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error upgrading to professional:', error);
-      toast.error(error.response?.data?.message || "Error al actualizar cuenta");
+      const errorMessage = extractErrorMessage(error, 'Error al actualizar cuenta');
+      toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }

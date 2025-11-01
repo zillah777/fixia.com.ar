@@ -16,6 +16,7 @@ import { Switch } from '../ui/switch';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { feedbackService, CreateFeedbackRequest, Feedback } from '../../lib/services/feedback.service';
 import { toast } from 'sonner';
+import { extractErrorMessage } from '../../utils/errorHandler';
 
 interface GiveFeedbackModalProps {
   isOpen: boolean;
@@ -67,9 +68,10 @@ export const GiveFeedbackModal: React.FC<GiveFeedbackModalProps> = ({
       toast.success('Feedback enviado exitosamente');
       onSuccess?.(feedback);
       handleClose();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error giving feedback:', error);
-      toast.error(error.response?.data?.message || 'Error al enviar feedback');
+      const errorMessage = extractErrorMessage(error, 'Error al enviar feedback');
+      toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
