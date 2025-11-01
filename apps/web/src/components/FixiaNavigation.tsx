@@ -188,7 +188,7 @@ export const FixiaNavigation = memo(function FixiaNavigation() {
                           </p>
                           {user?.userType === 'professional' && user?.professionalProfile && (
                             <div className="flex items-center space-x-1 mt-1">
-                              <div className="flex text-yellow-400">
+                              <div className="flex text-warning">
                                 {'★'.repeat(Math.floor(user.professionalProfile.averageRating || 0))}
                                 {'☆'.repeat(5 - Math.floor(user.professionalProfile.averageRating || 0))}
                               </div>

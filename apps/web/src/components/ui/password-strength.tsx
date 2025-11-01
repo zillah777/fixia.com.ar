@@ -14,10 +14,10 @@ interface StrengthLevel {
 }
 
 const strengthLevels: StrengthLevel[] = [
-  { label: "Muy débil", color: "text-red-500", bgColor: "bg-red-500", minScore: 0 },
+  { label: "Muy débil", color: "text-destructive", bgColor: "bg-destructive", minScore: 0 },
   { label: "Débil", color: "text-orange-500", bgColor: "bg-orange-500", minScore: 1 },
-  { label: "Aceptable", color: "text-yellow-500", bgColor: "bg-yellow-500", minScore: 2 },
-  { label: "Fuerte", color: "text-green-500", bgColor: "bg-green-500", minScore: 3 },
+  { label: "Aceptable", color: "text-warning", bgColor: "bg-warning", minScore: 2 },
+  { label: "Fuerte", color: "text-success", bgColor: "bg-success", minScore: 3 },
   { label: "Muy fuerte", color: "text-emerald-500", bgColor: "bg-emerald-500", minScore: 4 },
 ];
 

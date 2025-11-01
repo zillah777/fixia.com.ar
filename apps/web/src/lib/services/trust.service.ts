@@ -104,7 +104,7 @@ class TrustService {
 
   getBadgeColorFromScore(score: number): string {
     if (score >= 95) return 'text-purple-600 bg-purple-100';
-    if (score >= 85) return 'text-green-600 bg-green-100';
+    if (score >= 85) return 'text-success bg-success/10';
     if (score >= 75) return 'text-blue-600 bg-blue-100';
     if (score >= 65) return 'text-orange-600 bg-orange-100';
     if (score >= 50) return 'text-gray-600 bg-gray-100';

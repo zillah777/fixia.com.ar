@@ -506,7 +506,7 @@ function FeaturedServicesSection() {
                         {/* Rating y Precio */}
                         <div className="flex items-center justify-between pt-4 border-t border-white/10">
                           <div className="flex items-center space-x-1">
-                            <Star className="h-5 w-5 text-amber-400 fill-amber-400" />
+                            <Star className="h-5 w-5 text-warning fill-warning" />
                             <span className="font-bold text-lg">{rating.toFixed(1)}</span>
                             <span className="text-muted-foreground text-sm">({reviewCount})</span>
                           </div>

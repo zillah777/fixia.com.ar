@@ -156,8 +156,8 @@ function CriticalErrorFallback({
         className="max-w-md w-full bg-card border border-border rounded-lg p-8 text-center"
       >
         <div className="mb-6">
-          <div className="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
-            <AlertTriangle className="h-8 w-8 text-red-600" />
+          <div className="mx-auto w-16 h-16 bg-destructive/10 rounded-full flex items-center justify-center mb-4">
+            <AlertTriangle className="h-8 w-8 text-destructive" />
           </div>
           <h1 className="text-xl font-semibold text-foreground mb-2">
             Error Crítico de la Aplicación
@@ -165,10 +165,10 @@ function CriticalErrorFallback({
           <p className="text-sm text-muted-foreground mb-4">
             La aplicación ha encontrado un error crítico y no puede continuar.
           </p>
-          
+
           {process.env.NODE_ENV === 'development' && error && (
-            <div className="mb-4 p-3 bg-red-50 rounded-md text-left">
-              <p className="text-xs font-mono text-red-800 break-all">
+            <div className="mb-4 p-3 bg-destructive/5 rounded-md text-left">
+              <p className="text-xs font-mono text-destructive break-all">
                 {error.message}
               </p>
             </div>

@@ -151,15 +151,15 @@ class PaymentsService {
 
   getStatusColor(status: string): string {
     const colors: Record<string, string> = {
-      'pending': 'text-yellow-600 bg-yellow-100',
-      'approved': 'text-green-600 bg-green-100',
+      'pending': 'text-warning bg-warning/10',
+      'approved': 'text-success bg-success/10',
       'authorized': 'text-blue-600 bg-blue-100',
       'in_process': 'text-blue-600 bg-blue-100',
       'in_mediation': 'text-orange-600 bg-orange-100',
-      'rejected': 'text-red-600 bg-red-100',
+      'rejected': 'text-destructive bg-destructive/10',
       'cancelled': 'text-gray-600 bg-gray-100',
       'refunded': 'text-purple-600 bg-purple-100',
-      'charged_back': 'text-red-600 bg-red-100',
+      'charged_back': 'text-destructive bg-destructive/10',
     };
 
     return colors[status] || 'text-gray-600 bg-gray-100';

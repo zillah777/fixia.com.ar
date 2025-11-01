@@ -131,22 +131,22 @@ function AsyncErrorFallback({
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="p-6 border border-red-200 rounded-lg bg-red-50 max-w-md mx-auto"
+      className="p-6 border border-destructive/30 rounded-lg bg-destructive/5 max-w-md mx-auto"
     >
       <div className="flex items-center gap-3 mb-4">
         <div className="flex-shrink-0">
           {isNetworkError ? (
-            <WifiOff className="h-6 w-6 text-red-600" />
+            <WifiOff className="h-6 w-6 text-destructive" />
           ) : (
-            <AlertTriangle className="h-6 w-6 text-red-600" />
+            <AlertTriangle className="h-6 w-6 text-destructive" />
           )}
         </div>
         <div>
-          <h3 className="text-sm font-semibold text-red-800">
+          <h3 className="text-sm font-semibold text-destructive">
             {isNetworkError ? 'Error de Conexión' : 'Error Asíncrono'}
           </h3>
-          <p className="text-xs text-red-700 mt-1">
-            {isNetworkError 
+          <p className="text-xs text-destructive mt-1">
+            {isNetworkError
               ? 'No se pudo conectar al servidor. Verifica tu conexión a internet.'
               : 'Hubo un problema cargando el contenido dinámico.'
             }
@@ -155,13 +155,13 @@ function AsyncErrorFallback({
       </div>
 
       {process.env.NODE_ENV === 'development' && error && (
-        <div className="mb-4 p-3 bg-red-100 rounded border text-xs font-mono text-red-800 break-all">
+        <div className="mb-4 p-3 bg-destructive/10 rounded border text-xs font-mono text-destructive break-all">
           {error.message}
         </div>
       )}
 
       {retryCount > 0 && (
-        <div className="mb-4 text-xs text-red-600">
+        <div className="mb-4 text-xs text-destructive">
           Intentos: {retryCount}/{maxRetries}
         </div>
       )}
@@ -170,7 +170,7 @@ function AsyncErrorFallback({
         <button
           onClick={onRetry}
           disabled={isMaxRetriesReached}
-          className="flex-1 inline-flex items-center justify-center gap-2 bg-red-600 text-white px-3 py-2 rounded text-sm font-medium hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-1 inline-flex items-center justify-center gap-2 bg-destructive text-white px-3 py-2 rounded text-sm font-medium hover:bg-destructive/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <RefreshCcw className="h-4 w-4" />
           {isMaxRetriesReached ? 'Máx. intentos' : 'Reintentar'}

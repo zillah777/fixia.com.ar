@@ -21,10 +21,10 @@ interface PasswordInputProps extends Omit<React.InputHTMLAttributes<HTMLInputEle
 }
 
 const getStrengthColor = (score: number): string => {
-  if (score < 30) return 'bg-red-500';
-  if (score < 60) return 'bg-yellow-500';
+  if (score < 30) return 'bg-destructive';
+  if (score < 60) return 'bg-warning';
   if (score < 80) return 'bg-blue-500';
-  return 'bg-green-500';
+  return 'bg-success';
 };
 
 const getStrengthText = (score: number): string => {
@@ -186,35 +186,35 @@ export const PasswordInput = memo(forwardRef<HTMLInputElement, PasswordInputProp
             <div className="grid grid-cols-1 gap-1 text-xs">
               <div className={cn(
                 "flex items-center gap-2",
-                stringValue.length >= 8 ? "text-green-600" : "text-muted-foreground"
+                stringValue.length >= 8 ? "text-success" : "text-muted-foreground"
               )}>
                 <CheckCircle className="h-3 w-3" />
                 Mínimo 8 caracteres
               </div>
               <div className={cn(
                 "flex items-center gap-2",
-                /[A-Z]/.test(stringValue) ? "text-green-600" : "text-muted-foreground"
+                /[A-Z]/.test(stringValue) ? "text-success" : "text-muted-foreground"
               )}>
                 <CheckCircle className="h-3 w-3" />
                 Al menos una mayúscula
               </div>
               <div className={cn(
                 "flex items-center gap-2",
-                /[a-z]/.test(stringValue) ? "text-green-600" : "text-muted-foreground"
+                /[a-z]/.test(stringValue) ? "text-success" : "text-muted-foreground"
               )}>
                 <CheckCircle className="h-3 w-3" />
                 Al menos una minúscula
               </div>
               <div className={cn(
                 "flex items-center gap-2",
-                /\d/.test(stringValue) ? "text-green-600" : "text-muted-foreground"
+                /\d/.test(stringValue) ? "text-success" : "text-muted-foreground"
               )}>
                 <CheckCircle className="h-3 w-3" />
                 Al menos un número
               </div>
               <div className={cn(
                 "flex items-center gap-2",
-                /[!@#$%^&*(),.?":{}|<>]/.test(stringValue) ? "text-green-600" : "text-muted-foreground"
+                /[!@#$%^&*(),.?":{}|<>]/.test(stringValue) ? "text-success" : "text-muted-foreground"
               )}>
                 <CheckCircle className="h-3 w-3" />
                 Al menos un carácter especial
@@ -246,8 +246,8 @@ export const PasswordInput = memo(forwardRef<HTMLInputElement, PasswordInputProp
 
       {/* Success Message */}
       {passwordValidation.isValid && stringValue && stringValue.length > 0 && (
-        <Alert className="py-2 border-green-200 bg-green-50 text-green-800">
-          <CheckCircle className="h-4 w-4 text-green-600" />
+        <Alert className="py-2 border-success/30 bg-success/5 text-success">
+          <CheckCircle className="h-4 w-4 text-success" />
           <AlertDescription className="text-sm">
             Contraseña segura
             {passwordsMatch && showConfirmationCheck && ' y confirmada'}

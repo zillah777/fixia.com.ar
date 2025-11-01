@@ -535,7 +535,7 @@ export const VerificationAdminPage = memo(() => {
                   setSelectedRequest(null);
                   openReviewDialog(selectedRequest, 'reject');
                 }}
-                className="text-red-600 border-red-600 hover:bg-red-50"
+                className="text-destructive border-destructive hover:bg-destructive/5"
               >
                 Rechazar
               </Button>
@@ -544,7 +544,7 @@ export const VerificationAdminPage = memo(() => {
                   setSelectedRequest(null);
                   openReviewDialog(selectedRequest, 'approve');
                 }}
-                className="bg-green-600 hover:bg-green-700"
+                className="bg-success hover:bg-success/90"
               >
                 Aprobar
               </Button>

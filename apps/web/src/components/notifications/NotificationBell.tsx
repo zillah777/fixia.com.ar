@@ -17,7 +17,7 @@ interface NotificationBellProps {
 const notificationTypeConfig = {
   order: { color: 'bg-blue-500', icon: '🔨' },
   payment: { color: 'bg-emerald-500', icon: '💰' },
-  review: { color: 'bg-yellow-500', icon: '⭐' },
+  review: { color: 'bg-warning', icon: '⭐' },
   message: { color: 'bg-pink-500', icon: '💬' },
   promotion: { color: 'bg-orange-500', icon: '📋' },
   system: { color: 'bg-gray-500', icon: '🔔' }
@@ -193,7 +193,7 @@ export function NotificationBell({ className }: NotificationBellProps) {
                                   variant="ghost"
                                   size="sm"
                                   onClick={(e) => handleDeleteNotification(e, notification.id)}
-                                  className="opacity-0 group-hover:opacity-100 h-6 w-6 p-0 hover:bg-red-100 hover:text-red-600"
+                                  className="opacity-0 group-hover:opacity-100 h-6 w-6 p-0 hover:bg-destructive/10 hover:text-destructive"
                                 >
                                   <Trash2 className="h-3 w-3" />
                                 </Button>

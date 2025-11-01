@@ -104,10 +104,10 @@ export const ValidatedTextarea = memo(forwardRef<HTMLTextAreaElement, ValidatedT
               <AlertCircle className="absolute right-3 top-3 h-4 w-4 text-destructive" />
             )}
             {hasWarning && (
-              <Info className="absolute right-3 top-3 h-4 w-4 text-yellow-500" />
+              <Info className="absolute right-3 top-3 h-4 w-4 text-warning" />
             )}
             {hasSuccess && (
-              <CheckCircle className="absolute right-3 top-3 h-4 w-4 text-green-500" />
+              <CheckCircle className="absolute right-3 top-3 h-4 w-4 text-success" />
             )}
           </>
         )}
@@ -118,7 +118,7 @@ export const ValidatedTextarea = memo(forwardRef<HTMLTextAreaElement, ValidatedT
         <div className="flex justify-end">
           <span className={cn(
             "text-xs",
-            isNearLimit ? "text-yellow-600" : "text-muted-foreground",
+            isNearLimit ? "text-warning" : "text-muted-foreground",
             characterCount >= maxLength && "text-destructive"
           )}>
             {characterCount}/{maxLength}
@@ -136,16 +136,16 @@ export const ValidatedTextarea = memo(forwardRef<HTMLTextAreaElement, ValidatedT
       
       {/* Warning Message */}
       {warning && !error && (
-        <Alert className="py-2 border-yellow-200 bg-yellow-50 text-yellow-800">
-          <Info className="h-4 w-4 text-yellow-600" />
+        <Alert className="py-2 border-warning/30 bg-warning/5 text-warning">
+          <Info className="h-4 w-4 text-warning" />
           <AlertDescription className="text-sm">{warning}</AlertDescription>
         </Alert>
       )}
-      
+
       {/* Success Message */}
       {success && !error && !warning && (
-        <Alert className="py-2 border-green-200 bg-green-50 text-green-800">
-          <CheckCircle className="h-4 w-4 text-green-600" />
+        <Alert className="py-2 border-success/30 bg-success/5 text-success">
+          <CheckCircle className="h-4 w-4 text-success" />
           <AlertDescription className="text-sm">{success}</AlertDescription>
         </Alert>
       )}

@@ -454,7 +454,7 @@ export default function ServiceDetailPage() {
                       {favoriteLoading ? (
                         <div className="animate-spin rounded-full border-2 border-current border-t-transparent h-4 w-4" />
                       ) : (
-                        <Heart className={`h-4 w-4 ${isFavorite ? 'fill-red-500 text-red-500' : ''}`} />
+                        <Heart className={`h-4 w-4 ${isFavorite ? 'fill-destructive text-destructive' : ''}`} />
                       )}
                     </Button>
                   </div>

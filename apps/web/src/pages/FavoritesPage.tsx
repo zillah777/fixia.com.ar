@@ -201,7 +201,7 @@ function ServiceCard({ service }: { service: FavoriteService }) {
 
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-1">
-              <Heart className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+              <Heart className="h-4 w-4 fill-warning text-warning" />
               <span className="text-sm font-medium">{service.rating}</span>
               <span className="text-sm text-muted-foreground">({service.reviews})</span>
             </div>

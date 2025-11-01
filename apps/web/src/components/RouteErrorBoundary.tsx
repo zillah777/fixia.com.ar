@@ -103,14 +103,14 @@ class RouteErrorBoundary extends Component<Props, State> {
           >
             {/* Error Header */}
             <div className="text-center mb-8">
-              <div className="mx-auto w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mb-6">
-                <Bug className="h-10 w-10 text-red-600" />
+              <div className="mx-auto w-20 h-20 bg-destructive/10 rounded-full flex items-center justify-center mb-6">
+                <Bug className="h-10 w-10 text-destructive" />
               </div>
-              
+
               <h1 className="text-2xl font-bold text-foreground mb-2">
                 Error en la Página
               </h1>
-              
+
               <p className="text-muted-foreground mb-4">
                 {this.props.routeName ? (
                   <>Ocurrió un error en la página <span className="font-medium">{this.props.routeName}</span></>
@@ -132,12 +132,12 @@ class RouteErrorBoundary extends Component<Props, State> {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.2 }}
-                className="mb-8 p-4 bg-red-50 border border-red-200 rounded-lg"
+                className="mb-8 p-4 bg-destructive/5 border border-destructive/30 rounded-lg"
               >
-                <h3 className="text-sm font-semibold text-red-800 mb-2">
+                <h3 className="text-sm font-semibold text-destructive mb-2">
                   Detalles del Error (Solo en Desarrollo)
                 </h3>
-                <div className="text-xs font-mono text-red-700 bg-white p-3 rounded border overflow-auto">
+                <div className="text-xs font-mono text-destructive bg-white p-3 rounded border overflow-auto">
                   <div className="mb-2">
                     <strong>Mensaje:</strong> {this.state.error.message}
                   </div>

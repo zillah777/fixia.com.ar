@@ -153,9 +153,9 @@ class DashboardService {
     const colors: Record<CurrentProject['status'], string> = {
       not_started: 'bg-gray-500',
       in_progress: 'bg-blue-500',
-      milestone_review: 'bg-yellow-500',
-      completed: 'bg-green-500',
-      cancelled: 'bg-red-500'
+      milestone_review: 'bg-warning',
+      completed: 'bg-success',
+      cancelled: 'bg-destructive'
     };
 
     return colors[status] || 'bg-gray-500';

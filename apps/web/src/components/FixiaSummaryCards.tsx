@@ -69,7 +69,7 @@ export const FixiaSummaryCards = memo(function FixiaSummaryCards() {
           <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 group">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
               <CardTitle className="flex items-center space-x-2">
-                <Heart className="h-4 w-4 text-warning group-hover:text-yellow-300 transition-colors duration-300" />
+                <Heart className="h-4 w-4 text-warning group-hover:text-warning/80 transition-colors duration-300" />
                 <span>Reputación</span>
               </CardTitle>
             </CardHeader>

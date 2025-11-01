@@ -423,7 +423,7 @@ function ServiceCard({ service, viewMode }: { service: Service, viewMode: string
                 {loading ? (
                   <div className="animate-spin rounded-full border-2 border-current border-t-transparent h-4 w-4  text-white" />
                 ) : (
-                  <Heart className={`h-4 w-4 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-white'}`} />
+                  <Heart className={`h-4 w-4 ${isFavorite ? 'fill-destructive text-destructive' : 'text-white'}`} />
                 )}
               </Button>
             </div>
@@ -563,7 +563,7 @@ function ServiceCard({ service, viewMode }: { service: Service, viewMode: string
                 {loading ? (
                   <div className="animate-spin rounded-full border-2 border-current border-t-transparent h-4 w-4" />
                 ) : (
-                  <Heart className={`h-4 w-4 ${isFavorite ? 'fill-red-500 text-red-500' : ''}`} />
+                  <Heart className={`h-4 w-4 ${isFavorite ? 'fill-destructive text-destructive' : ''}`} />
                 )}
               </Button>
 

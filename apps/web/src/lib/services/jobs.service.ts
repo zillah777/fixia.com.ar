@@ -261,9 +261,9 @@ class JobsService {
     const colors: Record<JobStatus, string> = {
       'not_started': 'text-gray-600 bg-gray-100',
       'in_progress': 'text-blue-600 bg-blue-100',
-      'milestone_review': 'text-yellow-600 bg-yellow-100',
-      'completed': 'text-green-600 bg-green-100',
-      'cancelled': 'text-red-600 bg-red-100',
+      'milestone_review': 'text-warning bg-warning/10',
+      'completed': 'text-success bg-success/10',
+      'cancelled': 'text-destructive bg-destructive/10',
       'disputed': 'text-orange-600 bg-orange-100'
     };
     return colors[status] || 'text-gray-600 bg-gray-100';
@@ -282,10 +282,10 @@ class JobsService {
 
   getPaymentStatusColor(status: PaymentStatus): string {
     const colors: Record<PaymentStatus, string> = {
-      'pending': 'text-yellow-600 bg-yellow-100',
+      'pending': 'text-warning bg-warning/10',
       'paid': 'text-blue-600 bg-blue-100',
-      'released': 'text-green-600 bg-green-100',
-      'refunded': 'text-red-600 bg-red-100',
+      'released': 'text-success bg-success/10',
+      'refunded': 'text-destructive bg-destructive/10',
       'disputed': 'text-orange-600 bg-orange-100'
     };
     return colors[status] || 'text-gray-600 bg-gray-100';

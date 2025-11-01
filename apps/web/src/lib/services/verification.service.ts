@@ -283,9 +283,9 @@ class VerificationService {
 
   getVerificationStatusColor(status: VerificationStatus): string {
     const colors = {
-      [VerificationStatus.PENDING]: 'text-yellow-600 bg-yellow-100',
-      [VerificationStatus.APPROVED]: 'text-green-600 bg-green-100',
-      [VerificationStatus.REJECTED]: 'text-red-600 bg-red-100',
+      [VerificationStatus.PENDING]: 'text-warning bg-warning/10',
+      [VerificationStatus.APPROVED]: 'text-success bg-success/10',
+      [VerificationStatus.REJECTED]: 'text-destructive bg-destructive/10',
       [VerificationStatus.EXPIRED]: 'text-gray-600 bg-gray-100',
       [VerificationStatus.CANCELLED]: 'text-gray-600 bg-gray-100'
     };

@@ -146,12 +146,12 @@ export const validatePassword = (password: string): PasswordValidationResult => 
  */
 export const getStrengthColor = (strength: PasswordValidationResult['strength']): string => {
   switch (strength) {
-    case 'very-strong': return 'text-green-600';
-    case 'strong': return 'text-green-500';
+    case 'very-strong': return 'text-success';
+    case 'strong': return 'text-success';
     case 'good': return 'text-blue-500';
-    case 'fair': return 'text-yellow-500';
+    case 'fair': return 'text-warning';
     case 'weak': return 'text-orange-500';
-    case 'very-weak': return 'text-red-500';
+    case 'very-weak': return 'text-destructive';
     default: return 'text-gray-500';
   }
 };
