@@ -612,52 +612,58 @@ function CommitmentSection() {
 
 function CTASection() {
   return (
-    <section className="py-20">
-      <div className="container mx-auto px-4 sm:px-6">
+    <section className="py-12 sm:py-20">
+      <div className="container mx-auto px-4 sm:px-6 w-full max-w-full">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
+          className="w-full"
         >
-          <Card className="glass-glow border-white/10 overflow-hidden card-hover">
-            <CardContent className="p-12 text-center">
-              <div className="max-w-3xl mx-auto">
-                <div className="h-20 w-20 rounded-3xl bg-primary/20 flex items-center justify-center mx-auto mb-8 float">
-                  <Gift className="h-10 w-10 text-primary" />
+          <Card className="glass-glow border-white/10 overflow-hidden card-hover w-full">
+            <CardContent className="p-6 sm:p-10 md:p-12 text-center w-full">
+              <div className="w-full max-w-3xl mx-auto">
+                <div className="h-16 sm:h-20 w-16 sm:w-20 rounded-3xl bg-primary/20 flex items-center justify-center mx-auto mb-6 sm:mb-8 float">
+                  <Gift className="h-8 sm:h-10 w-8 sm:w-10 text-primary" />
                 </div>
-                <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-8 text-foreground tracking-tight">
+                <h2 className="text-2xl xs:text-3xl sm:text-4xl md:text-5xl font-extrabold mb-6 sm:mb-8 text-foreground tracking-tight leading-tight">
                   ¿Listo para ser parte del futuro?
                 </h2>
-                <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground/90 mb-10 font-medium leading-relaxed">
-                  Únete a la revolución del marketplace local. Sin comisiones, 
+                <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-muted-foreground/90 mb-8 sm:mb-10 font-medium leading-relaxed px-2 sm:px-0">
+                  Únete a la revolución del marketplace local. Sin comisiones,
                   con profesionales verificados y contacto directo.
                 </p>
-                
-                <Badge className="bg-warning/20 text-warning border-warning/30 mb-8 px-5 py-2.5 text-base pulse-glow">
-                  🎉 Promoción: Primeros 200 usuarios obtienen 2 meses gratis
-                </Badge>
-                
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                  <Link to="/register">
-                    <Button size="lg" className="liquid-gradient hover:opacity-90 hover:scale-105 transition-all duration-300 shadow-xl px-10 py-7 text-lg font-semibold rounded-2xl">
-                      <Users className="mr-3 h-6 w-6" />
+
+                <div className="flex justify-center mb-8 sm:mb-10 px-2 sm:px-0">
+                  <Badge className="bg-warning/20 text-warning border-warning/30 px-3 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm md:text-base pulse-glow inline-block max-w-[95vw] text-center flex-wrap">
+                    <span className="block">🎉 Promoción: Primeros 200 usuarios obtienen 2 meses gratis</span>
+                  </Badge>
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-8 sm:mb-10 px-2 sm:px-0">
+                  <Link to="/register" className="w-full sm:w-auto">
+                    <Button size="lg" className="liquid-gradient hover:opacity-90 hover:scale-105 transition-all duration-300 shadow-xl px-6 sm:px-10 py-6 sm:py-7 text-sm sm:text-lg font-semibold rounded-2xl w-full sm:w-auto">
+                      <Users className="mr-2 sm:mr-3 h-5 sm:h-6 w-5 sm:w-6" />
                       Buscar Profesionales
                     </Button>
                   </Link>
-                  <Link to="/register?type=professional">
-                    <Button size="lg" variant="outline" className="glass-glow border-white/20 hover:glass-medium hover:scale-105 transition-all px-10 py-7 text-lg font-semibold rounded-2xl">
-                      <Crown className="mr-3 h-6 w-6" />
+                  <Link to="/register?type=professional" className="w-full sm:w-auto">
+                    <Button size="lg" variant="outline" className="glass-glow border-white/20 hover:glass-medium hover:scale-105 transition-all px-6 sm:px-10 py-6 sm:py-7 text-sm sm:text-lg font-semibold rounded-2xl w-full sm:w-auto">
+                      <Crown className="mr-2 sm:mr-3 h-5 sm:h-6 w-5 sm:w-6" />
                       Ser Profesional
                     </Button>
                   </Link>
                 </div>
-                
-                <div className="flex items-center justify-center space-x-8 mt-8 text-sm text-muted-foreground">
-                  <span>✨ Sin comisiones</span>
-                  <span>🛡️ Profesionales verificados</span>
-                  <span>📱 Contacto directo WhatsApp</span>
-                  <span>🎯 Matchmaking inteligente</span>
+
+                <div className="flex flex-col xs:flex-row xs:flex-wrap items-center justify-center gap-3 sm:gap-6 lg:gap-8 mt-6 sm:mt-8 text-xs sm:text-sm text-muted-foreground px-2 sm:px-0">
+                  <span className="whitespace-nowrap">✨ Sin comisiones</span>
+                  <span className="hidden xs:inline">•</span>
+                  <span className="whitespace-nowrap">🛡️ Profesionales verificados</span>
+                  <span className="hidden xs:inline">•</span>
+                  <span className="whitespace-nowrap">📱 WhatsApp directo</span>
+                  <span className="hidden xs:inline">•</span>
+                  <span className="whitespace-nowrap">🎯 Matchmaking inteligente</span>
                 </div>
               </div>
             </CardContent>

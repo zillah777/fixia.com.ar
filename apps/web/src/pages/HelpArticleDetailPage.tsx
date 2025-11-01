@@ -220,11 +220,11 @@ export const HelpArticleDetailPage = () => {
               <Icon className="h-8 w-8 text-primary" />
             </div>
             <div className="flex-1">
-              <h1 className="text-3xl sm:text-4xl font-bold mb-3">{article.title}</h1>
-              <p className="text-lg text-muted-foreground mb-4">{article.description}</p>
+              <h1 className="text-3xl sm:text-4xl font-bold mb-3 text-white">{article.title}</h1>
+              <p className="text-lg text-muted-foreground/90 mb-4">{article.description}</p>
               <div className="flex items-center gap-3 flex-wrap">
                 <Badge variant="secondary">{article.category}</Badge>
-                <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                <div className="flex items-center gap-1 text-sm text-muted-foreground/80">
                   <Clock className="h-4 w-4" />
                   {article.readTime}
                 </div>
@@ -243,14 +243,14 @@ export const HelpArticleDetailPage = () => {
           {article.sections?.map((section, index) => (
             <Card key={index} className="glass border-white/10">
               <CardContent className="p-6 sm:p-8">
-                <h2 className="text-xl sm:text-2xl font-bold mb-4 text-foreground">
+                <h2 className="text-xl sm:text-2xl font-bold mb-4 text-white">
                   {section.title}
                 </h2>
                 <div className="prose prose-invert max-w-none">
                   {section.content.split('\n').map((paragraph, idx) => (
                     <p
                       key={idx}
-                      className="text-base text-muted-foreground/90 leading-relaxed mb-3 whitespace-pre-wrap"
+                      className="text-base text-muted-foreground/85 leading-relaxed mb-3 whitespace-pre-wrap"
                     >
                       {paragraph}
                     </p>
@@ -273,8 +273,8 @@ export const HelpArticleDetailPage = () => {
               <Share2 className="h-6 w-6 text-primary" />
             </div>
             <div>
-              <h3 className="text-lg font-bold mb-2">¿Necesitas más ayuda?</h3>
-              <p className="text-muted-foreground mb-4">
+              <h3 className="text-lg font-bold mb-2 text-white">¿Necesitas más ayuda?</h3>
+              <p className="text-muted-foreground/85 mb-4">
                 Si tienes más preguntas, puedes contactarnos directamente a través de nuestro centro de soporte.
               </p>
               <Link to="/help">
