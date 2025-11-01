@@ -276,7 +276,7 @@ function CategoryStep({
               </div>
               <span>Categoría y Especialización</span>
             </CardTitle>
-            <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30 px-3 py-1">
+            <Badge className="bg-secondary/20 text-secondary border-secondary/30 px-3 py-1">
               2 de 6
             </Badge>
           </div>
@@ -321,12 +321,12 @@ function CategoryStep({
             </div>
 
             {/* ALERT INFORMATIVO */}
-            <Alert className="glass-medium border-blue-500/30 bg-gradient-to-r from-blue-500/10 to-transparent">
-              <Info className="h-5 w-5 text-blue-400" />
-              <AlertDescription className="text-sm text-blue-100/90 leading-relaxed">
+            <Alert className="glass-medium border-secondary/30 bg-gradient-to-r from-secondary/10 to-transparent">
+              <Info className="h-5 w-5 text-secondary" />
+              <AlertDescription className="text-sm text-secondary/90 leading-relaxed">
                 <strong>¿Qué es la categoría?</strong> Es la clasificación general de tu servicio que ayuda a los clientes a encontrarte.
                 <br />
-                <strong className="text-blue-300">Ejemplo:</strong> "Desarrollo Web" es una categoría. "React" y "Node.js" son habilidades que agregarás después.
+                <strong className="text-secondary/80">Ejemplo:</strong> "Desarrollo Web" es una categoría. "React" y "Node.js" son habilidades que agregarás después.
               </AlertDescription>
             </Alert>
 
@@ -444,13 +444,13 @@ function CategoryStep({
               </div>
 
               {/* ALERT EXPLICATIVO DE TAGS */}
-              <Alert className="glass-medium border-purple-500/30 bg-gradient-to-r from-purple-500/10 to-transparent">
-                <Lightbulb className="h-5 w-5 text-purple-400" />
-                <AlertDescription className="text-sm text-purple-100/90 space-y-2">
+              <Alert className="glass-medium border-primary/30 bg-gradient-to-r from-primary/10 to-transparent">
+                <Lightbulb className="h-5 w-5 text-primary" />
+                <AlertDescription className="text-sm text-primary/90 space-y-2">
                   <p className="font-semibold">¿Cómo agregar tags?</p>
                   <ul className="list-disc list-inside space-y-1 text-xs leading-relaxed">
                     <li>Haz clic en los tags sugeridos abajo</li>
-                    <li>O escribe uno personalizado y presiona <kbd className="px-1.5 py-0.5 bg-purple-500/20 rounded text-xs">ENTER</kbd></li>
+                    <li>O escribe uno personalizado y presiona <kbd className="px-1.5 py-0.5 bg-primary/20 rounded text-xs">ENTER</kbd></li>
                     <li>Los tags ayudan a que los clientes te encuentren en búsquedas específicas</li>
                     <li>Ejemplo: Si sabes "React", agrégalo para que aparezcas cuando busquen "desarrollador React"</li>
                   </ul>
