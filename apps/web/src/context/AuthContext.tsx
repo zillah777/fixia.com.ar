@@ -288,7 +288,7 @@ const transformBackendUser = (backendUser: any): User => {
     throw new Error('Missing critical user information');
   }
   
-  console.log('✅ User transformation completed successfully:', transformedUser);
+  console.log('User transformation completed successfully:', transformedUser);
   return transformedUser;
 };
 
@@ -307,7 +307,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           storedUser = localStorage.getItem('fixia_user');
           token = localStorage.getItem('fixia_token');
         } catch (storageError) {
-          console.warn('⚠️ LocalStorage access failed:', storageError);
+          console.warn('LocalStorage access failed:', storageError);
         }
         
         if (storedUser && token) {
@@ -320,7 +320,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             try {
               transformedUser = transformBackendUser(freshUserData);
             } catch (transformError) {
-              console.warn('⚠️ Fresh user data transformation failed, using fallback:', transformError);
+              console.warn('Fresh user data transformation failed, using fallback:', transformError);
               
               try {
                 // Parse stored user data as backup
@@ -338,12 +338,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             try {
               localStorage.setItem('fixia_user', JSON.stringify(transformedUser));
             } catch (storageError) {
-              console.warn('⚠️ Failed to update localStorage:', storageError);
+              console.warn('Failed to update localStorage:', storageError);
             }
             
           } catch (apiError) {
             // If API call fails, fallback to stored user data
-            console.warn('⚠️ Failed to fetch fresh user data, using stored data:', apiError);
+            console.warn('Failed to fetch fresh user data, using stored data:', apiError);
             
             try {
               const parsedStoredUser = JSON.parse(storedUser);
@@ -364,7 +364,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           localStorage.removeItem('fixia_user');
           localStorage.removeItem('fixia_token');
         } catch (clearError) {
-          console.warn('⚠️ Failed to clear localStorage:', clearError);
+          console.warn('Failed to clear localStorage:', clearError);
         }
       } finally {
         setLoading(false);
@@ -444,7 +444,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         // Fallback transformation with minimal safe user object
         try {
           transformedUser = createSafeUserFallback(response.user, email);
-          console.warn('⚠️ Using fallback user transformation');
+          console.warn('Using fallback user transformation');
         } catch (fallbackError) {
           console.error('🚨 Fallback user transformation also failed:', fallbackError);
           throw new Error('No se pudo procesar la información del usuario. Por favor, intenta nuevamente.');
@@ -463,7 +463,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       try {
         localStorage.setItem('fixia_user', JSON.stringify(transformedUser));
       } catch (storageError) {
-        console.warn('⚠️ Failed to store user data locally:', storageError);
+        console.warn('Failed to store user data locally:', storageError);
         // Don't throw here - user can still function without localStorage
       }
       

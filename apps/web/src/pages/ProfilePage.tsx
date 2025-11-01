@@ -79,14 +79,14 @@ function ProfileHeader({ user, onUserUpdate }: any) {
       // Update the user context
       onUserUpdate(updatedUser);
       
-      toast.success("✅ Perfil actualizado", {
+      toast.success("Perfil actualizado", {
         description: "Tus cambios se guardaron correctamente"
       });
       
       setIsEditing(false);
     } catch (error: any) {
       console.error('Error updating profile:', error);
-      toast.error("❌ Error al actualizar", {
+      toast.error("Error al actualizar", {
         description: error.response?.data?.message || error.message || 'Error al actualizar el perfil'
       });
     } finally {
@@ -135,7 +135,7 @@ function ProfileHeader({ user, onUserUpdate }: any) {
       });
     } catch (error: any) {
       console.error('Avatar upload error:', error);
-      toast.error('❌ Error al actualizar foto', {
+      toast.error('Error al actualizar foto', {
         description: error.message || 'No se pudo guardar tu nueva foto'
       });
     } finally {
@@ -395,7 +395,7 @@ function SettingsSection() {
         newPassword: passwordData.newPassword
       });
 
-      toast.success('✅ Contraseña actualizada', {
+      toast.success('Contraseña actualizada', {
         description: 'Tu contraseña se ha cambiado correctamente'
       });
 
@@ -405,7 +405,7 @@ function SettingsSection() {
         confirmPassword: ''
       });
     } catch (error: any) {
-      toast.error('❌ Error al cambiar contraseña', {
+      toast.error('Error al cambiar contraseña', {
         description: error.response?.data?.message || 'Verifica tu contraseña actual'
       });
     } finally {

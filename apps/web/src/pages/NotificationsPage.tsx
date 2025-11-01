@@ -48,7 +48,7 @@ interface NotificationStats {
 
 const notificationTypeConfig = {
   job_started: { color: 'bg-secondary', icon: '🔨', label: 'Trabajo Iniciado' },
-  job_milestone: { color: 'bg-success', icon: '✅', label: 'Hito Completado' },
+  job_milestone: { color: 'bg-success', icon: '', label: 'Hito Completado' },
   job_completed: { color: 'bg-primary', icon: '🎉', label: 'Trabajo Terminado' },
   review_received: { color: 'bg-warning', icon: '⭐', label: 'Reseña Recibida' },
   proposal_received: { color: 'bg-warning', icon: '📋', label: 'Propuesta Recibida' },

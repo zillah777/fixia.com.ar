@@ -101,7 +101,7 @@ export function OnboardingMessages({ user, dashboardData, clientStats }: any) {
     {
       id: 'client_verify_profile',
       title: 'Verifica tu cuenta',
-      description: '✅ Usuarios verificados reciben 2x más respuestas. Agrega tu teléfono y completa tu perfil.',
+      description: 'Usuarios verificados reciben 2x más respuestas. Agrega tu teléfono y completa tu perfil.',
       icon: Shield,
       color: 'from-green-500 to-teal-500',
       condition: (user, stats) => !user?.isVerified,

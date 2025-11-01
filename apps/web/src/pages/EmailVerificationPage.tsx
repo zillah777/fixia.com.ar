@@ -101,7 +101,7 @@ function EmailVerificationPage() {
       await authService.verifyEmail(token);
       
       setState(prev => ({ ...prev, isVerified: true, isVerifying: false }));
-      toast.success('✅ Email verificado exitosamente', {
+      toast.success('Email verificado exitosamente', {
         description: "¡Perfecto! Ya puedes iniciar sesión con tu cuenta"
       });
       

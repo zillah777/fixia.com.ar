@@ -13,121 +13,109 @@ const Toaster = ({ ...props }: ToasterProps) => {
       toastOptions={{
         unstyled: true,
         classNames: {
-          // Base toast - Compact and subtle
+          // Base toast - Compact and modern
           toast: `
             group toast
-            bg-gradient-to-br from-white/90 via-white/85 to-white/90
-            dark:from-[rgba(30,30,35,0.92)] dark:via-[rgba(35,35,40,0.92)] dark:to-[rgba(30,30,35,0.92)]
-            backdrop-blur-[30px] backdrop-saturate-[180%]
-            border border-black/8 dark:border-white/15
-            shadow-[0_8px_16px_rgba(0,0,0,0.1),0_0_0_0.5px_rgba(0,0,0,0.05)_inset]
-            dark:shadow-[0_8px_16px_rgba(0,0,0,0.4),0_0_0_0.5px_rgba(255,255,255,0.1)_inset]
+            bg-white dark:bg-slate-900
+            border border-slate-200 dark:border-slate-700
+            shadow-lg dark:shadow-2xl
             rounded-lg
-            px-3 py-2
-            min-h-[44px]
-            max-w-[320px] sm:max-w-[380px]
+            px-4 py-2.5
+            min-h-auto
+            max-w-sm sm:max-w-md
+            flex items-center gap-3
+            backdrop-blur-sm
           `,
 
           // Title - Compact text
           title: `
-            text-xs sm:text-sm
-            font-bold
-            text-gray-900 dark:text-white
-            leading-snug
+            text-sm font-semibold
+            text-slate-900 dark:text-white
+            leading-tight
+            m-0
           `,
 
           // Description - Smaller and more subtle
           description: `
-            text-[11px] sm:text-xs
-            text-gray-700 dark:text-gray-300
-            font-medium
-            leading-snug
+            text-xs
+            text-slate-600 dark:text-slate-300
+            font-normal
+            leading-relaxed
+            m-0
           `,
 
-          // Error variant - Strong red with excellent visibility
+          // Error variant - Clean red
           error: `
-            bg-gradient-to-br from-red-50/95 via-red-100/90 to-red-50/95
-            dark:from-[rgba(127,29,29,0.9)] dark:via-[rgba(153,27,27,0.9)] dark:to-[rgba(127,29,29,0.9)]
-            border-2 border-red-500/40 dark:border-red-400/50
-            shadow-[0_20px_50px_rgba(239,68,68,0.25),0_0_30px_rgba(239,68,68,0.15)_inset]
-            dark:shadow-[0_20px_50px_rgba(239,68,68,0.4),0_0_30px_rgba(239,68,68,0.2)_inset]
+            bg-red-50 dark:bg-red-950/40
+            border-red-200 dark:border-red-800
+            [&>button]:text-red-700 dark:[&>button]:text-red-300
           `,
 
-          // Success variant - Strong green with excellent visibility
+          // Success variant - Clean green
           success: `
-            bg-gradient-to-br from-green-50/95 via-green-100/90 to-green-50/95
-            dark:from-[rgba(20,83,45,0.9)] dark:via-[rgba(22,101,52,0.9)] dark:to-[rgba(20,83,45,0.9)]
-            border-2 border-green-500/40 dark:border-green-400/50
-            shadow-[0_20px_50px_rgba(34,197,94,0.25),0_0_30px_rgba(34,197,94,0.15)_inset]
-            dark:shadow-[0_20px_50px_rgba(34,197,94,0.4),0_0_30px_rgba(34,197,94,0.2)_inset]
+            bg-green-50 dark:bg-green-950/40
+            border-green-200 dark:border-green-800
+            [&>button]:text-green-700 dark:[&>button]:text-green-300
           `,
 
-          // Warning variant - Strong orange/yellow with excellent visibility
+          // Warning variant - Clean orange
           warning: `
-            bg-gradient-to-br from-orange-50/95 via-orange-100/90 to-orange-50/95
-            dark:from-[rgba(124,45,18,0.9)] dark:via-[rgba(154,52,18,0.9)] dark:to-[rgba(124,45,18,0.9)]
-            border-2 border-orange-500/40 dark:border-orange-400/50
-            shadow-[0_20px_50px_rgba(249,115,22,0.25),0_0_30px_rgba(249,115,22,0.15)_inset]
-            dark:shadow-[0_20px_50px_rgba(249,115,22,0.4),0_0_30px_rgba(249,115,22,0.2)_inset]
+            bg-amber-50 dark:bg-amber-950/40
+            border-amber-200 dark:border-amber-800
+            [&>button]:text-amber-700 dark:[&>button]:text-amber-300
           `,
 
-          // Info variant - Strong blue with excellent visibility
+          // Info variant - Clean blue
           info: `
-            bg-gradient-to-br from-blue-50/95 via-blue-100/90 to-blue-50/95
-            dark:from-[rgba(30,58,138,0.9)] dark:via-[rgba(29,78,216,0.9)] dark:to-[rgba(30,58,138,0.9)]
-            border-2 border-blue-500/40 dark:border-blue-400/50
-            shadow-[0_20px_50px_rgba(59,130,246,0.25),0_0_30px_rgba(59,130,246,0.15)_inset]
-            dark:shadow-[0_20px_50px_rgba(59,130,246,0.4),0_0_30px_rgba(59,130,246,0.2)_inset]
+            bg-blue-50 dark:bg-blue-950/40
+            border-blue-200 dark:border-blue-800
+            [&>button]:text-blue-700 dark:[&>button]:text-blue-300
           `,
 
-          // Action button - Compact
+          // Action button - Compact and modern
           actionButton: `
-            bg-gray-900 dark:bg-white
-            text-white dark:text-gray-900
-            hover:bg-gray-800 dark:hover:bg-gray-100
-            border border-gray-900 dark:border-white
+            bg-slate-900 dark:bg-white
+            text-white dark:text-slate-900
+            hover:bg-slate-800 dark:hover:bg-slate-100
             font-semibold
-            shadow-md
             transition-all duration-150
-            rounded-md
-            px-2.5 py-1.5
-            text-xs sm:text-xs
+            rounded px-3 py-1.5
+            text-xs
           `,
 
           // Cancel button - Subtle
           cancelButton: `
-            bg-gray-100 dark:bg-gray-700
-            text-gray-900 dark:text-white
-            hover:bg-gray-200 dark:hover:bg-gray-600
-            border border-gray-300 dark:border-gray-600
+            bg-transparent
+            text-slate-600 dark:text-slate-400
+            hover:bg-slate-100 dark:hover:bg-slate-800
             font-medium
             transition-all duration-150
-            rounded-md
-            px-2.5 py-1.5
-            text-xs sm:text-xs
+            rounded px-3 py-1.5
+            text-xs
           `,
 
-          // Close button - Minimal
+          // Close button - Minimal icon-only
           closeButton: `
             bg-transparent dark:bg-transparent
-            hover:bg-gray-200 dark:hover:bg-white/20
+            hover:bg-slate-200 dark:hover:bg-slate-700
             border-none
-            text-gray-900 dark:text-white
-            font-bold
+            text-slate-400 hover:text-slate-600 dark:hover:text-slate-300
+            font-normal
             transition-all duration-150
             rounded
-            !w-5 !h-5 sm:!w-6 sm:!h-6
+            !w-5 !h-5
             flex items-center justify-center
+            p-0
           `,
         },
       }}
       position="top-center"
-      expand={true}
-      richColors={false}
+      expand={false}
+      richColors={true}
       closeButton={true}
       offset="16px"
-      gap={12}
-      duration={5000}
+      gap={10}
+      duration={4000}
       {...props}
     />
   );

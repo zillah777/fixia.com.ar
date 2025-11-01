@@ -151,7 +151,7 @@ export default function TermsPage() {
               <Alert className="border-destructive/50 bg-destructive/10">
                 <AlertTriangle className="h-4 w-4" />
                 <AlertDescription>
-                  <strong>⚠️ DISCLAIMER FUNDAMENTAL</strong><br />
+                  <strong>DISCLAIMER FUNDAMENTAL</strong><br />
                   <strong>FIXIA.COM.AR NO SE HACE RESPONSABLE POR:</strong>
                 </AlertDescription>
               </Alert>

@@ -494,7 +494,7 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
         errorTitle = "🌐 Error de conexión";
         errorMessage = "No se pudo conectar con el servidor. Verifica tu conexión a internet e intenta nuevamente.";
       } else {
-        errorTitle = "❌ Error inesperado";
+        errorTitle = "Error inesperado";
         errorMessage = serverMessage || "Ocurrió un error inesperado. Por favor intenta nuevamente.";
       }
       

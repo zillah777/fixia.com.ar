@@ -11,7 +11,7 @@ function BuggyComponent({ shouldCrash }: { shouldCrash: boolean }) {
   
   return (
     <div className="p-4 bg-success/5 border border-success/30 rounded-md">
-      <p className="text-success">✅ Component is working correctly!</p>
+      <p className="text-success">Component is working correctly!</p>
     </div>
   );
 }

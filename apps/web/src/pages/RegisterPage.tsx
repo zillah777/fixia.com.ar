@@ -1035,7 +1035,7 @@ export default function RegisterPage() {
     }
 
     if (currentTab === 'professional' && formData.serviceCategories.length > 10) {
-      toast.error('⚠️ Demasiadas categorías', {
+      toast.error('Demasiadas categorías', {
         description: "Máximo 10 categorías de servicio permitidas"
       });
       return;
@@ -1144,7 +1144,7 @@ export default function RegisterPage() {
       } else {
         // Generic error fallback
         toast.error(
-          '❌ Error al crear la cuenta',
+          'Error al crear la cuenta',
           {
             description: errorMessage || 'Por favor, verifica los datos ingresados e intenta de nuevo.',
             duration: 5000}
