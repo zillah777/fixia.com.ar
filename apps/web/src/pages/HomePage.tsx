@@ -8,9 +8,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Skeleton } from "../components/ui/skeleton";
 import {
   ArrowRight, Heart, Shield, Clock, Users, CheckCircle,
-  Search, Zap, Heart, TrendingUp, Globe, Smartphone,
-  Palette, Code, PenTool, Camera, Briefcase, HeadphonesIcon,
-  Play, ChevronRight, MessageSquare, Heart, Bell, MapPin,
+  Search, Zap, TrendingUp, Globe,
+  Palette, PenTool, Briefcase, HeadphonesIcon,
+  ChevronRight, MessageSquare, MapPin,
   Crown, Phone, Mail, Gift, CreditCard, Building, User,
   GraduationCap, Scissors, Leaf, Truck, Flame, Star
 } from "lucide-react";
@@ -371,6 +371,117 @@ function ServiceCardSkeleton() {
         </div>
       </CardContent>
     </Card>
+  );
+}
+
+function PremiumBenefitsSection() {
+  const benefits = [
+    {
+      icon: Shield,
+      title: "Profesionales Verificados",
+      description: "Todos nuestros profesionales pasan por un proceso riguroso de verificación para garantizar calidad y confianza.",
+      color: "from-blue-500/20 to-cyan-500/20"
+    },
+    {
+      icon: Clock,
+      title: "Entrega a Tiempo",
+      description: "Plazos de entrega garantizados. Si no se cumplen, recupera tu dinero sin preguntas.",
+      color: "from-purple-500/20 to-pink-500/20"
+    },
+    {
+      icon: Heart,
+      title: "Soporte 24/7",
+      description: "Nuestro equipo está siempre disponible para resolver cualquier duda o inconveniente que surja.",
+      color: "from-red-500/20 to-orange-500/20"
+    },
+    {
+      icon: CreditCard,
+      title: "Pago Seguro",
+      description: "Transacciones protegidas con los últimos estándares de seguridad. Tu dinero está garantizado.",
+      color: "from-green-500/20 to-emerald-500/20"
+    },
+    {
+      icon: TrendingUp,
+      title: "Sin Comisiones Ocultas",
+      description: "Transparencia total en precios. Lo que ves es lo que pagas, sin sorpresas adicionales.",
+      color: "from-yellow-500/20 to-amber-500/20"
+    },
+    {
+      icon: Users,
+      title: "Comunidad Verificada",
+      description: "Únete a miles de usuarios satisfechos que ya confían en Fixia para sus necesidades.",
+      color: "from-indigo-500/20 to-blue-500/20"
+    }
+  ];
+
+  return (
+    <section className="py-20 md:py-32">
+      <div className="container mx-auto px-4 sm:px-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="text-center mb-16 sm:mb-20"
+        >
+          <Badge className="mb-4 bg-primary/20 text-primary border-primary/30 px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm">
+            <Crown className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
+            Beneficios Premium
+          </Badge>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-4 sm:mb-6 text-foreground tracking-tight">
+            Por qué elegir Fixia
+          </h2>
+          <p className="text-base sm:text-lg md:text-xl text-muted-foreground/80 max-w-2xl mx-auto leading-relaxed">
+            La plataforma más confiable de servicios profesionales con protección garantizada
+          </p>
+        </motion.div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          {benefits.map((benefit, index) => {
+            const Icon = benefit.icon;
+            return (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.1 * index }}
+                whileHover={{ y: -4 }}
+              >
+                <Card className="glass-glow border-2 border-white/10 hover:border-primary/40 transition-all duration-300 h-full">
+                  <CardContent className="pt-8 sm:pt-10 pb-6 px-6 sm:px-8">
+                    <div className={`w-12 sm:w-14 h-12 sm:h-14 rounded-xl bg-gradient-to-br ${benefit.color} flex items-center justify-center mb-4 sm:mb-6`}>
+                      <Icon className="h-6 sm:h-7 w-6 sm:w-7 text-foreground" />
+                    </div>
+                    <h3 className="text-lg sm:text-xl font-bold text-foreground mb-2 sm:mb-3">
+                      {benefit.title}
+                    </h3>
+                    <p className="text-sm sm:text-base text-muted-foreground/80 leading-relaxed">
+                      {benefit.description}
+                    </p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            );
+          })}
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, delay: 0.3 }}
+          className="mt-12 sm:mt-16 text-center"
+        >
+          <Button asChild size="lg" className="text-base sm:text-lg px-6 sm:px-8 h-11 sm:h-12">
+            <Link to="/register">
+              Comenzar Ahora
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Link>
+          </Button>
+        </motion.div>
+      </div>
+    </section>
   );
 }
 
@@ -846,6 +957,7 @@ export default function HomePage() {
       <main id="main-content" role="main" aria-label="Contenido principal" className="pb-24 lg:pb-0">
         <HeroSection />
         <CategoriesSection />
+        <PremiumBenefitsSection />
         <FeaturedServicesSection />
         <HowItWorksSection />
         <CTASection />

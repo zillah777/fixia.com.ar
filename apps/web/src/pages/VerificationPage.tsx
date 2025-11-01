@@ -172,7 +172,7 @@ export const VerificationPage = memo(() => {
     {
       type: VerificationType.IDENTITY,
       title: 'Verificación de Identidad',
-      description: 'Sube las dos caras de tu DNI para verificar tu cuenta',
+      description: 'Sube las dos caras de tu DNI para verificar tu identidad. Esto ayuda a proteger nuestra comunidad contra fraude y garantiza que todos los usuarios sean quiénes dicen ser.',
       isVerified: verificationStatus?.verifiedIdentity || false,
       isRequired: true,
       instant: false
@@ -184,7 +184,7 @@ export const VerificationPage = memo(() => {
     {
       type: VerificationType.IDENTITY,
       title: 'Identidad',
-      description: 'Confirma tu identidad con documento oficial',
+      description: 'Verifica tu identidad con un documento oficial (DNI, Pasaporte, Licencia). Esto es fundamental para establecer confianza con los clientes y cumplir con regulaciones.',
       isVerified: verificationStatus?.verifiedIdentity || false,
       isRequired: true,
       instant: false
@@ -192,7 +192,7 @@ export const VerificationPage = memo(() => {
     {
       type: VerificationType.PHONE,
       title: 'Teléfono',
-      description: 'Verifica tu número de teléfono',
+      description: 'Confirma tu número de teléfono mediante un código de verificación. Esto te permite recibir notificaciones importantes y permite a los clientes comunicarse contigo.',
       isVerified: verificationStatus?.verifiedPhone || false,
       isRequired: true,
       instant: true
@@ -200,7 +200,7 @@ export const VerificationPage = memo(() => {
     {
       type: VerificationType.EMAIL,
       title: 'Email',
-      description: 'Confirma tu dirección de correo',
+      description: 'Confirma tu dirección de correo electrónico. Garantiza que puedas recibir mensajes de clientes y notificaciones de la plataforma.',
       isVerified: verificationStatus?.verifiedEmail || false,
       isRequired: true,
       instant: true
@@ -208,7 +208,7 @@ export const VerificationPage = memo(() => {
     {
       type: VerificationType.SKILLS,
       title: 'Habilidades',
-      description: 'Certifica tus competencias técnicas',
+      description: 'Demuestra tus competencias técnicas con certificaciones relevantes. Esto aumenta tu credibilidad y te hace más visible para clientes que buscan especialistas.',
       isVerified: verificationStatus?.verifiedSkills || false,
       isRequired: false,
       instant: false
@@ -216,7 +216,7 @@ export const VerificationPage = memo(() => {
     {
       type: VerificationType.ADDRESS,
       title: 'Dirección',
-      description: 'Confirma tu dirección física',
+      description: 'Confirma tu dirección física actual. Esto es importante para servicios locales y ayuda a los clientes a saber dónde estás basado.',
       isVerified: verificationStatus?.verifiedAddress || false,
       isRequired: false,
       instant: false
@@ -224,7 +224,7 @@ export const VerificationPage = memo(() => {
     {
       type: VerificationType.BUSINESS,
       title: 'Negocio',
-      description: 'Valida tu actividad comercial',
+      description: 'Valida tu actividad comercial si tienes un negocio registrado. Esto demuestra que operas de manera formal y profesional.',
       isVerified: verificationStatus?.verifiedBusiness || false,
       isRequired: false,
       instant: false
@@ -232,7 +232,7 @@ export const VerificationPage = memo(() => {
     {
       type: VerificationType.BACKGROUND_CHECK,
       title: 'Antecedentes',
-      description: 'Demuestra tu historial limpio',
+      description: 'Demuestra tu historial limpio mediante verificación de antecedentes. Esto es especialmente importante para servicios que requieren confianza alta (niñera, cuidador, acceso a hogares).',
       isVerified: verificationStatus?.backgroundChecked || false,
       isRequired: false,
       instant: false
@@ -253,7 +253,7 @@ export const VerificationPage = memo(() => {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="space-y-4"
+        className="space-y-6"
       >
         <div className="flex items-center justify-between">
           <div>
@@ -276,6 +276,37 @@ export const VerificationPage = memo(() => {
             </div>
           </div>
         </div>
+
+        {/* Verification Info Section */}
+        <Card className="glass border-white/10 bg-blue-500/5">
+          <CardContent className="pt-6">
+            <h3 className="font-semibold text-foreground mb-3">¿Qué significa estar "Verificado"?</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+              {isClient
+                ? 'Ser "Verificado" en Fixia significa que has confirmado tu identidad y eres un usuario de confianza. Esto protege tanto a los clientes como a los profesionales, creando un ambiente seguro para hacer transacciones.'
+                : 'Ser "Verificado" en Fixia significa que has completado las validaciones requeridas de tu identidad, información de contacto y (opcionalmente) certificaciones profesionales. Los clientes confían más en profesionales verificados y tienes acceso a mejor visibilidad en la plataforma.'}
+            </p>
+            <div className="space-y-2 text-sm">
+              <p className="font-medium text-foreground">Beneficios de verificación:</p>
+              <ul className="list-disc list-inside text-muted-foreground space-y-1">
+                {isClient ? (
+                  <>
+                    <li>Mayor confianza de los profesionales</li>
+                    <li>Acceso a todas las características de la plataforma</li>
+                    <li>Protección contra fraude</li>
+                  </>
+                ) : (
+                  <>
+                    <li>Aparece con distintivo "Verificado" en tu perfil</li>
+                    <li>Mayor visibilidad en búsquedas y recomendaciones</li>
+                    <li>Acceso a más oportunidades de clientes</li>
+                    <li>Mejores posiciones en rankings de profesionales</li>
+                  </>
+                )}
+              </ul>
+            </div>
+          </CardContent>
+        </Card>
       </motion.div>
 
       {/* Progress Overview */}
