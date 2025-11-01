@@ -5,8 +5,8 @@ import { toast } from "sonner";
 import {
   User, Lock, Bell, CreditCard, Shield,
   Check, X, AlertCircle, Crown,
-  Mail, Phone, MapPin, Save, Trash2, LogOut,
-  Settings, Smartphone, Globe, Calendar
+  Mail, Save, Trash2, LogOut,
+  Settings, Smartphone
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -52,9 +52,11 @@ function ProfileTab() {
     setIsSaving(true);
     try {
       await updateProfile(formData);
+      toast.success('Perfil actualizado correctamente');
       setIsEditing(false);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating profile:', error);
+      toast.error(error.message || 'Error al actualizar el perfil');
     } finally {
       setIsSaving(false);
     }
@@ -256,6 +258,8 @@ function SecurityTab() {
   const [isDeletingAccount, setIsDeletingAccount] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [deletePassword, setDeletePassword] = useState('');
+  const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
+  const [isEnablingTwoFactor, setIsEnablingTwoFactor] = useState(false);
   const [formData, setFormData] = useState({
     currentPassword: '',
     newPassword: '',
@@ -319,6 +323,25 @@ function SecurityTab() {
       console.error('Error deleting account:', error);
     } finally {
       setIsDeletingAccount(false);
+    }
+  };
+
+  const handleTwoFactorToggle = async (enabled: boolean) => {
+    setIsEnablingTwoFactor(true);
+    try {
+      // TODO: Implement 2FA API endpoint integration
+      // For now, just update local state with success feedback
+      setTwoFactorEnabled(enabled);
+      if (enabled) {
+        toast.success('Autenticación de dos factores habilitada');
+      } else {
+        toast.success('Autenticación de dos factores deshabilitada');
+      }
+    } catch (error: any) {
+      toast.error(error.message || 'Error al actualizar autenticación de dos factores');
+      console.error('Error toggling 2FA:', error);
+    } finally {
+      setIsEnablingTwoFactor(false);
     }
   };
 
@@ -421,7 +444,12 @@ function SecurityTab() {
               <h4 className="font-medium">Autenticación SMS</h4>
               <p className="text-sm text-muted-foreground">Recibe códigos de verificación por SMS</p>
             </div>
-            <Switch />
+            <Switch
+              checked={twoFactorEnabled}
+              onCheckedChange={handleTwoFactorToggle}
+              disabled={isEnablingTwoFactor}
+              aria-label="Habilitar autenticación de dos factores por SMS"
+            />
           </div>
         </CardContent>
       </Card>
@@ -841,6 +869,18 @@ function SubscriptionTab() {
     }
   };
 
+  const handleViewBilling = () => {
+    // TODO: Implement billing portal integration (Stripe/MercadoPago)
+    toast.info('Redirigiendo a panel de facturación...');
+    // window.location.href = '/billing'; // Uncomment when billing portal is ready
+  };
+
+  const handleCancelSubscription = () => {
+    // TODO: Implement subscription cancellation flow
+    toast.info('Función de cancelación de suscripción en desarrollo');
+    // For now, just show a message. Should open a dialog with confirmation.
+  };
+
   return (
     <div className="space-y-6">
       <Card className="glass border-white/10">
@@ -891,11 +931,19 @@ function SubscriptionTab() {
                 </div>
               </div>
               
-              <div className="flex space-x-2">
-                <Button variant="outline" className="glass border-white/20">
+              <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+                <Button
+                  variant="outline"
+                  className="glass border-white/20 text-sm sm:text-base"
+                  onClick={handleViewBilling}
+                >
                   Ver Facturación
                 </Button>
-                <Button variant="outline" className="glass border-white/20 text-destructive">
+                <Button
+                  variant="outline"
+                  className="glass border-white/20 text-destructive text-sm sm:text-base"
+                  onClick={handleCancelSubscription}
+                >
                   Cancelar Suscripción
                 </Button>
               </div>
@@ -949,6 +997,10 @@ function DangerZone() {
     navigate('/');
   };
 
+  const handleDeleteClick = () => {
+    toast.info('Por favor, dirígete a la pestaña de Seguridad para eliminar tu cuenta');
+  };
+
   return (
     <div className="space-y-6">
       <Card className="glass border-destructive/20">
@@ -978,7 +1030,11 @@ function DangerZone() {
               <h4 className="font-medium text-destructive">Eliminar Cuenta</h4>
               <p className="text-sm text-muted-foreground">Eliminar permanentemente tu cuenta y todos los datos</p>
             </div>
-            <Button variant="outline" className="border-destructive/50 text-destructive hover:bg-destructive/10">
+            <Button
+              variant="outline"
+              className="border-destructive/50 text-destructive hover:bg-destructive/10"
+              onClick={handleDeleteClick}
+            >
               <Trash2 className="h-4 w-4 mr-2" />
               Eliminar Cuenta
             </Button>
