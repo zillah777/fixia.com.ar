@@ -161,7 +161,7 @@ function HeroSection() {
               </CardContent>
             </Card>
             
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-5 mb-10 sm:mb-14 w-full px-4 sm:px-0">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-5 mb-10 sm:mb-14 w-full px-4 sm:px-0">
               <Link to="/how-it-works" className="w-full sm:w-auto">
                 <Button
                   size="lg"
@@ -628,18 +628,20 @@ function HowItWorksSection() {
           transition={{ duration: 0.6, delay: 0.4 }}
           className="text-center mt-12"
         >
-          <Link to="/how-it-works">
-            <Button size="lg" variant="outline" className="glass border-white/20 hover:glass-medium px-6 mr-4">
-              Ver Proceso Completo
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-          </Link>
-          <Link to="/register">
-            <Button size="lg" className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg px-6">
-              Comenzar Ahora Gratis
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-          </Link>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 w-full px-4 sm:px-0">
+            <Link to="/how-it-works" className="w-full sm:w-auto">
+              <Button size="lg" variant="outline" className="glass border-white/20 hover:glass-medium px-6 w-full sm:w-auto">
+                Ver Proceso Completo
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
+            <Link to="/register" className="w-full sm:w-auto">
+              <Button size="lg" className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg px-6 w-full sm:w-auto">
+                Comenzar Ahora Gratis
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
+          </div>
         </motion.div>
       </div>
     </section>
