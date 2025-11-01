@@ -117,7 +117,7 @@ export const EMAIL_TEMPLATES = {
               Comenzar Ahora
             </a>
           </div>
-          
+
           <p style="color: #6a6a6a; font-size: 14px; margin: 30px 0 0; padding-top: 20px; border-top: 1px solid #e0e0e0;">
             ¿Necesitas ayuda? Contáctanos en <a href="mailto:soporte@fixia.app" style="color: #667eea;">soporte@fixia.app</a>
           </p>
@@ -271,7 +271,7 @@ export const GODADDY_DNS_INSTRUCTIONS = `
    Nombre: @
    Valor: cname.vercel-dns.com
    TTL: 600
-   
+
    Tipo: CNAME
    Nombre: www
    Valor: cname.vercel-dns.com
@@ -284,7 +284,7 @@ export const GODADDY_DNS_INSTRUCTIONS = `
    Valor: mx1.improvmx.com
    Prioridad: 10
    TTL: 3600
-   
+
    Tipo: MX
    Nombre: @
    Valor: mx2.improvmx.com
@@ -297,7 +297,7 @@ export const GODADDY_DNS_INSTRUCTIONS = `
    Nombre: @
    Valor: v=spf1 include:_spf.improvmx.com ~all
    TTL: 600
-   
+
    Tipo: TXT
    Nombre: _dmarc
    Valor: v=DMARC1; p=none; rua=mailto:dmarc@fixia.app
