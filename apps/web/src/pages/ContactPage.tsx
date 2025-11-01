@@ -226,7 +226,7 @@ function ContactFormSection() {
             <Card className="glass border-success/30 bg-success/5">
               <CardContent className="p-12 text-center">
                 <CheckCircle className="h-16 w-16 text-success mx-auto mb-6" />
-                <h3 className="text-2xl font-bold mb-4 text-foreground">¡Mensaje Enviado!</h3>
+                <h3 className="text-xl sm:text-2xl font-bold mb-4 text-foreground">¡Mensaje Enviado!</h3>
                 <p className="text-muted-foreground mb-6">
                   Gracias por contactarnos. Hemos recibido tu mensaje y te responderemos 
                   dentro de las próximas 24 horas hábiles.
@@ -503,7 +503,7 @@ function SupportHoursSection() {
             <CardContent className="p-12 text-center">
               <div className="max-w-3xl mx-auto">
                 <Clock className="h-16 w-16 text-primary mx-auto mb-6" />
-                <h2 className="text-3xl font-bold mb-6 text-foreground">Horarios de Atención</h2>
+                <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-foreground">Horarios de Atención</h2>
                 
                 <div className="grid md:grid-cols-2 gap-8 mb-8">
                   <div>

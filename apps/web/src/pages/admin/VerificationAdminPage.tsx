@@ -180,7 +180,7 @@ export const VerificationAdminPage = memo(() => {
       >
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-foreground">
+            <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
               Panel de Verificación
             </h1>
             <p className="text-muted-foreground">
@@ -213,7 +213,7 @@ export const VerificationAdminPage = memo(() => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6"
         >
           <Card className="glass border-white/20">
             <CardContent className="p-6">
@@ -223,7 +223,7 @@ export const VerificationAdminPage = memo(() => {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Total Solicitudes</p>
-                  <p className="text-2xl font-bold text-foreground">
+                  <p className="text-xl sm:text-2xl font-bold text-foreground">
                     {stats.totalRequests}
                   </p>
                 </div>
@@ -239,7 +239,7 @@ export const VerificationAdminPage = memo(() => {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Pendientes</p>
-                  <p className="text-2xl font-bold text-foreground">
+                  <p className="text-xl sm:text-2xl font-bold text-foreground">
                     {stats.pendingRequests}
                   </p>
                 </div>
@@ -255,7 +255,7 @@ export const VerificationAdminPage = memo(() => {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Aprobadas</p>
-                  <p className="text-2xl font-bold text-foreground">
+                  <p className="text-xl sm:text-2xl font-bold text-foreground">
                     {stats.approvedRequests}
                   </p>
                 </div>
@@ -271,7 +271,7 @@ export const VerificationAdminPage = memo(() => {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Rechazadas</p>
-                  <p className="text-2xl font-bold text-foreground">
+                  <p className="text-xl sm:text-2xl font-bold text-foreground">
                     {stats.rejectedRequests}
                   </p>
                 </div>

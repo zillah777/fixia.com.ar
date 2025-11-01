@@ -7,7 +7,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 export function Navigation() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4">
+      <div className="container mx-auto flex h-16 sm:h-20 items-center justify-between px-4 sm:px-6">
         {/* Logo and Navigation Links */}
         <div className="flex items-center space-x-8">
           <div className="flex items-center space-x-2">
