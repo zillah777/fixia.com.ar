@@ -395,12 +395,6 @@ function PremiumBenefitsSection() {
       color: "from-red-500/20 to-orange-500/20"
     },
     {
-      icon: CreditCard,
-      title: "Pago Seguro",
-      description: "Transacciones protegidas con los últimos estándares de seguridad. Tu dinero está garantizado.",
-      color: "from-green-500/20 to-emerald-500/20"
-    },
-    {
       icon: TrendingUp,
       title: "Sin Comisiones Ocultas",
       description: "Transparencia total en precios. Lo que ves es lo que pagas, sin sorpresas adicionales.",
@@ -411,6 +405,12 @@ function PremiumBenefitsSection() {
       title: "Comunidad Verificada",
       description: "Únete a miles de usuarios satisfechos que ya confían en Fixia para sus necesidades.",
       color: "from-indigo-500/20 to-blue-500/20"
+    },
+    {
+      icon: Globe,
+      title: "Conecta Localmente",
+      description: "Encuentra profesionales y clientes en tu zona. Apoya la economía local de Chubut.",
+      color: "from-green-500/20 to-emerald-500/20"
     }
   ];
 
