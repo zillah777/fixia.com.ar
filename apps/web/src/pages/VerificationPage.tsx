@@ -71,7 +71,7 @@ export const VerificationPage = memo(() => {
   };
 
   const getVerificationIcon = (type: VerificationType, isVerified: boolean) => {
-    const iconClass = `h-5 w-5 ${isVerified ? 'text-green-600' : 'text-gray-400'}`;
+    const iconClass = `h-5 w-5 ${isVerified ? 'text-success' : 'text-muted-foreground'}`;
     
     switch (type) {
       case VerificationType.IDENTITY:
@@ -120,16 +120,16 @@ export const VerificationPage = memo(() => {
     // Clients have simple verification status
     if (isClient) {
       return progress === 100
-        ? { level: 'Verificado', color: 'text-green-600' }
-        : { level: 'Sin Verificar', color: 'text-gray-600' };
+        ? { level: 'Verificado', color: 'text-success' }
+        : { level: 'Sin Verificar', color: 'text-muted-foreground' };
     }
 
     // Professionals have tiered levels
-    if (progress >= 80) return { level: 'Elite', color: 'text-purple-600' };
-    if (progress >= 60) return { level: 'Avanzado', color: 'text-blue-600' };
-    if (progress >= 40) return { level: 'Intermedio', color: 'text-green-600' };
-    if (progress >= 20) return { level: 'Básico', color: 'text-yellow-600' };
-    return { level: 'Principiante', color: 'text-gray-600' };
+    if (progress >= 80) return { level: 'Elite', color: 'text-primary' };
+    if (progress >= 60) return { level: 'Avanzado', color: 'text-secondary' };
+    if (progress >= 40) return { level: 'Intermedio', color: 'text-success' };
+    if (progress >= 20) return { level: 'Básico', color: 'text-warning' };
+    return { level: 'Principiante', color: 'text-muted-foreground' };
   };
 
   // Remove the restriction - allow both professionals and clients
@@ -302,25 +302,25 @@ export const VerificationPage = memo(() => {
             
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
               <div className="text-center">
-                <div className="text-2xl font-bold text-green-600">
+                <div className="text-2xl font-bold text-success">
                   {verificationStatus?.overallVerificationScore || 0}
                 </div>
                 <div className="text-xs text-muted-foreground">Puntuación Total</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">
+                <div className="text-2xl font-bold text-secondary">
                   {verificationRequests.filter(r => r.status === VerificationStatusEnum.APPROVED).length}
                 </div>
                 <div className="text-xs text-muted-foreground">Verificaciones Aprobadas</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-yellow-600">
+                <div className="text-2xl font-bold text-warning">
                   {pendingRequests.length}
                 </div>
                 <div className="text-xs text-muted-foreground">Pendientes</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-purple-600">
+                <div className="text-2xl font-bold text-primary">
                   {verificationsData.filter(v => v.isVerified).length}/{verificationsData.length}
                 </div>
                 <div className="text-xs text-muted-foreground">Completadas</div>
@@ -355,7 +355,7 @@ export const VerificationPage = memo(() => {
                           <h3 className="font-medium text-foreground">
                             {verification.title}
                             {verification.isRequired && (
-                              <span className="text-red-500 ml-1">*</span>
+                              <span className="text-destructive ml-1">*</span>
                             )}
                           </h3>
                           <p className="text-sm text-muted-foreground">
@@ -365,9 +365,9 @@ export const VerificationPage = memo(() => {
                       </div>
                       
                       <div className="flex flex-col items-end space-y-2">
-                        <Badge 
+                        <Badge
                           variant={verification.isVerified ? 'default' : 'outline'}
-                          className={verification.isVerified ? 'bg-green-100 text-green-800' : ''}
+                          className={verification.isVerified ? 'bg-success/20 text-success' : ''}
                         >
                           {verification.isVerified ? 'Verificado' : 'Pendiente'}
                         </Badge>
