@@ -22,6 +22,24 @@ interface PlanFeature {
 
 const planFeatures: PlanFeature[] = [
   {
+    name: "Crear anuncios por mes",
+    free: "3 anuncios",
+    professional: "Ilimitados",
+    highlight: true
+  },
+  {
+    name: "Recibir propuestas de servicios",
+    free: "3 propuestas",
+    professional: "Ilimitadas",
+    highlight: true
+  },
+  {
+    name: "Dar feedback a profesionales",
+    free: "3 feedback",
+    professional: "Ilimitado",
+    highlight: true
+  },
+  {
     name: "Búsqueda de profesionales",
     free: true,
     professional: true
@@ -30,12 +48,6 @@ const planFeatures: PlanFeature[] = [
     name: "Visualización de perfiles",
     free: true,
     professional: true
-  },
-  {
-    name: "Solicitudes de contacto por mes",
-    free: "3 profesionales",
-    professional: "Ilimitadas",
-    highlight: true
   },
   {
     name: "Acceso a WhatsApp de profesionales",
@@ -214,23 +226,23 @@ function PricingCardsSection() {
                 <div className="space-y-2 text-xs sm:text-sm">
                   <div className="flex items-center gap-2">
                     <Check className="h-4 w-4 text-success flex-shrink-0" />
-                    <span>Crear proyectos</span>
+                    <span>Crear 3 anuncios por mes</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Check className="h-4 w-4 text-success flex-shrink-0" />
-                    <span>Contratar servicios</span>
+                    <span>Recibir 3 propuestas</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Check className="h-4 w-4 text-success flex-shrink-0" />
-                    <span>Dar feedback</span>
+                    <span>Dar 3 feedback</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Check className="h-4 w-4 text-success flex-shrink-0" />
+                    <span>Búsqueda de profesionales</span>
                   </div>
                   <div className="flex items-center gap-2 opacity-50">
                     <X className="h-4 w-4 flex-shrink-0" />
                     <span>Publicar servicios</span>
-                  </div>
-                  <div className="flex items-center gap-2 opacity-50">
-                    <X className="h-4 w-4 flex-shrink-0" />
-                    <span>Perfil profesional</span>
                   </div>
                 </div>
                 {user && user.userType === 'client' ? (
