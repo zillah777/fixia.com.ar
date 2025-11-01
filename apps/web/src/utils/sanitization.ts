@@ -284,9 +284,15 @@ export const FormSanitizers = {
     confirmPassword: 'plainText',
     phone: 'phone',
     location: 'plainText',
+    birthdate: 'plainText',
+    dni: 'plainText',
     description: 'basicHTML',
     portfolio: 'url',
-    certifications: 'plainText'
+    certifications: 'plainText',
+    agreeTerms: 'plainText',
+    agreePrivacy: 'plainText',
+    agreeMarketing: 'plainText',
+    serviceCategories: 'plainText'
   }),
   
   // Contact form sanitizer

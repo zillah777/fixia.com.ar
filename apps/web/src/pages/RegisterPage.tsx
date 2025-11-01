@@ -29,7 +29,8 @@ interface FormData {
   phone: string;
   location: string;
   birthdate: string;
-  
+  dni: string;
+
   // Professional fields
   serviceCategories: string[];
   description: string;
@@ -38,7 +39,7 @@ interface FormData {
   availability: string;
   portfolio: string;
   certifications: string;
-  
+
   // Agreements
   agreeTerms: boolean;
   agreePrivacy: boolean;
@@ -53,6 +54,7 @@ const initialFormData: FormData = {
   phone: '',
   location: '',
   birthdate: '',
+  dni: '',
   serviceCategories: [],
   description: '',
   experience: '',
@@ -291,6 +293,23 @@ function ClientRegistrationForm({
             />
             <p className="text-xs text-muted-foreground">
               Debes ser mayor de 18 años para registrarte
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="dni">Número de DNI *</Label>
+            <Input
+              id="dni"
+              type="text"
+              value={formData.dni}
+              onChange={(e) => setFormData({ ...formData, dni: e.target.value.replace(/\D/g, '').slice(0, 8) })}
+              placeholder="12345678"
+              maxLength={8}
+              minLength={7}
+              required
+            />
+            <p className="text-xs text-muted-foreground">
+              Ingresa tu DNI sin puntos ni espacios
             </p>
           </div>
 
@@ -769,6 +788,23 @@ function ProfessionalRegistrationForm({
                 Debes ser mayor de 18 años para registrarte como profesional
               </p>
             </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="dni">Número de DNI *</Label>
+              <Input
+                id="dni"
+                type="text"
+                value={formData.dni}
+                onChange={(e) => setFormData({ ...formData, dni: e.target.value.replace(/\D/g, '').slice(0, 8) })}
+                placeholder="12345678"
+                maxLength={8}
+                minLength={7}
+                required
+              />
+              <p className="text-xs text-muted-foreground">
+                Ingresa tu DNI sin puntos ni espacios
+              </p>
+            </div>
           </div>
 
           {/* Business Information */}
@@ -1027,6 +1063,21 @@ export default function RegisterPage() {
       return;
     }
 
+    // Validate DNI
+    if (!formData.dni) {
+      toast.error('Número de DNI requerido', {
+        description: "Por favor ingresa tu número de DNI"
+      });
+      return;
+    }
+
+    if (formData.dni.length < 7 || formData.dni.length > 8) {
+      toast.error('DNI inválido', {
+        description: "El DNI debe tener entre 7 y 8 dígitos"
+      });
+      return;
+    }
+
     if (currentTab === 'professional' && formData.serviceCategories.length === 0) {
       toast.error('🛠️ Categorías requeridas', {
         description: "Los profesionales deben seleccionar al menos una categoría de servicio"
@@ -1062,6 +1113,7 @@ export default function RegisterPage() {
         phone: sanitizedData.phone,
         location: sanitizedData.location,
         birthdate: sanitizedData.birthdate,
+        dni: sanitizedData.dni,
         userType: currentTab as 'client' | 'professional',
         serviceCategories: sanitizedData.serviceCategories,
         description: sanitizedData.description,

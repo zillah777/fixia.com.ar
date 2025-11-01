@@ -129,6 +129,7 @@ interface RegisterRequest {
   location?: string;
   phone?: string;
   birthdate?: string;
+  dni?: string;
   // Professional-specific fields
   serviceCategories?: string[];
   description?: string;
@@ -518,14 +519,15 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
         email: sanitizeInput(userRegistrationData.email, 'email'),
         password: userRegistrationData.password, // No sanitizar password
         name: sanitizeInput(userRegistrationData.fullName, 'plainText'), // Map fullName to name for backend
-        user_type: ['client', 'professional'].includes(userRegistrationData.userType) 
-          ? userRegistrationData.userType 
+        user_type: ['client', 'professional'].includes(userRegistrationData.userType)
+          ? userRegistrationData.userType
           : 'client',
         location: sanitizeInput(userRegistrationData.location || '', 'plainText'),
         phone: sanitizeInput(userRegistrationData.phone || '', 'phone'),
         birthdate: userRegistrationData.birthdate,
+        dni: sanitizeInput(userRegistrationData.dni || '', 'plainText'),
         // Campos profesionales
-        serviceCategories: userRegistrationData.serviceCategories?.map(cat => 
+        serviceCategories: userRegistrationData.serviceCategories?.map(cat =>
           sanitizeInput(cat, 'plainText')
         ).filter(Boolean),
         description: sanitizeInput(userRegistrationData.description || '', 'basicHTML'),
