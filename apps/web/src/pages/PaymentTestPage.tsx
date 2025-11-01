@@ -42,8 +42,8 @@ export default function PaymentTestPage() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-8"
         >
-          <h1 className="text-4xl font-bold text-gray-800 mb-4">
-            <CreditCard className="inline-block mr-3 h-10 w-10 text-blue-600" />
+          <h1 className="text-4xl font-bold text-foreground mb-4">
+            <CreditCard className="inline-block mr-3 h-10 w-10 text-secondary" />
             Sistema de Pagos - Test
           </h1>
           <p className="text-lg text-gray-600">
@@ -125,7 +125,7 @@ export default function PaymentTestPage() {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center">
-                    <CheckCircle2 className="mr-2 h-5 w-5 text-green-600" />
+                    <CheckCircle2 className="mr-2 h-5 w-5 text-success" />
                     PaymentButton Component
                   </CardTitle>
                 </CardHeader>
@@ -193,7 +193,7 @@ export default function PaymentTestPage() {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center">
-                    <AlertCircle className="mr-2 h-5 w-5 text-orange-600" />
+                    <AlertCircle className="mr-2 h-5 w-5 text-warning" />
                     Prueba Personalizada
                   </CardTitle>
                 </CardHeader>
@@ -234,9 +234,9 @@ export default function PaymentTestPage() {
                     </Button>
                   </div>
 
-                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                    <h4 className="font-medium text-yellow-800 mb-2">Nota de Desarrollo:</h4>
-                    <p className="text-sm text-yellow-700">
+                  <div className="bg-warning/10 border border-warning/30 rounded-lg p-4">
+                    <h4 className="font-medium text-warning mb-2">Nota de Desarrollo:</h4>
+                    <p className="text-sm text-warning/80">
                       Para probar pagos reales, necesitas configurar las credenciales de MercadoPago
                       en las variables de entorno del backend.
                     </p>
@@ -260,15 +260,15 @@ export default function PaymentTestPage() {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="flex items-center space-x-2">
-                  <CheckCircle2 className="h-5 w-5 text-green-600" />
+                  <CheckCircle2 className="h-5 w-5 text-success" />
                   <span className="text-sm">Frontend Integrado</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <CheckCircle2 className="h-5 w-5 text-green-600" />
+                  <CheckCircle2 className="h-5 w-5 text-success" />
                   <span className="text-sm">Backend Configurado</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <AlertCircle className="h-5 w-5 text-orange-600" />
+                  <AlertCircle className="h-5 w-5 text-warning" />
                   <span className="text-sm">Credenciales Pendientes</span>
                 </div>
               </div>
