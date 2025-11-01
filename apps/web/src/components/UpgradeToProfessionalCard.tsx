@@ -164,8 +164,8 @@ export function UpgradeToProfessionalCard({ userType, onUpgradeSuccess }: Upgrad
               whileHover={{ scale: 1.02 }}
               className="flex items-start space-x-1.5 sm:space-x-2 md:space-x-3 p-2 sm:p-2.5 md:p-3 rounded-lg glass border border-white/10"
             >
-              <div className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 lg:h-10 lg:w-10 rounded-full bg-green-500/10 flex items-center justify-center flex-shrink-0">
-                <Zap className="h-3 w-3 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4 lg:h-5 lg:w-5 text-green-500" />
+              <div className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 lg:h-10 lg:w-10 rounded-full bg-success/10 flex items-center justify-center flex-shrink-0">
+                <Zap className="h-3 w-3 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4 lg:h-5 lg:w-5 text-success" />
               </div>
               <div className="min-w-0 flex-1">
                 <h4 className="font-medium text-[10px] sm:text-xs md:text-sm truncate">100% Gratis</h4>
@@ -275,7 +275,7 @@ export function UpgradeToProfessionalCard({ userType, onUpgradeSuccess }: Upgrad
                           type="button"
                           onClick={() => handleRemoveSpecialty(index)}
                           disabled={isSubmitting}
-                          className="ml-1 hover:text-red-500 transition-colors"
+                          className="ml-1 hover:text-destructive transition-colors"
                         >
                           <X className="h-3 w-3" />
                         </button>

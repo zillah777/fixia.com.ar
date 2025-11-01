@@ -64,7 +64,7 @@ export const TrustBadge = memo<TrustBadgeProps>(({
 
   const getScoreColor = (score: number) => {
     if (score >= 95) return 'text-purple-600';
-    if (score >= 85) return 'text-green-600';
+    if (score >= 85) return 'text-success';
     if (score >= 75) return 'text-blue-600';
     if (score >= 65) return 'text-orange-600';
     if (score >= 50) return 'text-gray-600';
@@ -137,7 +137,7 @@ export const TrustBadge = memo<TrustBadgeProps>(({
       {verificationBadges && size !== 'sm' && (
         <div className="flex gap-1">
           {verificationBadges.verifiedIdentity && (
-            <div className="flex items-center justify-center w-5 h-5 bg-green-100 rounded-full">
+            <div className="flex items-center justify-center w-5 h-5 bg-success/10 rounded-full">
               <CheckCircle className="h-3 w-3 text-green-600" />
             </div>
           )}
@@ -190,7 +190,7 @@ export const TrustScoreDisplay = memo<{
 }>(({ score, label = 'Confianza', showProgressBar = true, className }) => {
   const getScoreColor = (score: number) => {
     if (score >= 95) return 'text-purple-600';
-    if (score >= 85) return 'text-green-600';
+    if (score >= 85) return 'text-success';
     if (score >= 75) return 'text-blue-600';
     if (score >= 65) return 'text-orange-600';
     if (score >= 50) return 'text-gray-600';

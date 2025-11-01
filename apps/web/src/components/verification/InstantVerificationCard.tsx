@@ -101,11 +101,11 @@ export const InstantVerificationCard = memo<InstantVerificationCardProps>(({
 
   const renderIcon = () => {
     if (isVerified) {
-      return <CheckCircle className="h-6 w-6 text-green-600" />;
+      return <CheckCircle className="h-6 w-6 text-success" />;
     }
     
     if (step === 'completed') {
-      return <CheckCircle className="h-6 w-6 text-green-600" />;
+      return <CheckCircle className="h-6 w-6 text-success" />;
     }
 
     return isPhone ? 
@@ -118,13 +118,13 @@ export const InstantVerificationCard = memo<InstantVerificationCardProps>(({
       <Card className="glass border-white/20">
         <CardContent className="p-6">
           <div className="flex items-center space-x-3">
-            <CheckCircle className="h-8 w-8 text-green-600" />
+            <CheckCircle className="h-8 w-8 text-success" />
             <div>
               <h3 className="font-medium text-foreground">{title}</h3>
               <p className="text-sm text-muted-foreground">Verificado exitosamente</p>
             </div>
           </div>
-          <Badge className="mt-4 bg-green-100 text-green-800">
+          <Badge className="mt-4 bg-success/10 text-success">
             Verificado
           </Badge>
         </CardContent>
@@ -223,14 +223,14 @@ export const InstantVerificationCard = memo<InstantVerificationCardProps>(({
             animate={{ opacity: 1, scale: 1 }}
             className="text-center space-y-3"
           >
-            <CheckCircle className="h-12 w-12 text-green-600 mx-auto" />
+            <CheckCircle className="h-12 w-12 text-success mx-auto" />
             <div>
               <h4 className="font-medium text-foreground">¡Verificación Exitosa!</h4>
               <p className="text-sm text-muted-foreground">
                 Tu {isPhone ? 'teléfono' : 'email'} ha sido verificado correctamente
               </p>
             </div>
-            <Badge className="bg-green-100 text-green-800">
+            <Badge className="bg-success/10 text-success">
               Completado
             </Badge>
           </motion.div>

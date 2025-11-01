@@ -22,11 +22,11 @@ export const VerificationRequestCard = memo<VerificationRequestCardProps>(({
   const getStatusIcon = (status: VerificationStatus) => {
     switch (status) {
       case VerificationStatus.PENDING:
-        return <Clock className="h-4 w-4 text-yellow-600" />;
+        return <Clock className="h-4 w-4 text-warning" />;
       case VerificationStatus.APPROVED:
-        return <CheckCircle className="h-4 w-4 text-green-600" />;
+        return <CheckCircle className="h-4 w-4 text-success" />;
       case VerificationStatus.REJECTED:
-        return <XCircle className="h-4 w-4 text-red-600" />;
+        return <XCircle className="h-4 w-4 text-destructive" />;
       case VerificationStatus.EXPIRED:
         return <AlertCircle className="h-4 w-4 text-gray-600" />;
       case VerificationStatus.CANCELLED:
@@ -153,11 +153,11 @@ export const VerificationRequestCard = memo<VerificationRequestCardProps>(({
         {request.status === VerificationStatus.REJECTED && request.rejectionReason && (
           <>
             <Separator className="bg-white/10" />
-            <div className="bg-red-50 border border-red-200 p-3 rounded-lg">
-              <h4 className="text-sm font-medium text-red-800 mb-2">
+            <div className="bg-destructive/5 border border-destructive/30 p-3 rounded-lg">
+              <h4 className="text-sm font-medium text-destructive mb-2">
                 Motivo del rechazo:
               </h4>
-              <p className="text-sm text-red-700">{request.rejectionReason}</p>
+              <p className="text-sm text-destructive">{request.rejectionReason}</p>
             </div>
           </>
         )}
@@ -212,7 +212,7 @@ export const VerificationRequestCard = memo<VerificationRequestCardProps>(({
                 variant="outline"
                 size="sm"
                 onClick={handleCancel}
-                className="text-red-600 border-red-600 hover:bg-red-50"
+                className="text-destructive border-red-600 hover:bg-destructive/5"
               >
                 Cancelar Solicitud
               </Button>
@@ -222,28 +222,28 @@ export const VerificationRequestCard = memo<VerificationRequestCardProps>(({
 
         {/* Status-specific content */}
         {request.status === VerificationStatus.APPROVED && (
-          <div className="bg-green-50 border border-green-200 p-3 rounded-lg">
+          <div className="bg-success/5 border border-success/30 p-3 rounded-lg">
             <div className="flex items-center space-x-2">
-              <CheckCircle className="h-5 w-5 text-green-600" />
-              <span className="text-sm font-medium text-green-800">
+              <CheckCircle className="h-5 w-5 text-success" />
+              <span className="text-sm font-medium text-success">
                 ¡Verificación aprobada!
               </span>
             </div>
-            <p className="text-sm text-green-700 mt-1">
+            <p className="text-sm text-success mt-1">
               Tu verificación ha sido aprobada exitosamente y ya está activa en tu perfil.
             </p>
           </div>
         )}
 
         {request.status === VerificationStatus.PENDING && (
-          <div className="bg-yellow-50 border border-yellow-200 p-3 rounded-lg">
+          <div className="bg-warning/5 border border-warning/30 p-3 rounded-lg">
             <div className="flex items-center space-x-2">
-              <Clock className="h-5 w-5 text-yellow-600" />
-              <span className="text-sm font-medium text-yellow-800">
+              <Clock className="h-5 w-5 text-warning" />
+              <span className="text-sm font-medium text-warning">
                 En revisión
               </span>
             </div>
-            <p className="text-sm text-yellow-700 mt-1">
+            <p className="text-sm text-warning mt-1">
               Tu solicitud está siendo revisada por nuestro equipo. Te notificaremos cuando esté lista.
             </p>
           </div>

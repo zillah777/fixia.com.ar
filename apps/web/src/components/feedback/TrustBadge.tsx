@@ -16,11 +16,11 @@ export const TrustBadge: React.FC<TrustBadgeProps> = ({
   showDetails = false,
 }) => {
   const getTrustLevel = (percentage: number): { color: string; label: string } => {
-    if (percentage >= 90) return { color: 'bg-green-500', label: 'Excelente' };
+    if (percentage >= 90) return { color: 'bg-success', label: 'Excelente' };
     if (percentage >= 75) return { color: 'bg-blue-500', label: 'Muy Bueno' };
-    if (percentage >= 60) return { color: 'bg-yellow-500', label: 'Bueno' };
+    if (percentage >= 60) return { color: 'bg-warning', label: 'Bueno' };
     if (percentage >= 40) return { color: 'bg-orange-500', label: 'Regular' };
-    return { color: 'bg-red-500', label: 'Bajo' };
+    return { color: 'bg-destructive', label: 'Bajo' };
   };
 
   const trustLevel = getTrustLevel(trustScore.trustPercentage);

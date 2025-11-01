@@ -10,8 +10,8 @@ function BuggyComponent({ shouldCrash }: { shouldCrash: boolean }) {
   }
   
   return (
-    <div className="p-4 bg-green-50 border border-green-200 rounded-md">
-      <p className="text-green-800">✅ Component is working correctly!</p>
+    <div className="p-4 bg-success/5 border border-success/30 rounded-md">
+      <p className="text-success">✅ Component is working correctly!</p>
     </div>
   );
 }
@@ -63,7 +63,7 @@ export default function ErrorBoundaryExample() {
             onClick={() => setCrashComponent(false)}
             className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
               !crashComponent 
-                ? 'bg-green-600 text-white' 
+                ? 'bg-success text-white' 
                 : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
             }`}
           >
@@ -73,7 +73,7 @@ export default function ErrorBoundaryExample() {
             onClick={() => setCrashComponent(true)}
             className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
               crashComponent 
-                ? 'bg-red-600 text-white' 
+                ? 'bg-destructive text-white' 
                 : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
             }`}
           >
