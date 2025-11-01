@@ -4,11 +4,15 @@ import { PrismaService } from '../common/prisma.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { CategoriesService } from '../categories/categories.service';
 
 @ApiTags('Admin')
 @Controller('admin')
 export class AdminController {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private categoriesService: CategoriesService
+  ) {}
 
   @Get('database-status')
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -110,6 +114,36 @@ export class AdminController {
         {
           status: 'error',
           message: 'Failed to baseline migration',
+          error: error.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Post('seed-categories')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Seed new 18-category system with 250+ subcategories (Admin only)' })
+  @ApiResponse({ status: 200, description: 'Categories seeded successfully' })
+  @ApiResponse({ status: 500, description: 'Seeding failed' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - Admin role required' })
+  async seedCategories() {
+    try {
+      const result = await this.categoriesService.seedCategories();
+      return {
+        status: 'success',
+        message: 'Categories and subcategories seeded successfully',
+        data: result,
+        timestamp: new Date().toISOString(),
+      };
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: 'error',
+          message: 'Failed to seed categories',
           error: error.message,
         },
         HttpStatus.INTERNAL_SERVER_ERROR,
