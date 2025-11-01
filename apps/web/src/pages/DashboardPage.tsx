@@ -75,8 +75,8 @@ function QuickActions({ user }: { user: any }) {
         <Link to="/new-opportunity">
           <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 cursor-pointer group">
             <CardContent className="p-3 sm:p-4 md:p-6 text-center">
-              <div className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 bg-purple-500/20 rounded-lg sm:rounded-xl flex items-center justify-center mx-auto mb-2 sm:mb-3 md:mb-4 group-hover:scale-110 transition-transform duration-300">
-                <Plus className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-purple-400" />
+              <div className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 bg-primary/20 rounded-lg sm:rounded-xl flex items-center justify-center mx-auto mb-2 sm:mb-3 md:mb-4 group-hover:scale-110 transition-transform duration-300">
+                <Plus className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-primary" />
               </div>
               <h3 className="text-xs sm:text-sm md:text-base font-semibold mb-1 sm:mb-2">Crear Anuncio</h3>
               <p className="text-[10px] sm:text-xs md:text-sm text-muted-foreground line-clamp-2">
@@ -124,8 +124,8 @@ function QuickActions({ user }: { user: any }) {
         <Link to="/profile">
           <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 cursor-pointer group">
             <CardContent className="p-3 sm:p-4 md:p-6 text-center">
-              <div className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 bg-blue-500/20 rounded-lg sm:rounded-xl flex items-center justify-center mx-auto mb-2 sm:mb-3 md:mb-4 group-hover:scale-110 transition-transform duration-300">
-                <Settings className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-blue-400" />
+              <div className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 bg-secondary/20 rounded-lg sm:rounded-xl flex items-center justify-center mx-auto mb-2 sm:mb-3 md:mb-4 group-hover:scale-110 transition-transform duration-300">
+                <Settings className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-secondary" />
               </div>
               <h3 className="text-xs sm:text-sm md:text-base font-semibold mb-1 sm:mb-2">Mi Perfil</h3>
               <p className="text-[10px] sm:text-xs md:text-sm text-muted-foreground line-clamp-2">
@@ -1182,15 +1182,15 @@ export default function DashboardPage() {
                     </div>
                     <div className="flex flex-col gap-2 text-xs text-white/80">
                       <div className="flex items-center gap-1.5">
-                        <CheckCircle className="h-3.5 w-3.5 text-green-400 flex-shrink-0" />
+                        <CheckCircle className="h-3.5 w-3.5 text-success flex-shrink-0" />
                         <span className="truncate">Doble rol Cliente + Profesional</span>
                       </div>
                       <div className="flex items-center gap-1.5">
-                        <CheckCircle className="h-3.5 w-3.5 text-green-400 flex-shrink-0" />
+                        <CheckCircle className="h-3.5 w-3.5 text-success flex-shrink-0" />
                         <span className="truncate">Trust Scores separados</span>
                       </div>
                       <div className="flex items-center gap-1.5">
-                        <CheckCircle className="h-3.5 w-3.5 text-green-400 flex-shrink-0" />
+                        <CheckCircle className="h-3.5 w-3.5 text-success flex-shrink-0" />
                         <span className="truncate">Desde $2,999/mes</span>
                       </div>
                     </div>
@@ -1220,17 +1220,17 @@ export default function DashboardPage() {
                         </p>
                         <div className="flex items-center gap-2 sm:gap-3 md:gap-4 text-xs sm:text-sm text-white/80 flex-wrap">
                           <div className="flex items-center gap-1 whitespace-nowrap">
-                            <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-green-400 flex-shrink-0" />
+                            <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-success flex-shrink-0" />
                             <span className="hidden md:inline">Doble rol: Cliente + Profesional</span>
                             <span className="md:hidden">Doble rol</span>
                           </div>
                           <div className="flex items-center gap-1 whitespace-nowrap">
-                            <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-green-400 flex-shrink-0" />
+                            <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-success flex-shrink-0" />
                             <span className="hidden md:inline">Trust Scores separados</span>
                             <span className="md:hidden">2 Trust Scores</span>
                           </div>
                           <div className="flex items-center gap-1 whitespace-nowrap">
-                            <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-green-400 flex-shrink-0" />
+                            <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-success flex-shrink-0" />
                             <span>Desde $2,999/mes</span>
                           </div>
                         </div>
