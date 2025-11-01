@@ -81,11 +81,11 @@ function ContactInfoSection() {
     {
       icon: Phone,
       title: "Teléfono",
-      primary: "+54 280 487-4166",
+      primary: "+54 9 2804874166",
       secondary: "WhatsApp disponible",
       description: "Atención personalizada de Lun-Vie 9:00-18:00",
       color: "text-success",
-      action: "tel:+542804874166"
+      action: "tel:+5492804874166"
     },
     {
       icon: MapPin,

@@ -400,10 +400,10 @@ function ContactSection() {
                 soporte@fixia.app
               </Button>
             </a>
-            <a href="tel:+542804874166" className="w-full sm:w-auto">
+            <a href="tel:+5492804874166" className="w-full sm:w-auto">
               <Button variant="outline" className="glass border-white/20 hover:glass-medium w-full sm:w-auto">
                 <Phone className="mr-2 h-4 w-4" />
-                +54 280 4874166
+                +54 9 2804874166
               </Button>
             </a>
           </div>
