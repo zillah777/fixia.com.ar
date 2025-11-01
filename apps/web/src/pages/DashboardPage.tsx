@@ -10,6 +10,7 @@ import {
 import { userService, DashboardStats } from "../lib/services";
 import { dashboardService } from "../lib/services/dashboard.service";
 import type { RecentActivity, CurrentProject } from "../lib/services/dashboard.service";
+import { feedbackService } from "../lib/services/feedback.service";
 import { Skeleton } from "../components/ui/skeleton";
 import { Button } from "../components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
@@ -27,6 +28,7 @@ import { useSecureAuth } from "../context/SecureAuthContext";
 import { MobileBottomNavigation } from "../components/MobileBottomNavigation";
 import { FixiaNavigation } from "../components/FixiaNavigation";
 import { OnboardingMessages } from "../components/OnboardingMessages";
+import { extractErrorMessage, logError, isAuthenticationError } from "../utils/errorHandler";
 
 function QuickActions({ user }: { user: any }) {
   const isProfessional = user?.userType === 'professional';
@@ -506,8 +508,10 @@ function ClientAnnouncements({
       if (onRefresh) {
         onRefresh();
       }
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Error al eliminar anuncio');
+    } catch (error) {
+      logError(error, 'deleteProject');
+      const message = extractErrorMessage(error, 'Error al eliminar anuncio');
+      toast.error(message);
     } finally {
       setActionLoading(null);
     }
@@ -734,8 +738,10 @@ function MyServices({
       toast.success('Servicio eliminado exitosamente');
       await fetchServices();
       if (onRefresh) onRefresh();
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Error al eliminar servicio');
+    } catch (error) {
+      logError(error, 'deleteService');
+      const message = extractErrorMessage(error, 'Error al eliminar servicio');
+      toast.error(message);
     } finally {
       setActionLoading(null);
     }
@@ -996,11 +1002,22 @@ export default function DashboardPage() {
         const proposals_received = projects.reduce((sum: number, p: any) => sum + (p._count?.proposals || 0), 0);
         const in_progress = projects.filter((p: any) => p.status === 'in_progress').length;
 
+        // ✅ Fetch client rating (trust score) from professionals
+        let client_rating = 0;
+        try {
+          const trustScore = await feedbackService.getTrustScore(user.id);
+          client_rating = trustScore.trustPercentage || 0;
+        } catch (error) {
+          // If trust score fetch fails, default to 0
+          logError(error, 'getTrustScore');
+          client_rating = 0;
+        }
+
         setClientStats({
           open_announcements,
           proposals_received,
           in_progress,
-          client_rating: 0 // TODO: Implement client rating from professionals
+          client_rating
         });
 
         // Store client projects for the ClientAnnouncements component
@@ -1011,12 +1028,12 @@ export default function DashboardPage() {
           const data = await userService.getDashboard();
           setDashboardData(data);
         }
-      } catch (error: any) {
-        console.warn('Dashboard stats fetch failed, using defaults:', error?.message);
+      } catch (error) {
+        logError(error, 'fetchDashboardData');
 
-        // Check if it's a UUID validation error suggesting stale session
-        const errorMessage = error?.response?.data?.message || error?.message || '';
-        if (errorMessage.includes('uuid') || errorMessage.includes('Validation failed')) {
+        // Check if it's an authentication error
+        const errorMessage = extractErrorMessage(error);
+        if (isAuthenticationError(error) || errorMessage.includes('uuid') || errorMessage.includes('Validation failed')) {
           toast.error('Tu sesión necesita actualizarse. Por favor, cierra sesión y vuelve a iniciar sesión.', {
             duration: 6000,
           });
@@ -1097,7 +1114,7 @@ export default function DashboardPage() {
         activities.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
         setRecentActivity(activities.slice(0, 10));
       } catch (error) {
-        console.warn('Recent activity fetch failed:', error);
+        logError(error, 'fetchRecentActivity');
         setRecentActivity([]);
       } finally {
         setActivityLoading(false);

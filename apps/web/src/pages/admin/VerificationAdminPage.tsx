@@ -137,17 +137,24 @@ export const VerificationAdminPage = memo(() => {
     });
   };
 
-  // TODO: Add proper admin role check
-  if (!user || user.userType !== 'professional') {
+  // ✅ Admin role check - requires admin role to access verification panel
+  const isAdmin = user?.role === 'admin';
+
+  if (!user || !isAdmin) {
     return (
       <div className="container mx-auto px-4 py-8">
         <Card className="glass border-white/20">
           <CardContent className="p-8 text-center">
-            <AlertCircle className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-            <h2 className="text-xl font-semibold mb-2">Acceso Restringido</h2>
-            <p className="text-muted-foreground">
+            <AlertCircle className="h-16 w-16 mx-auto mb-4 text-red-500/70" />
+            <h2 className="text-xl font-semibold mb-2">Acceso Restringido 🔐</h2>
+            <p className="text-muted-foreground mb-4">
               Esta página solo está disponible para administradores.
             </p>
+            {user && (
+              <p className="text-sm text-muted-foreground/70">
+                Tu rol actual: <span className="font-mono text-xs bg-white/10 px-2 py-1 rounded">{user.role || 'user'}</span>
+              </p>
+            )}
           </CardContent>
         </Card>
       </div>
