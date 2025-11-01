@@ -48,6 +48,8 @@ const Toaster = ({ ...props }: ToasterProps) => {
           error: `
             bg-red-600 dark:bg-red-600
             border-red-700 dark:border-red-700
+            [&_.title]:text-white
+            [&_.description]:text-white
             [&_div]:text-white
             [&_p]:text-white
             [&>button]:text-white dark:[&>button]:text-white
@@ -55,9 +57,13 @@ const Toaster = ({ ...props }: ToasterProps) => {
 
           // Success variant - Clean green
           success: `
-            bg-green-50 dark:bg-green-950/40
-            border-green-200 dark:border-green-800
-            [&>button]:text-green-700 dark:[&>button]:text-green-300
+            bg-green-600 dark:bg-green-600
+            border-green-700 dark:border-green-700
+            [&_.title]:text-white
+            [&_.description]:text-white
+            [&_div]:text-white
+            [&_p]:text-white
+            [&>button]:text-white dark:[&>button]:text-white
           `,
 
           // Warning variant - Clean orange
