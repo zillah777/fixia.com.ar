@@ -85,7 +85,7 @@ export const SecureAvatarUpload = memo<SecureAvatarUploadProps>(({
         </Button>
       </DialogTrigger>
       
-      <DialogContent className="glass border-white/10 max-w-md">
+      <DialogContent className="glass border-white/10 max-w-[90vw] sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="text-white">Cambiar Foto de Perfil</DialogTitle>
         </DialogHeader>

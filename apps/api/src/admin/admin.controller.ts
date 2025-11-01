@@ -1,6 +1,9 @@
-import { Controller, Post, Get, HttpException, HttpStatus } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Controller, Post, Get, HttpException, HttpStatus, UseGuards } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { PrismaService } from '../common/prisma.service';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
 
 @ApiTags('Admin')
 @Controller('admin')
@@ -8,8 +11,13 @@ export class AdminController {
   constructor(private prisma: PrismaService) {}
 
   @Get('database-status')
-  @ApiOperation({ summary: 'Check database status' })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Check database status (Admin only)' })
   @ApiResponse({ status: 200, description: 'Database status retrieved successfully' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - Admin role required' })
   async getDatabaseStatus() {
     try {
       const userCount = await this.prisma.user.count();
@@ -41,8 +49,13 @@ export class AdminController {
   }
 
   @Post('reset-migrations')
-  @ApiOperation({ summary: 'Reset Prisma migrations table (DANGER: Production use only for fixing failed migrations)' })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Reset Prisma migrations table (DANGER: Admin only - use only for fixing failed migrations)' })
   @ApiResponse({ status: 200, description: 'Migrations table reset successfully' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - Admin role required' })
   async resetMigrations() {
     try {
       // Delete all records from _prisma_migrations table
@@ -66,8 +79,13 @@ export class AdminController {
   }
 
   @Post('baseline-migration')
-  @ApiOperation({ summary: 'Mark migration as applied without executing (for production database recovery)' })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Mark migration as applied without executing (Admin only - for production database recovery)' })
   @ApiResponse({ status: 200, description: 'Migration baselined successfully' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - Admin role required' })
   async baselineMigration() {
     try {
       // First, clear any failed migrations
@@ -100,9 +118,14 @@ export class AdminController {
   }
 
   @Post('seed-services')
-  @ApiOperation({ summary: 'Populate missing services data (production-safe)' })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Populate missing services data (Admin only - production-safe)' })
   @ApiResponse({ status: 200, description: 'Services seeded successfully' })
   @ApiResponse({ status: 400, description: 'Services already exist or seeding failed' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - Admin role required' })
   async seedServices() {
     try {
       // Check if services already exist

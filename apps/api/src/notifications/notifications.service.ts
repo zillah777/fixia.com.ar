@@ -2,12 +2,16 @@ import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../common/prisma.service';
 import { NotificationType, Notification, User } from '@prisma/client';
 import { CreateNotificationDto, UpdateNotificationDto, NotificationFiltersDto } from './dto/notification.dto';
+import { NotificationsGateway } from './notifications.gateway';
 
 @Injectable()
 export class NotificationsService {
   private readonly logger = new Logger(NotificationsService.name);
 
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private notificationsGateway: NotificationsGateway,
+  ) {}
 
   async createNotification(createNotificationDto: CreateNotificationDto): Promise<Notification> {
     this.logger.log(`Creating notification for user: ${createNotificationDto.userId}`);
@@ -358,14 +362,16 @@ export class NotificationsService {
     return { count: result.count };
   }
 
-  // Real-time notification methods (placeholder for WebSocket/SSE implementation)
+  // Real-time notification via WebSocket (now fully implemented with Socket.io)
   private emitRealTimeNotification(notification: Notification): void {
-    // TODO: Implement WebSocket or Server-Sent Events
-    // This would emit the notification to connected clients in real-time
-    this.logger.debug(`Would emit real-time notification: ${notification.id}`);
-    
-    // Example implementation with Socket.IO (if implemented):
-    // this.socketGateway.emitToUser(notification.user_id, 'notification', notification);
+    try {
+      // Emit to connected WebSocket clients immediately
+      this.notificationsGateway.emitToUser(notification.user_id, notification);
+      this.logger.log(`✅ Real-time notification emitted via WebSocket: ${notification.id} to user ${notification.user_id}`);
+    } catch (error) {
+      // WebSocket error - notification is already in DB, will be fetched on next poll
+      this.logger.warn(`⚠️ Failed to emit real-time notification: ${error.message} (will be fetched on poll)`);
+    }
   }
 
   private getSortOrder(sortBy: string) {

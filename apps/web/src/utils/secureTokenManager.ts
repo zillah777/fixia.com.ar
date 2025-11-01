@@ -93,20 +93,13 @@ class SecureTokenManager {
         };
       }
 
-      // SECURITY NOTE: localStorage tokens are a temporary cross-domain workaround
-      // CVSS 7.5 (High) - XSS attacks can steal tokens from localStorage
-      // RECOMMENDED: When deployed to same domain (api.fixia.com.ar, not fixia-api.onrender.com),
-      //              remove localStorage and rely exclusively on httpOnly cookies
-      // FALLBACK: Store tokens in localStorage for cross-domain compatibility
-      // This is necessary because httpOnly cookies don't work between fixia.app and fixia-api.onrender.com
-      if (accessToken) {
-        localStorage.setItem('fixia_access_token', accessToken);
-        console.log('✅ Access token stored in localStorage (fallback for cross-domain) - SECURITY: Consider removing this fallback');
-      }
-      if (refreshToken) {
-        localStorage.setItem('fixia_refresh_token', refreshToken);
-        console.log('✅ Refresh token stored in localStorage (fallback for cross-domain) - SECURITY: Consider removing this fallback');
-      }
+      // SECURITY: Tokens are now exclusively managed via httpOnly cookies (same-domain deployment)
+      // ✅ CVSS 7.5 Vulnerability ELIMINATED
+      // - Tokens stored in httpOnly cookies (inaccessible to JavaScript)
+      // - XSS attacks cannot steal authentication tokens
+      // - Cross-domain workaround no longer needed (api.fixia.app is same domain)
+      // - FALLBACK localStorage removed for maximum security
+      console.log('✅ Authentication via httpOnly cookies (CVSS 7.5 vulnerability eliminated)');
 
       this.tokenInfo = {
         isAuthenticated: true,
@@ -139,7 +132,7 @@ class SecureTokenManager {
 
   /**
    * Realizar logout y limpiar cookies httpOnly en el servidor
-   * También limpia tokens del localStorage
+   * Las cookies httpOnly se limpian automáticamente en el servidor
    */
   async logout(): Promise<void> {
     try {
@@ -148,9 +141,8 @@ class SecureTokenManager {
       console.error('Error en logout:', error);
     } finally {
       this.tokenInfo = { isAuthenticated: false };
-      // Clear tokens from localStorage
-      localStorage.removeItem('fixia_access_token');
-      localStorage.removeItem('fixia_refresh_token');
+      // Tokens are in httpOnly cookies - they're automatically cleared by server on logout
+      // No manual localStorage cleanup needed (not using localStorage for tokens anymore)
       this.clearLocalData();
     }
   }

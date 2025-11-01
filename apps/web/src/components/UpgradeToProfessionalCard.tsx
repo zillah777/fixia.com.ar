@@ -191,7 +191,7 @@ export function UpgradeToProfessionalCard({ userType, onUpgradeSuccess }: Upgrad
 
       {/* Upgrade Dialog */}
       <Dialog open={showUpgradeDialog} onOpenChange={setShowUpgradeDialog}>
-        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto glass">
+        <DialogContent className="max-w-[90vw] sm:max-w-[600px] max-h-[85vh] sm:max-h-[90vh] overflow-y-auto glass">
           <DialogHeader>
             <DialogTitle className="flex items-center space-x-2 text-2xl">
               <Sparkles className="h-6 w-6 text-primary" />

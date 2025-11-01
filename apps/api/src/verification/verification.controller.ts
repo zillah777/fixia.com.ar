@@ -1,20 +1,22 @@
-import { 
-  Controller, 
-  Get, 
-  Post, 
-  Put, 
-  Delete, 
-  Param, 
-  Body, 
-  Query, 
-  UseGuards, 
-  HttpStatus, 
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Param,
+  Body,
+  Query,
+  UseGuards,
+  HttpStatus,
   HttpException,
   UploadedFiles,
   UseInterceptors
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { VerificationService } from './verification.service';
 import { 
@@ -308,14 +310,16 @@ export class VerificationController {
     }
   }
 
-  // Admin endpoints (would need role-based access control in production)
+  // Admin endpoints - SECURITY: Require admin role (CVSS 7.8 mitigation)
   @Get('admin/pending')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
   async getPendingVerificationRequests(
     @CurrentUser() user: User,
     @Query() filters: VerificationFiltersDto
   ) {
     try {
-      // TODO: Add admin role check
+      // ✅ Admin role check enforced via decorator
       const result = await this.verificationService.getPendingVerificationRequests(
         filters.page || 1,
         filters.limit || 20,
@@ -332,13 +336,15 @@ export class VerificationController {
   }
 
   @Post('admin/review/:id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
   async reviewVerificationRequest(
     @Param('id') id: string,
     @CurrentUser() user: User,
     @Body() reviewDto: ReviewVerificationDto
   ) {
     try {
-      // TODO: Add admin role check
+      // ✅ Admin role check enforced via decorator
       const reviewedRequest = await this.verificationService.reviewVerificationRequest(
         id,
         user.id,
@@ -358,9 +364,11 @@ export class VerificationController {
   }
 
   @Get('admin/stats')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
   async getVerificationStats(@CurrentUser() user: User) {
     try {
-      // TODO: Add admin role check
+      // ✅ Admin role check enforced via decorator
       const stats = await this.verificationService.getVerificationStats();
       return stats;
     } catch (error) {

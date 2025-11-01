@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect, ReactNode, useCallback 
 import { toast } from "sonner";
 import { notificationsService, type Notification as APINotification } from "../lib/services/notifications.service";
 import { useSecureAuth } from "./SecureAuthContext";
+import { useWebSocket, useWebSocketEvent } from "../hooks/useWebSocket";
 
 interface Notification {
   id: string;
@@ -33,6 +34,9 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const { user, isAuthenticated } = useSecureAuth();
   const [pollingInterval, setPollingInterval] = useState<NodeJS.Timeout | null>(null);
+
+  // WebSocket integration for real-time notifications
+  const { socket, isConnected } = useWebSocket({ enabled: isAuthenticated });
 
   // Convert API notification to local format
   const convertNotification = (apiNotif: APINotification): Notification => ({
@@ -83,10 +87,13 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     // Initial fetch
     refreshNotifications();
 
-    // Set up polling every 30 seconds for real-time updates
+    // Set up polling with adaptive interval:
+    // - 30 seconds when WebSocket disconnected (fallback)
+    // - 2 minutes when WebSocket connected (for sync/verification)
+    const pollingIntervalMs = isConnected ? 120000 : 30000;
     const interval = setInterval(() => {
       refreshNotifications();
-    }, 30000);
+    }, pollingIntervalMs);
 
     setPollingInterval(interval);
 
@@ -94,7 +101,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [isAuthenticated, user, refreshNotifications]);
+  }, [isAuthenticated, user, refreshNotifications, isConnected]);
 
   const addNotification = (notification: Omit<Notification, 'id' | 'timestamp' | 'read'>) => {
     const newNotification: Notification = {
@@ -175,6 +182,40 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       await refreshNotifications();
     }
   };
+
+  // WebSocket event listener for real-time notifications
+  useWebSocketEvent(socket, 'notification:new', (data: { notification: APINotification; receivedAt: string }) => {
+    console.log('✅ Real-time notification received via WebSocket:', data.notification.id);
+
+    // Add the new notification to the list
+    const convertedNotif = convertNotification(data.notification);
+    setNotifications(prev => [convertedNotif, ...prev]);
+    setUnreadCount(prev => prev + 1);
+
+    // Update localStorage with sync time
+    localStorage.setItem('fixia_last_notification_sync', new Date().toISOString());
+
+    // Show toast
+    toast(data.notification.title, {
+      description: data.notification.message,
+      action: data.notification.action_url ? {
+        label: "Ver",
+        onClick: () => window.location.href = data.notification.action_url!
+      } : undefined,
+    });
+  });
+
+  // WebSocket event listener for unread count updates
+  useWebSocketEvent(socket, 'notification:unread-count', (data: { count: number; updatedAt: string }) => {
+    console.log('📊 Unread count updated:', data.count);
+    setUnreadCount(data.count);
+  });
+
+  // WebSocket event listener for sync requests
+  useWebSocketEvent(socket, 'notification:sync-response', () => {
+    console.log('🔄 Server confirmed notification sync request');
+    refreshNotifications();
+  });
 
   const value = {
     notifications,

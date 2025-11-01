@@ -9,6 +9,7 @@ import {
   HttpStatus,
   Delete,
   BadRequestException,
+  Logger,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -23,6 +24,8 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 @ApiTags('Subscriptions')
 @Controller('subscription')
 export class SubscriptionController {
+  private readonly logger = new Logger(SubscriptionController.name);
+
   constructor(private readonly subscriptionService: SubscriptionService) {}
 
   @Post('create-preference')
@@ -60,12 +63,34 @@ export class SubscriptionController {
     });
     console.log('📦 Raw DTO:', dto);
 
-    // Manual validation
+    // SECURITY: Server-side validation to prevent amount tampering (CVSS 8.6 mitigation)
     if (!dto.subscriptionType || !['basic', 'premium'].includes(dto.subscriptionType)) {
       throw new BadRequestException('Invalid subscription type');
     }
+
+    // Validate subscription price against hardcoded server values
+    const hardcodedPrices = {
+      basic: 2999,
+      premium: 5999,
+    };
+
     if (!dto.price || typeof dto.price !== 'number' || dto.price < 0) {
-      throw new BadRequestException('Invalid price');
+      throw new BadRequestException('Invalid price format');
+    }
+
+    // CRITICAL: Verify price matches hardcoded server value (prevents client-side price manipulation)
+    const expectedPrice = hardcodedPrices[dto.subscriptionType];
+    if (dto.price !== expectedPrice) {
+      this.logger.warn(`⚠️ SECURITY ALERT: Price mismatch for subscription ${dto.subscriptionType}`);
+      this.logger.warn(`   Client sent: ${dto.price} ARS, Expected: ${expectedPrice} ARS`);
+      throw new BadRequestException(
+        `Invalid subscription price. Expected ${expectedPrice} ARS for ${dto.subscriptionType} plan`
+      );
+    }
+
+    // Additional validation: ensure price is within reasonable bounds
+    if (dto.price < 1 || dto.price > 9999999) {
+      throw new BadRequestException('Subscription price is out of acceptable range');
     }
 
     const userId = req.user.sub; // Extract user ID from JWT payload

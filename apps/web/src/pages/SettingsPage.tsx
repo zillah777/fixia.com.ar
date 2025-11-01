@@ -486,7 +486,7 @@ function SecurityTab() {
 
       {/* Delete Account Confirmation Dialog */}
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <DialogContent className="glass border-white/10 max-w-md">
+        <DialogContent className="glass border-white/10 max-w-[90vw] sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center space-x-2 text-destructive">
               <AlertCircle className="h-5 w-5" />

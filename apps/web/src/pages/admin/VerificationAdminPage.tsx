@@ -383,7 +383,7 @@ export const VerificationAdminPage = memo(() => {
 
       {/* Review Dialog */}
       <Dialog open={reviewDialog.open} onOpenChange={closeReviewDialog}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-[90vw] sm:max-w-md">
           <DialogHeader>
             <DialogTitle>
               {reviewDialog.action === 'approve' ? 'Aprobar' : 'Rechazar'} Verificación
@@ -446,7 +446,7 @@ export const VerificationAdminPage = memo(() => {
       {/* Request Detail Dialog */}
       {selectedRequest && (
         <Dialog open={!!selectedRequest} onOpenChange={() => setSelectedRequest(null)}>
-          <DialogContent className="max-w-2xl max-h-[80vh] overflow-auto">
+          <DialogContent className="max-w-[90vw] sm:max-w-2xl max-h-[80vh] sm:max-h-[80vh] overflow-auto">
             <DialogHeader>
               <DialogTitle>
                 Detalle de Verificación - {verificationService.getVerificationTypeLabel(selectedRequest.verificationType)}

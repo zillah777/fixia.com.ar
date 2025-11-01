@@ -147,7 +147,7 @@ export const MobileNavigation = memo<MobileNavigationProps>(({ className }) => {
         </Button>
       </SheetTrigger>
       
-      <SheetContent side="left" className="w-80 p-0">
+      <SheetContent side="left" className="w-[85vw] sm:w-80 max-w-sm p-0">
         <div className="flex flex-col h-full">
           {/* Header - Compact */}
           <SheetHeader className="p-4 pb-3">
@@ -296,7 +296,7 @@ const NavigationLink = memo<NavigationLinkProps>(({ item, isActive, onClick }) =
       to={item.href}
       onClick={onClick}
       className={cn(
-        "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors",
+        "flex items-center gap-3 px-4 py-3 rounded-md text-sm font-medium transition-colors min-h-12 min-w-12",
         isActive
           ? "bg-primary text-primary-foreground"
           : "text-foreground hover:bg-accent hover:text-accent-foreground"

@@ -67,6 +67,34 @@ export class PaymentsService {
   }
 
   /**
+   * Validate payment amount is within acceptable ranges
+   * SECURITY: Server-side validation to prevent amount tampering (CVSS 8.6 mitigation)
+   */
+  private validatePaymentAmount(amount: number, context: 'direct' | 'preference' = 'direct'): void {
+    // Check amount is a valid number
+    if (!Number.isFinite(amount) || amount !== Math.round(amount * 100) / 100) {
+      throw new BadRequestException('Invalid payment amount: must be a valid number with max 2 decimal places');
+    }
+
+    // Check minimum amount
+    if (amount < 1) {
+      throw new BadRequestException('Invalid payment amount: minimum amount is 1 ARS');
+    }
+
+    // Check maximum amount (9,999,999 ARS ≈ $100k USD)
+    if (amount > 9999999) {
+      throw new BadRequestException('Invalid payment amount: maximum amount is 9,999,999 ARS');
+    }
+
+    // For direct payments, add additional sanity check
+    if (context === 'direct' && amount > 100000) {
+      this.logger.warn(`⚠️ Large direct payment detected: ${amount} ARS - Please verify this is intentional`);
+    }
+
+    this.logger.debug(`✅ Payment amount validation passed: ${amount} ARS`);
+  }
+
+  /**
    * Create a direct payment
    */
   async createPayment(paymentData: CreatePaymentDto, userId: string): Promise<PaymentResult> {
@@ -76,6 +104,9 @@ export class PaymentsService {
 
     try {
       this.logger.log(`💳 Creating payment for amount: ${paymentData.amount}`);
+
+      // SECURITY: Validate amount server-side before processing (CVSS 8.6 mitigation)
+      this.validatePaymentAmount(paymentData.amount, 'direct');
 
       // Create external reference
       const externalReference = this.generateExternalReference(userId, paymentData.serviceId);
@@ -163,6 +194,9 @@ export class PaymentsService {
 
     try {
       this.logger.log(`🛒 Creating preference for amount: ${preferenceData.amount}`);
+
+      // SECURITY: Validate amount server-side before processing (CVSS 8.6 mitigation)
+      this.validatePaymentAmount(preferenceData.amount, 'preference');
 
       const externalReference = this.generateExternalReference(userId, preferenceData.serviceId);
       const baseUrl = this.configService.get('APP_URL', 'https://fixia.com.ar');

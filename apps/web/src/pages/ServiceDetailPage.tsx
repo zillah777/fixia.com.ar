@@ -59,7 +59,7 @@ function ImageLightbox({
 }) {
   return (
     <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="max-w-7xl w-full h-[90vh] p-0 bg-background/95 backdrop-blur-xl border-white/10">
+      <DialogContent className="max-w-[95vw] sm:max-w-7xl w-full h-[85vh] sm:h-[90vh] p-0 bg-background/95 backdrop-blur-xl border-white/10">
         <DialogTitle className="sr-only">Galería de imágenes</DialogTitle>
         <div className="relative w-full h-full flex items-center justify-center p-4">
           {/* Close button */}

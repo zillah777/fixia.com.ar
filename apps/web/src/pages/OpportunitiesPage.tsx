@@ -558,7 +558,7 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
         
         {/* Proposal Modal */}
         <Dialog open={showProposal} onOpenChange={setShowProposal}>
-          <DialogContent className="glass border-white/10 max-w-2xl">
+          <DialogContent className="glass border-white/10 max-w-[90vw] sm:max-w-2xl">
             <DialogHeader>
               <DialogTitle>Enviar Propuesta</DialogTitle>
               <DialogDescription>
@@ -702,7 +702,7 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
       
       {/* Proposal Modal */}
       <Dialog open={showProposal} onOpenChange={setShowProposal}>
-        <DialogContent className="glass border-white/10 max-w-2xl">
+        <DialogContent className="glass border-white/10 max-w-[90vw] sm:max-w-2xl">
           <DialogHeader>
             <DialogTitle>Enviar Propuesta</DialogTitle>
             <DialogDescription>

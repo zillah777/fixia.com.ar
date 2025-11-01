@@ -20,7 +20,9 @@
       "WebFetch(domain:fixiaweb.vercel.app)",
       "Bash(npm test:*)",
       "Bash(node:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(npm run:*)",
+      "Bash(npm install:*)"
     ],
     "deny": []
   }

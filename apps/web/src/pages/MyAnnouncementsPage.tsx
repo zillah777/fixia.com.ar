@@ -535,7 +535,7 @@ function ProposalsDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="glass border-white/10 max-w-4xl max-h-[80vh] overflow-y-auto">
+      <DialogContent className="glass border-white/10 max-w-[90vw] sm:max-w-4xl max-h-[80vh] sm:max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Propuestas Recibidas</DialogTitle>
           <DialogDescription>{project.title}</DialogDescription>

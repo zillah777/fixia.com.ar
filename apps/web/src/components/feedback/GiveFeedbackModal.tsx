@@ -83,7 +83,7 @@ export const GiveFeedbackModal: React.FC<GiveFeedbackModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="glass border-white/20 sm:max-w-[500px]">
+      <DialogContent className="glass border-white/20 max-w-[90vw] sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <MessageSquare className="h-5 w-5 text-primary" />

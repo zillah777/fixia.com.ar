@@ -32,7 +32,10 @@ function QuickActions({ user }: { user: any }) {
   const isProfessional = user?.userType === 'professional';
 
   return (
-    <div className={`grid grid-cols-2 md:grid-cols-2 lg:grid-cols-${isProfessional ? '3' : '4'} gap-3 sm:gap-4`}>
+    <div className={isProfessional
+      ? "grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4"
+      : "grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4"
+    }>
       {/* Professional Actions - Show for professionals with dual role */}
       {isProfessional && (
         <>

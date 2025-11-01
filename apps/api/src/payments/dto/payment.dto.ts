@@ -1,8 +1,9 @@
-import { IsNotEmpty, IsNumber, IsEmail, IsString, IsOptional, Min } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsEmail, IsString, IsOptional, Min, Max } from 'class-validator';
 
 export class CreatePaymentDto {
   @IsNumber()
   @Min(1)
+  @Max(9999999) // Prevent unreasonably large amounts (max ~$100k USD equivalent)
   amount: number;
 
   @IsString()
@@ -40,6 +41,7 @@ export class CreatePaymentDto {
 export class CreatePreferenceDto {
   @IsNumber()
   @Min(1)
+  @Max(9999999) // Prevent unreasonably large amounts (max ~$100k USD equivalent)
   amount: number;
 
   @IsString()
