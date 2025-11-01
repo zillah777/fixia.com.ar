@@ -36,3 +36,32 @@
     background: rgba(99, 102, 241, 0.7);
   }
 }
+
+/* Force white text on Sonner success and error toasts */
+@layer components {
+  /* Success toast - Green background with white text */
+  .sonner-toaster [data-type="success"] {
+    @apply !text-white;
+  }
+
+  .sonner-toaster [data-type="success"] [class*="title"],
+  .sonner-toaster [data-type="success"] [class*="description"],
+  .sonner-toaster [data-type="success"] p,
+  .sonner-toaster [data-type="success"] div,
+  .sonner-toaster [data-type="success"] span {
+    @apply !text-white;
+  }
+
+  /* Error toast - Red background with white text */
+  .sonner-toaster [data-type="error"] {
+    @apply !text-white;
+  }
+
+  .sonner-toaster [data-type="error"] [class*="title"],
+  .sonner-toaster [data-type="error"] [class*="description"],
+  .sonner-toaster [data-type="error"] p,
+  .sonner-toaster [data-type="error"] div,
+  .sonner-toaster [data-type="error"] span {
+    @apply !text-white;
+  }
+}
