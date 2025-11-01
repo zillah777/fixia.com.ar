@@ -236,14 +236,6 @@ function PricingCardsSection() {
                     <Check className="h-4 w-4 text-success flex-shrink-0" />
                     <span>Dar 3 feedback</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-success flex-shrink-0" />
-                    <span>Búsqueda de profesionales</span>
-                  </div>
-                  <div className="flex items-center gap-2 opacity-50">
-                    <X className="h-4 w-4 flex-shrink-0" />
-                    <span>Publicar servicios</span>
-                  </div>
                 </div>
                 {user && user.userType === 'client' ? (
                   <Button

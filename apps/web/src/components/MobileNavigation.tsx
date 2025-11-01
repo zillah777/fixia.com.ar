@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Menu, X, Home, Search, Briefcase, User, Bell, Settings,
   LogOut, Heart, Gift, Shield, HelpCircle, Plus, Crown,
-  MessageSquare, Target, TrendingUp, Info
+  MessageSquare, Target, TrendingUp, Info, DollarSign
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
@@ -50,6 +50,7 @@ export const MobileNavigation = memo<MobileNavigationProps>(({ className }) => {
   // Navigation items configuration - Optimized for mobile
   const publicNavigation: NavigationItem[] = [
     { label: 'Inicio', href: '/', icon: <Home className="h-5 w-5" /> },
+    { label: 'Planes', href: '/pricing', icon: <DollarSign className="h-5 w-5" /> },
     { label: 'Servicios', href: '/services', icon: <Search className="h-5 w-5" /> },
     { label: 'Sobre Nosotros', href: '/about', icon: <Info className="h-5 w-5" /> },
     { label: 'Ayuda', href: '/help', icon: <HelpCircle className="h-5 w-5" /> }
