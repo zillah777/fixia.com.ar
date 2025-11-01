@@ -765,7 +765,7 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
 
   const upgradeToPremium = async () => {
     try {
-      const result = await api.post('/user/upgrade');
+      const result = await api.post('/user/upgrade-premium');
       if (result.paymentUrl) {
         window.open(result.paymentUrl, '_blank');
       }
