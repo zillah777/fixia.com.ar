@@ -133,10 +133,10 @@ function ClientProcessSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.6 }}
-          className="text-center mt-12"
+          className="text-center mt-12 w-full"
         >
-          <Link to="/register">
-            <Button size="lg" className="liquid-gradient hover:opacity-90 hover:scale-105 transition-all duration-300 shadow-2xl hover:shadow-primary/50 px-10 py-6 text-lg font-semibold rounded-2xl group">
+          <Link to="/register" className="w-full sm:w-auto inline-block">
+            <Button size="lg" className="liquid-gradient hover:opacity-90 hover:scale-105 transition-all duration-300 shadow-2xl hover:shadow-primary/50 px-10 py-6 text-lg font-semibold rounded-2xl group w-full sm:w-auto">
               <UserPlus className="mr-3 h-6 w-6 group-hover:scale-110 transition-transform" />
               Comenzar Ahora
             </Button>
@@ -236,10 +236,10 @@ function ProfessionalProcessSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.6 }}
-          className="text-center mt-12"
+          className="text-center mt-12 w-full"
         >
-          <Link to="/register?type=professional">
-            <Button size="lg" className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg px-6">
+          <Link to="/register?type=professional" className="w-full sm:w-auto inline-block">
+            <Button size="lg" className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg px-6 w-full sm:w-auto">
               <Crown className="mr-2 h-5 w-5" />
               Ser Profesional - $4500/mes
             </Button>
@@ -329,7 +329,7 @@ function CTASection() {
           transition={{ duration: 0.8 }}
         >
           <Card className="glass border-white/10 overflow-hidden">
-            <CardContent className="p-12 text-center">
+            <CardContent className="p-6 sm:p-8 lg:p-12 text-center">
               <div className="max-w-3xl mx-auto">
                 <Zap className="h-16 w-16 text-primary mx-auto mb-6" />
                 <h2 className="text-4xl font-bold mb-6 text-foreground">
@@ -340,15 +340,15 @@ function CTASection() {
                   o hacer crecer tu negocio de servicios.
                 </p>
                 
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                  <Link to="/register">
-                    <Button size="lg" className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-xl px-6">
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 w-full sm:w-auto">
+                  <Link to="/register" className="w-full sm:w-auto">
+                    <Button size="lg" className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-xl px-6 w-full sm:w-auto">
                       <UserPlus className="mr-2 h-5 w-5" />
                       Buscar Profesionales
                     </Button>
                   </Link>
-                  <Link to="/register?type=professional">
-                    <Button size="lg" variant="outline" className="glass border-white/20 hover:glass-medium px-6">
+                  <Link to="/register?type=professional" className="w-full sm:w-auto">
+                    <Button size="lg" variant="outline" className="glass border-white/20 hover:glass-medium px-6 w-full sm:w-auto">
                       <Crown className="mr-2 h-5 w-5" />
                       Ser Profesional
                     </Button>
@@ -393,15 +393,15 @@ function ContactSection() {
           <p className="text-muted-foreground mb-8">
             Nuestro equipo está aquí para ayudarte en cada paso del proceso
           </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <a href="mailto:soporte@fixia.app">
-              <Button variant="outline" className="glass border-white/20 hover:glass-medium">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 w-full sm:w-auto">
+            <a href="mailto:soporte@fixia.app" className="w-full sm:w-auto">
+              <Button variant="outline" className="glass border-white/20 hover:glass-medium w-full sm:w-auto">
                 <Mail className="mr-2 h-4 w-4" />
                 soporte@fixia.app
               </Button>
             </a>
-            <a href="tel:+542804874166">
-              <Button variant="outline" className="glass border-white/20 hover:glass-medium">
+            <a href="tel:+542804874166" className="w-full sm:w-auto">
+              <Button variant="outline" className="glass border-white/20 hover:glass-medium w-full sm:w-auto">
                 <Phone className="mr-2 h-4 w-4" />
                 +54 280 4874166
               </Button>
