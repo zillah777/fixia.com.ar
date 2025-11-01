@@ -56,16 +56,39 @@ export const apiClient: AxiosInstance = axios.create({
 // SECURITY: Hybrid approach - httpOnly cookies + localStorage fallback for cross-domain
 // Cookies are automatically included with withCredentials: true
 // BUT for cross-domain (fixia.app → fixia-api.onrender.com), we need Authorization header
+//
+// SECURITY NOTE (CVSS 7.5 - High): localStorage tokens are vulnerable to XSS
+// RECOMMENDED: When deployed to same domain, remove localStorage fallback and use httpOnly cookies only
+// See audit: COMPREHENSIVE_SECURITY_AUDIT_2025.md - Section 1.1.2
+
+// Helper to read cookie value
+const getCookieValue = (name: string): string | null => {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop()?.split(';').shift() || null;
+  return null;
+};
 
 // Request interceptor - Add Bearer token from localStorage for cross-domain compatibility
+// Also adds CSRF token for state-changing requests
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     // FALLBACK: For cross-domain compatibility, add token from localStorage to Authorization header
     // This is necessary because httpOnly cookies don't work between fixia.app and fixia-api.onrender.com
+    // TODO: Remove this when deployed to same domain (api.fixia.com.ar)
     const accessToken = localStorage.getItem('fixia_access_token');
 
     if (accessToken && config.headers) {
       config.headers.Authorization = `Bearer ${accessToken}`;
+    }
+
+    // SECURITY: Add CSRF token for state-changing requests (POST, PUT, DELETE, PATCH)
+    // CSRF protection is implemented on backend (see csrf.guard.ts)
+    if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(config.method?.toUpperCase() || '')) {
+      const csrfToken = getCookieValue('csrf-token');
+      if (csrfToken && config.headers) {
+        config.headers['X-CSRF-Token'] = csrfToken;
+      }
     }
 
     // httpOnly cookies are also sent automatically as a fallback

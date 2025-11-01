@@ -93,15 +93,19 @@ class SecureTokenManager {
         };
       }
 
+      // SECURITY NOTE: localStorage tokens are a temporary cross-domain workaround
+      // CVSS 7.5 (High) - XSS attacks can steal tokens from localStorage
+      // RECOMMENDED: When deployed to same domain (api.fixia.com.ar, not fixia-api.onrender.com),
+      //              remove localStorage and rely exclusively on httpOnly cookies
       // FALLBACK: Store tokens in localStorage for cross-domain compatibility
       // This is necessary because httpOnly cookies don't work between fixia.app and fixia-api.onrender.com
       if (accessToken) {
         localStorage.setItem('fixia_access_token', accessToken);
-        console.log('✅ Access token stored in localStorage (fallback for cross-domain)');
+        console.log('✅ Access token stored in localStorage (fallback for cross-domain) - SECURITY: Consider removing this fallback');
       }
       if (refreshToken) {
         localStorage.setItem('fixia_refresh_token', refreshToken);
-        console.log('✅ Refresh token stored in localStorage (fallback for cross-domain)');
+        console.log('✅ Refresh token stored in localStorage (fallback for cross-domain) - SECURITY: Consider removing this fallback');
       }
 
       this.tokenInfo = {
