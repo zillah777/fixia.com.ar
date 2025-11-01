@@ -209,7 +209,7 @@ export default function MyAnnouncementsPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8"
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-8"
         >
           <Card className="glass border-white/10">
             <CardContent className="p-6">
@@ -368,7 +368,7 @@ export default function MyAnnouncementsPage() {
                               )}
 
                               {/* Project Details */}
-                              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                                 <div className="flex items-center space-x-2 text-muted-foreground">
                                   <DollarSign className="h-4 w-4" />
                                   <span>{formatBudget(project.budget_min, project.budget_max)}</span>

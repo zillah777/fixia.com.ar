@@ -26,7 +26,7 @@ function HeroSection() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="mb-8"
           >
-            <div className="text-8xl lg:text-9xl font-bold mb-4">
+            <div className="text-4xl sm:text-6xl md:text-8xl lg:text-9xl font-bold mb-4">
               <span className="bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent">
                 4
               </span>
@@ -157,7 +157,7 @@ function SuggestionsSection() {
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
           {suggestions.map((suggestion, index) => {
             const Icon = suggestion.icon;
             return (

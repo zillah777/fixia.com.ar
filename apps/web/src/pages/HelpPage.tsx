@@ -381,7 +381,7 @@ function HelpArticles() {
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
           {helpArticles.map((article, index) => {
             const Icon = article.icon;
             return (
@@ -524,7 +524,7 @@ function AllFAQ() {
 
         <div className="max-w-6xl mx-auto">
           <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="w-full">
-            <TabsList className="glass-glow border-white/10 mb-10 grid grid-cols-3 lg:grid-cols-7 p-2">
+            <TabsList className="glass-glow border-white/10 mb-10 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 p-2">
               {categories.map((category) => (
                 <TabsTrigger key={category.id} value={category.id} className="text-xs sm:text-sm font-semibold transition-all">
                   {category.name} ({category.count})

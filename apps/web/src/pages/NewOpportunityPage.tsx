@@ -218,7 +218,7 @@ export default function NewOpportunityPage() {
     <div className="min-h-screen bg-background">
       <FixiaNavigation />
 
-      <main className="container mx-auto px-6 py-8 max-w-4xl">
+      <main className="container mx-auto px-4 sm:px-6 py-8 max-w-4xl">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}

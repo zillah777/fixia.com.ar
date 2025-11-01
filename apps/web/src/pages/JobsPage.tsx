@@ -160,7 +160,7 @@ const JobsPage: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="grid gap-6 md:grid-cols-4 mb-8"
+            className="grid gap-3 sm:gap-4 md:gap-6 sm:grid-cols-2 md:grid-cols-4 mb-8"
           >
             <Card className="glass-glow border-white/10 hover:glass-medium transition-all duration-300">
               <CardContent className="p-6">
@@ -244,7 +244,7 @@ const JobsPage: React.FC = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid gap-6 md:grid-cols-3">
+                <div className="grid gap-3 sm:gap-4 md:gap-6 sm:grid-cols-2 md:grid-cols-3">
                   <div className="text-center p-4 glass-medium rounded-lg">
                     <div className="text-3xl font-bold text-info mb-2">{analytics.totalContacts}</div>
                     <p className="text-sm text-muted-foreground">Total Contactos</p>

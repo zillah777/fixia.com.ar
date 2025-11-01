@@ -114,7 +114,7 @@ function ContactInfoSection() {
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
           {contactMethods.map((method, index) => {
             const Icon = method.icon;
             return (
@@ -505,7 +505,7 @@ function SupportHoursSection() {
                 <Clock className="h-16 w-16 text-primary mx-auto mb-6" />
                 <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-foreground">Horarios de Atención</h2>
                 
-                <div className="grid md:grid-cols-2 gap-8 mb-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-8 mb-8">
                   <div>
                     <h4 className="font-semibold mb-4 text-primary">Soporte General</h4>
                     <div className="space-y-2 text-muted-foreground">

@@ -119,7 +119,7 @@ function StepProgress({ currentStep, totalSteps }: { currentStep: number; totalS
           <Progress value={(currentStep / totalSteps) * 100} className="h-2" />
         </div>
         
-        <div className="grid grid-cols-2 lg:grid-cols-6 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3 lg:gap-4">
           {steps.map((step) => (
             <div 
               key={step.id}
@@ -332,7 +332,7 @@ function CategoryStep({
 
             {/* GRID DE CATEGORÍAS CON LOADING */}
             {loadingCategories ? (
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                 {[...Array(8)].map((_, index) => (
                   <Card key={index} className="glass border-white/10 animate-pulse">
                     <CardContent className="p-5 text-center space-y-2">
@@ -359,7 +359,7 @@ function CategoryStep({
                 </Button>
               </Card>
             ) : (
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
                 {filteredCategories.map((category) => {
                   if (!category || !category.id || !category.name) return null;
 
@@ -928,7 +928,7 @@ function MediaStep({ data, setData }: { data: ProjectData; setData: (data: Proje
               </span>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 sm:gap-4">
               {/* Existing images */}
               {data.gallery.map((imageUrl, index) => (
                 <div key={index} className="relative aspect-square">
@@ -1546,7 +1546,7 @@ export default function NewProjectPage() {
     <div className="min-h-screen bg-background">
       <FixiaNavigation />
 
-      <main className="container mx-auto px-6 py-8 max-w-6xl">
+      <main className="container mx-auto px-4 sm:px-6 py-8 max-w-6xl">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}

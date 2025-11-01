@@ -460,7 +460,7 @@ export default function FavoritesPage() {
     <div className="min-h-screen bg-background">
       <FixiaNavigation />
       
-      <div className="container mx-auto px-6 py-8">
+      <div className="container mx-auto px-4 sm:px-6 py-8">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -534,7 +534,7 @@ export default function FavoritesPage() {
           </TabsList>
           
           <TabsContent value="services">
-            <div className={`grid gap-6 ${viewMode === 'grid' ? 'md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'}`}>
+            <div className={`grid gap-6 ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'}`}>
               {favoriteServices.map((service) => (
                 <ServiceCard key={service.id} service={service} />
               ))}
