@@ -46,9 +46,11 @@ const Toaster = ({ ...props }: ToasterProps) => {
 
           // Error variant - Clean red
           error: `
-            bg-red-50 dark:bg-red-950/40
-            border-red-200 dark:border-red-800
-            [&>button]:text-red-700 dark:[&>button]:text-red-300
+            bg-red-600 dark:bg-red-600
+            border-red-700 dark:border-red-700
+            [&_div]:text-white
+            [&_p]:text-white
+            [&>button]:text-white dark:[&>button]:text-white
           `,
 
           // Success variant - Clean green
