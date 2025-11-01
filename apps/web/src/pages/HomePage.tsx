@@ -801,7 +801,9 @@ function Footer() {
               </div>
               <div className="flex items-center space-x-2">
                 <Phone className="h-4 w-4" />
-                <span>+54 280 4567890</span>
+                <a href="tel:+5492804874166" className="hover:text-primary transition-colors">
+                  +54 9 2804874166
+                </a>
               </div>
               <p className="text-sm">Disponible Lun-Vie 9-18hs</p>
               <Link to="/contact" className="text-primary hover:underline text-sm">
