@@ -116,18 +116,35 @@ model ProfessionalProfile {
 }
 
 model Category {
-  id            String    @id @default(uuid())
-  name          String    @unique
-  slug          String    @unique
-  description   String?
-  icon          String?
-  popular       Boolean   @default(false)
-  service_count Int       @default(0)
-  created_at    DateTime  @default(now())
-  projects      Project[]
-  services      Service[]
+  id             String          @id @default(uuid())
+  name           String          @unique
+  slug           String          @unique
+  description    String?
+  icon           String?
+  popular        Boolean         @default(false)
+  service_count  Int             @default(0)
+  created_at     DateTime        @default(now())
+  projects       Project[]
+  services       Service[]
+  subcategories  Subcategory[]
 
   @@map("categories")
+}
+
+model Subcategory {
+  id           String    @id @default(uuid())
+  category_id  String
+  name         String
+  slug         String
+  description  String?
+  icon         String?
+  service_count Int      @default(0)
+  created_at   DateTime  @default(now())
+  category     Category  @relation(fields: [category_id], references: [id], onDelete: Cascade)
+
+  @@unique([category_id, slug])
+  @@index([category_id])
+  @@map("subcategories")
 }
 
 model Service {
