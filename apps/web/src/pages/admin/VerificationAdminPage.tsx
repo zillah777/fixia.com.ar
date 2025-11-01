@@ -218,8 +218,8 @@ export const VerificationAdminPage = memo(() => {
           <Card className="glass border-white/20">
             <CardContent className="p-6">
               <div className="flex items-center space-x-3">
-                <div className="p-2 bg-blue-100 rounded-lg">
-                  <Users className="h-6 w-6 text-blue-600" />
+                <div className="p-2 bg-secondary/20 rounded-lg">
+                  <Users className="h-6 w-6 text-secondary" />
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Total Solicitudes</p>
@@ -234,8 +234,8 @@ export const VerificationAdminPage = memo(() => {
           <Card className="glass border-white/20">
             <CardContent className="p-6">
               <div className="flex items-center space-x-3">
-                <div className="p-2 bg-yellow-100 rounded-lg">
-                  <Clock className="h-6 w-6 text-yellow-600" />
+                <div className="p-2 bg-warning/20 rounded-lg">
+                  <Clock className="h-6 w-6 text-warning" />
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Pendientes</p>
@@ -250,8 +250,8 @@ export const VerificationAdminPage = memo(() => {
           <Card className="glass border-white/20">
             <CardContent className="p-6">
               <div className="flex items-center space-x-3">
-                <div className="p-2 bg-green-100 rounded-lg">
-                  <CheckCircle className="h-6 w-6 text-green-600" />
+                <div className="p-2 bg-success/20 rounded-lg">
+                  <CheckCircle className="h-6 w-6 text-success" />
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Aprobadas</p>
@@ -266,8 +266,8 @@ export const VerificationAdminPage = memo(() => {
           <Card className="glass border-white/20">
             <CardContent className="p-6">
               <div className="flex items-center space-x-3">
-                <div className="p-2 bg-red-100 rounded-lg">
-                  <XCircle className="h-6 w-6 text-red-600" />
+                <div className="p-2 bg-destructive/20 rounded-lg">
+                  <XCircle className="h-6 w-6 text-destructive" />
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Rechazadas</p>
@@ -290,14 +290,14 @@ export const VerificationAdminPage = memo(() => {
         <Card className="glass border-white/20">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
-              <Clock className="h-5 w-5 text-yellow-600" />
+              <Clock className="h-5 w-5 text-warning" />
               <span>Solicitudes Pendientes ({pendingRequests.length})</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
             {pendingRequests.length === 0 ? (
               <div className="text-center py-8">
-                <CheckCircle className="h-16 w-16 mx-auto mb-4 text-green-600" />
+                <CheckCircle className="h-16 w-16 mx-auto mb-4 text-success" />
                 <h3 className="text-lg font-semibold mb-2">
                   ¡Todo al día!
                 </h3>
@@ -357,7 +357,7 @@ export const VerificationAdminPage = memo(() => {
                             size="sm"
                             variant="outline"
                             onClick={() => openReviewDialog(request, 'reject')}
-                            className="text-red-600 border-red-600 hover:bg-red-50"
+                            className="text-destructive border-destructive hover:bg-destructive/10"
                           >
                             <XCircle className="h-4 w-4 mr-1" />
                             Rechazar
@@ -365,7 +365,7 @@ export const VerificationAdminPage = memo(() => {
                           <Button
                             size="sm"
                             onClick={() => openReviewDialog(request, 'approve')}
-                            className="bg-green-600 hover:bg-green-700"
+                            className="bg-success hover:bg-success/90"
                           >
                             <CheckCircle className="h-4 w-4 mr-1" />
                             Aprobar
@@ -433,8 +433,8 @@ export const VerificationAdminPage = memo(() => {
               disabled={reviewDialog.action === 'reject' && !rejectionReason.trim()}
               className={
                 reviewDialog.action === 'approve'
-                  ? 'bg-green-600 hover:bg-green-700'
-                  : 'bg-red-600 hover:bg-red-700'
+                  ? 'bg-success hover:bg-success/90'
+                  : 'bg-destructive hover:bg-destructive/90'
               }
             >
               {reviewDialog.action === 'approve' ? 'Aprobar' : 'Rechazar'}
