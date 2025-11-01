@@ -427,9 +427,9 @@ function SecurityTab() {
       </Card>
 
       {/* Dangerous Zone - Account Deletion */}
-      <Card className="glass border-red-900/30 bg-red-950/10">
+      <Card className="glass border-destructive/30 bg-destructive/5">
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2 text-red-500">
+          <CardTitle className="flex items-center space-x-2 text-destructive">
             <AlertCircle className="h-5 w-5" />
             <span>Zona Peligrosa</span>
           </CardTitle>
@@ -439,7 +439,7 @@ function SecurityTab() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <h4 className="font-medium text-red-500">Eliminar Cuenta</h4>
+            <h4 className="font-medium text-destructive">Eliminar Cuenta</h4>
             <p className="text-sm text-muted-foreground">
               Eliminar tu cuenta de forma permanente. Esta acción no se puede deshacer.
               Se eliminarán todos tus datos, proyectos, mensajes e historial.
@@ -448,7 +448,7 @@ function SecurityTab() {
           <Button
             variant="destructive"
             onClick={() => setShowDeleteDialog(true)}
-            className="bg-red-600 hover:bg-red-700 text-white"
+            className="bg-destructive hover:bg-destructive/90 text-white"
           >
             <Trash2 className="h-4 w-4 mr-2" />
             Eliminar Cuenta Permanentemente
@@ -460,7 +460,7 @@ function SecurityTab() {
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <DialogContent className="glass border-white/10 max-w-md">
           <DialogHeader>
-            <DialogTitle className="flex items-center space-x-2 text-red-500">
+            <DialogTitle className="flex items-center space-x-2 text-destructive">
               <AlertCircle className="h-5 w-5" />
               <span>Confirmar Eliminación de Cuenta</span>
             </DialogTitle>
@@ -470,9 +470,9 @@ function SecurityTab() {
           </DialogHeader>
 
           <div className="space-y-4 py-4">
-            <Alert className="border-red-500/50 bg-red-950/40">
-              <AlertCircle className="h-4 w-4 text-red-400" />
-              <AlertDescription className="text-red-300 font-medium">
+            <Alert className="border-destructive/50 bg-destructive/10">
+              <AlertCircle className="h-4 w-4 text-destructive" />
+              <AlertDescription className="text-destructive font-medium">
                 Escribe tu contraseña para confirmar que deseas eliminar tu cuenta.
               </AlertDescription>
             </Alert>
@@ -951,9 +951,9 @@ function DangerZone() {
 
   return (
     <div className="space-y-6">
-      <Card className="glass border-red-500/20">
+      <Card className="glass border-destructive/20">
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2 text-red-500">
+          <CardTitle className="flex items-center space-x-2 text-destructive">
             <AlertCircle className="h-5 w-5" />
             <span>Zona de Peligro</span>
           </CardTitle>
@@ -962,23 +962,23 @@ function DangerZone() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex items-center justify-between p-4 border border-red-500/20 rounded-lg">
+          <div className="flex items-center justify-between p-4 border border-destructive/20 rounded-lg">
             <div>
               <h4 className="font-medium">Cerrar Sesión</h4>
               <p className="text-sm text-muted-foreground">Cerrar sesión en este dispositivo</p>
             </div>
-            <Button variant="outline" onClick={handleLogout} className="border-red-500/50 text-red-500 hover:bg-red-500/10">
+            <Button variant="outline" onClick={handleLogout} className="border-destructive/50 text-destructive hover:bg-destructive/10">
               <LogOut className="h-4 w-4 mr-2" />
               Cerrar Sesión
             </Button>
           </div>
-          
-          <div className="flex items-center justify-between p-4 border border-red-500/20 rounded-lg">
+
+          <div className="flex items-center justify-between p-4 border border-destructive/20 rounded-lg">
             <div>
-              <h4 className="font-medium text-red-500">Eliminar Cuenta</h4>
+              <h4 className="font-medium text-destructive">Eliminar Cuenta</h4>
               <p className="text-sm text-muted-foreground">Eliminar permanentemente tu cuenta y todos los datos</p>
             </div>
-            <Button variant="outline" className="border-red-500/50 text-red-500 hover:bg-red-500/10">
+            <Button variant="outline" className="border-destructive/50 text-destructive hover:bg-destructive/10">
               <Trash2 className="h-4 w-4 mr-2" />
               Eliminar Cuenta
             </Button>
