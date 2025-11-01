@@ -416,14 +416,86 @@ function SettingsSection() {
   // Handle data download
   const handleDataDownload = async () => {
     try {
-      toast.success('📥 Preparando descarga...', {
-        description: 'Se enviará un enlace de descarga a tu email'
+      // Prepare user data export in JSON format
+      const dataExport = {
+        exportDate: new Date().toISOString(),
+        user: {
+          id: user?.id,
+          email: user?.email,
+          name: user?.name,
+          userType: user?.userType,
+          phone: user?.phone,
+          whatsapp_number: user?.whatsapp_number,
+          location: user?.location,
+          bio: user?.bio,
+          avatar: user?.avatar,
+          isVerified: user?.isVerified,
+          planType: user?.planType,
+          createdAt: user?.createdAt,
+          updatedAt: user?.updatedAt,
+        },
+        professionalProfile: user?.professionalProfile || null,
+        metadata: {
+          platform: 'fixia.com.ar',
+          gdprCompliant: true,
+          dataPortabilityRight: true,
+        }
+      };
+
+      // Convert to JSON string
+      const jsonString = JSON.stringify(dataExport, null, 2);
+
+      // Create blob from JSON
+      const blob = new Blob([jsonString], { type: 'application/json' });
+
+      // Create download link
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `fixia-data-export-${user?.id}-${new Date().toISOString().split('T')[0]}.json`;
+
+      // Trigger download
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      toast.success('📥 Datos descargados exitosamente', {
+        description: 'Se ha descargado tu archivo de datos personales en formato JSON',
+        duration: 5000
       });
-      
-      // In a real implementation, this would trigger a backend process
-      // to generate a data export and send it via email
-    } catch (error) {
-      toast.error('Error al solicitar descarga de datos');
+    } catch (error: any) {
+      console.error('Error downloading data:', error);
+      toast.error('Error al descargar datos', {
+        description: error.message || 'No se pudo procesar tu solicitud de descarga'
+      });
+    }
+  };
+
+  // Handle account deletion with 30-day grace period
+  const handleAccountDeletion = async () => {
+    try {
+      // Call backend API to request account deletion
+      const response = await api.post('/user/account/delete-request', {
+        reason: 'User requested account deletion',
+        timestamp: new Date().toISOString()
+      });
+
+      // Show success message
+      toast.success('🗑️ Solicitud de eliminación enviada', {
+        description: 'Tu cuenta será eliminada en 30 días. Puedes cancelar esta solicitud en cualquier momento dentro del panel de configuración.',
+        duration: 7000
+      });
+
+      // Redirect to home page after delay
+      setTimeout(() => {
+        navigate('/');
+      }, 2000);
+    } catch (error: any) {
+      console.error('Error deleting account:', error);
+      toast.error('Error al procesar la solicitud', {
+        description: error.response?.data?.message || 'No se pudo procesar tu solicitud de eliminación'
+      });
     }
   };
 
@@ -772,11 +844,9 @@ function SettingsSection() {
                       Cancelar
                     </Button>
                   </DialogTrigger>
-                  <Button 
+                  <Button
                     variant="destructive"
-                    onClick={() => {
-                      toast.error('Función no implementada por seguridad');
-                    }}
+                    onClick={handleAccountDeletion}
                   >
                     <Trash2 className="h-4 w-4 mr-2" />
                     Sí, eliminar mi cuenta
