@@ -47,14 +47,14 @@ interface NotificationStats {
 }
 
 const notificationTypeConfig = {
-  job_started: { color: 'bg-blue-500', icon: '🔨', label: 'Trabajo Iniciado' },
-  job_milestone: { color: 'bg-green-500', icon: '✅', label: 'Hito Completado' },
-  job_completed: { color: 'bg-purple-500', icon: '🎉', label: 'Trabajo Terminado' },
-  review_received: { color: 'bg-yellow-500', icon: '⭐', label: 'Reseña Recibida' },
-  proposal_received: { color: 'bg-orange-500', icon: '📋', label: 'Propuesta Recibida' },
-  message: { color: 'bg-pink-500', icon: '💬', label: 'Mensaje' },
-  payment_received: { color: 'bg-emerald-500', icon: '💰', label: 'Pago Recibido' },
-  system: { color: 'bg-gray-500', icon: '🔔', label: 'Sistema' }
+  job_started: { color: 'bg-secondary', icon: '🔨', label: 'Trabajo Iniciado' },
+  job_milestone: { color: 'bg-success', icon: '✅', label: 'Hito Completado' },
+  job_completed: { color: 'bg-primary', icon: '🎉', label: 'Trabajo Terminado' },
+  review_received: { color: 'bg-warning', icon: '⭐', label: 'Reseña Recibida' },
+  proposal_received: { color: 'bg-warning', icon: '📋', label: 'Propuesta Recibida' },
+  message: { color: 'bg-primary', icon: '💬', label: 'Mensaje' },
+  payment_received: { color: 'bg-success', icon: '💰', label: 'Pago Recibido' },
+  system: { color: 'bg-muted-foreground', icon: '🔔', label: 'Sistema' }
 };
 
 function NotificationIcon({ type }: { type: string }) {
@@ -68,12 +68,12 @@ function NotificationIcon({ type }: { type: string }) {
   };
 
   const colorMap = {
-    message: "text-blue-500 bg-blue-500/20",
-    review: "text-yellow-500 bg-yellow-500/20", 
-    system: "text-green-500 bg-green-500/20",
-    project: "text-purple-500 bg-purple-500/20",
+    message: "text-secondary bg-secondary/20",
+    review: "text-warning bg-warning/20",
+    system: "text-success bg-success/20",
+    project: "text-primary bg-primary/20",
     payment: "text-primary bg-primary/20",
-    professional: "text-orange-500 bg-orange-500/20"
+    professional: "text-warning bg-warning/20"
   };
 
   const Icon = iconMap[type as keyof typeof iconMap] || Bell;
@@ -668,10 +668,10 @@ export default function NotificationsPage() {
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="text-sm font-medium text-muted-foreground">Sin leer</p>
-                          <p className="text-2xl font-bold text-blue-600">{stats.unread}</p>
+                          <p className="text-2xl font-bold text-secondary">{stats.unread}</p>
                         </div>
-                        <div className="h-8 w-8 bg-blue-100 rounded-full flex items-center justify-center">
-                          <Badge className="h-4 w-4 bg-blue-600" />
+                        <div className="h-8 w-8 bg-secondary/20 rounded-full flex items-center justify-center">
+                          <Badge className="h-4 w-4 bg-secondary" />
                         </div>
                       </div>
                     </CardContent>
@@ -801,7 +801,7 @@ export default function NotificationsPage() {
                   animate={{ opacity: 1, y: 0 }}
                   className="text-center py-16"
                 >
-                  <CheckCircle className="h-24 w-24 text-green-500 mx-auto mb-6" />
+                  <CheckCircle className="h-24 w-24 text-success mx-auto mb-6" />
                   <h2 className="text-2xl font-bold mb-4 text-foreground">¡Todo al día!</h2>
                   <p className="text-muted-foreground max-w-md mx-auto">
                     Has leído todas tus notificaciones
