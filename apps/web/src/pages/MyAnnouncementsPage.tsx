@@ -130,7 +130,7 @@ export default function MyAnnouncementsPage() {
   };
 
   const handleEdit = (projectId: string) => {
-    navigate(`/new-opportunity?edit=${projectId}`);
+    navigate(`/edit-opportunity/${projectId}`);
   };
 
   const handleViewProposals = async (project: Project) => {

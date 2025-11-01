@@ -15,6 +15,7 @@ const ProfilePage = lazy(() => import("./pages/ProfilePage"));
 const PublicProfilePage = lazy(() => import("./pages/PublicProfilePage"));
 const NewProjectPage = lazy(() => import("./pages/NewProjectPage"));
 const NewOpportunityPage = lazy(() => import("./pages/NewOpportunityPage"));
+const EditOpportunityPage = lazy(() => import("./pages/EditOpportunityPage"));
 const MyAnnouncementsPage = lazy(() => import("./pages/MyAnnouncementsPage"));
 const OpportunitiesPage = lazy(() => import("./pages/OpportunitiesPage"));
 const TermsPage = lazy(() => import("./pages/TermsPage"));
@@ -320,6 +321,16 @@ function AppRoutes() {
                     <RouteErrorBoundary routeName="Nuevo Anuncio" fallbackRoute="/dashboard">
                       <ProtectedRoute>
                         <NewOpportunityPage />
+                      </ProtectedRoute>
+                    </RouteErrorBoundary>
+                  }
+                />
+                <Route
+                  path="/edit-opportunity/:id"
+                  element={
+                    <RouteErrorBoundary routeName="Editar Anuncio" fallbackRoute="/dashboard">
+                      <ProtectedRoute>
+                        <EditOpportunityPage />
                       </ProtectedRoute>
                     </RouteErrorBoundary>
                   }

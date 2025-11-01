@@ -238,9 +238,11 @@ function RecentActivity({
         )}
         {activities.length > 0 && (
           <div className="mt-3 sm:mt-4">
-            <Button variant="outline" className="w-full glass border-white/20 hover:glass-medium text-xs sm:text-sm">
-              Ver Todo el Historial
-            </Button>
+            <Link to="/notifications" className="block">
+              <Button variant="outline" className="w-full glass border-white/20 hover:glass-medium text-xs sm:text-sm">
+                Ver Todo el Historial
+              </Button>
+            </Link>
           </div>
         )}
       </CardContent>
