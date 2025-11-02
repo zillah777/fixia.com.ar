@@ -161,14 +161,14 @@ export default function LoginPage() {
                 <div className="space-y-2">
                   <Label htmlFor="email" className="text-sm font-medium">Correo Electrónico</Label>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary/60 pointer-events-none" />
                     <Input
                       id="email"
                       type="email"
                       placeholder="tu@email.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="pl-10 glass border-white/20 focus:border-primary/50 focus:ring-primary/30 h-11 text-base"
+                      className="pl-12 glass border-white/20 focus:border-primary/50 focus:ring-primary/30 h-11 text-base placeholder:text-muted-foreground/60"
                       maxLength={200}
                       required
                     />
@@ -179,14 +179,14 @@ export default function LoginPage() {
                 <div className="space-y-2">
                   <Label htmlFor="password" className="text-sm font-medium">Contraseña</Label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none z-10 pointer-events-none" />
+                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary/60 pointer-events-none z-10" />
                     <Input
                       id="password"
                       type={showPassword ? "text" : "password"}
                       placeholder="Tu contraseña"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="pl-10 pr-10 glass border-white/20 focus:border-primary/50 focus:ring-primary/30 h-11 text-base"
+                      className="pl-12 pr-12 glass border-white/20 focus:border-primary/50 focus:ring-primary/30 h-11 text-base placeholder:text-muted-foreground/60"
                       required
                     />
                     <PasswordToggleButton

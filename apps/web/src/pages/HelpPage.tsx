@@ -400,7 +400,7 @@ function HelpArticles() {
                         <Icon className="h-7 w-7 text-primary" />
                       </div>
                       <div className="flex-1">
-                        <h3 className="text-lg sm:text-xl font-bold mb-3 text-white group-hover:text-primary transition-colors">
+                        <h3 className="text-lg sm:text-xl font-bold mb-3 article-title group-hover:text-primary transition-colors">
                           {article.title}
                         </h3>
                         <p className="text-base text-muted-foreground/80 mb-4 line-clamp-2 leading-relaxed">

@@ -130,14 +130,14 @@ function SearchAndFilters({
                     <Slider
                       value={priceRange}
                       onValueChange={setPriceRange}
-                      max={3000}
+                      max={1000000}
                       min={0}
-                      step={50}
+                      step={1000}
                       className="w-full"
                     />
                     <div className="flex justify-between text-sm text-foreground/70">
-                      <span>${priceRange[0]}</span>
-                      <span>${priceRange[1]}</span>
+                      <span>${priceRange[0].toLocaleString()}</span>
+                      <span>${priceRange[1].toLocaleString()}</span>
                     </div>
                   </div>
                 </div>
@@ -146,12 +146,21 @@ function SearchAndFilters({
 
                 {/* Professional Level */}
                 <div className="space-y-3">
-                  <label className="font-medium text-foreground">Nivel del Profesional</label>
+                  <label className="font-medium text-foreground">Nivel del Profesional (Sistema de Reviews Fixia)</label>
                   <div className="space-y-2">
-                    {["Rising Talent", "Pro", "Expert", "Top Rated", "Top Rated Plus"].map((level) => (
-                      <div key={level} className="flex items-center space-x-2">
-                        <Checkbox id={level} />
-                        <label htmlFor={level} className="text-sm text-foreground cursor-pointer">{level}</label>
+                    {[
+                      { level: "Rising Talent", description: "0 - 2 reviews" },
+                      { level: "Verified", description: "3 - 9 reviews" },
+                      { level: "Pro", description: "10+ reviews, 4.5+ estrellas" },
+                      { level: "Expert", description: "20+ reviews, 4.7+ estrellas" },
+                      { level: "Top Rated", description: "50+ reviews, 4.8+ estrellas" }
+                    ].map((item) => (
+                      <div key={item.level} className="flex items-start space-x-2">
+                        <Checkbox id={item.level} />
+                        <div className="flex-1">
+                          <label htmlFor={item.level} className="text-sm text-foreground cursor-pointer block font-medium">{item.level}</label>
+                          <p className="text-xs text-muted-foreground/70">{item.description}</p>
+                        </div>
                       </div>
                     ))}
                   </div>

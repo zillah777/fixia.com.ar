@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, CheckCircle, AlertCircle, Crown, UserPlus, FileText, CreditCard, X, Hash, Plus } from "lucide-react";
+import { ArrowLeft, CheckCircle, AlertCircle, Crown, UserPlus, FileText, CreditCard, X, Hash, Plus, Mail, Lock } from "lucide-react";
 import { PasswordToggleButton } from "../components/inputs/PasswordToggleButton";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -141,15 +141,19 @@ function ClientRegistrationForm({
             </div>
             <div className="space-y-2">
               <Label htmlFor="email">Correo Electrónico *</Label>
-              <Input
-                id="email"
-                type="email"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                placeholder="juan@email.com"
-                maxLength={200}
-                required
-              />
+              <div className="relative">
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary/60 pointer-events-none" />
+                <Input
+                  id="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  placeholder="juan@email.com"
+                  className="pl-12 placeholder:text-muted-foreground/60"
+                  maxLength={200}
+                  required
+                />
+              </div>
             </div>
           </div>
 
@@ -157,12 +161,14 @@ function ClientRegistrationForm({
             <div className="space-y-2">
               <Label htmlFor="password">Contraseña *</Label>
               <div className="relative">
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary/60 pointer-events-none z-10" />
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   placeholder="••••••••"
+                  className="pl-12 pr-12 placeholder:text-muted-foreground/60"
                   aria-describedby={formData.password.length > 0 ? "password-feedback" : undefined}
                   required
                 />
@@ -175,12 +181,14 @@ function ClientRegistrationForm({
             <div className="space-y-2">
               <Label htmlFor="confirmPassword">Confirmar Contraseña *</Label>
               <div className="relative">
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary/60 pointer-events-none z-10" />
                 <Input
                   id="confirmPassword"
                   type={showConfirmPassword ? "text" : "password"}
                   value={formData.confirmPassword}
                   onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                   placeholder="••••••••"
+                  className="pl-12 pr-12 placeholder:text-muted-foreground/60"
                   aria-describedby={formData.confirmPassword ? "confirm-password-feedback" : undefined}
                   required
                 />

@@ -493,6 +493,14 @@
   }
 }
 
+/* Article and card titles - ensure white text for accessibility */
+@layer components {
+  .article-title {
+    @apply text-white;
+    color: #ffffff !important;
+  }
+}
+
 /* Z-index management for modals */
 @layer utilities {
   .z-modal-backdrop {
