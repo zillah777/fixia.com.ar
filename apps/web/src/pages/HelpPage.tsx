@@ -321,7 +321,7 @@ function PopularFAQ() {
             <div className="h-14 w-14 rounded-2xl bg-primary/20 flex items-center justify-center float">
               <HelpCircle className="h-7 w-7 text-primary" />
             </div>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-foreground tracking-tight">Preguntas Frecuentes</h2>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight">Preguntas Frecuentes</h2>
           </div>
           <p className="text-lg sm:text-xl text-muted-foreground/80 max-w-2xl mx-auto leading-relaxed">
             Las consultas más comunes de nuestra comunidad
@@ -374,7 +374,7 @@ function HelpArticles() {
             <div className="h-14 w-14 rounded-2xl bg-success/20 flex items-center justify-center float">
               <BookOpen className="h-7 w-7 text-success" />
             </div>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-foreground tracking-tight">Artículos de Ayuda</h2>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight">Artículos de Ayuda</h2>
           </div>
           <p className="text-lg sm:text-xl text-muted-foreground/80 max-w-2xl mx-auto leading-relaxed">
             Guías detalladas para aprovechar al máximo Fixia
@@ -400,7 +400,7 @@ function HelpArticles() {
                         <Icon className="h-7 w-7 text-primary" />
                       </div>
                       <div className="flex-1">
-                        <h3 className="text-lg sm:text-xl font-bold mb-3 text-foreground group-hover:text-primary transition-colors">
+                        <h3 className="text-lg sm:text-xl font-bold mb-3 text-white group-hover:text-primary transition-colors">
                           {article.title}
                         </h3>
                         <p className="text-base text-muted-foreground/80 mb-4 line-clamp-2 leading-relaxed">
@@ -440,7 +440,7 @@ function SupportOptions() {
             <div className="h-14 w-14 rounded-2xl bg-info/20 flex items-center justify-center float">
               <MessageSquare className="h-7 w-7 text-info" />
             </div>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-foreground tracking-tight">¿Necesitas más ayuda?</h2>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight">¿Necesitas más ayuda?</h2>
           </div>
           <p className="text-lg sm:text-xl text-muted-foreground/80 max-w-2xl mx-auto leading-relaxed">
             Nuestro equipo está aquí para ayudarte
@@ -464,7 +464,7 @@ function SupportOptions() {
                     <div className="h-20 w-20 rounded-3xl bg-primary/20 flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform float">
                       <Icon className="h-10 w-10 text-primary" />
                     </div>
-                    <h3 className="font-bold text-xl sm:text-2xl mb-4 text-foreground">{option.title}</h3>
+                    <h3 className="font-bold text-xl sm:text-2xl mb-4 text-white">{option.title}</h3>
                     <p className="text-muted-foreground/80 text-base mb-4 leading-relaxed">
                       {option.description}
                     </p>
@@ -515,7 +515,7 @@ function AllFAQ() {
             <div className="h-14 w-14 rounded-2xl bg-warning/20 flex items-center justify-center float">
               <FileText className="h-7 w-7 text-warning" />
             </div>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-foreground tracking-tight">Todas las Preguntas</h2>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight">Todas las Preguntas</h2>
           </div>
           <p className="text-lg sm:text-xl text-muted-foreground/80 max-w-2xl mx-auto leading-relaxed">
             Explora todas nuestras preguntas frecuentes por categoría
