@@ -499,6 +499,18 @@
     @apply text-white;
     color: #ffffff !important;
   }
+
+  /* Ensure all headings in help pages have white text */
+  [data-page="help"] h1,
+  [data-page="help"] h2,
+  [data-page="help"] h3,
+  [data-page="help"] h4,
+  [data-page="help-detail"] h1,
+  [data-page="help-detail"] h2,
+  [data-page="help-detail"] h3,
+  [data-page="help-detail"] h4 {
+    color: #ffffff !important;
+  }
 }
 
 /* Z-index management for modals */

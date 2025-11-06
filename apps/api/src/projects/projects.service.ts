@@ -8,14 +8,46 @@ export class ProjectsService {
   constructor(private prisma: PrismaService) {}
 
   async create(userId: string, createProjectDto: CreateProjectDto) {
-    // Verify user is client
+    // Verify user is client and get subscription info
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      select: { user_type: true },
+      select: {
+        user_type: true,
+        subscription_type: true,
+        subscription_status: true
+      },
     });
 
     if (!user || user.user_type !== 'client') {
       throw new ForbiddenException('Only clients can create projects');
+    }
+
+    // Check monthly project limit for free users
+    const isFreeUser = !user.subscription_type || user.subscription_type === 'free' || user.subscription_status !== 'active';
+
+    if (isFreeUser) {
+      // Calculate start of current month
+      const now = new Date();
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+      // Count projects created this month
+      const projectsThisMonth = await this.prisma.project.count({
+        where: {
+          client_id: userId,
+          created_at: {
+            gte: startOfMonth,
+          },
+        },
+      });
+
+      // Free plan limit: 3 announcements per month
+      const FREE_PLAN_MONTHLY_LIMIT = 3;
+
+      if (projectsThisMonth >= FREE_PLAN_MONTHLY_LIMIT) {
+        throw new ForbiddenException(
+          `Has alcanzado el límite de ${FREE_PLAN_MONTHLY_LIMIT} anuncios mensuales del plan gratuito. Actualiza a un plan premium para publicar anuncios ilimitados.`
+        );
+      }
     }
 
     // Verify category exists if provided

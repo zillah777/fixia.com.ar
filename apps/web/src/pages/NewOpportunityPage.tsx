@@ -14,6 +14,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../co
 import { Badge } from "../components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import { Alert, AlertDescription } from "../components/ui/alert";
+import { UpgradeModal } from "../components/modals/UpgradeModal";
 import { useSecureAuth } from "../context/SecureAuthContext";
 import { toast } from "sonner";
 import { opportunitiesService, CreateOpportunityData } from "../lib/services/opportunities.service";
@@ -36,7 +37,8 @@ export default function NewOpportunityPage() {
   const [categories, setCategories] = useState<ServiceCategory[]>([]);
   const [loadingCategories, setLoadingCategories] = useState(true);
   const [publishing, setPublishing] = useState(false);
-  
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+
   const [formData, setFormData] = useState<OpportunityFormData>({
     title: '',
     description: '',
@@ -196,7 +198,13 @@ export default function NewOpportunityPage() {
     } catch (error: any) {
       console.error('Error publishing opportunity:', error);
       const errorMessage = error?.response?.data?.message || error?.message || "Error al publicar el anuncio";
-      toast.error(errorMessage);
+
+      // Check if error is due to free plan limit reached
+      if (errorMessage.includes('límite') || errorMessage.includes('limit')) {
+        setShowUpgradeModal(true);
+      } else {
+        toast.error(errorMessage);
+      }
     } finally {
       setPublishing(false);
     }
@@ -484,6 +492,14 @@ export default function NewOpportunityPage() {
           </Card>
         </motion.div>
       </main>
+
+      {/* Upgrade Modal */}
+      <UpgradeModal
+        isOpen={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+        limitType="announcements"
+        limitReached={3}
+      />
     </div>
   );
 }

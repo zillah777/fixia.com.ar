@@ -572,7 +572,7 @@ function AllFAQ() {
 
 export default function HelpPage() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background" data-page="help">
       <FixiaNavigation />
       <HeroSection />
       <PopularFAQ />

@@ -37,31 +37,34 @@
   }
 }
 
-/* Force white text on Sonner success and error toasts */
+/* Force white text on ALL Sonner toasts for maximum readability */
 @layer components {
-  /* Success toast - Green background with white text */
-  .sonner-toaster [data-type="success"] {
-    @apply !text-white;
+  /* All toast types - Ensure white text */
+  .sonner-toaster [data-sonner-toast],
+  .sonner-toaster [data-type="success"],
+  .sonner-toaster [data-type="error"],
+  .sonner-toaster [data-type="warning"],
+  .sonner-toaster [data-type="info"],
+  .sonner-toaster [data-type="loading"],
+  .sonner-toaster [data-type="default"] {
+    color: #ffffff !important;
   }
 
-  .sonner-toaster [data-type="success"] [class*="title"],
-  .sonner-toaster [data-type="success"] [class*="description"],
-  .sonner-toaster [data-type="success"] p,
-  .sonner-toaster [data-type="success"] div,
-  .sonner-toaster [data-type="success"] span {
-    @apply !text-white;
+  /* Ensure all text elements inside toasts are white */
+  .sonner-toaster [data-sonner-toast] *,
+  .sonner-toaster [data-type="success"] *,
+  .sonner-toaster [data-type="error"] *,
+  .sonner-toaster [data-type="warning"] *,
+  .sonner-toaster [data-type="info"] *,
+  .sonner-toaster [data-type="loading"] *,
+  .sonner-toaster [data-type="default"] * {
+    color: #ffffff !important;
   }
 
-  /* Error toast - Red background with white text */
-  .sonner-toaster [data-type="error"] {
-    @apply !text-white;
-  }
-
-  .sonner-toaster [data-type="error"] [class*="title"],
-  .sonner-toaster [data-type="error"] [class*="description"],
-  .sonner-toaster [data-type="error"] p,
-  .sonner-toaster [data-type="error"] div,
-  .sonner-toaster [data-type="error"] span {
-    @apply !text-white;
+  /* Specific elements for extra coverage */
+  .sonner-toaster [data-sonner-toast] [data-title],
+  .sonner-toaster [data-sonner-toast] [data-description],
+  .sonner-toaster [data-sonner-toast] [data-content] {
+    color: #ffffff !important;
   }
 }

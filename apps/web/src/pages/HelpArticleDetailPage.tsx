@@ -166,7 +166,7 @@ export const HelpArticleDetailPage = () => {
 
   if (!article) {
     return (
-      <div className="min-h-screen bg-background flex flex-col">
+      <div className="min-h-screen bg-background flex flex-col" data-page="help-detail">
         <FixiaNavigation />
         <main className="flex-1 container mx-auto px-4 sm:px-6 py-8 pb-24 lg:pb-8 flex items-center justify-center">
           <motion.div
@@ -189,7 +189,7 @@ export const HelpArticleDetailPage = () => {
   const Icon = article.icon;
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col" data-page="help-detail">
       <FixiaNavigation />
 
       <main className="flex-1 container mx-auto px-4 sm:px-6 py-8 pb-24 lg:pb-8 max-w-3xl">
