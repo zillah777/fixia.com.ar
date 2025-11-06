@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Mail, Lock, ArrowLeft, AlertCircle, RefreshCw, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, AlertCircle, RefreshCw, CheckCircle2 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { SecureInput } from "../components/SecureInput";
@@ -159,34 +159,30 @@ export default function LoginPage() {
               <form onSubmit={handleSubmit} className="mobile-space-y">
                 {/* Email Field */}
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-sm font-medium">Correo Electrónico</Label>
-                  <div className="relative">
-                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary/60 pointer-events-none" />
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="tu@email.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="pl-14 glass border-white/40 focus:border-primary/50 focus:ring-primary/30 h-11 text-base placeholder:text-muted-foreground/75"
-                      maxLength={200}
-                      required
-                    />
-                  </div>
+                  <Label htmlFor="email" className="text-sm font-medium text-white">Correo Electrónico</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="tu@email.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="glass border-white/40 focus:border-primary/50 focus:ring-primary/30 h-12 text-base placeholder:text-muted-foreground/60 bg-white/5 hover:bg-white/10 transition-colors"
+                    maxLength={200}
+                    required
+                  />
                 </div>
 
                 {/* Password Field */}
                 <div className="space-y-2">
-                  <Label htmlFor="password" className="text-sm font-medium">Contraseña</Label>
+                  <Label htmlFor="password" className="text-sm font-medium text-white">Contraseña</Label>
                   <div className="relative">
-                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary/60 pointer-events-none z-10" />
                     <Input
                       id="password"
                       type={showPassword ? "text" : "password"}
-                      placeholder="Tu contraseña"
+                      placeholder="Ingresa tu contraseña"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="pl-14 pr-12 glass border-white/40 focus:border-primary/50 focus:ring-primary/30 h-11 text-base placeholder:text-muted-foreground/75"
+                      className="pr-12 glass border-white/40 focus:border-primary/50 focus:ring-primary/30 h-12 text-base placeholder:text-muted-foreground/60 bg-white/5 hover:bg-white/10 transition-colors"
                       required
                     />
                     <PasswordToggleButton

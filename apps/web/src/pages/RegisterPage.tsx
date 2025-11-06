@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, CheckCircle, AlertCircle, Crown, UserPlus, FileText, CreditCard, X, Hash, Plus, Mail, Lock } from "lucide-react";
+import { ArrowLeft, CheckCircle, AlertCircle, Crown, UserPlus, FileText, CreditCard, X, Hash, Plus } from "lucide-react";
 import { PasswordToggleButton } from "../components/inputs/PasswordToggleButton";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -124,13 +124,14 @@ function ClientRegistrationForm({
         <form onSubmit={onSubmit} className="space-y-6">
           <div className="grid md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="fullName">Nombre Completo *</Label>
+              <Label htmlFor="fullName" className="text-white">Nombre Completo *</Label>
               <Input
                 id="fullName"
                 type="text"
                 value={formData.fullName}
                 onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                 placeholder="Juan Pérez"
+                className="placeholder:text-muted-foreground/60 bg-white/5 hover:bg-white/10 transition-colors h-12"
                 maxLength={100}
                 autoComplete="name"
                 autoCorrect="off"
@@ -140,35 +141,31 @@ function ClientRegistrationForm({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">Correo Electrónico *</Label>
-              <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary/60 pointer-events-none" />
-                <Input
-                  id="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  placeholder="juan@email.com"
-                  className="pl-14 placeholder:text-muted-foreground/75"
-                  maxLength={200}
-                  required
-                />
-              </div>
+              <Label htmlFor="email" className="text-white">Correo Electrónico *</Label>
+              <Input
+                id="email"
+                type="email"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                placeholder="juan@email.com"
+                className="placeholder:text-muted-foreground/60 bg-white/5 hover:bg-white/10 transition-colors h-12"
+                maxLength={200}
+                required
+              />
             </div>
           </div>
 
           <div className="grid md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="password">Contraseña *</Label>
+              <Label htmlFor="password" className="text-white">Contraseña *</Label>
               <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary/60 pointer-events-none z-10" />
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  placeholder="••••••••"
-                  className="pl-14 pr-12 placeholder:text-muted-foreground/75"
+                  placeholder="Ingresa tu contraseña"
+                  className="pr-12 placeholder:text-muted-foreground/60 bg-white/5 hover:bg-white/10 transition-colors h-12"
                   aria-describedby={formData.password.length > 0 ? "password-feedback" : undefined}
                   required
                 />
@@ -179,16 +176,15 @@ function ClientRegistrationForm({
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirmar Contraseña *</Label>
+              <Label htmlFor="confirmPassword" className="text-white">Confirmar Contraseña *</Label>
               <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary/60 pointer-events-none z-10" />
                 <Input
                   id="confirmPassword"
                   type={showConfirmPassword ? "text" : "password"}
                   value={formData.confirmPassword}
                   onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                  placeholder="••••••••"
-                  className="pl-14 pr-12 placeholder:text-muted-foreground/75"
+                  placeholder="Confirma tu contraseña"
+                  className="pr-12 placeholder:text-muted-foreground/60 bg-white/5 hover:bg-white/10 transition-colors h-12"
                   aria-describedby={formData.confirmPassword ? "confirm-password-feedback" : undefined}
                   required
                 />
@@ -258,24 +254,25 @@ function ClientRegistrationForm({
 
           <div className="grid md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="phone">Teléfono</Label>
+              <Label htmlFor="phone" className="text-white">Teléfono</Label>
               <Input
                 id="phone"
                 type="tel"
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 placeholder="+54 280 1234567"
+                className="placeholder:text-muted-foreground/60 bg-white/5 hover:bg-white/10 transition-colors h-12"
                 maxLength={20}
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="location">Ubicación *</Label>
+              <Label htmlFor="location" className="text-white">Ubicación *</Label>
               <Select
                 value={formData.location}
                 onValueChange={(value) => setFormData({ ...formData, location: value })}
                 required
               >
-                <SelectTrigger>
+                <SelectTrigger className="h-12 bg-white/5 hover:bg-white/10 border-white/40">
                   <SelectValue placeholder="Selecciona tu ciudad" />
                 </SelectTrigger>
                 <SelectContent>
@@ -290,12 +287,13 @@ function ClientRegistrationForm({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="birthdate">Fecha de Nacimiento *</Label>
+            <Label htmlFor="birthdate" className="text-white">Fecha de Nacimiento *</Label>
             <Input
               id="birthdate"
               type="date"
               value={formData.birthdate}
               onChange={(e) => setFormData({ ...formData, birthdate: e.target.value })}
+              className="bg-white/5 hover:bg-white/10 transition-colors h-12"
               max={new Date(new Date().getFullYear() - 18, new Date().getMonth(), new Date().getDate()).toISOString().split('T')[0]}
               required
             />
@@ -305,13 +303,14 @@ function ClientRegistrationForm({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="dni">Número de DNI *</Label>
+            <Label htmlFor="dni" className="text-white">Número de DNI *</Label>
             <Input
               id="dni"
               type="text"
               value={formData.dni}
               onChange={(e) => setFormData({ ...formData, dni: e.target.value.replace(/\D/g, '').slice(0, 8) })}
               placeholder="12345678"
+              className="placeholder:text-muted-foreground/60 bg-white/5 hover:bg-white/10 transition-colors h-12"
               maxLength={8}
               minLength={7}
               required
