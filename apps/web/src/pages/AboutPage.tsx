@@ -153,11 +153,6 @@ function WhatIsFixiaSection() {
       icon: Shield,
       title: "Un puente entre oferentes y demandantes",
       description: "Facilitamos conexiones de valor"
-    },
-    {
-      icon: Zap,
-      title: "El 'Uber' de los servicios profesionales",
-      description: "Velocidad y conveniencia en cada solicitud"
     }
   ];
 
@@ -172,8 +167,8 @@ function WhatIsFixiaSection() {
           className="text-center mb-16"
         >
           <div className="flex items-center justify-center gap-4 mb-6">
-            <div className="h-14 w-14 rounded-2xl bg-info/20 flex items-center justify-center float">
-              <Globe className="h-7 w-7 text-info" />
+            <div className="h-14 w-14 rounded-2xl bg-primary/20 flex items-center justify-center float">
+              <Globe className="h-7 w-7 text-primary" />
             </div>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-foreground tracking-tight">¿Qué es Fixia?</h2>
           </div>
@@ -411,7 +406,7 @@ function WhyChooseFixiaSection() {
     "Comparación transparente de servicios",
     "Sistema de reseñas confiable",
     "Búsqueda inteligente por ubicación",
-    "Chat directo con profesionales"
+    "Chat directo por WhatsApp con profesionales"
   ];
 
   return (

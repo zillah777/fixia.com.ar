@@ -439,7 +439,7 @@ function FAQSection() {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl font-bold mb-4 text-foreground">Preguntas Frecuentes</h2>
+          <h2 className="text-4xl font-bold mb-4 text-white">Preguntas Frecuentes</h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Encuentra respuestas rápidas a las consultas más comunes
           </p>

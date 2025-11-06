@@ -241,7 +241,7 @@ function ProfessionalProcessSection() {
           <Link to="/register?type=professional" className="w-full sm:w-auto inline-block">
             <Button size="lg" className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg px-6 w-full sm:w-auto">
               <Crown className="mr-2 h-5 w-5" />
-              Ser Profesional - $4500/mes
+              Ser Profesional - $3,900/mes
             </Button>
           </Link>
         </motion.div>
