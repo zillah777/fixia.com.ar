@@ -102,7 +102,9 @@ async function bootstrap() {
     });
 
     // Enable CORS with production-ready configuration - Updated for actual deployment URLs
-    const allowedOrigins = process.env.NODE_ENV === 'production'
+    const isProduction = process.env.NODE_ENV === 'production' || process.env.RENDER || process.env.RAILWAY_ENVIRONMENT;
+
+    const allowedOrigins = isProduction
       ? [
           // Primary Vercel deployments
           'https://fixiaweb.vercel.app',
@@ -112,17 +114,21 @@ async function bootstrap() {
           'https://www.fixia.com.ar',
           'https://fixia.app',
           'https://www.fixia.app',
+          // Render.com domain
+          'https://fixia-api.onrender.com',
           // Allow all Vercel preview deployments
           /https:\/\/.*\.vercel\.app$/
         ]
-      : process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000', 'http://localhost:5173'];
+      : process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000', 'http://localhost:5173', 'http://localhost:4000'];
 
+    logger.log(`🌐 Environment: ${process.env.NODE_ENV || 'development'} (isProduction: ${isProduction})`);
     logger.log(`🌐 CORS enabled for origins: ${JSON.stringify(allowedOrigins)}`);
 
     app.enableCors({
       origin: (origin, callback) => {
-        // Allow requests with no origin (mobile apps, Postman, etc.)
+        // Allow requests with no origin (mobile apps, Postman, curl, etc.)
         if (!origin) {
+          logger.log(`✅ CORS allowed for request with no origin (mobile/tools)`);
           return callback(null, true);
         }
 
@@ -139,7 +145,14 @@ async function bootstrap() {
           callback(null, true);
         } else {
           logger.warn(`❌ CORS blocked for origin: ${origin}`);
-          callback(new Error('Not allowed by CORS'));
+          logger.warn(`   Allowed origins: ${JSON.stringify(allowedOrigins)}`);
+          // In production, block; in development, allow for debugging
+          if (isProduction) {
+            callback(new Error('Not allowed by CORS'));
+          } else {
+            logger.warn(`   ⚠️  Allowing anyway for development`);
+            callback(null, true);
+          }
         }
       },
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
@@ -147,7 +160,8 @@ async function bootstrap() {
       exposedHeaders: ['Set-Cookie'],
       credentials: true,
       optionsSuccessStatus: 200,
-      preflightContinue: false
+      preflightContinue: false,
+      maxAge: 86400 // Cache preflight requests for 24 hours
     });
 
     // Global error handling and interceptors
