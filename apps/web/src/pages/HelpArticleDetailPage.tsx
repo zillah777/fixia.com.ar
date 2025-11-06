@@ -114,11 +114,11 @@ const helpArticlesData = [
     sections: [
       {
         title: "Planes y precios",
-        content: "CLIENTES:\n• Plan Gratuito: $0 ARS/mes (3 anuncios por mes, 3 propuestas, 3 feedbacks)\n• Plan Premium: $2,500 ARS/mes (anuncios ilimitados, propuestas ilimitadas, feedback ilimitado)\n\nPROFESIONALES:\n• Plan Basic: $2,999 ARS/mes (hasta 5 servicios activos, responder proyectos ilimitados, Trust Score profesional, soporte por email)\n• Plan Premium: $5,999 ARS/mes (servicios ilimitados, badge Premium destacado, prioridad en búsquedas, estadísticas avanzadas, soporte prioritario, WhatsApp support 24hs)\n\nPROMOCIÓN: Primeros 200 profesionales obtienen 2 MESES GRATIS."
+        content: "CLIENTES:\n• Plan Gratuito: $0 ARS/mes (3 anuncios por mes, 3 propuestas, 3 feedbacks)\n\nPROFESIONALES:\n• Plan Profesional: $3,900 ARS/mes (Cliente + Profesional, publicar hasta 5 servicios, responder proyectos ilimitados, Trust Score profesional, soporte por email)\n\nPROMOCIÓN: Primeros 200 profesionales obtienen 2 MESES GRATIS."
       },
       {
         title: "Cómo suscribirse",
-        content: "1. Inicia sesión en tu cuenta\n2. Ve a Configuración > Plan Actual\n3. Haz clic en 'Actualizar a Profesional'\n4. Selecciona el plan que deseas\n5. Ingresa datos de tu tarjeta de crédito\n6. Completa el pago\n7. ¡Acceso inmediato a todas las features!\n\nAceptamos: Visa, Mastercard, American Express"
+        content: "1. Inicia sesión en tu cuenta\n2. Ve a Configuración > Plan Actual\n3. Haz clic en 'Actualizar a Profesional'\n4. Ingresa datos de tu tarjeta de crédito\n5. Completa el pago\n6. ¡Acceso inmediato a todas las features profesionales!\n\nAceptamos: Visa, Mastercard, American Express"
       },
       {
         title: "Sin comisiones, solo suscripción",

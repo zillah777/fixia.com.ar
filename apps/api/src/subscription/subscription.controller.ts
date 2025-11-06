@@ -64,14 +64,13 @@ export class SubscriptionController {
     console.log('📦 Raw DTO:', dto);
 
     // SECURITY: Server-side validation to prevent amount tampering (CVSS 8.6 mitigation)
-    if (!dto.subscriptionType || !['basic', 'premium'].includes(dto.subscriptionType)) {
-      throw new BadRequestException('Invalid subscription type');
+    if (!dto.subscriptionType || dto.subscriptionType !== 'basic') {
+      throw new BadRequestException('Invalid subscription type. Only "basic" plan is available');
     }
 
     // Validate subscription price against hardcoded server values
     const hardcodedPrices = {
-      basic: 2999,
-      premium: 5999,
+      basic: 3900,
     };
 
     if (!dto.price || typeof dto.price !== 'number' || dto.price < 0) {

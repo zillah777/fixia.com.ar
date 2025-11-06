@@ -175,7 +175,7 @@ function PricingCardsSection() {
     navigate('/register');
   };
 
-  const handleSelectPlan = async (planType: 'basic' | 'premium') => {
+  const handleSelectPlan = async (planType: 'basic') => {
     if (!user) {
       toast.info('Debes iniciar sesión para suscribirte');
       navigate('/login');
