@@ -612,7 +612,7 @@ function ProfessionalRegistrationForm({
           <CardTitle className="text-2xl text-foreground">Registro Profesional</CardTitle>
         </div>
         <CardDescription>
-          Suscripción mensual $4500 ARS • Sin comisiones por servicios
+          Suscripción mensual $3,900 ARS • Sin comisiones por servicios
         </CardDescription>
         <Badge className="bg-warning/20 text-warning border-warning/30 mx-auto">
           🎉 Primeros 200 profesionales: 2 meses gratis
@@ -940,7 +940,7 @@ function ProfessionalRegistrationForm({
                 <Link to="/terms" className="text-primary hover:underline">
                   Términos y Condiciones
                 </Link>{" "}
-                de Fixia, incluyendo la suscripción mensual de $4500 ARS
+                de Fixia, incluyendo la suscripción mensual de $3,900 ARS
               </Label>
             </div>
 
@@ -979,7 +979,7 @@ function ProfessionalRegistrationForm({
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
                 <strong>Promoción de Lanzamiento:</strong> Los primeros 200 profesionales obtienen 
-                2 meses completamente gratis. Después se aplicará la tarifa mensual de $4500 ARS.
+                2 meses completamente gratis. Después se aplicará la tarifa mensual de $3,900 ARS.
               </AlertDescription>
             </Alert>
           </div>
