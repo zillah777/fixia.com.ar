@@ -54,38 +54,41 @@ export function useWebSocket(options: UseWebSocketOptions = {}): WebSocketStatus
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   /**
-   * Get JWT token from localStorage or cookies
+   * Verify authentication by checking if user is authenticated
+   * httpOnly cookies are automatically sent by the browser with requests
    */
-  const getAuthToken = useCallback((): string | null => {
+  const isUserAuthenticated = useCallback(async (): Promise<boolean> => {
     try {
-      // Try to get from httpOnly cookie via API header
-      // For client-side socket auth, we need the token in memory or sessionStorage
-      const token =
-        localStorage.getItem('fixia_access_token') ||
-        sessionStorage.getItem('fixia_access_token');
-
-      return token;
+      // Check if user is authenticated by calling the backend
+      // The backend will validate the httpOnly cookie automatically
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'https://api.fixia.app'}/auth/verify`, {
+        method: 'GET',
+        credentials: 'include', // Include cookies in the request
+      });
+      return response.ok;
     } catch (error) {
-      console.warn('Failed to retrieve auth token:', error);
-      return null;
+      console.warn('Failed to verify authentication:', error);
+      return false;
     }
   }, []);
 
   /**
    * Initialize WebSocket connection
+   * Uses httpOnly cookies for authentication (automatically sent by browser)
    */
-  const initializeSocket = useCallback(() => {
+  const initializeSocket = useCallback(async () => {
     if (!enabled || socketRef.current?.connected) {
       return;
     }
 
-    const token = getAuthToken();
+    // Verify user is authenticated before attempting socket connection
+    const isAuthenticated = await isUserAuthenticated();
 
-    if (!token) {
-      console.warn('⚠️ WebSocket: No authentication token available');
+    if (!isAuthenticated) {
+      console.warn('⚠️ WebSocket: User not authenticated. httpOnly cookie may be expired or invalid.');
       setStatus((prev) => ({
         ...prev,
-        error: 'Authentication token not found',
+        error: 'User authentication expired. Please login again.',
         isConnecting: false,
       }));
       return;
@@ -97,9 +100,9 @@ export function useWebSocket(options: UseWebSocketOptions = {}): WebSocketStatus
       const apiUrl = import.meta.env.VITE_API_URL || 'https://api.fixia.app';
 
       const newSocket = io(`${apiUrl}/notifications`, {
-        auth: {
-          token,
-        },
+        // httpOnly cookies are automatically included by the browser
+        // No need to manually pass token - socket.io will use the same cookies as HTTP requests
+        withCredentials: true, // Ensure cookies are sent with WebSocket connection
         reconnection: true,
         reconnectionDelay: Math.min(
           reconnectionDelay * Math.pow(2, reconnectAttemptsRef.current),
@@ -189,7 +192,7 @@ export function useWebSocket(options: UseWebSocketOptions = {}): WebSocketStatus
         error: error instanceof Error ? error.message : 'Failed to initialize WebSocket',
       }));
     }
-  }, [enabled, getAuthToken, reconnectionDelay, maxReconnectAttempts]);
+  }, [enabled, isUserAuthenticated, reconnectionDelay, maxReconnectAttempts]);
 
   /**
    * Effect: Initialize socket on mount and when token becomes available

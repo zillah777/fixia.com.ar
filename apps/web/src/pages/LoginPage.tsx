@@ -168,7 +168,7 @@ export default function LoginPage() {
                       placeholder="tu@email.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="pl-12 glass border-white/20 focus:border-primary/50 focus:ring-primary/30 h-11 text-base placeholder:text-muted-foreground/60"
+                      className="pl-12 glass border-white/40 focus:border-primary/50 focus:ring-primary/30 h-11 text-base placeholder:text-muted-foreground/75"
                       maxLength={200}
                       required
                     />
@@ -186,7 +186,7 @@ export default function LoginPage() {
                       placeholder="Tu contraseña"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="pl-12 pr-12 glass border-white/20 focus:border-primary/50 focus:ring-primary/30 h-11 text-base placeholder:text-muted-foreground/60"
+                      className="pl-12 pr-12 glass border-white/40 focus:border-primary/50 focus:ring-primary/30 h-11 text-base placeholder:text-muted-foreground/75"
                       required
                     />
                     <PasswordToggleButton

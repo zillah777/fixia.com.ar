@@ -484,7 +484,7 @@ export class UsersService {
   }
 
   async upgradeToProfessional(userId: string, upgradeDto: UpgradeToProfessionalDto) {
-    // Get current user
+    // Get current user with subscription info
     const user = await this.prisma.user.findUnique({
       where: { id: userId, deleted_at: null },
       include: { professional_profile: true },
@@ -501,6 +501,20 @@ export class UsersService {
 
     if (user.professional_profile) {
       throw new ConflictException('El usuario ya tiene un perfil profesional');
+    }
+
+    // SECURITY: Validate professional subscription requirement
+    // Professionals must have an active premium subscription to use platform
+    const hasProfessionalSubscription =
+      user.subscription_type === 'premium' &&
+      user.subscription_status === 'active' &&
+      (!user.subscription_expires_at || user.subscription_expires_at > new Date());
+
+    if (!hasProfessionalSubscription) {
+      throw new ForbiddenException(
+        'Se requiere una suscripción premium activa para convertirse en profesional. ' +
+        'Los profesionales necesitan un plan de pago para acceder a todas las herramientas y recibir propuestas.'
+      );
     }
 
     // Validate required fields

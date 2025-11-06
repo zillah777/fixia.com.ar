@@ -7,7 +7,7 @@ import {
   MessageBody,
   ConnectedSocket,
 } from '@nestjs/websockets';
-import { Logger, UseGuards, Inject } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import { Socket } from 'socket.io';
 import { Notification } from '@prisma/client';
 import { JwtService } from '@nestjs/jwt';
@@ -46,18 +46,47 @@ export class NotificationsGateway
 
   constructor(private jwtService: JwtService) {}
 
-  afterInit(server: any): void {
+  afterInit(): void {
     this.logger.log('✅ WebSocket Gateway initialized for notifications');
+  }
+
+  /**
+   * Extract JWT token from multiple sources in order of preference:
+   * 1. httpOnly cookies (preferred for same-domain deployments)
+   * 2. Authorization header (Bearer token)
+   * 3. Socket auth object (fallback)
+   */
+  private extractToken(client: Socket): string | null {
+    // Try httpOnly cookie first (automatically sent by browser)
+    const cookies = client.handshake.headers.cookie || '';
+    const accessTokenMatch = cookies.match(/access_token=([^;]+)/);
+    if (accessTokenMatch?.[1]) {
+      return accessTokenMatch[1];
+    }
+
+    // Try Authorization header (Bearer token)
+    const authHeader = client.handshake.headers.authorization;
+    if (authHeader?.startsWith('Bearer ')) {
+      return authHeader.substring(7);
+    }
+
+    // Try socket auth object (fallback for custom implementations)
+    const token = client.handshake.auth?.token;
+    if (token) {
+      return token;
+    }
+
+    return null;
   }
 
   async handleConnection(client: Socket): Promise<void> {
     try {
-      // Extract JWT token from connection headers
-      const token = client.handshake.auth.token || client.handshake.headers.authorization?.split(' ')[1];
+      // Extract JWT token from cookies, headers, or auth object
+      const token = this.extractToken(client);
 
       if (!token) {
-        this.logger.warn(`🔐 Connection rejected: No token provided from ${client.id}`);
-        client.disconnect();
+        this.logger.warn(`🔐 Connection rejected: No authentication token provided from ${client.id}`);
+        client.disconnect(true);
         return;
       }
 
@@ -69,7 +98,7 @@ export class NotificationsGateway
       const userId = payload.sub || payload.userId;
       if (!userId) {
         this.logger.warn(`🔐 Connection rejected: Invalid token payload from ${client.id}`);
-        client.disconnect();
+        client.disconnect(true);
         return;
       }
 
