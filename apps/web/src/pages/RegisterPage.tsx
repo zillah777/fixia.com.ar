@@ -149,7 +149,7 @@ function ClientRegistrationForm({
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   placeholder="juan@email.com"
-                  className="pl-12 placeholder:text-muted-foreground/75"
+                  className="pl-14 placeholder:text-muted-foreground/75"
                   maxLength={200}
                   required
                 />
@@ -168,7 +168,7 @@ function ClientRegistrationForm({
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   placeholder="••••••••"
-                  className="pl-12 pr-12 placeholder:text-muted-foreground/75"
+                  className="pl-14 pr-12 placeholder:text-muted-foreground/75"
                   aria-describedby={formData.password.length > 0 ? "password-feedback" : undefined}
                   required
                 />
@@ -188,7 +188,7 @@ function ClientRegistrationForm({
                   value={formData.confirmPassword}
                   onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                   placeholder="••••••••"
-                  className="pl-12 pr-12 placeholder:text-muted-foreground/75"
+                  className="pl-14 pr-12 placeholder:text-muted-foreground/75"
                   aria-describedby={formData.confirmPassword ? "confirm-password-feedback" : undefined}
                   required
                 />
