@@ -143,11 +143,19 @@ Ver `docs/DEPLOYMENT_GUIDE.md` para configuración de variables en Vercel y Rail
 
 ## 📚 Documentación Adicional
 
+### Para Desarrolladores
 - [Mapeo Figma → Componentes](./docs/MAPEO_FIGMA.md)
-- [API Specification](./docs/API.openapi.yaml) 
+- [API Specification](./docs/API.openapi.yaml)
 - [Modelo de Datos](./docs/DATA_MODEL.md)
 - [Guía de Deploy](./docs/DEPLOYMENT_GUIDE.md)
-- [Definition of Done](./docs/DOD.md)
+- [Límites Técnicos - Implementación](./docs/LIMITES_TECNICOS.md) ⭐ **NUEVO**
+
+### Para Clientes y Usuarios
+- [Guía de Planes y Límites](./docs/PLANES_Y_LIMITES.md) ⭐ **NUEVO**
+  - Plan Gratuito vs Premium
+  - FAQ sobre límites mensuales
+  - Proceso de upgrade
+  - Sistema de match Cliente-Profesional
 
 ## 🚨 Solución de Problemas
 
@@ -184,5 +192,5 @@ pnpm build
 - **Team**: Consultar con team lead
 
 ---
-**Última actualización**: 21 agosto 2025
-**Versión**: 1.0.0
+**Última actualización**: 6 enero 2025
+**Versión**: 1.1.0 (Sistema de límites implementado)
