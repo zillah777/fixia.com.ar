@@ -114,7 +114,7 @@ const helpArticlesData = [
     sections: [
       {
         title: "Planes y precios",
-        content: "CLIENTES: Completamente gratis\n\nPROFESIONALES:\n• Plan Básico: $3,900 ARS/mes (5 servicios activos)\n• Plan Premium: $7,900 ARS/mes (servicios ilimitados)\n• Plan Profesional: $14,900 ARS/mes (todas las features + soporte prioritario)\n\nPROMOCIÓN: Primeros 200 profesionales obtienen 2 MESES GRATIS."
+        content: "CLIENTES:\n• Plan Gratuito: $0 ARS/mes (3 anuncios por mes, 3 propuestas, 3 feedbacks)\n• Plan Premium: $2,500 ARS/mes (anuncios ilimitados, propuestas ilimitadas, feedback ilimitado)\n\nPROFESIONALES:\n• Plan Basic: $2,999 ARS/mes (hasta 5 servicios activos, responder proyectos ilimitados, Trust Score profesional, soporte por email)\n• Plan Premium: $5,999 ARS/mes (servicios ilimitados, badge Premium destacado, prioridad en búsquedas, estadísticas avanzadas, soporte prioritario, WhatsApp support 24hs)\n\nPROMOCIÓN: Primeros 200 profesionales obtienen 2 MESES GRATIS."
       },
       {
         title: "Cómo suscribirse",
