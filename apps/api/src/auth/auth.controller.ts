@@ -385,7 +385,7 @@ export class AuthController {
     const cookieOptions = {
       httpOnly: true,
       secure: isProduction,
-      sameSite: isProduction ? 'none' as const : 'lax' as const, // 'none' for cross-origin in production
+      sameSite: 'lax' as const, // Use 'lax' for better mobile compatibility (works for same-site requests)
       path: '/',
       // Don't set domain - let browser handle automatically
     };
@@ -407,7 +407,7 @@ export class AuthController {
       cookieConfig: {
         httpOnly: true,
         secure: isProduction,
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' as const : 'lax' as const,
+        sameSite: 'lax' as const,
         path: '/',
         domain: 'auto'
       },
@@ -423,13 +423,13 @@ export class AuthController {
     res.clearCookie('access_token', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' as const : 'lax' as const,
+      sameSite: 'lax' as const,
     });
-    
+
     res.clearCookie('refresh_token', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' as const : 'lax' as const,
+      sameSite: 'lax' as const,
     });
   }
 }
