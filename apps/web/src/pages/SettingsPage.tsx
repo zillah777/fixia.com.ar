@@ -488,27 +488,29 @@ function SecurityTab() {
 
       {/* Delete Account Confirmation Dialog */}
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <DialogContent className="glass border-white/10 max-w-[90vw] sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center space-x-2 text-destructive">
-              <AlertCircle className="h-5 w-5" />
-              <span>Confirmar Eliminación de Cuenta</span>
-            </DialogTitle>
-            <DialogDescription>
+        <DialogContent className="glass-glow border-destructive/40 max-w-[95%] sm:max-w-md shadow-2xl">
+          <DialogHeader className="border-b border-destructive/20 pb-4">
+            <div className="flex items-center space-x-2 mb-2">
+              <div className="p-2 rounded-lg bg-destructive/20">
+                <AlertCircle className="h-5 w-5 text-destructive" />
+              </div>
+              <DialogTitle className="text-destructive text-lg">Confirmar Eliminación de Cuenta</DialogTitle>
+            </div>
+            <DialogDescription className="text-white/70 ml-10 mt-2">
               Esta acción es permanente e irreversible. Se eliminarán todos tus datos.
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-4 py-4">
-            <Alert className="border-destructive/50 bg-destructive/10">
-              <AlertCircle className="h-4 w-4 text-destructive" />
-              <AlertDescription className="text-destructive font-medium">
-                Escribe tu contraseña para confirmar que deseas eliminar tu cuenta.
+          <div className="space-y-5 py-4">
+            <Alert className="border-destructive/30 bg-gradient-to-r from-destructive/20 to-destructive/10 rounded-xl">
+              <AlertCircle className="h-5 w-5 text-destructive" />
+              <AlertDescription className="text-destructive/90 ml-2 font-medium">
+                ⚠️ Escribe tu contraseña para confirmar que deseas eliminar tu cuenta de forma permanente.
               </AlertDescription>
             </Alert>
 
             <div className="space-y-2">
-              <Label htmlFor="deletePassword" className="font-medium">Contraseña</Label>
+              <Label htmlFor="deletePassword" className="font-semibold text-white">Contraseña de Confirmación</Label>
               <Input
                 id="deletePassword"
                 type="password"
@@ -516,12 +518,13 @@ function SecurityTab() {
                 value={deletePassword}
                 onChange={(e) => setDeletePassword(e.target.value)}
                 disabled={isDeletingAccount}
-                className="glass border-white/20"
+                className="glass border-white/20 focus:border-destructive/50"
               />
+              <p className="text-xs text-white/60">Tu contraseña será verificada de forma segura.</p>
             </div>
           </div>
 
-          <DialogFooter className="gap-3">
+          <DialogFooter className="gap-3 border-t border-white/10 pt-4">
             <Button
               variant="outline"
               onClick={() => {
@@ -529,7 +532,7 @@ function SecurityTab() {
                 setDeletePassword('');
               }}
               disabled={isDeletingAccount}
-              className="glass border-white/20 text-sm sm:text-base"
+              className="border-white/20 text-white/80 hover:text-white hover:bg-white/10"
             >
               Cancelar
             </Button>
@@ -537,14 +540,19 @@ function SecurityTab() {
               variant="destructive"
               onClick={handleDeleteAccount}
               disabled={isDeletingAccount || !deletePassword.trim()}
-              className="bg-destructive hover:bg-destructive/90 text-white text-sm sm:text-base"
+              className="bg-gradient-to-r from-destructive to-destructive/80 hover:from-destructive/90 hover:to-destructive/70 shadow-lg"
             >
               {isDeletingAccount ? (
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
+                  Eliminando...
+                </>
               ) : (
-                <Trash2 className="h-4 w-4 mr-2" />
+                <>
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Eliminar Permanentemente
+                </>
               )}
-              Eliminar
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -1005,58 +1013,71 @@ function SubscriptionTab() {
 
       {/* Cancel Subscription Dialog */}
       <Dialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
-        <DialogContent className="glass border-white/10 max-w-[90vw] sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center space-x-2 text-destructive">
-              <AlertCircle className="h-5 w-5" />
-              <span>Cancelar Suscripción</span>
-            </DialogTitle>
-            <DialogDescription>
+        <DialogContent className="glass-glow border-warning/40 max-w-[95%] sm:max-w-md shadow-2xl">
+          <DialogHeader className="border-b border-warning/20 pb-4">
+            <div className="flex items-center space-x-2 mb-2">
+              <div className="p-2 rounded-lg bg-warning/20">
+                <AlertCircle className="h-5 w-5 text-warning" />
+              </div>
+              <DialogTitle className="text-warning text-lg">Cancelar Suscripción Premium</DialogTitle>
+            </div>
+            <DialogDescription className="text-white/70 ml-10 mt-2">
               ¿Estás seguro de que deseas cancelar tu suscripción profesional?
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-4 py-4">
-            <Alert className="border-warning/50 bg-warning/10">
-              <AlertCircle className="h-4 w-4 text-warning" />
-              <AlertDescription className="text-warning">
-                Al cancelar tu suscripción, perderás acceso a las funcionalidades premium después del período de facturación actual.
+          <div className="space-y-5 py-4">
+            <Alert className="border-warning/30 bg-gradient-to-r from-warning/20 to-warning/10 rounded-xl">
+              <AlertCircle className="h-5 w-5 text-warning" />
+              <AlertDescription className="text-warning/90 ml-2 font-medium">
+                ⚠️ Al cancelar, perderás acceso a funciones premium después del período actual.
               </AlertDescription>
             </Alert>
 
-            <div className="space-y-3 text-sm text-muted-foreground">
-              <p>Se perderá acceso a:</p>
-              <ul className="list-disc list-inside space-y-1 ml-2">
-                <li>Servicios ilimitados</li>
-                <li>Badge "Premium" destacado</li>
-                <li>Prioridad en búsquedas</li>
-                <li>Estadísticas avanzadas</li>
-                <li>Soporte prioritario</li>
+            <div className="bg-white/5 border border-white/10 rounded-xl p-4 space-y-2">
+              <p className="text-sm font-semibold text-white">Perderás acceso a:</p>
+              <ul className="space-y-1 text-sm text-white/70 ml-2">
+                <li>✕ Servicios y anuncios ilimitados</li>
+                <li>✕ Badge "Premium" destacado en tu perfil</li>
+                <li>✕ Prioridad en búsquedas y visibilidad</li>
+                <li>✕ Estadísticas y análisis avanzados</li>
+                <li>✕ Soporte y atención prioritaria</li>
               </ul>
+            </div>
+
+            <div className="bg-primary/10 border border-primary/20 rounded-xl p-3">
+              <p className="text-xs text-primary/90">
+                💡 <strong>Tip:</strong> Puedes reactivar tu suscripción en cualquier momento desde tu panel de control.
+              </p>
             </div>
           </div>
 
-          <DialogFooter className="gap-3">
+          <DialogFooter className="gap-3 border-t border-white/10 pt-4">
             <Button
               variant="outline"
               onClick={() => setShowCancelDialog(false)}
               disabled={isCancelling}
-              className="glass border-white/20 text-sm sm:text-base"
+              className="border-white/20 text-white/80 hover:text-white hover:bg-white/10"
             >
-              Mantener Suscripción
+              Mantener Premium
             </Button>
             <Button
               variant="destructive"
               onClick={handleCancelSubscription}
               disabled={isCancelling}
-              className="bg-destructive hover:bg-destructive/90 text-white text-sm sm:text-base"
+              className="bg-gradient-to-r from-destructive to-destructive/80 hover:from-destructive/90 hover:to-destructive/70 shadow-lg"
             >
               {isCancelling ? (
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
+                  Cancelando...
+                </>
               ) : (
-                <X className="h-4 w-4 mr-2" />
+                <>
+                  <X className="h-4 w-4 mr-2" />
+                  Sí, Cancelar
+                </>
               )}
-              Cancelar Suscripción
             </Button>
           </DialogFooter>
         </DialogContent>

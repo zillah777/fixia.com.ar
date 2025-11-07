@@ -804,34 +804,51 @@ function SettingsSection() {
                 Eliminar Cuenta
               </Button>
             </DialogTrigger>
-            <DialogContent className="glass border-destructive/20">
-              <DialogHeader>
-                <DialogTitle className="text-destructive">¿Eliminar cuenta permanentemente?</DialogTitle>
-                <DialogDescription>
-                  Esta acción no se puede deshacer. Se eliminarán todos tus datos, servicios, 
+            <DialogContent className="glass-glow border-destructive/40 shadow-2xl">
+              <DialogHeader className="border-b border-destructive/20 pb-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="p-2 rounded-lg bg-destructive/20">
+                    <AlertTriangle className="h-5 w-5 text-destructive" />
+                  </div>
+                  <DialogTitle className="text-destructive text-xl">¿Eliminar cuenta permanentemente?</DialogTitle>
+                </div>
+                <DialogDescription className="text-white/70 ml-10 mt-2">
+                  Esta acción no se puede deshacer. Se eliminarán todos tus datos, servicios,
                   mensajes y cualquier información asociada a tu cuenta.
                 </DialogDescription>
               </DialogHeader>
-              <div className="space-y-4">
-                <Alert className="border-destructive/20 bg-destructive/5">
-                  <AlertTriangle className="h-4 w-4" />
-                  <AlertDescription>
-                    <strong>Advertencia:</strong> Una vez eliminada, tu cuenta no se podrá recuperar.
+              <div className="space-y-5">
+                <Alert className="border-destructive/30 bg-gradient-to-r from-destructive/20 to-destructive/10 rounded-xl">
+                  <AlertTriangle className="h-5 w-5 text-destructive" />
+                  <AlertDescription className="text-destructive/90 ml-2">
+                    <strong>⚠️ Advertencia:</strong> Una vez eliminada, tu cuenta NO se podrá recuperar. Todos tus datos serán eliminados permanentemente del servidor.
                   </AlertDescription>
                 </Alert>
-                
-                <div className="flex justify-end space-x-2">
+
+                <div className="bg-white/5 border border-white/10 rounded-xl p-4 space-y-2">
+                  <p className="text-sm font-semibold text-white">Se eliminarán:</p>
+                  <ul className="text-sm text-white/70 space-y-1 ml-2">
+                    <li>✕ Tu perfil y foto de usuario</li>
+                    <li>✕ Todos tus servicios y anuncios</li>
+                    <li>✕ Historial de trabajos y propuestas</li>
+                    <li>✕ Mensajes y conversaciones</li>
+                    <li>✕ Calificaciones y reviews</li>
+                  </ul>
+                </div>
+
+                <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-4 border-t border-white/10">
                   <DialogTrigger asChild>
-                    <Button variant="outline" className="glass border-white/20">
+                    <Button variant="outline" className="border-white/20 text-white/80 hover:text-white hover:bg-white/10">
                       Cancelar
                     </Button>
                   </DialogTrigger>
                   <Button
                     variant="destructive"
                     onClick={handleAccountDeletion}
+                    className="bg-gradient-to-r from-destructive to-destructive/80 hover:from-destructive/90 hover:to-destructive/70 shadow-lg"
                   >
                     <Trash2 className="h-4 w-4 mr-2" />
-                    Sí, eliminar mi cuenta
+                    Sí, eliminar permanentemente
                   </Button>
                 </div>
               </div>
