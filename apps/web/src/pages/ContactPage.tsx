@@ -405,7 +405,7 @@ function FAQSection() {
   const faqs = [
     {
       question: "¿Cómo puedo registrarme como profesional?",
-      answer: "Puedes registrarte como profesional haciendo clic en 'Ser Profesional' y completando el proceso de verificación. El plan profesional cuesta $5000 pesos argentinos mensuales."
+      answer: "Puedes registrarte como profesional haciendo clic en 'Ser Profesional' y completando el proceso de verificación. El plan profesional cuesta $3,900 pesos argentinos mensuales."
     },
     {
       question: "¿Fixia cobra comisiones por los servicios?",

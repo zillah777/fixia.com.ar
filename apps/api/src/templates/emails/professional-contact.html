@@ -9,12 +9,12 @@
         /* Reset and base styles */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f8fafc; }
-        
+
         /* Container */
         .email-container { max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
-        
+
         /* Header */
-        .email-header { background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%); padding: 30px; text-align: center; color: white; }
+        .email-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center; color: white; }
         .logo-container { margin-bottom: 20px; }
         .logo { width: 48px; height: 48px; background: rgba(255, 255, 255, 0.2); border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; color: white; backdrop-filter: blur(10px); }
         .brand-name { font-size: 28px; font-weight: bold; margin-top: 10px; }
@@ -24,20 +24,20 @@
         /* Content */
         .email-content { padding: 40px 30px; }
         .greeting { font-size: 24px; font-weight: 600; color: #1e293b; margin-bottom: 10px; }
-        .subtitle { font-size: 16px; color: #16a34a; margin-bottom: 25px; font-weight: 500; }
+        .subtitle { font-size: 16px; color: #667eea; margin-bottom: 25px; font-weight: 500; }
         .message { font-size: 16px; color: #475569; line-height: 1.7; margin-bottom: 30px; }
         
         /* Client info card */
-        .client-card { background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%); border: 1px solid #bbf7d0; border-radius: 12px; padding: 25px; margin: 25px 0; }
+        .client-card { background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%); border: 1px solid rgba(102, 126, 234, 0.2); border-radius: 12px; padding: 25px; margin: 25px 0; }
         .client-header { display: flex; align-items: center; margin-bottom: 20px; }
-        .client-avatar { width: 60px; height: 60px; background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; font-weight: bold; margin-right: 15px; }
-        .client-info h3 { color: #15803d; font-size: 20px; margin-bottom: 5px; }
-        .client-info p { color: #166534; font-size: 14px; }
-        
+        .client-avatar { width: 60px; height: 60px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; font-weight: bold; margin-right: 15px; }
+        .client-info h3 { color: #667eea; font-size: 20px; margin-bottom: 5px; }
+        .client-info p { color: #764ba2; font-size: 14px; }
+
         .client-details { margin-top: 20px; }
         .detail-row { display: flex; margin-bottom: 12px; }
-        .detail-label { width: 120px; font-weight: 600; color: #15803d; font-size: 14px; }
-        .detail-value { color: #166534; font-size: 14px; flex: 1; }
+        .detail-label { width: 120px; font-weight: 600; color: #667eea; font-size: 14px; }
+        .detail-value { color: #374151; font-size: 14px; flex: 1; }
         
         /* Project details */
         .project-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 25px; margin: 25px 0; }
@@ -53,9 +53,9 @@
         /* Action buttons */
         .action-buttons { display: flex; gap: 15px; justify-content: center; margin: 30px 0; }
         .btn { display: inline-block; padding: 16px 32px; border-radius: 8px; font-weight: 600; font-size: 16px; text-decoration: none; transition: all 0.3s ease; text-align: center; }
-        .btn-primary { background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%); color: white; box-shadow: 0 4px 14px rgba(22, 163, 74, 0.3); }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(22, 163, 74, 0.4); }
-        .btn-secondary { background: white; color: #16a34a; border: 2px solid #16a34a; }
+        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; box-shadow: 0 4px 14px rgba(102, 126, 234, 0.3); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4); }
+        .btn-secondary { background: white; color: #667eea; border: 2px solid #667eea; }
         
         /* Urgency indicator */
         .urgency-high { background: #fef2f2; border: 1px solid #fecaca; padding: 15px; border-radius: 8px; margin: 20px 0; }
@@ -64,18 +64,18 @@
         .urgency-high p { color: #7f1d1d; font-size: 14px; }
         
         /* Tips section */
-        .tips-section { background: #fff7ed; border: 1px solid #fed7aa; border-radius: 8px; padding: 20px; margin: 25px 0; }
-        .tips-section h3 { color: #9a3412; font-size: 18px; margin-bottom: 15px; }
+        .tips-section { background: linear-gradient(135deg, rgba(255, 215, 61, 0.05) 0%, rgba(255, 179, 0, 0.05) 100%); border: 1px solid rgba(255, 215, 61, 0.2); border-radius: 8px; padding: 20px; margin: 25px 0; }
+        .tips-section h3 { color: #374151; font-size: 18px; margin-bottom: 15px; font-weight: 600; }
         .tip-item { display: flex; align-items: flex-start; margin-bottom: 12px; }
-        .tip-icon { color: #ea580c; font-size: 16px; margin-right: 10px; margin-top: 2px; }
-        .tip-text { color: #c2410c; font-size: 14px; }
+        .tip-icon { color: #ffd93d; font-size: 16px; margin-right: 10px; margin-top: 2px; }
+        .tip-text { color: #4b5563; font-size: 14px; }
         
         /* Footer */
         .email-footer { background: #1e293b; color: #94a3b8; padding: 30px; font-size: 14px; text-align: center; }
         .footer-logo { opacity: 0.7; margin-bottom: 15px; }
         .footer-text { line-height: 1.6; }
         .unsubscribe { margin-top: 20px; font-size: 12px; }
-        .unsubscribe a { color: #0ea5e9; text-decoration: none; }
+        .unsubscribe a { color: #667eea; text-decoration: none; }
         
         /* Responsive */
         @media (max-width: 600px) {
@@ -243,13 +243,13 @@
             <div class="footer-text">
                 <strong>Fixia</strong> - Marketplace de servicios profesionales<br>
                 Chubut, Argentina<br>
-                <a href="https://fixia.com.ar" style="color: #0ea5e9;">fixia.com.ar</a>
+                <a href="https://fixia.app" style="color: #667eea;">fixia.app</a>
             </div>
             
             <div class="unsubscribe">
-                <a href="{{unsubscribeUrl}}">Darse de baja</a> | 
+                <a href="{{unsubscribeUrl}}">Darse de baja</a> |
                 <a href="{{settingsUrl}}">Configurar notificaciones</a> |
-                <a href="mailto:soporte@fixia.com.ar">Contactar soporte</a>
+                <a href="mailto:soporte@fixia.app">Contactar soporte</a>
             </div>
         </div>
     </div>
