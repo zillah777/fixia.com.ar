@@ -16,7 +16,7 @@ export class OpportunitiesService {
   constructor(private prisma: PrismaService) {}
 
   async getOpportunities(userId: string): Promise<OpportunityMatch[]> {
-    // Verify user is professional
+    // Verify user is professional or dual role
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       include: {
@@ -28,7 +28,7 @@ export class OpportunitiesService {
       },
     });
 
-    if (!user || user.user_type !== 'professional') {
+    if (!user || (user.user_type !== 'professional' && user.user_type !== 'dual')) {
       throw new ForbiddenException('Only professionals can view opportunities');
     }
 

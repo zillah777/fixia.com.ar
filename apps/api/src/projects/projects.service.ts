@@ -112,8 +112,8 @@ export class ProjectsService {
       throw new NotFoundException('User not found');
     }
 
-    // Clients see their own projects
-    if (user.user_type === 'client') {
+    // Clients (and dual role users as clients) see their own projects with proposals
+    if (user.user_type === 'client' || user.user_type === 'dual') {
       return this.prisma.project.findMany({
         where: { client_id: userId },
         include: {
@@ -157,36 +157,14 @@ export class ProjectsService {
       });
     }
 
-    // Professionals see open projects that match their skills/location
-    // For now, return all open projects - could be improved with matching algorithm
-    return this.prisma.project.findMany({
-      where: { 
-        status: 'open',
-      },
-      include: {
-        client: {
-          select: {
-            name: true,
-            location: true,
-            verified: true,
-          },
-        },
-        category: {
-          select: {
-            name: true,
-            slug: true,
-            icon: true,
-          },
-        },
-        _count: {
-          select: {
-            proposals: true,
-          },
-        },
-      },
-      orderBy: { created_at: 'desc' },
-      take: 50, // Limit to prevent overwhelming professionals
-    });
+    // Pure professionals should NOT see projects via this endpoint
+    // They should use /opportunities endpoint instead to discover client announcements
+    if (user.user_type === 'professional') {
+      return [];
+    }
+
+    // Default: return empty array for unknown user types
+    return [];
   }
 
   async findOne(id: string, userId: string) {

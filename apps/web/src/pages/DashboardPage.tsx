@@ -31,7 +31,7 @@ import { OnboardingMessages } from "../components/OnboardingMessages";
 import { extractErrorMessage, logError, isAuthenticationError } from "../utils/errorHandler";
 
 function QuickActions({ user }: { user: any }) {
-  const isProfessional = user?.userType === 'professional';
+  const isProfessional = user?.userType === 'professional' || user?.userType === 'dual';
 
   return (
     <div className={isProfessional
@@ -371,7 +371,7 @@ function StatCards({ dashboardData, loading, userType, clientStats, planType }: 
   ];
 
   // For professionals (dual role), show both professional and client stats
-  const showBothStats = userType === 'professional';
+  const showBothStats = userType === 'professional' || userType === 'dual';
 
   return (
     <div className="space-y-6">
@@ -996,9 +996,12 @@ export default function DashboardPage() {
         await new Promise(resolve => setTimeout(resolve, 1000));
 
         // Load data - professionals with dual role load BOTH client and professional data
-        // Always load client stats (everyone can be a client)
-        const { opportunitiesService } = await import('../lib/services/opportunities.service');
-        const projects = await opportunitiesService.getMyProjects();
+        // Only load client data if user is client or dual role
+        let projects: any[] = [];
+        if (user.userType === 'client' || user.userType === 'dual') {
+          const { opportunitiesService } = await import('../lib/services/opportunities.service');
+          projects = await opportunitiesService.getMyProjects();
+        }
 
         const open_announcements = projects.filter((p: any) => p.status === 'open').length;
         const proposals_received = projects.reduce((sum: number, p: any) => sum + (p._count?.proposals || 0), 0);
@@ -1025,8 +1028,8 @@ export default function DashboardPage() {
         // Store client projects for the ClientAnnouncements component
         setClientProjects(projects);
 
-        // Additionally load professional stats if user is professional
-        if (user.userType === 'professional') {
+        // Additionally load professional stats if user is professional or dual
+        if (user.userType === 'professional' || user.userType === 'dual') {
           const data = await userService.getDashboard();
           setDashboardData(data);
         }
@@ -1049,8 +1052,8 @@ export default function DashboardPage() {
           client_rating: 0
         });
 
-        // Set professional stats fallback if user is professional
-        if (user.userType === 'professional') {
+        // Set professional stats fallback if user is professional or dual
+        if (user.userType === 'professional' || user.userType === 'dual') {
           setDashboardData({
             total_services: 0,
             active_projects: 0,
@@ -1076,38 +1079,40 @@ export default function DashboardPage() {
         // Generate activity from user's actual data - load both client AND professional activities (dual role)
         const activities: RecentActivity[] = [];
 
-        // Always load client activities (everyone can be a client)
-        const { opportunitiesService } = await import('../lib/services/opportunities.service');
-        const projects = await opportunitiesService.getMyProjects();
+        // Load client activities only if user is client or dual role
+        if (user.userType === 'client' || user.userType === 'dual') {
+          const { opportunitiesService } = await import('../lib/services/opportunities.service');
+          const projects = await opportunitiesService.getMyProjects();
 
-        // Add project creation activities
-        projects.forEach((project: any) => {
-          activities.push({
-            id: `project-${project.id}`,
-            type: 'service_created',
-            title: 'Anuncio publicado',
-            description: `Creaste el anuncio "${project.title}"`,
-            created_at: project.created_at,
-            status: 'completed'
-          });
-
-          // Add proposal received activities
-          if (project.proposals && project.proposals.length > 0) {
-            project.proposals.forEach((proposal: any) => {
-              activities.push({
-                id: `proposal-${proposal.id}`,
-                type: 'proposal',
-                title: 'Propuesta recibida',
-                description: `${proposal.professional.name} envió una propuesta para "${project.title}"`,
-                created_at: proposal.created_at,
-                status: 'new'
-              });
+          // Add project creation activities
+          projects.forEach((project: any) => {
+            activities.push({
+              id: `project-${project.id}`,
+              type: 'service_created',
+              title: 'Anuncio publicado',
+              description: `Creaste el anuncio "${project.title}"`,
+              created_at: project.created_at,
+              status: 'completed'
             });
-          }
-        });
 
-        // Additionally load professional activities if user is professional
-        if (user.userType === 'professional') {
+            // Add proposal received activities
+            if (project.proposals && project.proposals.length > 0) {
+              project.proposals.forEach((proposal: any) => {
+                activities.push({
+                  id: `proposal-${proposal.id}`,
+                  type: 'proposal',
+                  title: 'Propuesta recibida',
+                  description: `${proposal.professional.name} envió una propuesta para "${project.title}"`,
+                  created_at: proposal.created_at,
+                  status: 'new'
+                });
+              });
+            }
+          });
+        }
+
+        // Load professional activities if user is professional or dual
+        if (user.userType === 'professional' || user.userType === 'dual') {
           const professionalActivities = await dashboardService.getRecentActivity(10);
           activities.push(...professionalActivities);
         }
@@ -1272,7 +1277,7 @@ export default function DashboardPage() {
         )}
 
         {/* Service limit warning for Basic users approaching limit */}
-        {user?.userType === 'professional' && user?.planType === 'basic' && dashboardData && dashboardData.total_services >= 4 && (
+        {(user?.userType === 'professional' || user?.userType === 'dual') && user?.planType === 'basic' && dashboardData && dashboardData.total_services >= 4 && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -1307,7 +1312,7 @@ export default function DashboardPage() {
         )}
 
         {/* Subtle Premium upgrade suggestion for Basic users */}
-        {user?.userType === 'professional' && user?.planType === 'basic' && (!dashboardData || dashboardData.total_services < 4) && (
+        {(user?.userType === 'professional' || user?.userType === 'dual') && user?.planType === 'basic' && (!dashboardData || dashboardData.total_services < 4) && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -1379,7 +1384,7 @@ export default function DashboardPage() {
         >
           {/* Projects Section - Show both for professionals (dual role) */}
           <div className="lg:col-span-2 space-y-8">
-            {user?.userType === 'professional' && user?.id && !loading && (
+            {(user?.userType === 'professional' || user?.userType === 'dual') && user?.id && !loading && (
               <>
                 {/* My Services Section */}
                 <MyServices loading={loading} onRefresh={refreshDashboard} />
@@ -1414,13 +1419,13 @@ export default function DashboardPage() {
                   ¿Listo para crecer en Fixia?
                 </h3>
                 <p className="text-xs sm:text-sm md:text-base text-muted-foreground mb-4 sm:mb-5 md:mb-6 line-clamp-3">
-                  {user?.userType === 'professional'
+                  {user?.userType === 'professional' || user?.userType === 'dual'
                     ? 'Crea nuevos servicios, explora oportunidades y conecta con más clientes. Tu próximo proyecto te está esperando.'
                     : 'Encuentra profesionales verificados, publica tus necesidades y conecta con expertos. Tu solución está a un clic.'
                   }
                 </p>
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
-                  {user?.userType === 'professional' ? (
+                  {user?.userType === 'professional' || user?.userType === 'dual' ? (
                     <>
                       <Link to="/new-project" className="w-full sm:w-auto">
                         <Button className="w-full sm:w-auto liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg text-xs sm:text-sm md:text-base h-9 sm:h-10 md:h-11">
