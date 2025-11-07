@@ -991,9 +991,7 @@ export default function DashboardPage() {
 
       try {
         setLoading(true);
-
-        // Add delay to ensure authentication is fully established after login
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        setActivityLoading(true);
 
         // Load data - professionals with dual role load BOTH client and professional data
         // Only load client data if user is client or dual role
@@ -1033,6 +1031,53 @@ export default function DashboardPage() {
           const data = await userService.getDashboard();
           setDashboardData(data);
         }
+
+        // Generate activity from user's actual data - load both client AND professional activities (dual role)
+        const activities: RecentActivity[] = [];
+
+        // Add client activities from loaded projects
+        if (user.userType === 'client' || user.userType === 'dual') {
+          // Add project creation activities
+          projects.forEach((project: any) => {
+            activities.push({
+              id: `project-${project.id}`,
+              type: 'service_created',
+              title: 'Anuncio publicado',
+              description: `Creaste el anuncio "${project.title}"`,
+              created_at: project.created_at,
+              status: 'completed'
+            });
+
+            // Add proposal received activities
+            if (project.proposals && project.proposals.length > 0) {
+              project.proposals.forEach((proposal: any) => {
+                activities.push({
+                  id: `proposal-${proposal.id}`,
+                  type: 'proposal',
+                  title: 'Propuesta recibida',
+                  description: `${proposal.professional.name} envió una propuesta para "${project.title}"`,
+                  created_at: proposal.created_at,
+                  status: 'new'
+                });
+              });
+            }
+          });
+        }
+
+        // Load professional activities if user is professional or dual
+        if (user.userType === 'professional' || user.userType === 'dual') {
+          try {
+            const professionalActivities = await dashboardService.getRecentActivity(10);
+            activities.push(...professionalActivities);
+          } catch (error) {
+            logError(error, 'getRecentActivity');
+            // Continue without professional activities if fetch fails
+          }
+        }
+
+        // Sort by timestamp (most recent first) and limit to 10
+        activities.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        setRecentActivity(activities.slice(0, 10));
       } catch (error) {
         logError(error, 'fetchDashboardData');
 
@@ -1065,71 +1110,15 @@ export default function DashboardPage() {
             pending_proposals: 0
           });
         }
-      } finally {
-        setLoading(false);
-      }
-    };
 
-    const fetchRecentActivity = async () => {
-      if (!user) return;
-
-      try {
-        setActivityLoading(true);
-
-        // Generate activity from user's actual data - load both client AND professional activities (dual role)
-        const activities: RecentActivity[] = [];
-
-        // Load client activities only if user is client or dual role
-        if (user.userType === 'client' || user.userType === 'dual') {
-          const { opportunitiesService } = await import('../lib/services/opportunities.service');
-          const projects = await opportunitiesService.getMyProjects();
-
-          // Add project creation activities
-          projects.forEach((project: any) => {
-            activities.push({
-              id: `project-${project.id}`,
-              type: 'service_created',
-              title: 'Anuncio publicado',
-              description: `Creaste el anuncio "${project.title}"`,
-              created_at: project.created_at,
-              status: 'completed'
-            });
-
-            // Add proposal received activities
-            if (project.proposals && project.proposals.length > 0) {
-              project.proposals.forEach((proposal: any) => {
-                activities.push({
-                  id: `proposal-${proposal.id}`,
-                  type: 'proposal',
-                  title: 'Propuesta recibida',
-                  description: `${proposal.professional.name} envió una propuesta para "${project.title}"`,
-                  created_at: proposal.created_at,
-                  status: 'new'
-                });
-              });
-            }
-          });
-        }
-
-        // Load professional activities if user is professional or dual
-        if (user.userType === 'professional' || user.userType === 'dual') {
-          const professionalActivities = await dashboardService.getRecentActivity(10);
-          activities.push(...professionalActivities);
-        }
-
-        // Sort by timestamp (most recent first) and limit to 10
-        activities.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-        setRecentActivity(activities.slice(0, 10));
-      } catch (error) {
-        logError(error, 'fetchRecentActivity');
         setRecentActivity([]);
       } finally {
+        setLoading(false);
         setActivityLoading(false);
       }
     };
 
     fetchDashboardData();
-    fetchRecentActivity();
   }, [user, refreshTrigger]);
 
   return (
@@ -1384,7 +1373,7 @@ export default function DashboardPage() {
         >
           {/* Projects Section - Show both for professionals (dual role) */}
           <div className="lg:col-span-2 space-y-8">
-            {(user?.userType === 'professional' || user?.userType === 'dual') && user?.id && !loading && (
+            {(user?.userType === 'professional' || user?.userType === 'dual') && user?.id && (
               <>
                 {/* My Services Section */}
                 <MyServices loading={loading} onRefresh={refreshDashboard} />
