@@ -163,17 +163,18 @@ export const VerificationRequestForm = memo<VerificationRequestFormProps>(({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
+        className="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 z-50"
         onClick={onClose}
       >
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.9 }}
-          className="w-full max-w-2xl max-h-[90vh] overflow-auto"
+          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, y: 20 }}
+          transition={{ duration: 0.3 }}
+          className="w-full max-w-[95%] sm:max-w-2xl max-h-[95vh] sm:max-h-[90vh] overflow-auto rounded-2xl"
           onClick={(e) => e.stopPropagation()}
         >
-          <Card className="glass border-white/20">
+          <Card className="glass-glow border-white/30 shadow-2xl rounded-2xl">
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
@@ -223,49 +224,65 @@ export const VerificationRequestForm = memo<VerificationRequestFormProps>(({
                         <div className="animate-spin rounded-full border-2 border-current border-t-transparent h-6 w-6  text-primary" />
                       </div>
                     ) : guide ? (
-                      <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
-                        <h3 className="font-medium text-blue-900 mb-2">{guide.title}</h3>
-                        <p className="text-sm text-blue-800 mb-3">{guide.description}</p>
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="bg-gradient-to-br from-primary/20 to-primary/10 border border-primary/30 p-5 sm:p-6 rounded-xl"
+                      >
+                        <h3 className="font-semibold text-white mb-2 text-base sm:text-lg">{guide.title}</h3>
+                        <p className="text-sm text-white/80 mb-4">{guide.description}</p>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm mb-4">
                           <div>
-                            <h4 className="font-medium text-blue-900 mb-1">Requisitos:</h4>
-                            <ul className="list-disc list-inside space-y-1 text-blue-800">
+                            <h4 className="font-semibold text-white mb-2 flex items-center gap-2">
+                              <span className="text-primary">▸</span> Requisitos
+                            </h4>
+                            <ul className="space-y-1 text-white/70">
                               {guide.requirements.map((req, index) => (
-                                <li key={index}>{req}</li>
+                                <li key={index} className="flex gap-2">
+                                  <span className="text-primary/60">•</span> {req}
+                                </li>
                               ))}
                             </ul>
                           </div>
-                          
+
                           {guide.documents.length > 0 && (
                             <div>
-                              <h4 className="font-medium text-blue-900 mb-1">Documentos necesarios:</h4>
-                              <ul className="list-disc list-inside space-y-1 text-blue-800">
+                              <h4 className="font-semibold text-white mb-2 flex items-center gap-2">
+                                <span className="text-primary">▸</span> Documentos necesarios
+                              </h4>
+                              <ul className="space-y-1 text-white/70">
                                 {guide.documents.map((doc, index) => (
-                                  <li key={index}>{doc}</li>
+                                  <li key={index} className="flex gap-2">
+                                    <span className="text-primary/60">•</span> {doc}
+                                  </li>
                                 ))}
                               </ul>
                             </div>
                           )}
                         </div>
-                        
-                        <div className="mt-3 pt-3 border-t border-blue-200">
-                          <p className="text-sm text-blue-800">
-                            <strong>Tiempo de procesamiento:</strong> {guide.processingTime}
+
+                        <div className="border-t border-primary/20 pt-4 mb-4">
+                          <p className="text-sm text-white/70">
+                            <span className="font-semibold text-white">⏱ Tiempo de procesamiento:</span> {guide.processingTime}
                           </p>
                         </div>
 
                         {guide.tips.length > 0 && (
-                          <div className="mt-3 pt-3 border-t border-blue-200">
-                            <h4 className="font-medium text-blue-900 mb-1">Consejos:</h4>
-                            <ul className="list-disc list-inside space-y-1 text-blue-800 text-sm">
+                          <div className="border-t border-primary/20 pt-4">
+                            <h4 className="font-semibold text-white mb-2 flex items-center gap-2">
+                              <span className="text-primary">💡</span> Consejos
+                            </h4>
+                            <ul className="space-y-1 text-white/70 text-sm">
                               {guide.tips.map((tip, index) => (
-                                <li key={index}>{tip}</li>
+                                <li key={index} className="flex gap-2">
+                                  <span className="text-primary/60">→</span> {tip}
+                                </li>
                               ))}
                             </ul>
                           </div>
                         )}
-                      </div>
+                      </motion.div>
                     ) : null}
                   </motion.div>
                 )}
@@ -273,9 +290,9 @@ export const VerificationRequestForm = memo<VerificationRequestFormProps>(({
                 {/* File Upload */}
                 {selectedType && !verificationService.isInstantVerification(selectedType) && (
                   <div className="space-y-4">
-                    <Label>Documentos</Label>
-                    
-                    <div className="border-2 border-dashed border-white/20 rounded-lg p-6 text-center">
+                    <Label className="text-base font-semibold">Documentos requeridos</Label>
+
+                    <div className="border-2 border-dashed border-primary/40 hover:border-primary/60 transition-colors rounded-xl p-6 sm:p-8 text-center bg-primary/5">
                       <input
                         type="file"
                         multiple
@@ -284,12 +301,17 @@ export const VerificationRequestForm = memo<VerificationRequestFormProps>(({
                         className="hidden"
                         id="file-upload"
                       />
-                      <label htmlFor="file-upload" className="cursor-pointer">
-                        <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
-                        <p className="text-sm text-muted-foreground mb-1">
+                      <label htmlFor="file-upload" className="cursor-pointer block">
+                        <motion.div
+                          whileHover={{ scale: 1.05 }}
+                          className="inline-flex"
+                        >
+                          <Upload className="h-8 w-8 mx-auto mb-3 text-primary" />
+                        </motion.div>
+                        <p className="text-sm text-white font-medium mb-1">
                           Haz clic para seleccionar archivos
                         </p>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-xs text-white/70">
                           Imágenes y PDFs, máximo 10MB cada uno
                         </p>
                       </label>
@@ -351,19 +373,38 @@ export const VerificationRequestForm = memo<VerificationRequestFormProps>(({
                 )}
 
                 {/* Submit Button */}
-                <div className="flex justify-end space-x-3">
-                  <Button type="button" variant="outline" onClick={onClose}>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.8 }}
+                  className="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-4 border-t border-white/10"
+                >
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={onClose}
+                    className="border-white/20 text-white/80 hover:text-white hover:bg-white/10"
+                  >
                     Cancelar
                   </Button>
                   <Button
                     type="submit"
                     disabled={isLoading || !selectedType}
-                    className="liquid-gradient"
+                    className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-white font-semibold shadow-lg transition-all disabled:opacity-50"
                   >
-                    {isLoading && <div className="animate-spin rounded-full border-2 border-current border-t-transparent h-4 w-4 mr-2" />}
-                    Enviar Solicitud
+                    {isLoading ? (
+                      <>
+                        <div className="animate-spin rounded-full border-2 border-current border-t-transparent h-4 w-4 mr-2" />
+                        Enviando...
+                      </>
+                    ) : (
+                      <>
+                        <FileText className="h-4 w-4 mr-2" />
+                        Enviar Solicitud
+                      </>
+                    )}
                   </Button>
-                </div>
+                </motion.div>
               </form>
             </CardContent>
           </Card>

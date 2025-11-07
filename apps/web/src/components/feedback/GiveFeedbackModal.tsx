@@ -85,55 +85,66 @@ export const GiveFeedbackModal: React.FC<GiveFeedbackModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="glass border-white/20 max-w-[90vw] sm:max-w-[500px]">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <MessageSquare className="h-5 w-5 text-primary" />
+      <DialogContent className="glass-glow border-white/30 max-w-[95%] sm:max-w-[500px] shadow-2xl">
+        <DialogHeader className="border-b border-white/10 pb-4">
+          <DialogTitle className="flex items-center gap-2 text-white">
+            <div className="p-2 rounded-lg bg-primary/20">
+              <MessageSquare className="h-5 w-5 text-primary" />
+            </div>
             Dar Feedback
           </DialogTitle>
-          <DialogDescription>
-            Comparte tu experiencia con {toUser.name}
+          <DialogDescription className="text-white/70 mt-2">
+            Comparte tu experiencia con <span className="font-semibold text-white">{toUser.name}</span>
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* User Info */}
-          <div className="flex items-center gap-3 p-3 rounded-lg glass-medium">
-            <Avatar className="h-12 w-12 ring-2 ring-primary/20">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex items-center gap-3 p-4 rounded-xl bg-gradient-to-r from-primary/20 to-primary/10 border border-primary/20"
+          >
+            <Avatar className="h-14 w-14 ring-2 ring-primary/40 shadow-lg">
               <AvatarImage src={toUser.avatar} alt={toUser.name} />
-              <AvatarFallback className="glass">
+              <AvatarFallback className="glass font-semibold">
                 {toUser.name?.charAt(0)?.toUpperCase() || 'U'}
               </AvatarFallback>
             </Avatar>
             <div>
-              <p className="font-semibold">{toUser.name}</p>
-              <p className="text-sm text-muted-foreground">
-                {toUser.userType === 'professional' ? 'Profesional' : 'Cliente'}
+              <p className="font-semibold text-white">{toUser.name}</p>
+              <p className="text-sm text-white/70">
+                {toUser.userType === 'professional' ? '👨‍💼 Profesional' : '👤 Cliente'}
               </p>
             </div>
-          </div>
+          </motion.div>
 
           {/* Like Toggle */}
-          <div className="flex items-center justify-between p-4 rounded-lg glass-medium">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all"
+          >
             <div className="flex items-center gap-3">
               <div
-                className={`h-10 w-10 rounded-full flex items-center justify-center transition-colors ${
-                  hasLike ? 'bg-blue-500/20 text-blue-400' : 'bg-muted'
+                className={`h-11 w-11 rounded-full flex items-center justify-center transition-all ${
+                  hasLike ? 'bg-gradient-to-br from-primary to-primary/60 text-white shadow-lg' : 'bg-white/10 text-white/50'
                 }`}
               >
                 <ThumbsUp className="h-5 w-5" />
               </div>
               <div>
-                <Label htmlFor="hasLike" className="text-sm font-semibold cursor-pointer">
+                <Label htmlFor="hasLike" className="text-sm font-semibold text-white cursor-pointer">
                   Recomendar usuario
                 </Label>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-white/60">
                   Suma +1 a su confiabilidad
                 </p>
               </div>
             </div>
             <Switch id="hasLike" checked={hasLike} onCheckedChange={setHasLike} />
-          </div>
+          </motion.div>
 
           {/* Comment */}
           <div className="space-y-2">
@@ -154,22 +165,39 @@ export const GiveFeedbackModal: React.FC<GiveFeedbackModalProps> = ({
             </p>
           </div>
 
-          <DialogFooter>
+          <DialogFooter className="border-t border-white/10 pt-6 gap-3">
             <Button
               type="button"
-              variant="ghost"
+              variant="outline"
               onClick={handleClose}
               disabled={isSubmitting}
+              className="border-white/20 text-white/80 hover:text-white hover:bg-white/10"
             >
               Cancelar
             </Button>
-            <Button
-              type="submit"
-              className="liquid-gradient"
-              disabled={isSubmitting || (!comment.trim() && !hasLike)}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.3 }}
             >
-              {isSubmitting ? 'Enviando...' : 'Enviar Feedback'}
-            </Button>
+              <Button
+                type="submit"
+                className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-white font-semibold shadow-lg transition-all disabled:opacity-50"
+                disabled={isSubmitting || (!comment.trim() && !hasLike)}
+              >
+                {isSubmitting ? (
+                  <>
+                    <div className="animate-spin rounded-full border-2 border-current border-t-transparent h-4 w-4 mr-2" />
+                    Enviando...
+                  </>
+                ) : (
+                  <>
+                    <ThumbsUp className="h-4 w-4 mr-2" />
+                    Enviar Feedback
+                  </>
+                )}
+              </Button>
+            </motion.div>
           </DialogFooter>
         </form>
       </DialogContent>
