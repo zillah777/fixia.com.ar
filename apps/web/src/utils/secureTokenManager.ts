@@ -93,13 +93,19 @@ class SecureTokenManager {
         };
       }
 
-      // SECURITY: Tokens are now exclusively managed via httpOnly cookies (same-domain deployment)
-      // ✅ CVSS 7.5 Vulnerability ELIMINATED
-      // - Tokens stored in httpOnly cookies (inaccessible to JavaScript)
-      // - XSS attacks cannot steal authentication tokens
-      // - Cross-domain workaround no longer needed (api.fixia.app is same domain)
-      // - FALLBACK localStorage removed for maximum security
-      console.log('✅ Authentication via httpOnly cookies (CVSS 7.5 vulnerability eliminated)');
+      // SECURITY: Primary authentication via httpOnly cookies (set by server)
+      // FALLBACK: Also store tokens in localStorage for cross-domain scenarios
+      // (www.fixia.app -> fixia-api.onrender.com requires explicit credential handling)
+
+      // Store tokens as fallback for Authorization header
+      if (accessToken) {
+        localStorage.setItem('fixia_access_token', accessToken);
+      }
+      if (refreshToken) {
+        localStorage.setItem('fixia_refresh_token', refreshToken);
+      }
+
+      console.log('✅ Authentication successful - tokens stored (httpOnly cookies + localStorage fallback)');
 
       this.tokenInfo = {
         isAuthenticated: true,
@@ -172,7 +178,15 @@ class SecureTokenManager {
     try {
       const response = await api.post('/auth/refresh', {});
       const data = response.data;
-      
+
+      // Update localStorage tokens if provided in response
+      if (data?.access_token) {
+        localStorage.setItem('fixia_access_token', data.access_token);
+      }
+      if (data?.refresh_token) {
+        localStorage.setItem('fixia_refresh_token', data.refresh_token);
+      }
+
       this.tokenInfo = {
         isAuthenticated: true,
         expiresAt: data.expiresAt,
@@ -221,6 +235,8 @@ class SecureTokenManager {
     // Limpiar cualquier dato sensible del localStorage/sessionStorage
     localStorage.removeItem('fixia_user');
     localStorage.removeItem('fixia_preferences');
+    localStorage.removeItem('fixia_access_token');
+    localStorage.removeItem('fixia_refresh_token');
     sessionStorage.clear();
   }
 
