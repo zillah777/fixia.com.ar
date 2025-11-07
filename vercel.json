@@ -21,13 +21,7 @@
       "destination": "/index.html"
     }
   ],
-  "redirects": [
-    {
-      "source": "/auth/verify/:token",
-      "destination": "https://www.fixia.app/auth/verify/:token",
-      "permanent": false
-    }
-  ],
+  "redirects": [],
   "headers": [
     {
       "source": "/service-worker.js",

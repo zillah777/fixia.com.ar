@@ -273,7 +273,7 @@ export class AuthService {
       });
 
       // Send password reset email
-      const resetUrl = `${this.configService.get('FRONTEND_URL') || 'https://www.fixia.app'}/reset-password?token=${token}`;
+      const resetUrl = `${this.configService.get('FRONTEND_URL') || 'https://fixia.app'}/reset-password?token=${token}`;
       
       try {
         await this.emailService.sendPasswordReset(email, user.name, resetUrl);
@@ -402,8 +402,8 @@ export class AuthService {
     this.logger.log(`New verification token created for user: ${user.id}, expires: ${expiresAt.toISOString()}`);
 
     // Send email with verification link pointing to frontend /auth/verify endpoint
-    // The frontend proxies this to the backend API, which verifies and redirects
-    const frontendUrl = this.configService.get('FRONTEND_URL') || 'https://www.fixia.app';
+    // Frontend handles verification via AuthVerifyPage component
+    const frontendUrl = this.configService.get('FRONTEND_URL') || 'https://fixia.app';
     const verificationUrl = `${frontendUrl}/auth/verify/${token}`;
 
     this.logger.log(`🔍 URL Generation Debug:`);
