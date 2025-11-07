@@ -292,8 +292,28 @@ export class ServicesService {
 
     const totalPages = Math.ceil(total / limit);
 
+    // Sanitize services to ensure gallery is always an array
+    const sanitizedServices = services.map(service => {
+      let gallery = [];
+      if (Array.isArray(service.gallery)) {
+        gallery = service.gallery;
+      } else if (typeof service.gallery === 'string') {
+        try {
+          gallery = JSON.parse(service.gallery);
+          if (!Array.isArray(gallery)) gallery = [];
+        } catch (e) {
+          gallery = [];
+        }
+      }
+      return {
+        ...service,
+        gallery,
+        main_image: service.main_image || null,
+      };
+    });
+
     return {
-      data: services,
+      data: sanitizedServices,
       pagination: {
         page,
         limit,
@@ -307,9 +327,9 @@ export class ServicesService {
 
   async findOne(id: string, viewerId?: string) {
     const service = await this.prisma.service.findUnique({
-      where: { 
+      where: {
         id,
-        active: true 
+        active: true
       },
       include: {
         professional: {
@@ -359,6 +379,25 @@ export class ServicesService {
       throw new NotFoundException('Service not found');
     }
 
+    // Ensure gallery is always an array
+    let gallery = [];
+    if (Array.isArray(service.gallery)) {
+      gallery = service.gallery;
+    } else if (typeof service.gallery === 'string') {
+      try {
+        gallery = JSON.parse(service.gallery);
+        if (!Array.isArray(gallery)) gallery = [];
+      } catch (e) {
+        gallery = [];
+      }
+    }
+
+    const sanitizedService = {
+      ...service,
+      gallery,
+      main_image: service.main_image || null,
+    };
+
     // Record view if viewer provided and different from professional
     if (viewerId && viewerId !== service.professional.id) {
       await this.prisma.serviceView.create({
@@ -379,7 +418,7 @@ export class ServicesService {
       });
     }
 
-    return service;
+    return sanitizedService;
   }
 
   async update(id: string, userId: string, updateServiceDto: UpdateServiceDto) {
