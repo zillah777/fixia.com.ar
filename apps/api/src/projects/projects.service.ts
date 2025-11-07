@@ -8,7 +8,7 @@ export class ProjectsService {
   constructor(private prisma: PrismaService) {}
 
   async create(userId: string, createProjectDto: CreateProjectDto) {
-    // Verify user is client and get subscription info
+    // Verify user can create projects (client or professional or dual) and get subscription info
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       select: {
@@ -18,8 +18,8 @@ export class ProjectsService {
       },
     });
 
-    if (!user || user.user_type !== 'client') {
-      throw new ForbiddenException('Only clients can create projects');
+    if (!user || (user.user_type !== 'client' && user.user_type !== 'professional' && user.user_type !== 'dual')) {
+      throw new ForbiddenException('Only clients and professionals can create projects');
     }
 
     // Check monthly project limit for free users
