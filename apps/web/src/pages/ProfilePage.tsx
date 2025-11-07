@@ -507,50 +507,22 @@ function SettingsSection() {
         onUpgradeSuccess={refreshUserData}
       />
 
-      {/* Personal Information */}
+      {/* Timezone Preferences */}
       <Card className="glass border-white/10">
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <User className="h-5 w-5" />
-            <span>Información Personal</span>
+            <Globe className="h-5 w-5" />
+            <span>Zona Horaria</span>
           </CardTitle>
           <CardDescription>
-            Tus datos básicos se guardan automáticamente al editarlos
+            Configura tu zona horaria para sincronizar mejor con tus clientes
           </CardDescription>
         </CardHeader>
-        
+
         <CardContent className="space-y-6">
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <Label>Email</Label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-                <Input 
-                  value={user?.email || ""}
-                  disabled
-                  className="glass border-white/20 pl-10 bg-muted/50"
-                />
-              </div>
-              <p className="text-xs text-muted-foreground">El email no se puede cambiar</p>
-            </div>
-            
-            <div className="space-y-2">
-              <Label>Teléfono</Label>
-              <div className="relative">
-                <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-                <Input 
-                  value={user?.phone || user?.whatsapp_number || ""}
-                  onChange={(e) => autoSave('whatsapp_number', e.target.value)}
-                  className="glass border-white/20 pl-10"
-                  placeholder="+54 11 1234-5678"
-                />
-              </div>
-            </div>
-          </div>
-          
           <div className="space-y-2">
-            <Label>Zona Horaria</Label>
-            <Select 
+            <Label>Mi Zona Horaria</Label>
+            <Select
               defaultValue="buenos-aires"
               onValueChange={(value) => autoSave('timezone', value)}
             >
