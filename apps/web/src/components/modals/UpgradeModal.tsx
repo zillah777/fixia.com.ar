@@ -3,6 +3,7 @@ import { X, Crown, CheckCircle2, Zap } from "lucide-react";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
 import { Badge } from "../ui/badge";
+import { getClientPremiumPriceFormatted } from "../../lib/constants/pricing";
 
 interface UpgradeModalProps {
   isOpen: boolean;
@@ -127,7 +128,7 @@ export function UpgradeModal({ isOpen, onClose, limitType, limitReached }: Upgra
                   {/* Pricing */}
                   <div className="glass border-white/10 rounded-lg p-4 mb-6 text-center">
                     <div className="flex items-baseline justify-center gap-2">
-                      <span className="text-3xl font-bold text-white">$2.500</span>
+                      <span className="text-3xl font-bold text-white">${getClientPremiumPriceFormatted()}</span>
                       <span className="text-muted-foreground/80">ARS/mes</span>
                     </div>
                     <Badge variant="secondary" className="mt-2">
