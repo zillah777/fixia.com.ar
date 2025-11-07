@@ -222,7 +222,7 @@ export class AuthController {
     res.cookie('access_token', result.access_token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax' as const, // Use 'lax' for better mobile compatibility
+      sameSite: 'none' as const, // Use 'none' for cross-domain cookies
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
     
@@ -385,7 +385,9 @@ export class AuthController {
     const cookieOptions = {
       httpOnly: true,
       secure: isProduction,
-      sameSite: 'lax' as const, // Use 'lax' for better mobile compatibility (works for same-site requests)
+      // Use 'none' for cross-domain cookies (www.fixia.app -> fixia-api.onrender.com)
+      // This requires secure: true which is enabled in production
+      sameSite: 'none' as const,
       path: '/',
       // Don't set domain - let browser handle automatically
     };
@@ -407,7 +409,7 @@ export class AuthController {
       cookieConfig: {
         httpOnly: true,
         secure: isProduction,
-        sameSite: 'lax' as const,
+        sameSite: 'none' as const,
         path: '/',
         domain: 'auto'
       },
@@ -423,13 +425,13 @@ export class AuthController {
     res.clearCookie('access_token', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax' as const,
+      sameSite: 'none' as const,
     });
 
     res.clearCookie('refresh_token', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax' as const,
+      sameSite: 'none' as const,
     });
   }
 }
