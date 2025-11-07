@@ -182,9 +182,20 @@ function PricingCardsSection() {
       return;
     }
 
-    // Check if user is already a professional
-    if (user.userType === 'professional') {
-      toast.info('Ya tienes un perfil profesional activo');
+    // Check if user already has active subscription (Dual or Professional with active subscription)
+    if (user.isSubscriptionActive && user.subscriptionStatus === 'active') {
+      const expiryDate = new Date(user.subscriptionExpiresAt);
+      const formattedDate = expiryDate.toLocaleDateString('es-AR');
+      toast.error(
+        `Ya tienes una suscripción activa que expira el ${formattedDate}. ` +
+        'Para cambiar de plan, cancela tu suscripción actual primero.'
+      );
+      return;
+    }
+
+    // Check if user is already a professional (legacy, no active subscription)
+    if (user.userType === 'professional' && !user.isSubscriptionActive) {
+      toast.info('Ya tienes un perfil profesional activo sin suscripción pagada');
       return;
     }
 
@@ -280,18 +291,58 @@ function PricingCardsSection() {
                     </div>
                   ))}
                 </div>
-                <Button
-                  onClick={() => handleSelectPlan('basic')}
-                  disabled={isProcessing === 'basic'}
-                  className="w-full liquid-gradient hover:opacity-90"
-                  size="sm"
-                >
-                  {isProcessing === 'basic' ? 'Procesando...' : 'Seleccionar Plan Profesional'}
-                </Button>
+                {user?.isSubscriptionActive && user?.subscriptionStatus === 'active' ? (
+                  <div className="space-y-2">
+                    <Button
+                      disabled
+                      className="w-full bg-success/50 cursor-not-allowed"
+                      size="sm"
+                    >
+                      ✓ Suscripción Activa
+                    </Button>
+                    <p className="text-xs text-muted-foreground text-center">
+                      Expira: {new Date(user.subscriptionExpiresAt || '').toLocaleDateString('es-AR')}
+                    </p>
+                  </div>
+                ) : (
+                  <Button
+                    onClick={() => handleSelectPlan('basic')}
+                    disabled={isProcessing === 'basic'}
+                    className="w-full liquid-gradient hover:opacity-90"
+                    size="sm"
+                  >
+                    {isProcessing === 'basic' ? 'Procesando...' : 'Seleccionar Plan Profesional'}
+                  </Button>
+                )}
               </CardContent>
             </Card>
           </motion.div>
         </div>
+
+        {/* Alert for active subscription */}
+        {user?.isSubscriptionActive && user?.subscriptionStatus === 'active' && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="mt-6 mx-auto max-w-4xl"
+          >
+            <Card className="bg-success/10 border-success/50">
+              <CardContent className="p-4 flex items-center gap-3">
+                <CheckCircle className="h-5 w-5 text-success flex-shrink-0" />
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-success">
+                    Ya tienes una suscripción activa
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Tu plan está activo hasta {new Date(user.subscriptionExpiresAt || '').toLocaleDateString('es-AR')}.
+                    {user.autoRenew ? ' Se renovará automáticamente.' : ' No se renovará automáticamente.'}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
       </div>
     </section>
   );

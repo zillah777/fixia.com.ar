@@ -71,7 +71,11 @@ export class SubscriptionService {
       user.subscription_expires_at &&
       user.subscription_expires_at > new Date()
     ) {
-      throw new BadRequestException('Ya tienes una suscripción activa');
+      const expiryDate = new Date(user.subscription_expires_at);
+      const formattedDate = expiryDate.toLocaleDateString('es-AR');
+      throw new BadRequestException(
+        `Ya tienes una suscripción activa. Tu plan expira el ${formattedDate}. Si deseas cambiar de plan, cancela tu suscripción actual primero.`
+      );
     }
 
     // Check if user subscribed in the last 30 days (prevent multiple subscriptions per month)

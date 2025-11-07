@@ -23,7 +23,7 @@ export interface User {
   lastName?: string;
   phone?: string;
   avatar?: string;
-  userType: 'client' | 'professional';
+  userType: 'client' | 'professional' | 'dual';
   location?: string;
   planType: 'free' | 'premium';
   isVerified: boolean;
@@ -48,6 +48,16 @@ export interface User {
 
   // Settings
   timezone?: string;
+
+  // Subscription fields
+  isSubscriptionActive?: boolean;
+  subscriptionStatus?: string;
+  subscriptionType?: string;
+  subscriptionStartedAt?: string;
+  subscriptionExpiresAt?: string;
+  subscriptionPrice?: number;
+  autoRenew?: boolean;
+  isProfessionalActive?: boolean;
 
   // Professional specific fields
   professionalProfile?: {
