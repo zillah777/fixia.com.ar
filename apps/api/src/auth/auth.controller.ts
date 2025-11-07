@@ -222,7 +222,7 @@ export class AuthController {
     res.cookie('access_token', result.access_token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' as const : 'lax' as const,
+      sameSite: 'lax' as const, // Use 'lax' for better mobile compatibility
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
     

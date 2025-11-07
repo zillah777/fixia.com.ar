@@ -46,7 +46,7 @@ async function bootstrap() {
           styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
           scriptSrc: ["'self'"],
           imgSrc: ["'self'", "data:", "https:"],
-          connectSrc: ["'self'", "https://api.fixia.app", "https://fixia-api.onrender.com"],
+          connectSrc: ["'self'", "https://api.fixia.app", "https://fixia-api.onrender.com", "wss://fixia-api.onrender.com"],
           fontSrc: ["'self'", "https://fonts.gstatic.com"],
           objectSrc: ["'none'"],
           mediaSrc: ["'self'"],
