@@ -1,4 +1,4 @@
-import { apiClient } from '../api';
+import { apiClient, api } from '../api';
 
 /**
  * Frontend types for Feedback system
@@ -53,8 +53,7 @@ export const feedbackService = {
    * Give feedback to another user
    */
   async giveFeedback(data: CreateFeedbackRequest): Promise<Feedback> {
-    const response = await apiClient.post<Feedback>('/feedback', data);
-    return response.data;
+    return api.post<Feedback>('/feedback', data);
   },
 
   /**
@@ -64,48 +63,42 @@ export const feedbackService = {
     feedbackId: string,
     data: UpdateFeedbackRequest,
   ): Promise<Feedback> {
-    const response = await apiClient.put<Feedback>(`/feedback/${feedbackId}`, data);
-    return response.data;
+    return api.put<Feedback>(`/feedback/${feedbackId}`, data);
   },
 
   /**
    * Get all feedback received by current user
    */
   async getMyFeedbackReceived(): Promise<Feedback[]> {
-    const response = await apiClient.get<Feedback[]>('/feedback/received');
-    return response.data;
+    return api.get<Feedback[]>('/feedback/received');
   },
 
   /**
    * Get all feedback received by a specific user (public)
    */
   async getFeedbackReceivedByUser(userId: string): Promise<Feedback[]> {
-    const response = await apiClient.get<Feedback[]>(`/feedback/received/${userId}`);
-    return response.data;
+    return api.get<Feedback[]>(`/feedback/received/${userId}`);
   },
 
   /**
    * Get all feedback given by current user
    */
   async getMyFeedbackGiven(): Promise<Feedback[]> {
-    const response = await apiClient.get<Feedback[]>('/feedback/given');
-    return response.data;
+    return api.get<Feedback[]>('/feedback/given');
   },
 
   /**
    * Get all feedback for a specific job
    */
   async getFeedbackForJob(jobId: string): Promise<Feedback[]> {
-    const response = await apiClient.get<Feedback[]>(`/feedback/job/${jobId}`);
-    return response.data;
+    return api.get<Feedback[]>(`/feedback/job/${jobId}`);
   },
 
   /**
    * Calculate trust score for a user
    */
   async getTrustScore(userId: string): Promise<TrustScore> {
-    const response = await apiClient.get<TrustScore>(`/feedback/trust-score/${userId}`);
-    return response.data;
+    return api.get<TrustScore>(`/feedback/trust-score/${userId}`);
   },
 
   /**
