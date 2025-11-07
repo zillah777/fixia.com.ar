@@ -129,6 +129,7 @@ export class UsersService {
       avatar: updateData.avatar,
       location: updateData.location,
       bio: updateData.bio,
+      phone: updateData.phone,
       whatsapp_number: updateData.whatsapp_number,
 
       // Social networks

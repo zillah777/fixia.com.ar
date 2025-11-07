@@ -29,7 +29,7 @@ export class UpdateProfileDto {
   @IsString()
   avatar?: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     example: 'Rawson, Chubut',
     description: 'Ubicación del usuario',
     required: false
@@ -39,7 +39,17 @@ export class UpdateProfileDto {
   @MaxLength(255)
   location?: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
+    example: '+542804567890',
+    description: 'Número de teléfono del usuario',
+    required: false
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(20)
+  phone?: string;
+
+  @ApiProperty({
     example: 'Desarrollador full-stack especializado en React y Node.js con 5 años de experiencia...',
     description: 'Biografía profesional (solo para profesionales)',
     required: false

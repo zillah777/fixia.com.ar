@@ -69,20 +69,23 @@ function ProfileHeader({ user, onUserUpdate }: any) {
         bio: profileData.bio
       };
 
-      // Only include phone if it's provided and valid
+      // Include both phone and whatsapp_number if provided and valid
       if (profileData.phone && profileData.phone.trim()) {
+        updateData.phone = profileData.phone;
         updateData.whatsapp_number = profileData.phone;
       }
 
+      console.log('Saving profile data:', updateData);
+
       const updatedUser = await api.put('/user/profile', updateData);
-      
+
       // Update the user context
       onUserUpdate(updatedUser);
-      
+
       toast.success("Perfil actualizado", {
         description: "Tus cambios se guardaron correctamente"
       });
-      
+
       setIsEditing(false);
     } catch (error: any) {
       console.error('Error updating profile:', error);
