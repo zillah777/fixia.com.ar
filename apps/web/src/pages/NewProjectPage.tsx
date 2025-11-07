@@ -1445,6 +1445,10 @@ export default function NewProjectPage() {
         serviceData.delivery_time_days = selectedPackage.deliveryTime;
       }
 
+      // DEBUG: Log exactly what we're sending
+      console.log('[DEBUG] Exact serviceData being sent:', JSON.stringify(serviceData, null, 2));
+      console.log('[DEBUG] serviceData keys:', Object.keys(serviceData));
+
       const createdService = await servicesService.createService(serviceData);
 
       toast.success("¡Servicio publicado correctamente!");
