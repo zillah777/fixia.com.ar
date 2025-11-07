@@ -5,6 +5,10 @@
   "framework": null,
   "rewrites": [
     {
+      "source": "/auth/verify/:token",
+      "destination": "/index.html"
+    },
+    {
       "source": "/verify-email/:token",
       "destination": "/index.html"
     },
