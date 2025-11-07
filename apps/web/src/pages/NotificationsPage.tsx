@@ -562,29 +562,30 @@ export default function NotificationsPage() {
     <div className="min-h-screen bg-background">
       <FixiaNavigation />
       
-      <div className="container mx-auto px-6 py-8">
+      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex items-center justify-between mb-8"
+          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-0 mb-6 sm:mb-8"
         >
-          <div>
-            <h1 className="text-4xl font-bold text-foreground">Notificaciones</h1>
-            <p className="text-xl text-muted-foreground">
+          <div className="min-w-0 flex-1">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground truncate">Notificaciones</h1>
+            <p className="text-sm sm:text-base md:text-lg text-muted-foreground line-clamp-2">
               Mantente al día con las últimas actualizaciones
             </p>
           </div>
-          
-          <div className="flex items-center space-x-2">
+
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:space-x-2 flex-shrink-0">
             {unreadCount > 0 && (
-              <Badge variant="secondary" className="bg-primary/20 text-primary">
+              <Badge variant="secondary" className="bg-primary/20 text-primary text-xs sm:text-sm whitespace-nowrap text-center sm:text-left">
                 {unreadCount} sin leer
               </Badge>
             )}
-            <Button variant="outline" size="sm" className="glass border-white/20">
-              <Check className="h-4 w-4 mr-1" />
-              Marcar todas como leídas
+            <Button variant="outline" size="sm" className="glass border-white/20 text-xs sm:text-sm whitespace-nowrap">
+              <Check className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+              <span className="hidden sm:inline">Marcar todas como leídas</span>
+              <span className="sm:hidden">Marcar leídas</span>
             </Button>
           </div>
         </motion.div>
@@ -606,43 +607,43 @@ export default function NotificationsPage() {
             <TabsContent value="all" className="space-y-6">
               {/* Search and Filters */}
               <Card className="glass border-white/10">
-                <CardContent className="p-4">
-                  <div className="flex flex-col sm:flex-row gap-4">
-                    <div className="flex-1">
-                      <div className="relative">
-                        <Input
-                          placeholder="Buscar notificaciones..."
-                          value={searchQuery}
-                          onChange={(e) => setSearchQuery(e.target.value)}
-                          className="glass border-white/20"
-                        />
-                      </div>
+                <CardContent className="p-3 sm:p-4">
+                  <div className="flex flex-col gap-3 sm:gap-4">
+                    <div className="relative">
+                      <Input
+                        placeholder="Buscar notificaciones..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="glass border-white/20 text-sm"
+                      />
                     </div>
-                    
-                    <Select value={currentType} onValueChange={setCurrentType}>
-                      <SelectTrigger className="w-48 glass border-white/20">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="glass border-white/20">
-                        <SelectItem value="all">Todos los tipos</SelectItem>
-                        {Object.entries(notificationTypeConfig).map(([type, config]) => (
-                          <SelectItem key={type} value={type}>
-                            {config.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    
-                    <Select value={sortBy} onValueChange={(value: 'newest' | 'oldest' | 'type') => setSortBy(value)}>
-                      <SelectTrigger className="w-40 glass border-white/20">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="glass border-white/20">
-                        <SelectItem value="newest">Más recientes</SelectItem>
-                        <SelectItem value="oldest">Más antiguos</SelectItem>
-                        <SelectItem value="type">Por tipo</SelectItem>
-                      </SelectContent>
-                    </Select>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+                      <Select value={currentType} onValueChange={setCurrentType}>
+                        <SelectTrigger className="glass border-white/20 text-xs sm:text-sm">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="glass border-white/20">
+                          <SelectItem value="all">Todos los tipos</SelectItem>
+                          {Object.entries(notificationTypeConfig).map(([type, config]) => (
+                            <SelectItem key={type} value={type}>
+                              {config.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+
+                      <Select value={sortBy} onValueChange={(value: 'newest' | 'oldest' | 'type') => setSortBy(value)}>
+                        <SelectTrigger className="glass border-white/20 text-xs sm:text-sm">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="glass border-white/20">
+                          <SelectItem value="newest">Más recientes</SelectItem>
+                          <SelectItem value="oldest">Más antiguos</SelectItem>
+                          <SelectItem value="type">Por tipo</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
                 </CardContent>
               </Card>

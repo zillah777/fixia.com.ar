@@ -286,19 +286,41 @@ export function OnboardingMessages({ user, dashboardData, clientStats }: Onboard
     .sort((a, b) => a.priority - b.priority);
 
   const handleDismiss = (messageId: string) => {
-    const updated = [...dismissedMessages, messageId];
-    setDismissedMessages(updated);
-    localStorage.setItem('dismissedOnboarding', JSON.stringify(updated));
+    try {
+      const updated = [...dismissedMessages, messageId];
+      setDismissedMessages(updated);
 
-    if (currentMessageIndex < activeMessages.length - 1) {
-      setCurrentMessageIndex(prev => prev + 1);
+      try {
+        localStorage.setItem('dismissedOnboarding', JSON.stringify(updated));
+      } catch (storageError) {
+        console.warn('Failed to save dismissed messages to localStorage:', storageError);
+        // Continue anyway - dismissal is not critical
+      }
+
+      if (currentMessageIndex < activeMessages.length - 1) {
+        setCurrentMessageIndex(prev => prev + 1);
+      }
+    } catch (error) {
+      console.error('Error dismissing onboarding message:', error);
+      // Don't show error to user - just continue
     }
   };
 
   const handleDismissAll = () => {
-    const allIds = activeMessages.map(m => m.id);
-    setDismissedMessages(allIds);
-    localStorage.setItem('dismissedOnboarding', JSON.stringify(allIds));
+    try {
+      const allIds = activeMessages.map(m => m.id);
+      setDismissedMessages(allIds);
+
+      try {
+        localStorage.setItem('dismissedOnboarding', JSON.stringify(allIds));
+      } catch (storageError) {
+        console.warn('Failed to save dismissed messages to localStorage:', storageError);
+        // Continue anyway - dismissal is not critical
+      }
+    } catch (error) {
+      console.error('Error dismissing all onboarding messages:', error);
+      // Don't show error to user - just continue
+    }
   };
 
   if (activeMessages.length === 0) return null;
