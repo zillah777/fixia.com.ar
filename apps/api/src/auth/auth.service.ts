@@ -407,7 +407,11 @@ export class AuthService {
     // Frontend handles verification via AuthVerifyPage component
     // IMPORTANT: Always use www.fixia.app because fixia.app redirects to www
     // and 301 redirects lose the URL path (user would lose the token)
-    const frontendUrl = this.configService.get('FRONTEND_URL') || 'https://www.fixia.app';
+    let frontendUrl = this.configService.get('FRONTEND_URL') || 'https://www.fixia.app';
+    // Ensure we always use www subdomain for email links
+    if (frontendUrl.includes('fixia.app') && !frontendUrl.includes('www')) {
+      frontendUrl = frontendUrl.replace('https://fixia.app', 'https://www.fixia.app');
+    }
     const verificationUrl = `${frontendUrl}/auth/verify/${token}`;
 
     this.logger.log(`🔍 URL Generation Debug:`);
