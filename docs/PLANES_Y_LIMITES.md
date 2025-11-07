@@ -19,7 +19,7 @@ Fixia ofrece dos planes para **Clientes** que buscan contratar servicios profesi
 
 | Característica | Plan Gratuito | Plan Premium |
 |---|---|---|
-| **Precio** | $0 ARS | $2,500 ARS/mes |
+| **Precio** | $0 ARS | $3,900 ARS/mes |
 | **Anuncios mensuales** | 3 por mes | Ilimitados |
 | **Propuestas recibidas** | 3 por mes | Ilimitadas |
 | **Feedback otorgado** | 3 por mes | Ilimitados |
@@ -28,7 +28,7 @@ Fixia ofrece dos planes para **Clientes** que buscan contratar servicios profesi
 | **Soporte prioritario** | ❌ | ✅ |
 | **Badge Premium** | ❌ | ✅ |
 
-> **Nota para Profesionales:** Los profesionales pagan una suscripción mensual de $2,500 ARS y no tienen límites en anuncios, propuestas o feedback. Consulta la documentación de planes profesionales para más detalles.
+> **Nota para Profesionales:** Los profesionales pagan una suscripción mensual de $3,900 ARS y no tienen límites en anuncios, propuestas o feedback. Consulta la documentación de planes profesionales para más detalles.
 
 ---
 
@@ -112,7 +112,7 @@ Has alcanzado el límite de 3 anuncios mensuales del plan gratuito.
 
 ### Precio y Facturación
 
-- **Costo:** $2,500 ARS/mes
+- **Costo:** $3,900 ARS/mes
 - **Facturación:** Mensual, con renovación automática
 - **Método de pago:** MercadoPago (tarjetas de crédito/débito)
 - **Cancelación:** Puedes cancelar en cualquier momento desde tu perfil
@@ -270,7 +270,7 @@ Cuando alcances tu límite de 3 anuncios, verás automáticamente un modal con:
 
 ### Proceso de Pago
 
-1. **Selección de Plan:** Confirmas que quieres el Plan Premium ($2,500/mes)
+1. **Selección de Plan:** Confirmas que quieres el Plan Premium ($3,900/mes)
 2. **Método de Pago:** Eliges tarjeta y completas datos en MercadoPago
 3. **Confirmación:** Recibes email de confirmación
 4. **Activación Inmediata:** Tu cuenta se actualiza instantáneamente
