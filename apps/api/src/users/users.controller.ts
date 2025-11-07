@@ -11,6 +11,7 @@ import {
   ParseUUIDPipe,
   ParseIntPipe,
   DefaultValuePipe,
+  BadRequestException,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { UsersService } from './users.service';
@@ -40,10 +41,16 @@ export class UsersController {
   @ApiOperation({ summary: 'Actualizar perfil del usuario' })
   @ApiResponse({ status: 200, description: 'Perfil actualizado exitosamente' })
   @ApiResponse({ status: 400, description: 'Datos de entrada inválidos' })
+  @ApiResponse({ status: 403, description: 'No autorizado para actualizar este perfil' })
   async updateProfile(
     @CurrentUser() user: any,
     @Body() updateProfileDto: UpdateProfileDto,
   ) {
+    // Explicit authorization check - ensure user can only update their own profile
+    if (!user.sub) {
+      throw new BadRequestException('User ID missing from authentication token');
+    }
+
     return this.usersService.updateProfile(user.sub, updateProfileDto);
   }
 

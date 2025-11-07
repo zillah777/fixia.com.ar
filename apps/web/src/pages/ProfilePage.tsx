@@ -199,6 +199,7 @@ function ProfileHeader({ user, onUserUpdate }: any) {
                     <Input
                       value={profileData.name}
                       onChange={(e) => setProfileData({...profileData, name: e.target.value})}
+                      maxLength={100}
                       className="text-2xl font-bold glass border-white/20 bg-background/50"
                       placeholder="Tu nombre completo"
                     />
@@ -283,6 +284,7 @@ function ProfileHeader({ user, onUserUpdate }: any) {
                   <Input
                     value={profileData.phone}
                     onChange={(e) => setProfileData({...profileData, phone: e.target.value})}
+                    maxLength={20}
                     className="h-6 text-sm glass border-white/20 bg-background/50"
                     placeholder="+54 11 1234-5678"
                   />
@@ -297,6 +299,7 @@ function ProfileHeader({ user, onUserUpdate }: any) {
                   <Input
                     value={profileData.location}
                     onChange={(e) => setProfileData({...profileData, location: e.target.value})}
+                    maxLength={100}
                     className="h-6 text-sm glass border-white/20 bg-background/50"
                     placeholder="Ciudad, País"
                   />
@@ -556,8 +559,9 @@ function SettingsSection() {
           <div className="grid md:grid-cols-2 gap-4">
             <div className="flex items-center space-x-3">
               <Linkedin className="h-5 w-5 text-blue-500 flex-shrink-0" />
-              <Input 
-                placeholder="https://linkedin.com/in/tu-perfil" 
+              <Input
+                placeholder="https://linkedin.com/in/tu-perfil"
+                maxLength={255}
                 className="glass border-white/20"
                 value={socialNetworks.linkedin}
                 onChange={(e) => {
@@ -566,11 +570,12 @@ function SettingsSection() {
                 }}
               />
             </div>
-            
+
             <div className="flex items-center space-x-3">
               <Twitter className="h-5 w-5 text-blue-400 flex-shrink-0" />
-              <Input 
-                placeholder="https://twitter.com/tu-usuario" 
+              <Input
+                placeholder="https://twitter.com/tu-usuario"
+                maxLength={255}
                 className="glass border-white/20"
                 value={socialNetworks.twitter}
                 onChange={(e) => {
@@ -579,11 +584,12 @@ function SettingsSection() {
                 }}
               />
             </div>
-            
+
             <div className="flex items-center space-x-3">
               <Github className="h-5 w-5 text-white flex-shrink-0" />
-              <Input 
-                placeholder="https://github.com/tu-usuario" 
+              <Input
+                placeholder="https://github.com/tu-usuario"
+                maxLength={255}
                 className="glass border-white/20"
                 value={socialNetworks.github}
                 onChange={(e) => {
@@ -592,11 +598,12 @@ function SettingsSection() {
                 }}
               />
             </div>
-            
+
             <div className="flex items-center space-x-3">
               <Instagram className="h-5 w-5 text-pink-500 flex-shrink-0" />
-              <Input 
-                placeholder="https://instagram.com/tu-usuario" 
+              <Input
+                placeholder="https://instagram.com/tu-usuario"
+                maxLength={255}
                 className="glass border-white/20"
                 value={socialNetworks.instagram}
                 onChange={(e) => {

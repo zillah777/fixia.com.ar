@@ -107,6 +107,7 @@ export class UsersService {
   }
 
   async updateProfile(userId: string, updateData: UpdateProfileDto) {
+    // First check user exists
     const existingUser = await this.prisma.user.findUnique({
       where: { id: userId },
       include: { professional_profile: true },
@@ -116,12 +117,9 @@ export class UsersService {
       throw new NotFoundException('User not found');
     }
 
-    // Debug logging
-    console.log('[updateProfile] Received data:', {
-      userId,
-      avatar: updateData.avatar,
-      hasAvatar: !!updateData.avatar,
-      allFields: Object.keys(updateData)
+    // Log update attempt
+    console.log(`[updateProfile] Updating profile for user: ${userId}`, {
+      fieldsToUpdate: Object.keys(updateData).filter(k => updateData[k] !== undefined)
     });
 
     // Build complete user update data with all supported fields
@@ -154,51 +152,45 @@ export class UsersService {
       userUpdateData[key] === undefined && delete userUpdateData[key]
     );
 
-    // Debug logging
-    console.log('[updateProfile] Data to update:', {
-      avatar: userUpdateData.avatar,
-      fieldsToUpdate: Object.keys(userUpdateData)
-    });
+    // ATOMIC TRANSACTION: Update user and professional profile together
+    // If either fails, both rollback. Prevents data inconsistency.
+    const result = await this.prisma.$transaction(async (tx) => {
+      // Update user record with all provided fields
+      const updatedUser = await tx.user.update({
+        where: { id: userId },
+        data: userUpdateData,
+        include: {
+          professional_profile: true,
+        },
+      });
 
-    // Update user record with all provided fields
-    const updatedUser = await this.prisma.user.update({
-      where: { id: userId },
-      data: userUpdateData,
-      include: {
-        professional_profile: true,
-      },
-    });
+      // Update professional profile if user is professional/dual and specialties provided
+      if ((existingUser.user_type === 'professional' || existingUser.user_type === 'dual') && updateData.specialties !== undefined) {
+        const professionalUpdateData = {
+          specialties: updateData.specialties,
+        };
 
-    console.log('[updateProfile] Updated user avatar:', updatedUser.avatar);
-
-    // Update professional profile if user is professional and specialties provided
-    if (existingUser.user_type === 'professional' && updateData.specialties !== undefined) {
-      const professionalUpdateData = {
-        specialties: updateData.specialties,
-      };
-
-      if (existingUser.professional_profile) {
-        await this.prisma.professionalProfile.update({
-          where: { user_id: userId },
-          data: professionalUpdateData,
-        });
-      } else {
-        await this.prisma.professionalProfile.create({
-          data: {
-            user_id: userId,
-            ...professionalUpdateData,
-          },
-        });
+        if (existingUser.professional_profile) {
+          await tx.professionalProfile.update({
+            where: { user_id: userId },
+            data: professionalUpdateData,
+          });
+        } else {
+          await tx.professionalProfile.create({
+            data: {
+              user_id: userId,
+              ...professionalUpdateData,
+            },
+          });
+        }
       }
-    }
 
-    // Fetch final updated user data
-    const finalUser = await this.prisma.user.findUnique({
-      where: { id: userId },
-      include: { professional_profile: true },
+      return updatedUser;
     });
 
-    const { password_hash, ...userProfile } = finalUser;
+    console.log(`[updateProfile] Profile updated successfully for user: ${userId}`);
+
+    const { password_hash, ...userProfile } = result;
     return userProfile;
   }
 
