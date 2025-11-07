@@ -28,6 +28,7 @@ import { useSecureAuth } from "../context/SecureAuthContext";
 import { MobileBottomNavigation } from "../components/MobileBottomNavigation";
 import { FixiaNavigation } from "../components/FixiaNavigation";
 import { OnboardingMessages } from "../components/OnboardingMessages";
+import { MatchesListSection } from "../components/match/MatchesListSection";
 import { extractErrorMessage, logError, isAuthenticationError } from "../utils/errorHandler";
 
 function QuickActions({ user }: { user: any }) {
@@ -1385,6 +1386,27 @@ export default function DashboardPage() {
 
             {user?.userType === 'client' && (
               <ClientAnnouncements clientProjects={clientProjects} loading={loading} onRefresh={refreshDashboard} />
+            )}
+
+            {/* Active Matches Section */}
+            {user?.id && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.5 }}
+              >
+                <div className="mb-6 sm:mb-8">
+                  <h2 className="text-lg sm:text-xl md:text-2xl font-bold mb-4 sm:mb-6">Mis Matches Activos</h2>
+                  <MatchesListSection
+                    userId={user.id}
+                    limit={5}
+                    onMatchSelect={(matchId) => {
+                      // Navigate to match detail page when implemented
+                      console.log('Match selected:', matchId);
+                    }}
+                  />
+                </div>
+              </motion.div>
             )}
           </div>
 

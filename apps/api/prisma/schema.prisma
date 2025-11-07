@@ -82,6 +82,11 @@ model User {
   sessions                         UserSession[]
   reviewed_verifications           VerificationRequest[]    @relation("ReviewedVerifications")
   verification_requests            VerificationRequest[]    @relation("VerificationRequests")
+  client_matches                   Match[]                  @relation("ClientMatches")
+  professional_matches             Match[]                  @relation("ProfessionalMatches")
+  phone_reveals                    PhoneReveal[]            @relation("PhoneReveals")
+  match_reviews_given              MatchReview[]            @relation("MatchReviewsGiven")
+  match_reviews_received           MatchReview[]            @relation("MatchReviewsReceived")
 
   @@index([email])
   @@index([user_type])
@@ -219,17 +224,100 @@ model Proposal {
   message            String
   quoted_price       Decimal        @db.Decimal(12, 2)
   delivery_time_days Int
-  status             ProposalStatus @default(pending)    // pending | accepted | rejected
+  status             ProposalStatus @default(pending)    // pending | accepted | rejected | withdrawn
   accepted_at        DateTime?                             // When client accepted (timestamp for match)
   rejected_at        DateTime?                             // When client rejected
   created_at         DateTime       @default(now())
   updated_at         DateTime       @updatedAt
+  parent_proposal_id String?                              // For counter-proposals
+  version            Int            @default(1)          // For tracking counter-proposal versions
+  match              Match?                               // One-to-one relationship with Match
   job                Job?
   professional       User           @relation(fields: [professional_id], references: [id], onDelete: Cascade)
   project            Project        @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  parent_proposal    Proposal?      @relation("CounterProposals", fields: [parent_proposal_id], references: [id], onDelete: Cascade)
+  counter_proposals  Proposal[]     @relation("CounterProposals")
 
-  @@unique([project_id, professional_id])
+  @@unique([project_id, professional_id, version])
+  @@index([status])
+  @@index([accepted_at])
   @@map("proposals")
+}
+
+model Match {
+  id                  String          @id @default(uuid())
+  proposal_id         String          @unique(map: "matches_proposal_id_unique")
+  client_id           String
+  professional_id     String
+  project_id          String
+  job_id              String?
+  status              MatchStatus     @default(active)   // active | completed | disputed | cancelled
+  phone_revealed_at   DateTime?                           // When WhatsApp was revealed
+  phone_reveal_count  Int             @default(0)        // How many times phone was revealed
+  created_at          DateTime        @default(now())
+  updated_at          DateTime        @updatedAt
+
+  proposal            Proposal        @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
+  client              User            @relation("ClientMatches", fields: [client_id], references: [id])
+  professional        User            @relation("ProfessionalMatches", fields: [professional_id], references: [id])
+  phone_reveals       PhoneReveal[]
+  reviews             MatchReview[]
+
+  @@index([client_id])
+  @@index([professional_id])
+  @@index([status])
+  @@index([created_at])
+  @@map("matches")
+}
+
+model MatchReview {
+  id                  String          @id @default(uuid())
+  match_id            String
+  reviewer_id         String          // User leaving the review (client or professional)
+  reviewed_user_id    String          // User being reviewed (opposite party)
+  overall_rating      Int             // 1-5 stars
+  communication_rating Int?           // 1-5
+  quality_rating      Int?            // 1-5
+  professionalism_rating Int?         // 1-5
+  timeliness_rating   Int?            // 1-5
+  comment             String?         // Review text
+  verified_match      Boolean         @default(true)    // Always true for match reviews
+  created_at          DateTime        @default(now())
+  updated_at          DateTime        @updatedAt
+
+  match               Match           @relation(fields: [match_id], references: [id], onDelete: Cascade)
+  reviewer            User            @relation("MatchReviewsGiven", fields: [reviewer_id], references: [id], onDelete: Cascade)
+  reviewed_user       User            @relation("MatchReviewsReceived", fields: [reviewed_user_id], references: [id], onDelete: Cascade)
+
+  @@unique([match_id, reviewer_id])  // One review per reviewer per match
+  @@index([match_id])
+  @@index([reviewer_id])
+  @@index([reviewed_user_id])
+  @@index([overall_rating])
+  @@index([created_at])
+  @@map("match_reviews")
+}
+
+model PhoneReveal {
+  id              String    @id @default(uuid())
+  match_id        String
+  user_id         String    // User who requested reveal
+  phone_number    String    // Encrypted phone number (store encrypted)
+  token           String    @unique  // One-time token for reveal endpoint
+  token_hash      String             // Hash of token for secure comparison
+  expires_at      DateTime           // When token expires (24h default)
+  revealed_at     DateTime?          // When actually revealed
+  ip_address      String?            // For audit logging
+  user_agent      String?            // For audit logging
+  created_at      DateTime  @default(now())
+
+  match           Match     @relation(fields: [match_id], references: [id], onDelete: Cascade)
+  user            User      @relation("PhoneReveals", fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([match_id])
+  @@index([user_id])
+  @@index([expires_at])
+  @@map("phone_reveals")
 }
 
 model Review {
@@ -377,38 +465,43 @@ model PasswordHistory {
 }
 
 model Job {
-  id                  String              @id @default(uuid())
-  project_id          String              @unique
-  client_id           String
-  professional_id     String
-  proposal_id         String              @unique
-  title               String
-  description         String
-  agreed_price        Decimal             @db.Decimal(12, 2)
-  currency            String              @default("ARS")
-  delivery_date       DateTime?
-  progress_percentage Int                 @default(0)
-  started_at          DateTime?
-  completed_at        DateTime?
-  cancelled_at        DateTime?
-  created_at          DateTime            @default(now())
-  updated_at          DateTime            @updatedAt
-  status              JobStatus           @default(not_started)
-  feedbacks           Feedback[]
-  milestones          JobMilestone[]
-  status_updates      JobStatusUpdate[]
-  client              User                @relation("ClientJobs", fields: [client_id], references: [id])
-  professional        User                @relation("ProfessionalJobs", fields: [professional_id], references: [id])
-  project             Project             @relation(fields: [project_id], references: [id], onDelete: Cascade)
-  proposal            Proposal            @relation(fields: [proposal_id], references: [id])
-  payment_preferences PaymentPreference[]
-  payments            Payment[]
-  reviews             Review[]
+  id                        String              @id @default(uuid())
+  project_id                String              @unique
+  client_id                 String
+  professional_id           String
+  proposal_id               String              @unique
+  title                     String
+  description               String
+  agreed_price              Decimal             @db.Decimal(12, 2)
+  currency                  String              @default("ARS")
+  delivery_date             DateTime?
+  progress_percentage       Int                 @default(0)
+  started_at                DateTime?
+  completed_at              DateTime?
+  cancelled_at              DateTime?
+  completion_requested_by   String?             // User ID who requested completion (client or professional)
+  completion_requested_at   DateTime?           // When completion was requested
+  completion_confirmed_by   String?             // User ID who confirmed completion (must be opposite party)
+  completion_confirmed_at   DateTime?           // When completion was confirmed (enables reviews)
+  created_at                DateTime            @default(now())
+  updated_at                DateTime            @updatedAt
+  status                    JobStatus           @default(not_started)
+  feedbacks                 Feedback[]
+  milestones                JobMilestone[]
+  status_updates            JobStatusUpdate[]
+  client                    User                @relation("ClientJobs", fields: [client_id], references: [id])
+  professional              User                @relation("ProfessionalJobs", fields: [professional_id], references: [id])
+  project                   Project             @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  proposal                  Proposal            @relation(fields: [proposal_id], references: [id])
+  payment_preferences       PaymentPreference[]
+  payments                  Payment[]
+  reviews                   Review[]
 
   @@index([client_id])
   @@index([professional_id])
   @@index([status])
   @@index([created_at])
+  @@index([completion_confirmed_at])
   @@map("jobs")
 }
 
@@ -814,6 +907,13 @@ enum ConversationStatus {
   archived
 }
 
+enum MatchStatus {
+  active           // Match is active, both parties accepted
+  completed        // Both parties confirmed service completion
+  disputed         // Service disputed
+  cancelled        // Match was cancelled
+}
+
 enum NotificationType {
   new_project
   proposal_received
@@ -824,4 +924,8 @@ enum NotificationType {
   job_milestone
   job_completed
   payment_received
+  match_created
+  match_completed
+  phone_revealed
+  review_requested
 }

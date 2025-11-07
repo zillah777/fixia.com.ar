@@ -22,6 +22,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
 import { CategoriesModule } from './categories/categories.module';
 import { FavoritesModule } from './favorites/favorites.module';
 import { SubscriptionModule } from './subscription/subscription.module';
+import { MatchingModule } from './matching/matching.module';
 
 @Module({
   imports: [
@@ -56,6 +57,7 @@ import { SubscriptionModule } from './subscription/subscription.module';
     CategoriesModule,
     FavoritesModule,
     SubscriptionModule, // NEW: Subscription and dual roles system
+    MatchingModule, // NEW: Matchmaking and phone reveal system
   ],
   controllers: [],
   providers: [],

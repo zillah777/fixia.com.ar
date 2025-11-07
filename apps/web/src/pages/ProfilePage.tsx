@@ -32,6 +32,7 @@ import { uploadService } from "../lib/services/upload.service";
 import { toast } from "sonner";
 import { api } from "../lib/api";
 import { UpgradeToProfessionalCard } from "../components/UpgradeToProfessionalCard";
+import { UserReviewStats } from "../components/profile/UserReviewStats";
 
 // Profile Header component
 function ProfileHeader({ user, onUserUpdate }: any) {
@@ -913,6 +914,7 @@ export default function ProfilePageFixed() {
             <Tabs defaultValue="settings" className="w-full">
               <TabsList className="glass w-full md:w-auto">
                 <TabsTrigger value="settings">Configuración</TabsTrigger>
+                <TabsTrigger value="reviews">Calificaciones</TabsTrigger>
                 {user.userType === 'client' && (
                   <>
                     <TabsTrigger value="activity">Actividad</TabsTrigger>
@@ -931,7 +933,16 @@ export default function ProfilePageFixed() {
               <TabsContent value="settings" className="mt-6">
                 <SettingsSection />
               </TabsContent>
-              
+
+              {/* Reviews Tab */}
+              <TabsContent value="reviews" className="mt-6">
+                <UserReviewStats
+                  userId={user.id}
+                  userName={user.name}
+                  showReviews={true}
+                />
+              </TabsContent>
+
               {/* Other tabs can be implemented as needed */}
               <TabsContent value="activity" className="mt-6">
                 <Card className="glass border-white/10">
