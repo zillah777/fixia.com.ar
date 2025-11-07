@@ -112,8 +112,9 @@ export class ProjectsService {
       throw new NotFoundException('User not found');
     }
 
-    // Clients (and dual role users as clients) see their own projects with proposals
-    if (user.user_type === 'client' || user.user_type === 'dual') {
+    // Users who can create projects should see their own projects with proposals
+    // This includes: clients, professionals (who can now create projects), and dual role users
+    if (user.user_type === 'client' || user.user_type === 'professional' || user.user_type === 'dual') {
       return this.prisma.project.findMany({
         where: { client_id: userId },
         include: {
@@ -155,12 +156,6 @@ export class ProjectsService {
         },
         orderBy: { created_at: 'desc' },
       });
-    }
-
-    // Pure professionals should NOT see projects via this endpoint
-    // They should use /opportunities endpoint instead to discover client announcements
-    if (user.user_type === 'professional') {
-      return [];
     }
 
     // Default: return empty array for unknown user types
