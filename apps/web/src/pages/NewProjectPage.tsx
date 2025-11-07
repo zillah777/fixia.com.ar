@@ -1417,12 +1417,12 @@ export default function NewProjectPage() {
       }
 
       // Transform frontend data to backend format
+      // Only send fields that are accepted by CreateServiceDto
       const serviceData: any = {
         title: projectData.title,
         description: projectData.description,
         price: selectedPackage.price,
         category_id: projectData.category,
-        active: projectData.isActive !== undefined ? projectData.isActive : true, // Default to active
       };
 
       // Only add optional fields if they have values
@@ -1443,19 +1443,6 @@ export default function NewProjectPage() {
       }
       if (selectedPackage.deliveryTime > 0) {
         serviceData.delivery_time_days = selectedPackage.deliveryTime;
-      }
-
-      // Add availability settings
-      if (selectedPackage.immediateAvailability) {
-        serviceData.immediate_availability = true;
-      }
-      if (selectedPackage.scheduledAvailability) {
-        serviceData.scheduled_availability = true;
-      }
-
-      // Add configuration settings from Step 6
-      if (projectData.videoUrl) {
-        serviceData.video_url = projectData.videoUrl;
       }
 
       const createdService = await servicesService.createService(serviceData);
