@@ -1,7 +1,7 @@
 import React, { useState, useRef, memo, useCallback } from 'react';
 import { Camera, Upload, X, AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
 import { Button } from './ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from './ui/dialog';
 import { Progress } from './ui/progress';
 import { Alert, AlertDescription } from './ui/alert';
 import useSecureFileUpload from '../hooks/useSecureFileUpload';
@@ -88,6 +88,9 @@ export const SecureAvatarUpload = memo<SecureAvatarUploadProps>(({
       <DialogContent className="glass border-white/10 max-w-[90vw] sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="text-white">Cambiar Foto de Perfil</DialogTitle>
+          <DialogDescription>
+            Sube una nueva foto de perfil (máximo 5MB, formatos: JPG, PNG, WebP)
+          </DialogDescription>
         </DialogHeader>
         
         <div className="space-y-6">

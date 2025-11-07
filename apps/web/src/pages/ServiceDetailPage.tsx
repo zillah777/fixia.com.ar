@@ -20,7 +20,7 @@ import { Badge } from "../components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { Separator } from "../components/ui/separator";
-import { Dialog, DialogContent, DialogTitle } from "../components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "../components/ui/dialog";
 import { FixiaNavigation } from "../components/FixiaNavigation";
 import { MobileBottomNavigation } from "../components/MobileBottomNavigation";
 import { SEOHelmet } from "../components/SEOHelmet";
@@ -61,6 +61,9 @@ function ImageLightbox({
     <Dialog open={true} onOpenChange={onClose}>
       <DialogContent className="max-w-[95vw] sm:max-w-7xl w-full h-[85vh] sm:h-[90vh] p-0 bg-background/95 backdrop-blur-xl border-white/10">
         <DialogTitle className="sr-only">Galería de imágenes</DialogTitle>
+        <DialogDescription className="sr-only">
+          Galería de imágenes del servicio. Imagen {currentIndex + 1} de {images.length}
+        </DialogDescription>
         <div className="relative w-full h-full flex items-center justify-center p-4">
           {/* Close button */}
           <Button

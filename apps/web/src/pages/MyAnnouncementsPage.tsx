@@ -648,7 +648,9 @@ function ProposalsDialog({
       <DialogContent className="glass border-white/10 max-w-[90vw] sm:max-w-4xl max-h-[80vh] sm:max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Propuestas Recibidas</DialogTitle>
-          <div className="text-sm text-muted-foreground mt-1">{project.title}</div>
+          <DialogDescription>
+            {project.title}
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 mt-4">
