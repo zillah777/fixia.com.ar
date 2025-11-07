@@ -327,13 +327,15 @@ export class AuthController {
       this.logger.log(`Email verification successful via GET: ip=${clientIp}, success=${result.success}`);
       
       // Redirect to frontend with success message
-      const redirectUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/login?verified=true&message=Email verificado exitosamente`;
+      // IMPORTANT: Always use www.fixia.app because fixia.app redirects to www
+      const redirectUrl = `${process.env.FRONTEND_URL || 'https://www.fixia.app'}/login?verified=true&message=Email verificado exitosamente`;
       res.redirect(redirectUrl);
     } catch (error) {
       this.logger.warn(`Email verification failed via GET: ip=${clientIp}, error=${error.message}`);
-      
-      // Redirect to frontend with error message  
-      const redirectUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/register?error=token_invalid&message=Token de verificación inválido o expirado`;
+
+      // Redirect to frontend with error message
+      // IMPORTANT: Always use www.fixia.app because fixia.app redirects to www
+      const redirectUrl = `${process.env.FRONTEND_URL || 'https://www.fixia.app'}/register?error=token_invalid&message=Token de verificación inválido o expirado`;
       res.redirect(redirectUrl);
     }
   }

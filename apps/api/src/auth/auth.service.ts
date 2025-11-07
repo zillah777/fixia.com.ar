@@ -273,7 +273,9 @@ export class AuthService {
       });
 
       // Send password reset email
-      const resetUrl = `${this.configService.get('FRONTEND_URL') || 'https://fixia.app'}/reset-password?token=${token}`;
+      // IMPORTANT: Always use www.fixia.app because fixia.app redirects to www
+      // and 301 redirects lose the URL path
+      const resetUrl = `${this.configService.get('FRONTEND_URL') || 'https://www.fixia.app'}/reset-password?token=${token}`;
       
       try {
         await this.emailService.sendPasswordReset(email, user.name, resetUrl);
@@ -403,7 +405,9 @@ export class AuthService {
 
     // Send email with verification link pointing to frontend /auth/verify endpoint
     // Frontend handles verification via AuthVerifyPage component
-    const frontendUrl = this.configService.get('FRONTEND_URL') || 'https://fixia.app';
+    // IMPORTANT: Always use www.fixia.app because fixia.app redirects to www
+    // and 301 redirects lose the URL path (user would lose the token)
+    const frontendUrl = this.configService.get('FRONTEND_URL') || 'https://www.fixia.app';
     const verificationUrl = `${frontendUrl}/auth/verify/${token}`;
 
     this.logger.log(`🔍 URL Generation Debug:`);
