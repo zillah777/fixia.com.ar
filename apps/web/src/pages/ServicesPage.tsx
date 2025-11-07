@@ -343,12 +343,17 @@ function ServiceCard({ service, viewMode }: { service: Service, viewMode: string
   const [isFavorite, setIsFavorite] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showContactModal, setShowContactModal] = useState(false);
+  const { user } = useSecureAuth();
 
   useEffect(() => {
-    checkFavoriteStatus();
-  }, [service.id]);
+    if (user?.id) {
+      checkFavoriteStatus();
+    }
+  }, [service.id, user?.id]);
 
   const checkFavoriteStatus = async () => {
+    if (!user?.id) return;
+
     try {
       const result = await favoritesService.isServiceFavorite(service.id);
       setIsFavorite(result.is_favorite);
@@ -361,6 +366,11 @@ function ServiceCard({ service, viewMode }: { service: Service, viewMode: string
   const toggleFavorite = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+
+    if (!user?.id) {
+      toast.error('Debes iniciar sesión para agregar favoritos');
+      return;
+    }
 
     if (loading) return;
 
