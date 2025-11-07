@@ -374,7 +374,26 @@ export default function ServiceDetailPage() {
   }
 
   const currentPackage = getCurrentPackage();
-  const images = Array.isArray(service.gallery) ? service.gallery : [];
+
+  // Ensure gallery is always an array - handle various response formats
+  let images: string[] = [];
+  if (service.gallery) {
+    if (Array.isArray(service.gallery)) {
+      images = service.gallery.filter(img => typeof img === 'string' && img.length > 0);
+    } else if (typeof service.gallery === 'string') {
+      try {
+        const parsed = JSON.parse(service.gallery);
+        images = Array.isArray(parsed) ? parsed.filter(img => typeof img === 'string' && img.length > 0) : [];
+      } catch (e) {
+        images = [];
+      }
+    }
+  }
+
+  // Fallback to images field if gallery is empty
+  if (images.length === 0 && service.images && Array.isArray(service.images)) {
+    images = service.images.filter(img => typeof img === 'string' && img.length > 0);
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -382,7 +401,7 @@ export default function ServiceDetailPage() {
         title={`${service.title} - ${getCategoryName(service.category)}`}
         description={service.description.substring(0, 160)}
         keywords={`${getCategoryName(service.category)}, ${service.tags?.join(', ')}, servicios profesionales, ${service.professional.name}`}
-        image={service.main_image || service.gallery?.[0]}
+        image={service.main_image || images?.[0]}
         type="article"
         author={service.professional.name}
       />
