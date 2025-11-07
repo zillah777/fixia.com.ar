@@ -55,15 +55,27 @@ export function useWebSocket(options: UseWebSocketOptions = {}): WebSocketStatus
 
   /**
    * Verify authentication by checking if user is authenticated
-   * httpOnly cookies are automatically sent by the browser with requests
+   * Uses Authorization header as fallback for cross-domain scenarios
    */
   const isUserAuthenticated = useCallback(async (): Promise<boolean> => {
     try {
+      // Get token from localStorage (set after login)
+      const accessToken = localStorage.getItem('fixia_access_token');
+
+      if (!accessToken) {
+        console.warn('⚠️ No access token found in localStorage');
+        return false;
+      }
+
       // Check if user is authenticated by calling the backend
-      // The backend will validate the httpOnly cookie automatically
+      // Uses Authorization header for cross-domain cookie support
       const response = await fetch(`${import.meta.env.VITE_API_URL || 'https://api.fixia.app'}/auth/verify`, {
         method: 'GET',
-        credentials: 'include', // Include cookies in the request
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include', // Also include cookies as primary method
       });
       return response.ok;
     } catch (error) {
@@ -98,11 +110,13 @@ export function useWebSocket(options: UseWebSocketOptions = {}): WebSocketStatus
 
     try {
       const apiUrl = import.meta.env.VITE_API_URL || 'https://api.fixia.app';
+      const accessToken = localStorage.getItem('fixia_access_token');
 
       const newSocket = io(`${apiUrl}/notifications`, {
-        // httpOnly cookies are automatically included by the browser
-        // No need to manually pass token - socket.io will use the same cookies as HTTP requests
-        withCredentials: true, // Ensure cookies are sent with WebSocket connection
+        // Primary: httpOnly cookies automatically sent by browser
+        // Fallback: Pass token in auth object for cross-domain scenarios
+        withCredentials: true,
+        auth: accessToken ? { token: accessToken } : undefined,
         reconnection: true,
         reconnectionDelay: Math.min(
           reconnectionDelay * Math.pow(2, reconnectAttemptsRef.current),
