@@ -385,6 +385,7 @@ function StatCards({ dashboardData, loading, userType, clientStats, planType }: 
           <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
             {professionalStatsCards.map((stat, index) => {
               const Icon = stat.icon;
+              if (!Icon) return null; // Skip if icon is missing
               return (
                 <motion.div
                   key={stat.title}
@@ -431,6 +432,7 @@ function StatCards({ dashboardData, loading, userType, clientStats, planType }: 
         <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
           {clientStatsCards.map((stat, index) => {
             const Icon = stat.icon;
+            if (!Icon) return null; // Skip if icon is missing
             return (
               <motion.div
                 key={stat.title}
