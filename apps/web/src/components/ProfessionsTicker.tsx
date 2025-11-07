@@ -62,7 +62,7 @@ export const ProfessionsTicker = memo(function ProfessionsTicker() {
             x: {
               repeat: Infinity,
               repeatType: "loop",
-              duration: 42,
+              duration: 25,
               ease: "linear"
             }
           }}
