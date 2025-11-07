@@ -1422,16 +1422,16 @@ export default function NewProjectPage() {
         description: projectData.description,
         price: selectedPackage.price,
         category_id: projectData.category,
-        active: data.isActive !== undefined ? data.isActive : true, // Default to active
+        active: projectData.isActive !== undefined ? projectData.isActive : true, // Default to active
       };
 
       // Only add optional fields if they have values
-      if (data.images && data.images[0]) {
-        serviceData.main_image = data.images[0];
+      if (projectData.images && projectData.images[0]) {
+        serviceData.main_image = projectData.images[0];
       }
-      if (data.gallery && data.gallery.length > 0) {
+      if (projectData.gallery && projectData.gallery.length > 0) {
         // Filter out any invalid URLs (only include strings that start with http/https)
-        const validGalleryUrls = data.gallery.filter(url =>
+        const validGalleryUrls = projectData.gallery.filter(url =>
           typeof url === 'string' && (url.startsWith('http://') || url.startsWith('https://'))
         );
         if (validGalleryUrls.length > 0) {
