@@ -317,6 +317,165 @@ export class OpportunitiesService {
     };
   }
 
+  async acceptProposal(
+    clientId: string,
+    projectId: string,
+    proposalId: string,
+  ) {
+    // Verify project exists and client owns it
+    const project = await this.prisma.project.findUnique({
+      where: { id: projectId },
+      include: {
+        proposals: true,
+      },
+    });
+
+    if (!project) {
+      throw new NotFoundException('Project not found');
+    }
+
+    if (project.client_id !== clientId) {
+      throw new ForbiddenException('You can only manage proposals for your own projects');
+    }
+
+    // Verify proposal exists and belongs to this project
+    const proposal = await this.prisma.proposal.findUnique({
+      where: { id: proposalId },
+      include: {
+        professional: {
+          select: {
+            id: true,
+            name: true,
+            whatsapp_number: true,
+            phone: true,
+            email: true,
+          },
+        },
+      },
+    });
+
+    if (!proposal || proposal.project_id !== projectId) {
+      throw new NotFoundException('Proposal not found for this project');
+    }
+
+    if (proposal.status !== 'pending') {
+      throw new BadRequestException('Can only accept pending proposals');
+    }
+
+    // ATOMIC TRANSACTION: Accept proposal, create Job, update project
+    const result = await this.prisma.$transaction(async (tx) => {
+      // 1. Update proposal to accepted
+      const acceptedProposal = await tx.proposal.update({
+        where: { id: proposalId },
+        data: {
+          status: 'accepted',
+          accepted_at: new Date(),
+        },
+        include: {
+          professional: {
+            select: {
+              id: true,
+              name: true,
+              whatsapp_number: true,
+              phone: true,
+              email: true,
+            },
+          },
+        },
+      });
+
+      // 2. Update project to in_progress
+      await tx.project.update({
+        where: { id: projectId },
+        data: {
+          status: 'in_progress',
+        },
+      });
+
+      // 3. Create Job record
+      const job = await tx.job.create({
+        data: {
+          project_id: projectId,
+          client_id: clientId,
+          professional_id: proposal.professional_id,
+          proposal_id: proposalId,
+          title: project.title,
+          description: project.description,
+          agreed_price: proposal.quoted_price,
+          currency: 'ARS',
+          delivery_date: new Date(Date.now() + proposal.delivery_time_days * 24 * 60 * 60 * 1000),
+          status: 'not_started',
+        },
+      });
+
+      // 4. Create Conversation record for messaging
+      await tx.conversation.create({
+        data: {
+          project_id: projectId,
+          client_id: clientId,
+          professional_id: proposal.professional_id,
+          last_message_at: new Date(),
+        },
+      });
+
+      return {
+        success: true,
+        proposal: acceptedProposal,
+        job: job,
+        message: 'Propuesta aceptada! Match realizado exitosamente. Ambas partes pueden verse por WhatsApp.',
+      };
+    });
+
+    return result;
+  }
+
+  async rejectProposal(
+    clientId: string,
+    projectId: string,
+    proposalId: string,
+  ) {
+    // Verify project exists and client owns it
+    const project = await this.prisma.project.findUnique({
+      where: { id: projectId },
+    });
+
+    if (!project) {
+      throw new NotFoundException('Project not found');
+    }
+
+    if (project.client_id !== clientId) {
+      throw new ForbiddenException('You can only manage proposals for your own projects');
+    }
+
+    // Verify proposal exists and belongs to this project
+    const proposal = await this.prisma.proposal.findUnique({
+      where: { id: proposalId },
+    });
+
+    if (!proposal || proposal.project_id !== projectId) {
+      throw new NotFoundException('Proposal not found for this project');
+    }
+
+    if (proposal.status !== 'pending') {
+      throw new BadRequestException('Can only reject pending proposals');
+    }
+
+    // Update proposal to rejected
+    const rejectedProposal = await this.prisma.proposal.update({
+      where: { id: proposalId },
+      data: {
+        status: 'rejected',
+        rejected_at: new Date(),
+      },
+    });
+
+    return {
+      success: true,
+      proposal: rejectedProposal,
+      message: 'Propuesta rechazada',
+    };
+  }
+
   private parseDurationToDays(duration: string): number {
     const durationMap: { [key: string]: number } = {
       '1 semana': 7,

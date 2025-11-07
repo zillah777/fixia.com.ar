@@ -219,7 +219,9 @@ model Proposal {
   message            String
   quoted_price       Decimal        @db.Decimal(12, 2)
   delivery_time_days Int
-  status             ProposalStatus @default(pending)
+  status             ProposalStatus @default(pending)    // pending | accepted | rejected
+  accepted_at        DateTime?                             // When client accepted (timestamp for match)
+  rejected_at        DateTime?                             // When client rejected
   created_at         DateTime       @default(now())
   updated_at         DateTime       @updatedAt
   job                Job?

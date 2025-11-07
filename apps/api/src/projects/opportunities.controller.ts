@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Post,
+  Put,
   Param,
   Body,
   UseGuards,
@@ -79,6 +80,54 @@ export class OpportunitiesController {
       user.sub,
       opportunityId,
       applicationData,
+    );
+  }
+
+  @Put(':projectId/proposals/:proposalId/accept')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Aceptar una propuesta de profesional (MATCH)',
+    description: 'Cliente acepta una propuesta. Ambas partes pueden ver contacto WhatsApp. Crea Job automaticamente.'
+  })
+  @ApiParam({ name: 'projectId', description: 'ID del proyecto/anuncio', type: 'string' })
+  @ApiParam({ name: 'proposalId', description: 'ID de la propuesta', type: 'string' })
+  @ApiResponse({ status: 200, description: 'Propuesta aceptada, Match realizado exitosamente' })
+  @ApiResponse({ status: 404, description: 'Proyecto o propuesta no encontrada' })
+  @ApiResponse({ status: 403, description: 'No autorizado para aceptar esta propuesta' })
+  async acceptProposal(
+    @Param('projectId', ParseUUIDPipe) projectId: string,
+    @Param('proposalId', ParseUUIDPipe) proposalId: string,
+    @CurrentUser() user: any,
+  ) {
+    return this.opportunitiesService.acceptProposal(
+      user.sub,
+      projectId,
+      proposalId,
+    );
+  }
+
+  @Put(':projectId/proposals/:proposalId/reject')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Rechazar una propuesta',
+    description: 'Cliente rechaza una propuesta. Se registra el rechazo pero la propuesta se mantiene para historial.'
+  })
+  @ApiParam({ name: 'projectId', description: 'ID del proyecto/anuncio', type: 'string' })
+  @ApiParam({ name: 'proposalId', description: 'ID de la propuesta', type: 'string' })
+  @ApiResponse({ status: 200, description: 'Propuesta rechazada' })
+  @ApiResponse({ status: 404, description: 'Proyecto o propuesta no encontrada' })
+  @ApiResponse({ status: 403, description: 'No autorizado para rechazar esta propuesta' })
+  async rejectProposal(
+    @Param('projectId', ParseUUIDPipe) projectId: string,
+    @Param('proposalId', ParseUUIDPipe) proposalId: string,
+    @CurrentUser() user: any,
+  ) {
+    return this.opportunitiesService.rejectProposal(
+      user.sub,
+      projectId,
+      proposalId,
     );
   }
 }
