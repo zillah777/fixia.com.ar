@@ -69,9 +69,10 @@ const Toaster = ({ ...props }: ToasterProps) => {
 
           // Info variant - Clean blue
           info: `
-            bg-blue-50 dark:bg-blue-950/40
-            border-blue-200 dark:border-blue-800
-            [&>button]:text-blue-700 dark:[&>button]:text-blue-300
+            !bg-blue-600 dark:!bg-blue-600
+            !border-blue-700 dark:!border-blue-700
+            !text-white
+            [&_*]:!text-white [&_*]:!text-opacity-100
           `,
 
           // Action button - Compact and modern
