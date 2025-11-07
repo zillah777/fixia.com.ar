@@ -8,6 +8,7 @@ const LoginPage = lazy(() => import("./pages/LoginPage"));
 const RegisterPage = lazy(() => import("./pages/RegisterPage"));
 const ForgotPasswordPage = lazy(() => import("./pages/ForgotPasswordPage"));
 const EmailVerificationPage = lazy(() => import("./pages/EmailVerificationPage"));
+const AuthVerifyPage = lazy(() => import("./pages/AuthVerifyPage"));
 const DashboardPage = lazy(() => import("./pages/DashboardPage"));
 const ServicesPage = lazy(() => import("./pages/ServicesPage"));
 const ServiceDetailPage = lazy(() => import("./pages/ServiceDetailPage"));
@@ -263,21 +264,29 @@ function AppRoutes() {
                     </RouteErrorBoundary>
                   } 
                 />
-                <Route 
-                  path="/verify-email/*" 
+                <Route
+                  path="/auth/verify/:token"
                   element={
                     <RouteErrorBoundary routeName="Verificación de Email" fallbackRoute="/">
-                      <EmailVerificationPage />
+                      <AuthVerifyPage />
                     </RouteErrorBoundary>
-                  } 
+                  }
                 />
-                <Route 
-                  path="/verify-email" 
+                <Route
+                  path="/verify-email/*"
                   element={
                     <RouteErrorBoundary routeName="Verificación de Email" fallbackRoute="/">
                       <EmailVerificationPage />
                     </RouteErrorBoundary>
-                  } 
+                  }
+                />
+                <Route
+                  path="/verify-email"
+                  element={
+                    <RouteErrorBoundary routeName="Verificación de Email" fallbackRoute="/">
+                      <EmailVerificationPage />
+                    </RouteErrorBoundary>
+                  }
                 />
             
                 {/* Protected Routes */}
