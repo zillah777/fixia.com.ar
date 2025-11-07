@@ -34,7 +34,7 @@ export class OpportunitiesController {
 
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('professional')
+  @Roles('professional', 'dual')
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Listar oportunidades para profesionales',
@@ -48,7 +48,7 @@ export class OpportunitiesController {
 
   @Get('stats')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('professional')
+  @Roles('professional', 'dual')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Obtener estadísticas de oportunidades del profesional' })
   @ApiResponse({ status: 200, description: 'Estadísticas de oportunidades y propuestas' })
@@ -59,7 +59,7 @@ export class OpportunitiesController {
 
   @Post(':opportunityId/apply')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('professional')
+  @Roles('professional', 'dual')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Aplicar a una oportunidad' })
   @ApiParam({ name: 'opportunityId', description: 'ID de la oportunidad', type: 'string' })

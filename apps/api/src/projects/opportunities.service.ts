@@ -188,13 +188,13 @@ export class OpportunitiesService {
   }
 
   async getOpportunityStats(userId: string) {
-    // Verify user is professional
+    // Verify user is professional or dual role
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       select: { user_type: true },
     });
 
-    if (!user || user.user_type !== 'professional') {
+    if (!user || (user.user_type !== 'professional' && user.user_type !== 'dual')) {
       throw new ForbiddenException('Only professionals can view opportunity stats');
     }
 
@@ -242,13 +242,13 @@ export class OpportunitiesService {
       portfolio?: string[];
     },
   ) {
-    // Verify user is professional
+    // Verify user is professional or dual role
     const user = await this.prisma.user.findUnique({
       where: { id: professionalId },
       select: { user_type: true, name: true, email: true },
     });
 
-    if (!user || user.user_type !== 'professional') {
+    if (!user || (user.user_type !== 'professional' && user.user_type !== 'dual')) {
       throw new ForbiddenException('Only professionals can apply to opportunities');
     }
 
