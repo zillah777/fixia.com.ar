@@ -79,6 +79,10 @@ export const FixiaNavigation = memo(function FixiaNavigation() {
                   <span className="relative z-10">Explorar Servicios</span>
                   <span className="absolute inset-x-0 -bottom-px h-px bg-gradient-to-r from-transparent via-primary to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></span>
                 </Link>
+                <Link to="/pricing" className="relative px-4 py-2 text-sm font-medium text-foreground/80 hover:text-foreground transition-all duration-300 rounded-lg hover:bg-white/5 group">
+                  <span className="relative z-10">Planes</span>
+                  <span className="absolute inset-x-0 -bottom-px h-px bg-gradient-to-r from-transparent via-primary to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                </Link>
                 <Link to="/how-it-works" className="relative px-4 py-2 text-sm font-medium text-foreground/80 hover:text-foreground transition-all duration-300 rounded-lg hover:bg-white/5 group">
                   <span className="relative z-10">Cómo Funciona</span>
                   <span className="absolute inset-x-0 -bottom-px h-px bg-gradient-to-r from-transparent via-primary to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></span>
