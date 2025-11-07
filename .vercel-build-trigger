@@ -1,0 +1,3 @@
+Force Vercel to rebuild and deploy the latest changes
+Build ID: 2025-11-07-websocket-csp-fix
+Triggered to ensure wss:// is included in CSP headers
