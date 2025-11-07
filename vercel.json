@@ -5,15 +5,15 @@
   "framework": null,
   "rewrites": [
     {
+      "source": "/verify-email/:token",
+      "destination": "/index.html"
+    },
+    {
       "source": "/verify-email",
       "destination": "/index.html"
     },
     {
-      "source": "/verify-email/:path*",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/((?!api/|_next/|_static/|favicon.ico|robots.txt|sitemap.xml).*)",
+      "source": "/((?!api/|_next/|_static/|favicon.ico|robots.txt|sitemap.xml|assets/|icons/).*)",
       "destination": "/index.html"
     }
   ],

@@ -1,3 +1,4 @@
-Force Vercel to rebuild and deploy the latest changes
-Build ID: 2025-11-07-websocket-csp-fix
-Triggered to ensure wss:// is included in CSP headers
+Force Vercel to rebuild and deploy with email verification fix
+Build ID: 2025-11-07-email-verification-fix
+Triggered to ensure /verify-email/:token route works correctly
+Fixed rewrite pattern to explicitly match /verify-email/:token before general catch-all
