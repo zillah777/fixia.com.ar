@@ -558,14 +558,16 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
         
         {/* Proposal Modal */}
         <Dialog open={showProposal} onOpenChange={setShowProposal}>
-          <DialogContent className="glass border-white/10 max-w-[90vw] sm:max-w-2xl">
-            <DialogHeader>
-              <DialogTitle>Enviar Propuesta</DialogTitle>
-              <DialogDescription>
+          <DialogContent className="glass border-white/10 max-w-[90vw] sm:max-w-2xl bg-gradient-to-br from-background/95 via-background to-background/95 fixed">
+            <DialogHeader className="border-b border-white/10 pb-4">
+              <DialogTitle className="text-lg sm:text-xl font-bold text-foreground">Enviar Tu Propuesta</DialogTitle>
+              <DialogDescription className="text-sm text-foreground/80 font-medium mt-2">
                 {opportunity.title}
               </DialogDescription>
             </DialogHeader>
-            <ProposalForm opportunity={opportunity} onClose={() => setShowProposal(false)} />
+            <div className="max-h-[70vh] overflow-y-auto">
+              <ProposalForm opportunity={opportunity} onClose={() => setShowProposal(false)} />
+            </div>
           </DialogContent>
         </Dialog>
       </motion.div>
@@ -702,14 +704,16 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
       
       {/* Proposal Modal */}
       <Dialog open={showProposal} onOpenChange={setShowProposal}>
-        <DialogContent className="glass border-white/10 max-w-[90vw] sm:max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Enviar Propuesta</DialogTitle>
-            <DialogDescription>
+        <DialogContent className="glass border-white/10 max-w-[90vw] sm:max-w-2xl bg-gradient-to-br from-background/95 via-background to-background/95 fixed">
+          <DialogHeader className="border-b border-white/10 pb-4">
+            <DialogTitle className="text-lg sm:text-xl font-bold text-foreground">Enviar Tu Propuesta</DialogTitle>
+            <DialogDescription className="text-sm text-foreground/80 font-medium mt-2">
               {opportunity.title}
             </DialogDescription>
           </DialogHeader>
-          <ProposalForm opportunity={opportunity} onClose={() => setShowProposal(false)} />
+          <div className="max-h-[70vh] overflow-y-auto">
+            <ProposalForm opportunity={opportunity} onClose={() => setShowProposal(false)} />
+          </div>
         </DialogContent>
       </Dialog>
     </motion.div>
@@ -750,16 +754,17 @@ function ProposalForm({ opportunity, onClose, onSuccess }: { opportunity: Opport
   return (
     <div className="space-y-6">
       {/* Opportunity Summary */}
-      <Card className="glass-medium border-white/10">
-        <CardContent className="p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h4 className="font-medium">{opportunity.title}</h4>
-              <p className="text-sm text-muted-foreground">
-                Presupuesto: ${opportunity.budget || 0}
+      <Card className="glass-medium border-white/10 bg-gradient-to-br from-primary/10 via-transparent to-transparent">
+        <CardContent className="p-4 sm:p-5">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex-1 min-w-0">
+              <h4 className="font-bold text-foreground text-sm sm:text-base truncate">{opportunity.title}</h4>
+              <p className="text-xs sm:text-sm text-foreground/80 mt-1 font-medium">
+                Presupuesto referencial: ARS ${(opportunity.budget || 0).toLocaleString('es-AR')}
               </p>
             </div>
-            <Badge variant="outline" className="glass border-white/20">
+            <Badge className="bg-primary/90 text-white border-0 flex-shrink-0 text-xs sm:text-sm whitespace-nowrap">
+              <Target className="h-3 w-3 mr-1" />
               {opportunity.proposals} propuestas
             </Badge>
           </div>
@@ -767,9 +772,9 @@ function ProposalForm({ opportunity, onClose, onSuccess }: { opportunity: Opport
       </Card>
 
       {/* Proposal Form */}
-      <div className="space-y-4">
+      <div className="space-y-5">
         <div className="space-y-2">
-          <Label>Carta de Presentación *</Label>
+          <Label className="text-foreground font-semibold text-sm">Carta de Presentación *</Label>
           <Textarea
             placeholder="Explica por qué eres el candidato ideal para este proyecto..."
             value={proposalData.message}
@@ -782,53 +787,75 @@ function ProposalForm({ opportunity, onClose, onSuccess }: { opportunity: Opport
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label>Presupuesto Propuesto (USD) *</Label>
-            <Input
-              type="number"
-              value={proposalData.proposedBudget}
-              onChange={(e) => setProposalData({ ...proposalData, proposedBudget: parseInt(e.target.value) || 0 })}
-              className="glass border-white/20"
-            />
+            <Label htmlFor="budget" className="text-foreground font-semibold text-sm">Presupuesto Propuesto (ARS) *</Label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-foreground/60 font-semibold">$</span>
+              <Input
+                id="budget"
+                type="number"
+                placeholder="5000"
+                value={proposalData.proposedBudget === 0 ? '' : proposalData.proposedBudget}
+                onChange={(e) => setProposalData({ ...proposalData, proposedBudget: parseInt(e.target.value) || 0 })}
+                className="glass border-white/20 pl-8 text-foreground font-medium"
+                min="0"
+                step="100"
+              />
+            </div>
+            {proposalData.proposedBudget > 0 && (
+              <p className="text-xs text-primary font-semibold">
+                Ingresaste: ARS ${proposalData.proposedBudget.toLocaleString('es-AR')}
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">
-            <Label>Tiempo de Entrega *</Label>
-            <Select
+            <Label htmlFor="delivery" className="text-foreground font-semibold text-sm">Tiempo de Entrega *</Label>
+            <Input
+              id="delivery"
+              type="text"
+              placeholder="Ej: 7 días"
               value={proposalData.estimatedDuration}
-              onValueChange={(value) => setProposalData({ ...proposalData, estimatedDuration: value })}
-            >
-              <SelectTrigger className="glass border-white/20">
-                <SelectValue placeholder="Seleccionar tiempo" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="1 semana">1 semana</SelectItem>
-                <SelectItem value="2 semanas">2 semanas</SelectItem>
-                <SelectItem value="1 mes">1 mes</SelectItem>
-                <SelectItem value="2 meses">2 meses</SelectItem>
-                <SelectItem value="3+ meses">3+ meses</SelectItem>
-              </SelectContent>
-            </Select>
+              onChange={(e) => setProposalData({ ...proposalData, estimatedDuration: e.target.value })}
+              className="glass border-white/20 text-foreground font-medium"
+            />
+            <p className="text-xs text-muted-foreground/70">
+              Personaliza el tiempo según tus disponibilidad
+            </p>
           </div>
         </div>
       </div>
 
-      <div className="flex items-center justify-between">
-        <div className="text-sm text-muted-foreground">
-          Al enviar esta propuesta, aceptas los términos de servicio de Fixia
+      <div className="border-t border-white/10 pt-5 mt-6">
+        <div className="text-xs text-muted-foreground/80 mb-4">
+          Al enviar esta propuesta, aceptas los <a href="/terms" className="text-primary hover:underline">términos de servicio</a> de Fixia
         </div>
-        <div className="flex items-center space-x-3">
-          <Button variant="outline" onClick={onClose} className="glass border-white/20" disabled={submitting}>
+        <div className="flex items-center justify-end gap-3 flex-wrap">
+          <Button
+            variant="outline"
+            onClick={onClose}
+            className="glass border-white/20 hover:glass-medium text-sm"
+            disabled={submitting}
+          >
             Cancelar
           </Button>
           <Button
             onClick={handleSubmit}
-            className="liquid-gradient hover:opacity-90"
+            className="liquid-gradient hover:opacity-90 text-sm font-semibold shadow-lg"
             disabled={!proposalData.message || !proposalData.estimatedDuration || submitting}
           >
-            <Send className="h-4 w-4 mr-2" />
-            {submitting ? 'Enviando...' : 'Enviar Propuesta'}
+            {submitting ? (
+              <>
+                <div className="animate-spin rounded-full border-2 border-current border-t-transparent h-4 w-4 mr-2" />
+                Enviando...
+              </>
+            ) : (
+              <>
+                <Send className="h-4 w-4 mr-2" />
+                Enviar Propuesta
+              </>
+            )}
           </Button>
         </div>
       </div>
