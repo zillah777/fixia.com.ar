@@ -1,21 +1,26 @@
 import { Injectable, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../common/prisma.service';
 
-interface OpportunityMatch {
-  id: string;
-  project: any;
-  client: {
-    name: string;
-    location: string;
-  };
-  matchScore: number;
-}
+// Interface removed - using direct transformation to frontend format
 
 @Injectable()
 export class OpportunitiesService {
   constructor(private prisma: PrismaService) {}
 
-  async getOpportunities(userId: string): Promise<OpportunityMatch[]> {
+  async getOpportunities(
+    userId: string,
+    filters?: {
+      page?: number;
+      limit?: number;
+      category?: string;
+      search?: string;
+      budgetMin?: number;
+      budgetMax?: number;
+      remote?: boolean;
+      location?: string;
+      sortBy?: string;
+    },
+  ): Promise<any> {
     // Verify user is professional or dual role
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
@@ -32,41 +37,82 @@ export class OpportunitiesService {
       throw new ForbiddenException('Only professionals can view opportunities');
     }
 
-    // Get open projects (including own projects to show with warning)
-    const projects = await this.prisma.project.findMany({
-      where: {
-        status: 'open',
-        OR: [
-          // Own projects (to show with warning "This is your project")
-          {
-            client_id: userId,
-          },
-          // Other projects where professional hasn't applied yet
-          {
-            AND: [
-              {
-                client_id: {
-                  not: userId,
-                },
-              },
-              {
-                NOT: {
-                  proposals: {
-                    some: {
-                      professional_id: userId,
-                    },
-                  },
-                },
-              },
-            ],
-          },
-        ],
+    // Pagination parameters
+    const page = filters?.page || 1;
+    const limit = filters?.limit || 12;
+    const skip = (page - 1) * limit;
+
+    // Build where clause
+    const where: any = {
+      status: 'open',
+      // ONLY show projects from OTHER clients, not the user's own
+      client_id: {
+        not: userId,
       },
+    };
+
+    // Apply filters
+    if (filters?.search) {
+      where.OR = [
+        { title: { contains: filters.search, mode: 'insensitive' } },
+        { description: { contains: filters.search, mode: 'insensitive' } },
+        { skills_required: { hasSome: [filters.search] } },
+      ];
+    }
+
+    if (filters?.category && filters.category !== 'Todos') {
+      where.category = { name: { contains: filters.category, mode: 'insensitive' } };
+    }
+
+    if (filters?.budgetMin || filters?.budgetMax) {
+      where.AND = where.AND || [];
+      if (filters.budgetMin) {
+        where.budget_max = { gte: filters.budgetMin };
+      }
+      if (filters.budgetMax) {
+        where.budget_min = { lte: filters.budgetMax };
+      }
+    }
+
+    if (filters?.remote) {
+      where.location = { contains: 'Remoto', mode: 'insensitive' };
+    }
+
+    if (filters?.location && filters.location !== 'all') {
+      if (filters.location === 'remote') {
+        where.location = { contains: 'Remoto', mode: 'insensitive' };
+      }
+    }
+
+    // Determine sort order
+    let orderBy: any = { created_at: 'desc' };
+    if (filters?.sortBy === 'newest') {
+      orderBy = { created_at: 'desc' };
+    } else if (filters?.sortBy === 'budget_desc') {
+      orderBy = { budget_max: 'desc' };
+    }
+
+    // Get total count for pagination
+    const total = await this.prisma.project.count({ where });
+
+    // Get paginated projects
+    const projects = await this.prisma.project.findMany({
+      where,
       include: {
         client: {
           select: {
+            id: true,
             name: true,
+            avatar: true,
+            verified: true,
+            email: true,
             location: true,
+            professional_profile: {
+              select: {
+                rating: true,
+                review_count: true,
+              },
+            },
           },
         },
         category: {
@@ -82,43 +128,76 @@ export class OpportunitiesService {
           },
         },
       },
-      orderBy: { created_at: 'desc' },
-      take: 50,
+      orderBy,
+      skip,
+      take: limit,
     });
 
-    // Calculate match scores for each project
-    const opportunities: OpportunityMatch[] = projects.map(project => {
-      const isOwn = project.client_id === userId;
-      const matchScore = isOwn ? 0 : this.calculateMatchScore(project, user);
+    // Get list of projects user has already applied to
+    const appliedProjects = await this.prisma.proposal.findMany({
+      where: {
+        professional_id: userId,
+      },
+      select: {
+        project_id: true,
+      },
+    });
+    const appliedProjectIds = new Set(appliedProjects.map(p => p.project_id));
+
+    // Transform to frontend expected format
+    const opportunities = projects.map(project => {
+      const matchScore = this.calculateMatchScore(project, user);
+
+      // Calculate average budget - handle Decimal type from Prisma
+      let budget = 0;
+      if (project.budget_min && project.budget_max) {
+        const min = typeof project.budget_min === 'object' ? parseFloat(project.budget_min.toString()) : project.budget_min;
+        const max = typeof project.budget_max === 'object' ? parseFloat(project.budget_max.toString()) : project.budget_max;
+        budget = (min + max) / 2;
+      }
 
       return {
         id: project.id,
-        project: {
-          id: project.id,
-          title: project.title,
-          description: project.description,
-          budget_min: project.budget_min,
-          budget_max: project.budget_max,
-          deadline: project.deadline,
-          location: project.location,
-          skills_required: project.skills_required,
-          category: project.category,
-          proposals_count: project._count.proposals,
-          created_at: project.created_at,
-        },
+        title: project.title,
+        description: project.description,
+        category: project.category?.name || 'Sin categoría',
+        budget: budget,
+        budgetType: 'negotiable' as const, // Projects use negotiable by default
+        location: project.location || 'Remoto',
+        remote: !project.location || project.location.toLowerCase().includes('remoto'),
+        deadline: project.deadline?.toISOString(),
+        skills: project.skills_required || [],
+        priority: 'normal' as const, // Default priority
         client: {
+          id: project.client.id,
           name: project.client.name,
+          avatar: project.client.avatar,
+          verified: project.client.verified,
+          averageRating: project.client.professional_profile?.rating || 0,
+          totalProjects: 0, // TODO: Get from count
           location: project.client.location || 'No especificado',
         },
-        matchScore,
-        isOwn, // Flag to indicate this is user's own project
+        proposals: project._count.proposals,
+        matchScore: matchScore,
+        isApplied: appliedProjectIds.has(project.id),
+        createdAt: project.created_at.toISOString(),
       };
     });
 
-    // Sort by match score (highest first)
-    opportunities.sort((a, b) => b.matchScore - a.matchScore);
+    // Sort by match score if not using budget sort
+    if (filters?.sortBy !== 'budget_desc') {
+      opportunities.sort((a, b) => b.matchScore - a.matchScore);
+    }
 
-    return opportunities;
+    // Return paginated response
+    const totalPages = Math.ceil(total / limit);
+    return {
+      data: opportunities,
+      total,
+      page,
+      limit,
+      totalPages,
+    };
   }
 
   private calculateMatchScore(project: any, professional: any): number {

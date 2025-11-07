@@ -7,6 +7,7 @@ import {
   Body,
   UseGuards,
   ParseUUIDPipe,
+  Query,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam } from '@nestjs/swagger';
 import { OpportunitiesService } from './opportunities.service';
@@ -42,8 +43,31 @@ export class OpportunitiesController {
   })
   @ApiResponse({ status: 200, description: 'Lista de oportunidades con score de compatibilidad' })
   @ApiResponse({ status: 403, description: 'Solo profesionales pueden ver oportunidades' })
-  getOpportunities(@CurrentUser() user: any): Promise<any> {
-    return this.opportunitiesService.getOpportunities(user.sub);
+  getOpportunities(
+    @CurrentUser() user: any,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+    @Query('category') category?: string,
+    @Query('search') search?: string,
+    @Query('budgetMin') budgetMin?: string,
+    @Query('budgetMax') budgetMax?: string,
+    @Query('remote') remote?: string,
+    @Query('location') location?: string,
+    @Query('sortBy') sortBy?: string,
+  ): Promise<any> {
+    const filters = {
+      page: page ? parseInt(page) : 1,
+      limit: limit ? parseInt(limit) : 12,
+      category,
+      search,
+      budgetMin: budgetMin ? parseInt(budgetMin) : undefined,
+      budgetMax: budgetMax ? parseInt(budgetMax) : undefined,
+      remote: remote === 'true',
+      location,
+      sortBy,
+    };
+
+    return this.opportunitiesService.getOpportunities(user.sub, filters);
   }
 
   @Get('stats')
