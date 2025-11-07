@@ -198,9 +198,18 @@ export default function NewOpportunityPage() {
     } catch (error: any) {
       console.error('Error publishing opportunity:', error);
       const errorMessage = error?.response?.data?.message || error?.message || "Error al publicar el anuncio";
+      const errorStatus = error?.response?.status;
 
-      // Check if error is due to free plan limit reached
-      if (errorMessage.includes('límite') || errorMessage.includes('limit')) {
+      // Check if error is due to free plan limit reached (403 Forbidden with limit message)
+      const isLimitError =
+        errorStatus === 403 &&
+        (errorMessage.toLowerCase().includes('límite') ||
+         errorMessage.toLowerCase().includes('limit') ||
+         errorMessage.toLowerCase().includes('gratuito') ||
+         errorMessage.toLowerCase().includes('free plan') ||
+         errorMessage.toLowerCase().includes('alcanzado'));
+
+      if (isLimitError) {
         setShowUpgradeModal(true);
       } else {
         toast.error(errorMessage);
