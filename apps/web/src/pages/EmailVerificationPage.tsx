@@ -202,7 +202,7 @@ function EmailVerificationPage() {
                   
                   <CardTitle className="text-2xl text-foreground">¡Email Verificado!</CardTitle>
                   <CardDescription>
-                    Tu cuenta ha sido verificada exitosamente
+                    Cierra esta página ya puedes iniciar sesión
                   </CardDescription>
                 </CardHeader>
                 
