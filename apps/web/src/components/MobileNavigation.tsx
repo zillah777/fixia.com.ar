@@ -217,17 +217,19 @@ export const MobileNavigation = memo<MobileNavigationProps>(({ className }) => {
           {/* Navigation Items */}
           <nav className="flex-1 py-4">
             <div className="space-y-1 px-3">
-              {/* Public Navigation */}
-              <div className="space-y-1">
-                {publicNavigation.map((item) => (
-                  <NavigationLink
-                    key={item.href}
-                    item={item}
-                    isActive={isActivePath(item.href)}
-                    onClick={handleClose}
-                  />
-                ))}
-              </div>
+              {/* Public Navigation - Hidden when authenticated */}
+              {!isAuthenticated && (
+                <div className="space-y-1">
+                  {publicNavigation.map((item) => (
+                    <NavigationLink
+                      key={item.href}
+                      item={item}
+                      isActive={isActivePath(item.href)}
+                      onClick={handleClose}
+                    />
+                  ))}
+                </div>
+              )}
 
               {/* Authenticated Navigation */}
               {isAuthenticated && (
