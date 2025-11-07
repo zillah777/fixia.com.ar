@@ -1,10 +1,10 @@
 import { useState, useEffect, ReactNode } from 'react';
 import { LucideIcon } from 'lucide-react';
 import {
-  X, Lightbulb, TrendingUp, Target, Zap, Star, Users,
-  MessageSquare, Shield, Trophy, Rocket, Heart, Briefcase,
-  CheckCircle, AlertCircle, Camera, Award, ThumbsUp, Eye,
-  Clock, DollarSign, Settings, Bell, Search, Upload
+  X, TrendingUp, Target, Zap, Users,
+  MessageSquare, Heart, Briefcase,
+  CheckCircle, AlertCircle,
+  Clock, DollarSign, Settings, Bell, Search, Plus
 } from 'lucide-react';
 import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';
@@ -56,7 +56,7 @@ export function OnboardingMessages({ user, dashboardData, clientStats }: Onboard
       id: 'welcome_client',
       title: '¡Bienvenido a Fixia! 👋',
       description: 'Conecta con profesionales verificados en toda Argentina. Publica lo que necesitas y recibe propuestas en minutos.',
-      icon: Rocket,
+      icon: Plus,
       color: 'from-blue-500 to-purple-500',
       condition: (user, stats) => user?.userType === 'client' && stats?.open_announcements === 0,
       priority: 1
@@ -65,7 +65,7 @@ export function OnboardingMessages({ user, dashboardData, clientStats }: Onboard
       id: 'welcome_professional',
       title: '¡Bienvenido Profesional! 🚀',
       description: 'Tu perfil está listo. Crea servicios, responde a oportunidades y construye tu reputación en Fixia.',
-      icon: Trophy,
+      icon: TrendingUp,
       color: 'from-green-500 to-emerald-500',
       condition: (user, stats) => user?.userType === 'professional' && (!stats?.total_services || stats.total_services === 0),
       priority: 1
@@ -76,7 +76,7 @@ export function OnboardingMessages({ user, dashboardData, clientStats }: Onboard
       id: 'client_first_announcement',
       title: 'Publica tu primera solicitud',
       description: '📢 Los anuncios bien detallados reciben un 300% más propuestas. Incluye fotos, presupuesto y plazo estimado.',
-      icon: Lightbulb,
+      icon: Plus,
       color: 'from-yellow-500 to-orange-500',
       condition: (user, stats) => user?.userType === 'client' && stats?.open_announcements === 0,
       priority: 2
@@ -103,7 +103,7 @@ export function OnboardingMessages({ user, dashboardData, clientStats }: Onboard
       id: 'client_leave_review',
       title: 'Ayuda a la comunidad con tu opinión',
       description: '⭐ Califica a los profesionales que contrataste. Tu feedback ayuda a otros clientes a decidir mejor.',
-      icon: Star,
+      icon: Heart,
       color: 'from-amber-500 to-yellow-500',
       condition: (user, stats) => stats?.in_progress > 0,
       priority: 4
@@ -121,7 +121,7 @@ export function OnboardingMessages({ user, dashboardData, clientStats }: Onboard
       id: 'client_verify_profile',
       title: 'Verifica tu cuenta',
       description: 'Usuarios verificados reciben 2x más respuestas. Agrega tu teléfono y completa tu perfil.',
-      icon: Shield,
+      icon: CheckCircle,
       color: 'from-green-500 to-teal-500',
       condition: (user, stats) => !user?.isVerified,
       priority: 3
@@ -141,7 +141,7 @@ export function OnboardingMessages({ user, dashboardData, clientStats }: Onboard
       id: 'pro_add_portfolio',
       title: 'Agrega fotos a tu portafolio',
       description: '📸 Servicios con 3+ imágenes profesionales tienen 400% más conversión. Muestra tu mejor trabajo.',
-      icon: Camera,
+      icon: Briefcase,
       color: 'from-pink-500 to-rose-500',
       condition: (user, stats) => user?.userType === 'professional' && stats?.total_services > 0,
       priority: 3
@@ -159,7 +159,7 @@ export function OnboardingMessages({ user, dashboardData, clientStats }: Onboard
       id: 'pro_complete_profile',
       title: 'Completa tu perfil profesional',
       description: '📝 Agrega experiencia, certificaciones y especialidades. Perfiles completos tienen 3x más visibilidad.',
-      icon: Award,
+      icon: Users,
       color: 'from-orange-500 to-amber-500',
       condition: (user, stats) => user?.userType === 'professional' && !user?.bio,
       priority: 2
@@ -195,7 +195,7 @@ export function OnboardingMessages({ user, dashboardData, clientStats }: Onboard
       id: 'pro_build_reputation',
       title: 'Construye tu reputación',
       description: '⭐ Cada trabajo completado suma. Pide a tus clientes que te califiquen para destacar en búsquedas.',
-      icon: ThumbsUp,
+      icon: Heart,
       color: 'from-purple-500 to-pink-500',
       condition: (user, stats) => user?.userType === 'professional' && stats?.total_reviews < 5,
       priority: 7
@@ -204,7 +204,7 @@ export function OnboardingMessages({ user, dashboardData, clientStats }: Onboard
       id: 'pro_service_visibility',
       title: 'Mejora la visibilidad de tus servicios',
       description: '👁️ Usa títulos claros, descripciones detalladas y tags relevantes. El SEO interno te posiciona mejor.',
-      icon: Eye,
+      icon: Search,
       color: 'from-indigo-500 to-purple-500',
       condition: (user, stats) => user?.userType === 'professional' && stats?.total_services > 0,
       priority: 8
@@ -224,7 +224,7 @@ export function OnboardingMessages({ user, dashboardData, clientStats }: Onboard
       id: 'profile_photo_tip',
       title: 'Agrega una foto de perfil',
       description: '📷 Perfiles con foto profesional generan 85% más confianza. Usa una imagen clara y amigable.',
-      icon: Upload,
+      icon: Users,
       color: 'from-cyan-500 to-blue-500',
       condition: (user, stats) => !user?.avatar,
       priority: 3
