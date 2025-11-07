@@ -1417,39 +1417,52 @@ export default function NewProjectPage() {
       }
 
       // Transform frontend data to backend format
-      // Only send fields that are accepted by CreateServiceDto
-      const serviceData: any = {
+      // IMPORTANT: Only send fields that are EXACTLY in CreateServiceDto
+      // Do NOT send any extra fields - the backend forbidNonWhitelisted will reject them
+      const serviceData = {
         title: projectData.title,
         description: projectData.description,
         price: selectedPackage.price,
         category_id: projectData.category,
-      };
+      } as const;
 
-      // Only add optional fields if they have values
-      if (projectData.images && projectData.images[0]) {
-        serviceData.main_image = projectData.images[0];
+      // Only add optional fields if they have values (conditionally add each one)
+      const finalServiceData: any = { ...serviceData };
+
+      if (projectData.images && projectData.images[0] &&
+          (projectData.images[0].startsWith('http://') || projectData.images[0].startsWith('https://'))) {
+        finalServiceData.main_image = projectData.images[0];
       }
+
       if (projectData.gallery && projectData.gallery.length > 0) {
         // Filter out any invalid URLs (only include strings that start with http/https)
-        const validGalleryUrls = projectData.gallery.filter(url =>
+        const validGalleryUrls = projectData.gallery.filter((url: any) =>
           typeof url === 'string' && (url.startsWith('http://') || url.startsWith('https://'))
         );
         if (validGalleryUrls.length > 0) {
-          serviceData.gallery = validGalleryUrls;
+          finalServiceData.gallery = validGalleryUrls;
         }
       }
-      if (projectData.tags && projectData.tags.length > 0) {
-        serviceData.tags = projectData.tags;
+
+      if (projectData.tags && Array.isArray(projectData.tags) && projectData.tags.length > 0) {
+        finalServiceData.tags = projectData.tags;
       }
-      if (selectedPackage.deliveryTime > 0) {
-        serviceData.delivery_time_days = selectedPackage.deliveryTime;
+
+      if (selectedPackage.deliveryTime && selectedPackage.deliveryTime > 0) {
+        finalServiceData.delivery_time_days = selectedPackage.deliveryTime;
       }
 
       // DEBUG: Log exactly what we're sending
-      console.log('[DEBUG] Exact serviceData being sent:', JSON.stringify(serviceData, null, 2));
-      console.log('[DEBUG] serviceData keys:', Object.keys(serviceData));
+      console.log('[DEBUG] Exact serviceData being sent:', JSON.stringify(finalServiceData, null, 2));
+      console.log('[DEBUG] serviceData keys:', Object.keys(finalServiceData));
+      console.log('[DEBUG] Checking for forbidden fields:');
+      console.log('[DEBUG]   - has "active"?', 'active' in finalServiceData);
+      console.log('[DEBUG]   - has "immediate_availability"?', 'immediate_availability' in finalServiceData);
+      console.log('[DEBUG]   - has "scheduled_availability"?', 'scheduled_availability' in finalServiceData);
+      console.log('[DEBUG]   - has "isActive"?', 'isActive' in finalServiceData);
+      console.log('[DEBUG]   - has "instantDelivery"?', 'instantDelivery' in finalServiceData);
 
-      const createdService = await servicesService.createService(serviceData);
+      const createdService = await servicesService.createService(finalServiceData);
 
       toast.success("¡Servicio publicado correctamente!");
 
