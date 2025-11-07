@@ -1,5 +1,5 @@
 import React, { memo, useCallback } from "react";
-import { Search, Plus, Bell, User, Briefcase, Heart, Shield, Gift, Settings, HelpCircle, LogOut, MessageSquare } from "lucide-react";
+import { Plus, Bell, User, Briefcase, Heart, Shield, Gift, Settings, HelpCircle, LogOut, MessageSquare } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -104,10 +104,9 @@ export const FixiaNavigation = memo(function FixiaNavigation() {
               {/* Search - Visible for clients */}
               {user?.userType === 'client' && (
                 <div className="relative hidden lg:block">
-                  <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground pointer-events-none" />
                   <Input
                     placeholder="Buscar..."
-                    className="w-40 h-8 pl-9 pr-3 text-sm glass border-white/20 focus:border-primary/50 focus:ring-primary/30 transition-all duration-300"
+                    className="w-40 h-8 px-3 text-sm glass border-white/20 focus:border-primary/50 focus:ring-primary/30 transition-all duration-300"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
                         const searchValue = (e.target as HTMLInputElement).value;

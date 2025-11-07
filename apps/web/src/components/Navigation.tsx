@@ -1,4 +1,4 @@
-import { Search, Plus, Bell, Settings, LogOut, User } from "lucide-react";
+import { Plus, Bell, Settings, LogOut, User } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
@@ -27,10 +27,9 @@ export function Navigation() {
         <div className="flex items-center space-x-4">
           {/* Search */}
           <div className="relative hidden sm:block">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
             <Input
               placeholder="Search projects..."
-              className="w-64 pl-9"
+              className="w-64"
             />
           </div>
 

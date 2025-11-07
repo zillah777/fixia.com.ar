@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Mail, ArrowLeft, Check, RefreshCw } from "lucide-react";
+import { ArrowLeft, RefreshCw } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
@@ -110,14 +110,13 @@ export default function ForgotPasswordPage() {
                   <div className="space-y-2">
                     <Label htmlFor="email">Correo Electrónico</Label>
                     <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                       <Input
                         id="email"
                         type="email"
                         placeholder="tu@email.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="pl-10 glass border-white/20 focus:border-primary/50 focus:ring-primary/30"
+                        className="glass border-white/20 focus:border-primary/50 focus:ring-primary/30"
                         required
                       />
                     </div>
@@ -138,10 +137,7 @@ export default function ForgotPasswordPage() {
                         Enviando...
                       </>
                     ) : (
-                      <>
-                        <Mail className="mr-2 h-4 w-4" />
-                        Enviar enlace de recuperación
-                      </>
+                      "Enviar enlace de recuperación"
                     )}
                   </Button>
                 </form>

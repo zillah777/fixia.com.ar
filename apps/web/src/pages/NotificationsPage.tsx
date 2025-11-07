@@ -610,12 +610,11 @@ export default function NotificationsPage() {
                   <div className="flex flex-col sm:flex-row gap-4">
                     <div className="flex-1">
                       <div className="relative">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                         <Input
                           placeholder="Buscar notificaciones..."
                           value={searchQuery}
                           onChange={(e) => setSearchQuery(e.target.value)}
-                          className="pl-10 glass border-white/20"
+                          className="glass border-white/20"
                         />
                       </div>
                     </div>

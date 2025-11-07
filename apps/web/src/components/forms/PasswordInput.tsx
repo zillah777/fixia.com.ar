@@ -4,7 +4,7 @@ import { Label } from '../ui/label';
 import { Button } from '../ui/button';
 import { Progress } from '../ui/progress';
 import { Alert, AlertDescription } from '../ui/alert';
-import { Eye, EyeOff, AlertCircle, CheckCircle, Shield } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 import { cn } from '../ui/utils';
 import { validatePassword } from '../../utils/passwordValidation';
 
@@ -136,16 +136,12 @@ export const PasswordInput = memo(forwardRef<HTMLInputElement, PasswordInputProp
             type="button"
             variant="ghost"
             size="sm"
-            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent text-xs"
             onClick={togglePasswordVisibility}
             aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
             tabIndex={-1}
           >
-            {showPassword ? (
-              <EyeOff className="h-4 w-4 text-muted-foreground" />
-            ) : (
-              <Eye className="h-4 w-4 text-muted-foreground" />
-            )}
+            {showPassword ? 'Ocultar' : 'Mostrar'}
           </Button>
         )}
       </div>
@@ -179,8 +175,7 @@ export const PasswordInput = memo(forwardRef<HTMLInputElement, PasswordInputProp
       {showValidationDetails && isFocused && stringValue && (
         <div className="p-3 border rounded-md bg-muted/30" id={helperId}>
           <div className="space-y-2">
-            <h4 className="text-sm font-medium flex items-center gap-2">
-              <Shield className="h-4 w-4" />
+            <h4 className="text-sm font-medium">
               Requisitos de seguridad
             </h4>
             <div className="grid grid-cols-1 gap-1 text-xs">
@@ -188,35 +183,35 @@ export const PasswordInput = memo(forwardRef<HTMLInputElement, PasswordInputProp
                 "flex items-center gap-2",
                 stringValue.length >= 8 ? "text-success" : "text-muted-foreground"
               )}>
-                <CheckCircle className="h-3 w-3" />
+                <span className={stringValue.length >= 8 ? "text-success font-bold" : "text-muted-foreground"}>✓</span>
                 Mínimo 8 caracteres
               </div>
               <div className={cn(
                 "flex items-center gap-2",
                 /[A-Z]/.test(stringValue) ? "text-success" : "text-muted-foreground"
               )}>
-                <CheckCircle className="h-3 w-3" />
+                <span className={/[A-Z]/.test(stringValue) ? "text-success font-bold" : "text-muted-foreground"}>✓</span>
                 Al menos una mayúscula
               </div>
               <div className={cn(
                 "flex items-center gap-2",
                 /[a-z]/.test(stringValue) ? "text-success" : "text-muted-foreground"
               )}>
-                <CheckCircle className="h-3 w-3" />
+                <span className={/[a-z]/.test(stringValue) ? "text-success font-bold" : "text-muted-foreground"}>✓</span>
                 Al menos una minúscula
               </div>
               <div className={cn(
                 "flex items-center gap-2",
                 /\d/.test(stringValue) ? "text-success" : "text-muted-foreground"
               )}>
-                <CheckCircle className="h-3 w-3" />
+                <span className={/\d/.test(stringValue) ? "text-success font-bold" : "text-muted-foreground"}>✓</span>
                 Al menos un número
               </div>
               <div className={cn(
                 "flex items-center gap-2",
                 /[!@#$%^&*(),.?":{}|<>]/.test(stringValue) ? "text-success" : "text-muted-foreground"
               )}>
-                <CheckCircle className="h-3 w-3" />
+                <span className={/[!@#$%^&*(),.?":{}|<>]/.test(stringValue) ? "text-success font-bold" : "text-muted-foreground"}>✓</span>
                 Al menos un carácter especial
               </div>
             </div>
@@ -247,9 +242,8 @@ export const PasswordInput = memo(forwardRef<HTMLInputElement, PasswordInputProp
       {/* Success Message */}
       {passwordValidation.isValid && stringValue && stringValue.length > 0 && (
         <Alert className="py-2 border-success/30 bg-success/5 text-success">
-          <CheckCircle className="h-4 w-4 text-success" />
           <AlertDescription className="text-sm">
-            Contraseña segura
+            ✓ Contraseña segura
             {passwordsMatch && showConfirmationCheck && ' y confirmada'}
           </AlertDescription>
         </Alert>

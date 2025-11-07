@@ -301,12 +301,11 @@ function CategoryStep({
 
             {/* BARRA DE BÚSQUEDA */}
             <div className="relative group">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
               <Input
                 placeholder="🔍 Busca tu categoría... (ej: Desarrollo, Diseño, Plomería, Electricista)"
                 value={categorySearch}
                 onChange={(e) => setCategorySearch(e.target.value)}
-                className="glass-glow border-white/30 pl-12 pr-4 py-6 text-base focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all"
+                className="glass-glow border-white/30 px-4 py-6 text-base focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all"
               />
               {categorySearch && (
                 <Button

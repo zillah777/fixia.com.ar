@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { 
-  Home, Search, ArrowLeft, HelpCircle, MessageSquare,
+import {
+  Home, ArrowLeft, HelpCircle, MessageSquare,
   Compass, Heart, Lightbulb, RefreshCw
 } from "lucide-react";
 import { Button } from "../components/ui/button";
@@ -66,10 +66,9 @@ function HeroSection() {
             className="max-w-2xl mx-auto mb-12"
           >
             <div className="relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none" />
               <Input
                 placeholder="¿Qué servicio estás buscando?"
-                className="pl-12 pr-4 py-6 text-lg glass border-white/20"
+                className="px-4 py-6 text-lg glass border-white/20"
               />
               <Link to="/services">
                 <Button className="absolute right-2 top-1/2 -translate-y-1/2 liquid-gradient hover:opacity-90 transition-all duration-300">

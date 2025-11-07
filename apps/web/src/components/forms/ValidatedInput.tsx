@@ -2,7 +2,7 @@ import React, { memo, forwardRef, useCallback } from 'react';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Alert, AlertDescription } from '../ui/alert';
-import { AlertCircle, CheckCircle, Info } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 import { cn } from '../ui/utils';
 
 interface ValidatedInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -92,13 +92,13 @@ export const ValidatedInput = memo(forwardRef<HTMLInputElement, ValidatedInputPr
         {showValidationIcon && (
           <>
             {hasError && (
-              <AlertCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-destructive" />
+              <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-destructive font-bold">✕</span>
             )}
             {hasWarning && (
-              <Info className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-warning" />
+              <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-warning font-bold">!</span>
             )}
             {hasSuccess && (
-              <CheckCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-success" />
+              <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-success font-bold">✓</span>
             )}
           </>
         )}
@@ -107,24 +107,21 @@ export const ValidatedInput = memo(forwardRef<HTMLInputElement, ValidatedInputPr
       {/* Error Message */}
       {error && (
         <Alert variant="destructive" className="py-2" id={errorId}>
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription className="text-sm">{error}</AlertDescription>
+          <AlertDescription className="text-sm">✕ {error}</AlertDescription>
         </Alert>
       )}
-      
+
       {/* Warning Message */}
       {warning && !error && (
         <Alert className="py-2 border-warning/30 bg-warning/5 text-warning">
-          <Info className="h-4 w-4 text-warning" />
-          <AlertDescription className="text-sm">{warning}</AlertDescription>
+          <AlertDescription className="text-sm">! {warning}</AlertDescription>
         </Alert>
       )}
 
       {/* Success Message */}
       {success && !error && !warning && (
         <Alert className="py-2 border-success/30 bg-success/5 text-success">
-          <CheckCircle className="h-4 w-4 text-success" />
-          <AlertDescription className="text-sm">{success}</AlertDescription>
+          <AlertDescription className="text-sm">✓ {success}</AlertDescription>
         </Alert>
       )}
       
