@@ -23,9 +23,9 @@
   ],
   "redirects": [
     {
-      "source": "/www.fixia.app/:path*",
-      "destination": "https://fixia.app/:path*",
-      "permanent": true
+      "source": "/auth/verify/:token",
+      "destination": "https://www.fixia.app/auth/verify/:token",
+      "permanent": false
     }
   ],
   "headers": [
