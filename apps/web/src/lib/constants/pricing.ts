@@ -15,7 +15,7 @@ export const CLIENT_SUBSCRIPTION_PLANS = {
     },
   },
   premium: {
-    price: 2500,
+    price: 3900,
     currency: 'ARS',
     name: 'Plan Premium',
     limits: {
