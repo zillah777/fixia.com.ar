@@ -36,6 +36,7 @@ export default function NewOpportunityPage() {
   const navigate = useNavigate();
   const [categories, setCategories] = useState<ServiceCategory[]>([]);
   const [loadingCategories, setLoadingCategories] = useState(true);
+  const [categoriesError, setCategoriesError] = useState<string | null>(null);
   const [publishing, setPublishing] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
@@ -64,19 +65,28 @@ export default function NewOpportunityPage() {
   useEffect(() => {
     const loadCategories = async () => {
       try {
+        setCategoriesError(null);
         const backendCategories = await servicesService.getCategories();
         if (Array.isArray(backendCategories)) {
-          const validCategories = backendCategories.filter(cat => 
+          const validCategories = backendCategories.filter(cat =>
             cat && typeof cat === 'object' && cat.id && cat.name
           );
-          setCategories(validCategories);
+          if (validCategories.length === 0) {
+            setCategoriesError('No hay categorías disponibles en este momento');
+            setCategories([]);
+          } else {
+            setCategories(validCategories);
+          }
         } else {
+          setCategoriesError('Error al cargar las categorías');
           setCategories([]);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error loading categories:', error);
+        const errorMessage = error?.message || 'Error al cargar las categorías';
+        setCategoriesError(errorMessage);
         setCategories([]);
-        toast.error('Error al cargar las categorías');
+        toast.error(errorMessage);
       } finally {
         setLoadingCategories(false);
       }
@@ -305,6 +315,20 @@ export default function NewOpportunityPage() {
                 <Label>Categoría *</Label>
                 {loadingCategories ? (
                   <div className="h-10 glass border-white/20 rounded-md animate-pulse" />
+                ) : categoriesError ? (
+                  <Alert className="border-destructive/20 bg-destructive/5">
+                    <AlertCircle className="h-4 w-4 text-destructive" />
+                    <AlertDescription className="text-destructive">
+                      {categoriesError}. Por favor, recarga la página e intenta nuevamente.
+                    </AlertDescription>
+                  </Alert>
+                ) : categories.length === 0 ? (
+                  <Alert className="border-warning/20 bg-warning/5">
+                    <AlertCircle className="h-4 w-4 text-warning" />
+                    <AlertDescription className="text-warning">
+                      No hay categorías disponibles en este momento. Por favor, intenta más tarde.
+                    </AlertDescription>
+                  </Alert>
                 ) : (
                   <Select
                     value={formData.category_id}
