@@ -141,11 +141,11 @@ export const opportunitiesService = {
 
   // Proposal management methods
   async acceptProposal(projectId: string, proposalId: string): Promise<any> {
-    return api.put(`/projects/${projectId}/proposals/${proposalId}/accept`);
+    return api.put(`/opportunities/${projectId}/proposals/${proposalId}/accept`);
   },
 
   async rejectProposal(projectId: string, proposalId: string): Promise<any> {
-    return api.put(`/projects/${projectId}/proposals/${proposalId}/reject`);
+    return api.put(`/opportunities/${projectId}/proposals/${proposalId}/reject`);
   },
 };
 
