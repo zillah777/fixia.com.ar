@@ -76,7 +76,12 @@ function ProfileTab() {
   };
 
   return (
-    <div className="space-y-6">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+      className="space-y-6"
+    >
       <Card className="glass border-white/10">
         <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center sm:justify-between gap-4 sm:gap-0">
           <div className="flex-1">
@@ -247,7 +252,7 @@ function ProfileTab() {
           </div>
         </CardContent>
       </Card>
-    </div>
+    </motion.div>
   );
 }
 
@@ -348,7 +353,12 @@ function SecurityTab() {
   };
 
   return (
-    <div className="space-y-6">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+      className="space-y-6"
+    >
       <Card className="glass border-white/10">
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
@@ -557,7 +567,7 @@ function SecurityTab() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </motion.div>
   );
 }
 
@@ -687,7 +697,12 @@ function NotificationsTab() {
   }, []);
 
   return (
-    <div className="space-y-6">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+      className="space-y-6"
+    >
       <Card className="glass border-white/10">
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
@@ -856,7 +871,7 @@ function NotificationsTab() {
           </div>
         </CardContent>
       </Card>
-    </div>
+    </motion.div>
   );
 }
 
@@ -907,7 +922,12 @@ function SubscriptionTab() {
   };
 
   return (
-    <div className="space-y-6">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+      className="space-y-6"
+    >
       <Card className="glass border-white/10">
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
@@ -1082,7 +1102,7 @@ function SubscriptionTab() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </motion.div>
   );
 }
 
@@ -1100,7 +1120,12 @@ function DangerZone() {
   };
 
   return (
-    <div className="space-y-6">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+      className="space-y-6"
+    >
       <Card className="glass border-destructive/20">
         <CardHeader>
           <CardTitle className="flex items-center space-x-2 text-destructive">
@@ -1139,7 +1164,7 @@ function DangerZone() {
           </div>
         </CardContent>
       </Card>
-    </div>
+    </motion.div>
   );
 }
 
@@ -1175,8 +1200,9 @@ export default function SettingsPage() {
       <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8">
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
           className="mb-6 sm:mb-8"
         >
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 text-foreground">Configuración</h1>
@@ -1187,26 +1213,26 @@ export default function SettingsPage() {
 
         <div className="max-w-4xl mx-auto">
           <Tabs defaultValue="profile" className="w-full">
-            <TabsList className="glass border-white/10 mb-6 sm:mb-8 flex flex-wrap items-center gap-2 w-full">
-              <TabsTrigger value="profile" className="text-xs sm:text-sm px-2 sm:px-3 py-2 flex items-center space-x-1">
+            <TabsList className="glass border-white/10 mb-6 sm:mb-8 grid grid-cols-2 sm:grid-cols-5 gap-1 w-full h-auto p-1">
+              <TabsTrigger value="profile" className="text-xs sm:text-sm px-1 sm:px-2 py-2 flex items-center justify-center space-x-1">
                 <User className="h-4 w-4 flex-shrink-0" />
-                <span className="font-medium">Perfil</span>
+                <span className="hidden sm:inline font-medium">Perfil</span>
               </TabsTrigger>
-              <TabsTrigger value="security" className="text-xs sm:text-sm px-2 sm:px-3 py-2 flex items-center space-x-1">
+              <TabsTrigger value="security" className="text-xs sm:text-sm px-1 sm:px-2 py-2 flex items-center justify-center space-x-1">
                 <Lock className="h-4 w-4 flex-shrink-0" />
-                <span className="font-medium">Seguridad</span>
+                <span className="hidden sm:inline font-medium">Seguridad</span>
               </TabsTrigger>
-              <TabsTrigger value="notifications" className="text-xs sm:text-sm px-2 sm:px-3 py-2 flex items-center space-x-1">
+              <TabsTrigger value="notifications" className="text-xs sm:text-sm px-1 sm:px-2 py-2 flex items-center justify-center space-x-1">
                 <Bell className="h-4 w-4 flex-shrink-0" />
-                <span className="font-medium">Notificaciones</span>
+                <span className="hidden sm:inline font-medium">Notif.</span>
               </TabsTrigger>
-              <TabsTrigger value="subscription" className="text-xs sm:text-sm px-2 sm:px-3 py-2 flex items-center space-x-1">
+              <TabsTrigger value="subscription" className="text-xs sm:text-sm px-1 sm:px-2 py-2 flex items-center justify-center space-x-1">
                 <CreditCard className="h-4 w-4 flex-shrink-0" />
-                <span className="font-medium">Suscripción</span>
+                <span className="hidden sm:inline font-medium">Suscripción</span>
               </TabsTrigger>
-              <TabsTrigger value="danger" className="text-xs sm:text-sm px-2 sm:px-3 py-2 flex items-center space-x-1">
+              <TabsTrigger value="danger" className="text-xs sm:text-sm px-1 sm:px-2 py-2 flex items-center justify-center space-x-1">
                 <AlertCircle className="h-4 w-4 flex-shrink-0" />
-                <span className="font-medium">Cuenta</span>
+                <span className="hidden sm:inline font-medium">Cuenta</span>
               </TabsTrigger>
             </TabsList>
             
