@@ -222,27 +222,27 @@ function SearchAndFilters({
   const [showFilters, setShowFilters] = useState(false);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Main Search */}
-      <div className="relative">
-        <div className="flex glass rounded-2xl p-2 border-white/20">
+      <div className="relative w-full">
+        <div className="flex flex-col sm:flex-row glass rounded-2xl p-2 border-white/20 gap-2">
           <div className="flex-1 flex items-center">
-            <Search className="h-5 w-5 text-muted-foreground ml-4 mr-3" />
+            <Search className="h-5 w-5 text-muted-foreground ml-3 mr-2 sm:ml-4 sm:mr-3 flex-shrink-0" />
             <Input
-              placeholder="Buscar proyectos: desarrollo web, diseño, marketing..."
+              placeholder="Buscar proyectos..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="border-0 bg-transparent text-lg placeholder:text-muted-foreground focus-visible:ring-0"
+              className="border-0 bg-transparent text-base sm:text-lg placeholder:text-muted-foreground focus-visible:ring-0"
             />
           </div>
-          <Button className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg px-6">
-            Buscar Oportunidades
+          <Button className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg px-4 sm:px-6 text-sm sm:text-base flex-shrink-0">
+            Buscar
           </Button>
         </div>
       </div>
 
       {/* Quick Filters and Controls */}
-      <div className="flex flex-wrap items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         {/* Categories */}
         <div className="flex flex-wrap gap-2">
           {categories.slice(0, 6).map((category) => (
@@ -367,9 +367,9 @@ function SearchAndFilters({
         </div>
 
         {/* Sort and View Controls */}
-        <div className="flex items-center space-x-3">
+        <div className="flex flex-col xs:flex-row items-stretch xs:items-center gap-2 xs:gap-3 w-full sm:w-auto">
           <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="w-48 glass border-white/20">
+            <SelectTrigger className="w-full xs:w-auto xs:min-w-40 glass border-white/20 text-sm">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -380,13 +380,13 @@ function SearchAndFilters({
               ))}
             </SelectContent>
           </Select>
-          
-          <div className="flex glass rounded-lg p-1 border-white/20">
+
+          <div className="flex glass rounded-lg p-1 border-white/20 w-full xs:w-auto">
             <Button
               variant={viewMode === "grid" ? "default" : "ghost"}
               size="sm"
               onClick={() => setViewMode("grid")}
-              className={viewMode === "grid" ? "liquid-gradient" : "hover:glass-medium"}
+              className={viewMode === "grid" ? "liquid-gradient" : "hover:glass-medium flex-1 xs:flex-none"}
             >
               <Grid3X3 className="h-4 w-4" />
             </Button>
@@ -394,7 +394,7 @@ function SearchAndFilters({
               variant={viewMode === "list" ? "default" : "ghost"}
               size="sm"
               onClick={() => setViewMode("list")}
-              className={viewMode === "list" ? "liquid-gradient" : "hover:glass-medium"}
+              className={viewMode === "list" ? "liquid-gradient" : "hover:glass-medium flex-1 xs:flex-none"}
             >
               <List className="h-4 w-4" />
             </Button>
@@ -943,26 +943,23 @@ export default function OpportunitiesPage() {
   }, [selectedCategory, searchQuery, budgetRange, sortBy, urgencyFilter, locationFilter, currentPage]);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <FixiaNavigation />
 
-      <main className="container mx-auto px-6 py-8">
+      <main className="w-full flex-1 px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10">
         {/* Hero Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-12"
+          className="text-center mb-8 sm:mb-10 lg:mb-12 px-2"
         >
-          <h1 className="text-4xl lg:text-5xl font-bold mb-4 bg-gradient-to-r from-white via-white to-white/70 bg-clip-text text-transparent">
-            Descubre Oportunidades Extraordinarias
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4 bg-gradient-to-r from-white via-white to-white/70 bg-clip-text text-transparent">
+            Descubre Oportunidades
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Conecta con clientes que necesitan exactamente tus habilidades. 
-            Encuentra proyectos que impulsen tu carrera al siguiente nivel.
+          <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto">
+            Conecta con clientes y proyectos que impulsen tu carrera
           </p>
-          
-          {/* Quick Stats - removed mock data */}
         </motion.div>
 
         {/* Search and Filters */}
@@ -995,20 +992,20 @@ export default function OpportunitiesPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.3 }}
-          className="flex items-center justify-between mb-8"
+          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-6 sm:mb-8"
         >
-          <div className="flex items-center space-x-4">
-            <h2 className="text-lg font-semibold">
-              {opportunities.length} oportunidades encontradas
+          <div className="flex flex-col xs:flex-row xs:items-center gap-2 xs:gap-3">
+            <h2 className="text-base sm:text-lg font-semibold">
+              {opportunities.length} encontradas
             </h2>
             {selectedCategory !== "Todos" && (
-              <Badge className="bg-primary/20 text-primary border-primary/30">
+              <Badge className="bg-primary/20 text-primary border-primary/30 w-fit text-xs sm:text-sm">
                 {selectedCategory}
               </Badge>
             )}
           </div>
 
-          <div className="flex items-center space-x-4 text-sm text-muted-foreground">
+          <div className="flex flex-wrap items-center gap-2 xs:gap-3 text-xs sm:text-sm text-muted-foreground">
             <span>{opportunities.filter(o => o.urgency === 'urgent').length} urgentes</span>
             <span>•</span>
             <span>{opportunities.filter(o => o.featured).length} destacadas</span>
@@ -1018,7 +1015,7 @@ export default function OpportunitiesPage() {
         {/* Opportunities Grid/List */}
         {/* Loading State */}
         {loading && (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {Array.from({ length: 6 }).map((_, index) => (
               <Card key={index} className="glass border-white/10">
                 <CardHeader>
@@ -1039,11 +1036,11 @@ export default function OpportunitiesPage() {
 
         {/* Error State */}
         {error && (
-          <Card className="glass border-white/10 p-8 text-center">
-            <AlertCircle className="h-12 w-12 mx-auto mb-4 text-destructive" />
-            <h3 className="text-lg font-medium mb-2">Error al cargar oportunidades</h3>
-            <p className="text-muted-foreground mb-4">{error}</p>
-            <Button onClick={() => window.location.reload()} variant="outline">
+          <Card className="glass border-white/10 p-6 sm:p-8 text-center mx-4">
+            <AlertCircle className="h-10 sm:h-12 w-10 sm:w-12 mx-auto mb-4 text-destructive" />
+            <h3 className="text-base sm:text-lg font-medium mb-2">Error al cargar oportunidades</h3>
+            <p className="text-sm sm:text-base text-muted-foreground mb-4">{error}</p>
+            <Button onClick={() => window.location.reload()} variant="outline" className="w-full sm:w-auto">
               <RefreshCw className="h-4 w-4 mr-2" />
               Reintentar
             </Button>
@@ -1057,8 +1054,8 @@ export default function OpportunitiesPage() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.4 }}
             className={viewMode === "grid"
-              ? "grid md:grid-cols-2 lg:grid-cols-3 gap-6"
-              : "space-y-6"
+              ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
+              : "space-y-4 sm:space-y-6"
             }
           >
             {opportunities.map((opportunity, index) => (
@@ -1080,22 +1077,22 @@ export default function OpportunitiesPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.6 }}
-            className="flex items-center justify-center gap-2 mt-12"
+            className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mt-8 sm:mt-12"
           >
             <Button
               variant="outline"
-              className="glass border-white/20"
+              className="glass border-white/20 w-full sm:w-auto text-sm"
               onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
               disabled={currentPage === 1}
             >
               Anterior
             </Button>
-            <span className="text-sm text-muted-foreground">
+            <span className="text-xs sm:text-sm text-muted-foreground">
               Página {currentPage} de {totalPages}
             </span>
             <Button
               variant="outline"
-              className="glass border-white/20"
+              className="glass border-white/20 w-full sm:w-auto text-sm"
               onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
             >
@@ -1110,9 +1107,9 @@ export default function OpportunitiesPage() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6 }}
-            className="text-center py-16"
+            className="text-center py-12 sm:py-16 px-4"
           >
-            <div className="glass rounded-2xl p-12 max-w-lg mx-auto">
+            <div className="glass rounded-2xl p-8 sm:p-12 max-w-lg mx-auto">
               <div className="h-16 w-16 liquid-gradient rounded-2xl flex items-center justify-center mx-auto mb-6">
                 <Search className="h-8 w-8 text-white" />
               </div>
