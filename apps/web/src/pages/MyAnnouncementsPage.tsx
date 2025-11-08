@@ -617,10 +617,10 @@ function ProposalsDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="glass border-white/10 max-w-[90vw] sm:max-w-4xl max-h-[80vh] sm:max-h-[80vh] overflow-y-auto">
+      <DialogContent className="bg-slate-900/95 border-white/20 max-w-[90vw] sm:max-w-4xl max-h-[80vh] sm:max-h-[80vh] overflow-y-auto backdrop-blur-xl">
         <DialogHeader>
-          <DialogTitle>Propuestas Recibidas</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="text-white text-2xl font-bold">Propuestas Recibidas</DialogTitle>
+          <DialogDescription className="text-slate-300 mt-2">
             {project.title}
           </DialogDescription>
         </DialogHeader>
@@ -628,7 +628,7 @@ function ProposalsDialog({
         <div className="space-y-4 mt-4">
           {localProposals && localProposals.length > 0 ? (
             localProposals.map((proposal) => (
-              <Card key={proposal.id} className="glass-medium border-white/10">
+              <Card key={proposal.id} className="bg-slate-800/50 border-white/15 hover:border-white/25 transition-colors">
                 <CardContent className="p-6">
                   <div className="space-y-4">
                     {/* Header with avatar and basic info */}
@@ -643,11 +643,11 @@ function ProposalsDialog({
                       <div className="flex-1">
                         <div className="flex items-start justify-between mb-2">
                           <div>
-                            <h4 className="font-semibold">{proposal.professional.name}</h4>
+                            <h4 className="font-semibold text-white">{proposal.professional.name}</h4>
                             {proposal.professional.professional_profile && proposal.professional.professional_profile.average_rating !== undefined && (
-                              <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                              <div className="flex items-center space-x-2 text-sm text-slate-300">
                                 <div className="flex items-center">
-                                  <Star className="h-3 w-3 text-warning mr-1 fill-warning" />
+                                  <Star className="h-3 w-3 text-amber-400 mr-1 fill-amber-400" />
                                   <span>{(proposal.professional.professional_profile.average_rating ?? 0).toFixed(1)}</span>
                                 </div>
                                 <span>•</span>
@@ -655,7 +655,7 @@ function ProposalsDialog({
                               </div>
                             )}
                             {proposal.professional.location && (
-                              <div className="flex items-center space-x-1 text-xs text-muted-foreground mt-1">
+                              <div className="flex items-center space-x-1 text-xs text-slate-400 mt-1">
                                 <MapPin className="h-3 w-3" />
                                 <span>{proposal.professional.location}</span>
                               </div>
@@ -665,7 +665,7 @@ function ProposalsDialog({
                             <Badge className={getProposalStatusColor(proposal.status)}>
                               {getProposalStatusLabel(proposal.status)}
                             </Badge>
-                            <Badge className="bg-primary/20 text-primary border-primary/30">
+                            <Badge className="bg-blue-500/20 text-blue-300 border-blue-500/30">
                               ${proposal.quoted_price.toLocaleString()}
                             </Badge>
                           </div>
@@ -674,10 +674,10 @@ function ProposalsDialog({
                     </div>
 
                     {/* Proposal message */}
-                    <p className="text-sm text-muted-foreground">{proposal.message}</p>
+                    <p className="text-sm text-slate-200">{proposal.message}</p>
 
                     {/* Proposal details */}
-                    <div className="flex items-center space-x-4 text-xs text-muted-foreground pt-2">
+                    <div className="flex items-center space-x-4 text-xs text-slate-400 pt-2">
                       <div className="flex items-center space-x-1">
                         <Clock className="h-3 w-3" />
                         <span>{proposal.delivery_time_days} días de entrega</span>
@@ -691,16 +691,16 @@ function ProposalsDialog({
                     </div>
 
                     {/* Action buttons */}
-                    <div className="flex items-center justify-between pt-4 border-t border-white/10">
-                      <div className="text-xs text-muted-foreground">
+                    <div className="flex items-center justify-between pt-4 border-t border-white/15">
+                      <div className="text-xs">
                         {proposal.status === 'accepted' && (
-                          <span className="text-success flex items-center gap-1">
+                          <span className="text-emerald-400 flex items-center gap-1">
                             <CheckCircle2 className="h-3 w-3" />
                             Match realizado - Ambas partes pueden verse por WhatsApp
                           </span>
                         )}
                         {proposal.status === 'rejected' && (
-                          <span className="text-destructive flex items-center gap-1">
+                          <span className="text-red-400 flex items-center gap-1">
                             <XCircle className="h-3 w-3" />
                             Propuesta rechazada
                           </span>
@@ -758,8 +758,8 @@ function ProposalsDialog({
             ))
           ) : (
             <div className="text-center py-12">
-              <Users className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-              <p className="text-muted-foreground">
+              <Users className="h-16 w-16 mx-auto mb-4 text-slate-500" />
+              <p className="text-slate-300">
                 Aún no has recibido propuestas para este anuncio
               </p>
             </div>
