@@ -8,7 +8,6 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Badge } from "./ui/badge";
 import { motion } from "framer-motion";
 import { useSecureAuth } from "../context/SecureAuthContext";
-import { useNotifications } from "../context/NotificationContext";
 import { MobileNavigation } from "./MobileNavigation";
 import { NotificationBell } from "./notifications/NotificationBell";
 import { ProfessionsTicker } from "./ProfessionsTicker";
@@ -16,11 +15,7 @@ import { ProfessionsTicker } from "./ProfessionsTicker";
 // Navigation component - Heart icon removed to fix bundling issue
 export const FixiaNavigation = memo(function FixiaNavigation() {
   const { user, isAuthenticated, logout } = useSecureAuth();
-  const { notifications } = useNotifications();
   const navigate = useNavigate();
-
-  // Calculate actual unread count from notifications to prevent phantom badges
-  const actualUnreadCount = notifications.filter(n => !n.read).length;
 
   // Handle logout with navigation - memoized to prevent unnecessary re-renders
   const handleLogout = useCallback(async () => {
@@ -174,15 +169,6 @@ export const FixiaNavigation = memo(function FixiaNavigation() {
                         {user?.name?.charAt(0)?.toUpperCase() || 'U'}
                       </AvatarFallback>
                     </Avatar>
-                    {/* Notification Badge - Like Facebook */}
-                    {actualUnreadCount > 0 && (
-                      <Badge
-                        variant="destructive"
-                        className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 text-xs flex items-center justify-center font-bold bg-red-500 hover:bg-red-600"
-                      >
-                        {actualUnreadCount > 99 ? '99+' : actualUnreadCount}
-                      </Badge>
-                    )}
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-64 glass border-white/20" align="end">

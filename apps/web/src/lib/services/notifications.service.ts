@@ -3,7 +3,7 @@ import { api } from '../api';
 export interface Notification {
   id: string;
   user_id: string;
-  type: 'message' | 'order' | 'payment' | 'review' | 'system' | 'promotion';
+  type: 'message' | 'order' | 'payment' | 'review' | 'system' | 'promotion' | 'proposal_received' | 'proposal_accepted' | 'job_started' | 'job_completed' | 'job_milestone' | 'review_received';
   title: string;
   message: string;
   read: boolean;
