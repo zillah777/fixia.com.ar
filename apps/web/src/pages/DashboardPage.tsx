@@ -434,6 +434,33 @@ function StatCards({ dashboardData, loading, userType, clientStats, planType }: 
           {clientStatsCards.map((stat, index) => {
             const Icon = stat.icon;
             if (!Icon) return null; // Skip if icon is missing
+
+            // Make "Propuestas Recibidas" card clickable
+            const isProposalsCard = stat.title === "Propuestas Recibidas";
+            const cardContent = (
+              <Card className="glass-glow hover:glass-medium transition-all duration-300 border-white/10 card-hover">
+                <CardContent className="p-3 sm:p-4 md:p-6">
+                  <div className="flex items-center justify-between">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[10px] sm:text-xs md:text-sm text-muted-foreground truncate">{stat.title}</p>
+                      <p className="text-xl sm:text-2xl md:text-3xl font-bold mt-1 sm:mt-2 text-gradient">{stat.value}</p>
+                      <div className="flex items-center mt-1 sm:mt-2 space-x-1 sm:space-x-2">
+                        <span className={`text-[10px] sm:text-xs md:text-sm ${
+                          stat.changeType === 'positive' ? 'text-success' : 'text-destructive'
+                        }`}>
+                          {stat.change}
+                        </span>
+                        <span className="text-[9px] sm:text-[10px] md:text-xs text-muted-foreground truncate">{stat.description}</span>
+                      </div>
+                    </div>
+                    <div className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 bg-info/20 rounded-lg sm:rounded-xl flex items-center justify-center float ml-2">
+                      <Icon className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-info" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+
             return (
               <motion.div
                 key={stat.title}
@@ -441,27 +468,13 @@ function StatCards({ dashboardData, loading, userType, clientStats, planType }: 
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: showBothStats ? 0.4 + 0.1 * index : 0.1 * index }}
               >
-                <Card className="glass-glow hover:glass-medium transition-all duration-300 border-white/10 card-hover">
-                  <CardContent className="p-3 sm:p-4 md:p-6">
-                    <div className="flex items-center justify-between">
-                      <div className="min-w-0 flex-1">
-                        <p className="text-[10px] sm:text-xs md:text-sm text-muted-foreground truncate">{stat.title}</p>
-                        <p className="text-xl sm:text-2xl md:text-3xl font-bold mt-1 sm:mt-2 text-gradient">{stat.value}</p>
-                        <div className="flex items-center mt-1 sm:mt-2 space-x-1 sm:space-x-2">
-                          <span className={`text-[10px] sm:text-xs md:text-sm ${
-                            stat.changeType === 'positive' ? 'text-success' : 'text-destructive'
-                          }`}>
-                            {stat.change}
-                          </span>
-                          <span className="text-[9px] sm:text-[10px] md:text-xs text-muted-foreground truncate">{stat.description}</span>
-                        </div>
-                      </div>
-                      <div className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 bg-info/20 rounded-lg sm:rounded-xl flex items-center justify-center float ml-2">
-                        <Icon className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-info" />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                {isProposalsCard ? (
+                  <Link to="/my-announcements" className="block">
+                    {cardContent}
+                  </Link>
+                ) : (
+                  cardContent
+                )}
               </motion.div>
             );
           })}
