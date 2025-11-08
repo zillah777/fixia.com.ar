@@ -880,6 +880,31 @@ function ProposalForm({ opportunity, onClose, onSuccess }: { opportunity: Opport
         </CardContent>
       </Card>
 
+      {/* User's Proposal Status */}
+      {opportunity.myProposals !== undefined && opportunity.myProposals > 0 && (
+        <Card className="bg-blue-500/10 border-blue-500/30 overflow-hidden">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="h-8 w-8 bg-blue-500/20 rounded-full flex items-center justify-center">
+                <span className="text-sm font-bold text-blue-400">✓</span>
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-white">
+                  {opportunity.myProposals === 1
+                    ? 'Ya enviaste 1 propuesta'
+                    : 'Ya enviaste 2 propuestas'}
+                </p>
+                <p className="text-xs text-blue-300">
+                  {opportunity.myProposals === 1
+                    ? 'Puedes enviar 1 propuesta más'
+                    : 'Has alcanzado el máximo de propuestas para esta oportunidad'}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Proposal Form */}
       <div className="space-y-6">
         {/* Cover Letter */}
@@ -1003,12 +1028,18 @@ function ProposalForm({ opportunity, onClose, onSuccess }: { opportunity: Opport
           <Button
             onClick={handleSubmit}
             className="liquid-gradient hover:opacity-95 text-sm font-bold shadow-lg hover:shadow-xl transition-all duration-200"
-            disabled={!proposalData.message || !proposalData.estimatedDuration || submitting}
+            disabled={!proposalData.message || !proposalData.estimatedDuration || submitting || (opportunity.myProposals === 2)}
+            title={opportunity.myProposals === 2 ? 'Ya alcanzaste el máximo de propuestas para esta oportunidad' : ''}
           >
             {submitting ? (
               <>
                 <div className="animate-spin rounded-full border-2 border-white border-t-transparent h-4 w-4 mr-2" />
                 Enviando...
+              </>
+            ) : opportunity.myProposals === 2 ? (
+              <>
+                <AlertCircle className="h-5 w-5 mr-2" />
+                Máximo alcanzado
               </>
             ) : (
               <>

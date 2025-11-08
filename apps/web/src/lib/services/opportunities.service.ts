@@ -24,6 +24,7 @@ export interface Opportunity {
   proposals: number;
   matchScore: number; // 0-100, how well it matches professional's profile
   isApplied: boolean;
+  myProposals?: number; // Number of proposals current user has submitted (0-2)
   isOwn?: boolean; // Flag to indicate this is user's own project
   createdAt: string;
   expiresAt?: string;

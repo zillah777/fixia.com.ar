@@ -353,16 +353,17 @@ export class OpportunitiesService {
       throw new BadRequestException('This opportunity is no longer accepting proposals');
     }
 
-    // Check if professional already applied
-    const existingProposal = await this.prisma.proposal.findFirst({
+    // Check proposal count - allow up to 2 proposals per opportunity per professional
+    const proposalCount = await this.prisma.proposal.count({
       where: {
         project_id: opportunityId,
         professional_id: professionalId,
+        status: { not: 'withdrawn' }, // Don't count withdrawn proposals
       },
     });
 
-    if (existingProposal) {
-      throw new BadRequestException('You have already applied to this opportunity');
+    if (proposalCount >= 2) {
+      throw new BadRequestException('You have already submitted the maximum number of proposals (2) for this opportunity');
     }
 
     // Create proposal
