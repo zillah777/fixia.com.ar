@@ -60,33 +60,33 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     }
 
     try {
-      const [notificationsData, unreadCountData] = await Promise.all([
-        notificationsService.getNotifications({ limit: 50 }),
-        notificationsService.getUnreadCount(),
-      ]);
+      const notificationsData = await notificationsService.getNotifications({ limit: 50 });
 
       const convertedNotifications = notificationsData.notifications.map(convertNotification);
 
-      // Calculate actual unread count from notifications to prevent mismatch
+      // Calculate actual unread count from notifications array
       const actualUnreadCount = convertedNotifications.filter(n => !n.read).length;
 
-      // Safety check: always use the actual count from the notifications array
-      // This prevents phantom notifications where unreadCount > 0 but no notifications exist
-      const finalUnreadCount = actualUnreadCount;
+      // Use unreadCount from server response (authoritative source for total unread count)
+      const serverUnreadCount = notificationsData.unreadCount || 0;
+
+      // Use server's unread count as it includes ALL unread notifications across all pages
+      // The actual visible unread count in this load might be less if there are more than 50 total
+      const finalUnreadCount = serverUnreadCount;
 
       // Debug logging for notification issues
-      if (actualUnreadCount !== unreadCountData) {
-        console.warn(`⚠️ Notification count mismatch for user ${user?.id}:`, {
-          actualUnreadCount: actualUnreadCount,
-          serverUnreadCount: unreadCountData,
-          discrepancy: Math.abs(actualUnreadCount - unreadCountData)
+      if (actualUnreadCount !== serverUnreadCount) {
+        console.warn(`⚠️ Notification count insight for user ${user?.id}:`, {
+          actualUnreadInThisLoad: actualUnreadCount,
+          serverTotalUnread: serverUnreadCount,
+          note: 'Server count may be higher if total unread > 50 (limit)'
         });
       }
 
       console.log(`📬 Notifications loaded for user ${user?.id}:`, {
         total: convertedNotifications.length,
-        actualUnreadCount: actualUnreadCount,
-        serverUnreadCount: unreadCountData,
+        actualUnreadInThisLoad: actualUnreadCount,
+        serverTotalUnread: serverUnreadCount,
         finalUnreadCount: finalUnreadCount,
         notifications: convertedNotifications.map(n => ({
           id: n.id,

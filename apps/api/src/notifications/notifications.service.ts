@@ -55,6 +55,7 @@ export class NotificationsService {
       total: number;
       pages: number;
     };
+    unreadCount: number;
   }> {
     const {
       type,
@@ -72,7 +73,7 @@ export class NotificationsService {
 
     const orderBy = this.getSortOrder(sortBy);
 
-    const [notifications, total] = await Promise.all([
+    const [notifications, total, unreadCount] = await Promise.all([
       this.prisma.notification.findMany({
         where,
         orderBy,
@@ -88,7 +89,13 @@ export class NotificationsService {
           }
         }
       }),
-      this.prisma.notification.count({ where })
+      this.prisma.notification.count({ where }),
+      this.prisma.notification.count({
+        where: {
+          user_id: userId,
+          read: false
+        }
+      })
     ]);
 
     return {
@@ -98,7 +105,8 @@ export class NotificationsService {
         limit,
         total,
         pages: Math.ceil(total / limit)
-      }
+      },
+      unreadCount
     };
   }
 
