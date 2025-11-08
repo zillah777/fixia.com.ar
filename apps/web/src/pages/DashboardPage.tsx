@@ -5,7 +5,7 @@ import {
   Plus, TrendingUp, Users, Heart, MessageSquare,
   Calendar, Clock, DollarSign, ArrowRight, Briefcase, Target,
   Zap, CheckCircle, AlertCircle, Search, Settings, Bell, Crown,
-  Edit, Trash2, MoreVertical
+  Edit, Trash2, MoreVertical, ChevronRight
 } from "lucide-react";
 import { userService, DashboardStats } from "../lib/services";
 import { dashboardService } from "../lib/services/dashboard.service";
@@ -25,11 +25,51 @@ import {
 } from "../components/ui/dropdown-menu";
 import { toast } from "sonner";
 import { useSecureAuth } from "../context/SecureAuthContext";
+import { useNotifications } from "../context/NotificationContext";
 import { MobileBottomNavigation } from "../components/MobileBottomNavigation";
 import { FixiaNavigation } from "../components/FixiaNavigation";
 import { OnboardingMessages } from "../components/OnboardingMessages";
 import { MatchesListSection } from "../components/match/MatchesListSection";
 import { extractErrorMessage, logError, isAuthenticationError } from "../utils/errorHandler";
+
+// Notifications Banner Component - Visible for ALL user types
+function NotificationsBanner() {
+  const { unreadCount } = useNotifications();
+
+  if (unreadCount === 0) return null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="mb-6 sm:mb-8"
+    >
+      <Link to="/notifications">
+        <Card className="glass border-white/10 bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-blue-600/20 hover:scale-[1.01] transition-all duration-300 cursor-pointer group">
+          <CardContent className="p-4 sm:p-5 md:p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-blue-500/20 flex items-center justify-center flex-shrink-0">
+                  <Bell className="h-5 w-5 sm:h-6 sm:w-6 text-blue-400 animate-pulse" />
+                </div>
+                <div className="min-w-0">
+                  <h3 className="font-semibold text-white text-sm sm:text-base">
+                    Tienes {unreadCount} notificación{unreadCount > 1 ? 'es' : ''} sin leer
+                  </h3>
+                  <p className="text-xs sm:text-sm text-white/70">
+                    Haz clic para ver todos los mensajes y actualizaciones
+                  </p>
+                </div>
+              </div>
+              <ChevronRight className="h-5 w-5 text-white/40 group-hover:text-white/80 transition-colors flex-shrink-0" />
+            </div>
+          </CardContent>
+        </Card>
+      </Link>
+    </motion.div>
+  );
+}
 
 function QuickActions({ user }: { user: any }) {
   const isProfessional = user?.userType === 'professional' || user?.userType === 'dual';
@@ -1179,6 +1219,9 @@ export default function DashboardPage() {
             clientStats={clientStats}
           />
         </motion.div>
+
+        {/* Notifications Banner - Visible for ALL users */}
+        <NotificationsBanner />
 
         {/* Upgrade to Professional Banner - Only for Clients */}
         {/* Show "Become Professional" banner only for free clients */}
