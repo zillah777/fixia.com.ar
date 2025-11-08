@@ -280,18 +280,18 @@ export default function MyAnnouncementsPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <Tabs defaultValue="open" className="w-full">
-            <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="open">
+          <Tabs defaultValue="all" className="w-full">
+            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 gap-2 p-1 h-auto">
+              <TabsTrigger value="open" className="text-xs sm:text-sm">
                 Abiertos ({projects.filter(p => p.status === 'open').length})
               </TabsTrigger>
-              <TabsTrigger value="in_progress">
+              <TabsTrigger value="in_progress" className="text-xs sm:text-sm">
                 En Progreso ({projects.filter(p => p.status === 'in_progress').length})
               </TabsTrigger>
-              <TabsTrigger value="completed">
+              <TabsTrigger value="completed" className="text-xs sm:text-sm">
                 Completados ({projects.filter(p => p.status === 'completed').length})
               </TabsTrigger>
-              <TabsTrigger value="all">
+              <TabsTrigger value="all" className="text-xs sm:text-sm">
                 Todos ({projects.length})
               </TabsTrigger>
             </TabsList>
