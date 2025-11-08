@@ -25,12 +25,18 @@ interface Proposal {
     rating: number;
     totalReviews: number;
     isVerified: boolean;
+    memberSince?: string;
+    completedProjects?: number;
+    responseTime?: string;
+    description?: string;
   };
   message: string;
   proposed_budget: number;
   estimated_duration: string;
   status: 'pending' | 'accepted' | 'rejected';
   created_at: string;
+  availableToStart?: boolean;
+  flexibleSchedule?: boolean;
 }
 
 interface ProjectDetail {
@@ -362,35 +368,114 @@ export default function ProjectDetailPage() {
                       Propuestas Recibidas ({project.proposals.length})
                     </CardTitle>
                     <CardDescription>
-                      Revisa las propuestas de los profesionales interesados
+                      Revisa los perfiles completos de los profesionales interesados. Cada uno ha sido evaluado por otros clientes.
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    {project.proposals.map((proposal) => (
-                      <div
+                    {project.proposals.map((proposal, index) => (
+                      <motion.div
                         key={proposal.id}
-                        className="p-4 rounded-lg border border-white/10 hover:bg-white/5 transition-colors"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                        className="p-5 rounded-lg border border-white/10 bg-gradient-to-br from-white/5 to-transparent hover:border-primary/30 hover:bg-white/10 transition-all duration-300"
                       >
-                        <div className="flex items-start justify-between gap-4 mb-3">
-                          <div className="flex items-start gap-3 flex-1 min-w-0">
-                            <img
-                              src={proposal.professional.avatar}
-                              alt={proposal.professional.name}
-                              className="h-12 w-12 rounded-full object-cover flex-shrink-0"
-                            />
-                            <div className="flex-1 min-w-0">
-                              <h4 className="font-semibold text-foreground">{proposal.professional.name}</h4>
-                              <div className="flex items-center gap-2 mt-1 flex-wrap">
-                                <div className="flex items-center gap-1">
-                                  <Star className="h-3 w-3 text-warning fill-warning" />
-                                  <span className="text-sm font-semibold">{proposal.professional.rating.toFixed(1)}</span>
+                        {/* Header with Professional Info */}
+                        <div className="flex items-start justify-between gap-4 mb-4">
+                          <div className="flex items-start gap-4 flex-1 min-w-0">
+                            {/* Avatar with verification badge */}
+                            <div className="relative flex-shrink-0">
+                              <img
+                                src={proposal.professional.avatar}
+                                alt={proposal.professional.name}
+                                className="h-16 w-16 rounded-full object-cover border-2 border-primary/30"
+                              />
+                              {proposal.professional.isVerified && (
+                                <div className="absolute -bottom-1 -right-1 bg-success rounded-full p-1.5 border-2 border-background">
+                                  <Check className="h-3 w-3 text-white" />
                                 </div>
-                                <span className="text-xs text-muted-foreground">
-                                  ({proposal.professional.totalReviews} reseñas)
-                                </span>
+                              )}
+                            </div>
+
+                            {/* Professional Details */}
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 flex-wrap mb-2">
+                                <h4 className="font-bold text-foreground text-lg">{proposal.professional.name}</h4>
+                                {proposal.professional.isVerified && (
+                                  <Badge variant="outline" className="border-success/50 bg-success/10 text-success gap-1 text-xs">
+                                    <Shield className="h-3 w-3" />
+                                    Verificado
+                                  </Badge>
+                                )}
                               </div>
+
+                              {/* Trust Indicators */}
+                              <div className="grid grid-cols-2 gap-2 mb-3 text-sm">
+                                {/* Rating */}
+                                <div className="flex items-center gap-2">
+                                  <div className="flex items-center">
+                                    {[...Array(5)].map((_, i) => (
+                                      <Star
+                                        key={i}
+                                        className={`h-3.5 w-3.5 ${
+                                          i < Math.floor(proposal.professional.rating)
+                                            ? 'fill-warning text-warning'
+                                            : 'text-muted-foreground'
+                                        }`}
+                                      />
+                                    ))}
+                                  </div>
+                                  <span className="font-semibold">{proposal.professional.rating.toFixed(1)}</span>
+                                </div>
+
+                                {/* Reviews Count */}
+                                <div className="text-xs text-muted-foreground">
+                                  {proposal.professional.totalReviews} {proposal.professional.totalReviews === 1 ? 'reseña' : 'reseñas'}
+                                </div>
+
+                                {/* Member Since */}
+                                {proposal.professional.memberSince && (
+                                  <div className="text-xs text-muted-foreground col-span-2">
+                                    📅 Miembro desde {new Date(proposal.professional.memberSince).toLocaleDateString('es-AR', {
+                                      month: 'short',
+                                      year: 'numeric'
+                                    })}
+                                  </div>
+                                )}
+                              </div>
+
+                              {/* Trust Score / Experience Badges */}
+                              <div className="flex flex-wrap gap-1.5 mb-3">
+                                {proposal.professional.completedProjects && proposal.professional.completedProjects > 0 && (
+                                  <Badge variant="secondary" className="bg-primary/10 text-primary text-xs gap-1">
+                                    <Briefcase className="h-3 w-3" />
+                                    {proposal.professional.completedProjects} trabajos completados
+                                  </Badge>
+                                )}
+                                {proposal.availableToStart && (
+                                  <Badge variant="secondary" className="bg-success/10 text-success text-xs gap-1">
+                                    <Clock className="h-3 w-3" />
+                                    Disponible ahora
+                                  </Badge>
+                                )}
+                                {proposal.flexibleSchedule && (
+                                  <Badge variant="secondary" className="bg-blue-500/10 text-blue-400 text-xs gap-1">
+                                    ⏱️
+                                    Horarios flexibles
+                                  </Badge>
+                                )}
+                              </div>
+
+                              {/* Professional Description/Specialty */}
+                              {proposal.professional.description && (
+                                <p className="text-xs text-muted-foreground italic line-clamp-1">
+                                  "{proposal.professional.description}"
+                                </p>
+                              )}
                             </div>
                           </div>
+
+                          {/* Status Badge */}
                           <Badge
                             variant={
                               proposal.status === 'accepted'
@@ -399,35 +484,69 @@ export default function ProjectDetailPage() {
                                 ? 'destructive'
                                 : 'secondary'
                             }
-                            className="flex-shrink-0"
+                            className="flex-shrink-0 whitespace-nowrap"
                           >
-                            {proposal.status === 'pending' && 'Pendiente'}
-                            {proposal.status === 'accepted' && 'Aceptada'}
-                            {proposal.status === 'rejected' && 'Rechazada'}
+                            {proposal.status === 'pending' && '⏳ Pendiente'}
+                            {proposal.status === 'accepted' && '✅ Aceptada'}
+                            {proposal.status === 'rejected' && '❌ Rechazada'}
                           </Badge>
                         </div>
 
-                        <p className="text-sm text-muted-foreground mb-3 line-clamp-3">
-                          {proposal.message}
-                        </p>
+                        <Separator className="my-4" />
 
-                        <div className="grid grid-cols-2 gap-3 mb-3 text-sm">
+                        {/* Proposal Message */}
+                        <div className="mb-4">
+                          <p className="text-sm text-muted-foreground leading-relaxed">
+                            <span className="font-semibold text-foreground">"</span>
+                            {proposal.message}
+                            <span className="font-semibold text-foreground">"</span>
+                          </p>
+                        </div>
+
+                        {/* Budget and Timeline */}
+                        <div className="grid grid-cols-3 gap-3 mb-4 p-3 bg-white/5 rounded-lg border border-white/5">
                           <div>
-                            <span className="text-muted-foreground text-xs">Presupuesto</span>
-                            <p className="font-semibold text-primary">
+                            <span className="text-muted-foreground text-xs font-semibold block mb-1">💰 PRESUPUESTO</span>
+                            <p className="font-bold text-primary text-lg">
                               ARS ${proposal.proposed_budget.toLocaleString('es-AR')}
                             </p>
+                            {proposal.proposed_budget < (project.budget_min || 0) && (
+                              <p className="text-xs text-success mt-1">✓ Dentro del presupuesto</p>
+                            )}
                           </div>
                           <div>
-                            <span className="text-muted-foreground text-xs">Tiempo de Entrega</span>
-                            <p className="font-semibold text-foreground">{proposal.estimated_duration}</p>
+                            <span className="text-muted-foreground text-xs font-semibold block mb-1">⏳ ENTREGA</span>
+                            <p className="font-bold text-foreground">{proposal.estimated_duration}</p>
+                            {project.deadline && (
+                              <p className="text-xs text-muted-foreground mt-1">Antes del vencimiento</p>
+                            )}
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground text-xs font-semibold block mb-1">📍 PROPUESTA</span>
+                            <p className="font-bold text-foreground text-sm">Hace {formatTimeAgo(new Date(proposal.created_at))}</p>
                           </div>
                         </div>
 
-                        <div className="text-xs text-muted-foreground">
-                          Enviado hace {formatTimeAgo(new Date(proposal.created_at))}
+                        {/* Action Buttons */}
+                        <div className="flex gap-2 pt-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="flex-1 glass border-white/20 hover:border-primary/50 text-xs sm:text-sm"
+                          >
+                            Ver Perfil
+                          </Button>
+                          {proposal.status === 'pending' && (
+                            <Button
+                              size="sm"
+                              className="flex-1 liquid-gradient text-xs sm:text-sm"
+                            >
+                              <Check className="h-4 w-4 mr-1" />
+                              Aceptar
+                            </Button>
+                          )}
                         </div>
-                      </div>
+                      </motion.div>
                     ))}
                   </CardContent>
                 </Card>
