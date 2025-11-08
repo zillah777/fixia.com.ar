@@ -257,7 +257,7 @@ export default function NewOpportunityPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
         >
-          <Card className="glass border-white/10">
+          <Card className="glass border-white/10 overflow-visible">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <Target className="h-5 w-5" />
@@ -268,7 +268,7 @@ export default function NewOpportunityPage() {
               </CardDescription>
             </CardHeader>
             
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-6 overflow-visible">
               {/* Title */}
               <div className="space-y-2">
                 <Label>Título del Anuncio *</Label>
