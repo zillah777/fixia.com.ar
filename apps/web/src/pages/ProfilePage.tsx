@@ -663,8 +663,8 @@ function SettingsSection() {
           
           <div className="flex items-center justify-between">
             <div>
-              <div className="font-medium">Actualizaciones de proyectos</div>
-              <div className="text-sm text-muted-foreground">Updates sobre el progreso de proyectos</div>
+              <div className="font-medium">Actualizaciones de oportunidades</div>
+              <div className="text-sm text-muted-foreground">Updates sobre el progreso de oportunidades</div>
             </div>
             <Switch 
               checked={notifications.projectUpdates}

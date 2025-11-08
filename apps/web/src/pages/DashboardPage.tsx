@@ -107,7 +107,7 @@ function QuickActions({ user }: { user: any }) {
                   </div>
                   <h3 className="text-xs sm:text-sm md:text-base font-semibold mb-1 sm:mb-2">Ver Oportunidades</h3>
                   <p className="text-[10px] sm:text-xs md:text-sm text-muted-foreground line-clamp-2">
-                    Encuentra proyectos que se ajusten a tus habilidades
+                    Encuentra oportunidades que se ajusten a tus habilidades
                   </p>
                 </CardContent>
               </Card>
@@ -394,7 +394,7 @@ function StatCards({ dashboardData, loading, userType, clientStats, planType }: 
       description: planType === 'basic' ? 'límite plan Basic' : planType === 'premium' ? 'ilimitados' : 'servicios creados'
     },
     {
-      title: "Proyectos Activos",
+      title: "Oportunidades Activas",
       value: dashboardData?.active_projects?.toString() || "0",
       change: '',
       changeType: "neutral",

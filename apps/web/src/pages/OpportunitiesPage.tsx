@@ -229,7 +229,7 @@ function SearchAndFilters({
           <div className="flex-1 flex items-center">
             <Search className="h-5 w-5 text-muted-foreground ml-3 mr-2 sm:ml-4 sm:mr-3 flex-shrink-0" />
             <Input
-              placeholder="Buscar proyectos..."
+              placeholder="Buscar oportunidades..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="border-0 bg-transparent text-base sm:text-lg placeholder:text-muted-foreground focus-visible:ring-0"
@@ -302,7 +302,7 @@ function SearchAndFilters({
                   <label className="font-medium">Urgencia del Proyecto</label>
                   <div className="space-y-2">
                     {[
-                      { value: "all", label: "Todos los proyectos" },
+                      { value: "all", label: "Todas las oportunidades" },
                       { value: "urgent", label: "Urgente (1-5 días)" },
                       { value: "high", label: "Alta prioridad" },
                       { value: "normal", label: "Prioridad normal" }
@@ -610,7 +610,7 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
                   <Heart className="h-3 w-3 text-warning" />
                   <span>{opportunity.client.rating}</span>
                   <span>•</span>
-                  <span>{opportunity.client.projectsPosted} proyectos</span>
+                  <span>{opportunity.client.projectsPosted} oportunidades publicadas</span>
                 </div>
               </div>
             </div>
@@ -723,16 +723,16 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
         </CardContent>
       </Card>
       
-      {/* Proposal Modal */}
+      {/* Proposal Modal - Responsive and properly centered */}
       <Dialog open={showProposal} onOpenChange={setShowProposal}>
-        <DialogContent className="bg-slate-900/95 border-white/20 max-w-[90vw] sm:max-w-2xl fixed backdrop-blur-xl shadow-2xl">
-          <DialogHeader className="border-b border-gradient-to-r from-primary/20 via-transparent to-transparent pb-6 mb-2">
-            <DialogTitle className="text-2xl sm:text-3xl font-bold text-white">Enviar Tu Propuesta</DialogTitle>
-            <DialogDescription className="text-base text-slate-300 font-medium mt-3">
+        <DialogContent className="bg-slate-900/95 border-white/20 max-w-[95vw] sm:max-w-[85vw] md:max-w-2xl lg:max-w-3xl fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] backdrop-blur-xl shadow-2xl rounded-xl">
+          <DialogHeader className="border-b border-white/10 pb-6 mb-4 space-y-2">
+            <DialogTitle className="text-xl sm:text-2xl md:text-3xl font-bold text-white">Enviar Tu Propuesta</DialogTitle>
+            <DialogDescription className="text-sm sm:text-base text-slate-300 font-medium line-clamp-2">
               {opportunity.title}
             </DialogDescription>
           </DialogHeader>
-          <div className="max-h-[70vh] overflow-y-auto">
+          <div className="max-h-[70vh] sm:max-h-[75vh] overflow-y-auto pr-2 md:pr-0">
             <ProposalForm opportunity={opportunity} onClose={() => setShowProposal(false)} />
           </div>
         </DialogContent>
@@ -746,7 +746,9 @@ function ProposalForm({ opportunity, onClose, onSuccess }: { opportunity: Opport
     message: '',
     proposedBudget: opportunity.budget || 0,
     estimatedDuration: '',
-    portfolio: [] as string[]
+    portfolio: [] as string[],
+    availableToStart: false,
+    flexibleSchedule: false
   });
   const [submitting, setSubmitting] = useState(false);
 
@@ -774,27 +776,63 @@ function ProposalForm({ opportunity, onClose, onSuccess }: { opportunity: Opport
 
   return (
     <div className="space-y-6">
-      {/* Opportunity Summary */}
+      {/* Opportunity Summary - Enhanced with full details */}
       <Card className="bg-slate-800/60 border-white/15 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-transparent to-transparent pointer-events-none"></div>
         <CardContent className="p-5 sm:p-6 relative">
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex-1 min-w-0">
-              <h4 className="font-bold text-lg text-foreground truncate">{opportunity.title}</h4>
-              <p className="text-sm text-primary/90 mt-2 font-semibold">
-                💰 Presupuesto referencial: ARS ${opportunity.budget?.min ? (opportunity.budget.min ?? 0).toLocaleString('es-AR') : '0'}
-              </p>
+          <div className="space-y-4">
+            {/* Title and Proposals */}
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex-1 min-w-0">
+                <h4 className="font-bold text-lg text-white truncate">{opportunity.title}</h4>
+              </div>
+              <Badge className="bg-gradient-to-r from-primary to-primary/80 text-white border-0 flex-shrink-0 text-xs sm:text-sm whitespace-nowrap shadow-lg">
+                <Target className="h-4 w-4 mr-1.5" />
+                {opportunity.proposals}
+              </Badge>
             </div>
-            <Badge className="bg-gradient-to-r from-primary to-primary/80 text-white border-0 flex-shrink-0 text-xs sm:text-sm whitespace-nowrap shadow-lg">
-              <Target className="h-4 w-4 mr-1.5" />
-              {opportunity.proposals}
-            </Badge>
+
+            {/* Budget and Timeline */}
+            <div className="grid grid-cols-2 gap-4 pt-2">
+              <div>
+                <p className="text-xs text-foreground/60 font-semibold uppercase">Presupuesto</p>
+                <p className="text-base text-white font-bold mt-1">
+                  💰 ${opportunity.budget?.min ? (opportunity.budget.min ?? 0).toLocaleString('es-AR') : '0'} - ${opportunity.budget?.max ? (opportunity.budget.max ?? 0).toLocaleString('es-AR') : '0'}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-foreground/60 font-semibold uppercase">Deadline</p>
+                <p className="text-base text-white font-bold mt-1">📅 {opportunity.deadline || 'No especificado'}</p>
+              </div>
+            </div>
+
+            {/* Client Info */}
+            {opportunity.client && (
+              <div className="pt-2 border-t border-white/10">
+                <div className="flex items-center gap-3">
+                  <Avatar className="h-8 w-8 border border-primary/30">
+                    <AvatarImage src={opportunity.client.avatar} alt={opportunity.client.name} />
+                    <AvatarFallback>{opportunity.client.name?.charAt(0)}</AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-white font-semibold truncate">{opportunity.client.name}</p>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      {opportunity.client.verified && <CheckCircle className="h-3 w-3 text-primary" />}
+                      <span className="text-xs text-foreground/70">
+                        ⭐ {opportunity.client.rating?.toFixed(1) || '0.0'} · {opportunity.client.verified ? 'Verificado' : 'No verificado'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
 
       {/* Proposal Form */}
       <div className="space-y-6">
+        {/* Cover Letter */}
         <div className="space-y-3">
           <div className="flex items-center gap-2">
             <div className="h-1 w-1.5 rounded-full bg-gradient-to-r from-primary to-primary/60"></div>
@@ -804,8 +842,9 @@ function ProposalForm({ opportunity, onClose, onSuccess }: { opportunity: Opport
             placeholder="Cuéntale al cliente por qué eres el candidato perfecto. Destaca tus habilidades, experiencia relevante y por qué te apasiona este proyecto..."
             value={proposalData.message}
             onChange={(e) => setProposalData({ ...proposalData, message: e.target.value })}
-            className="bg-slate-800/80 border-white/20 min-h-32 text-white placeholder:text-slate-400 focus:border-primary/50 rounded-lg"
+            className="bg-slate-800/80 border-white/20 min-h-32 text-white placeholder:text-slate-400 focus:border-primary/50 rounded-lg focus:ring-1 focus:ring-primary/50"
             rows={6}
+            maxLength={1000}
           />
           <div className="flex items-center justify-between">
             <span className="text-xs text-foreground/60 font-medium">
@@ -861,6 +900,39 @@ function ProposalForm({ opportunity, onClose, onSuccess }: { opportunity: Opport
             <p className="text-xs text-foreground/60 font-medium">
               📅 Personaliza según tu disponibilidad
             </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Availability & Flexibility Options */}
+      <div className="space-y-4 p-4 bg-slate-800/40 border border-white/10 rounded-lg">
+        <p className="text-sm font-semibold text-white">Disponibilidad y Flexibilidad</p>
+
+        <div className="flex items-center space-x-3 p-3 bg-slate-800/60 rounded-lg border border-white/10 hover:border-primary/30 transition-colors cursor-pointer"
+          onClick={() => setProposalData({ ...proposalData, availableToStart: !proposalData.availableToStart })}
+        >
+          <Checkbox
+            checked={proposalData.availableToStart}
+            onChange={(checked) => setProposalData({ ...proposalData, availableToStart: checked as boolean })}
+            className="h-5 w-5 border-white/30"
+          />
+          <div className="flex-1">
+            <Label className="text-white font-semibold cursor-pointer">Estoy disponible para empezar ahora</Label>
+            <p className="text-xs text-foreground/60 mt-1">El cliente sabrá que puedes comenzar inmediatamente</p>
+          </div>
+        </div>
+
+        <div className="flex items-center space-x-3 p-3 bg-slate-800/60 rounded-lg border border-white/10 hover:border-primary/30 transition-colors cursor-pointer"
+          onClick={() => setProposalData({ ...proposalData, flexibleSchedule: !proposalData.flexibleSchedule })}
+        >
+          <Checkbox
+            checked={proposalData.flexibleSchedule}
+            onChange={(checked) => setProposalData({ ...proposalData, flexibleSchedule: checked as boolean })}
+            className="h-5 w-5 border-white/30"
+          />
+          <div className="flex-1">
+            <Label className="text-white font-semibold cursor-pointer">Horario y fecha de entrega flexible</Label>
+            <p className="text-xs text-foreground/60 mt-1">Puedes ajustar los tiempos según las necesidades del cliente</p>
           </div>
         </div>
       </div>
@@ -979,7 +1051,7 @@ export default function OpportunitiesPage() {
             Descubre Oportunidades
           </h1>
           <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto">
-            Conecta con clientes y proyectos que impulsen tu carrera
+            Conecta con clientes y oportunidades que impulsen tu carrera
           </p>
         </motion.div>
 

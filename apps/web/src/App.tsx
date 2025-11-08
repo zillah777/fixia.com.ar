@@ -30,6 +30,7 @@ const FavoritesPage = lazy(() => import("./pages/FavoritesPage"));
 const HelpPage = lazy(() => import("./pages/HelpPage"));
 const HelpArticleDetailPage = lazy(() => import("./pages/HelpArticleDetailPage"));
 const NotificationsPage = lazy(() => import("./pages/NotificationsPage"));
+const ProjectDetailPage = lazy(() => import("./pages/ProjectDetailPage"));
 const SettingsPage = lazy(() => import("./pages/SettingsPage"));
 const JobsPage = lazy(() => import("./pages/JobsPage"));
 // DISABLED: ReviewsPage causing React error #306 - replaced with new Feedback system
@@ -380,17 +381,29 @@ function AppRoutes() {
                     </RouteErrorBoundary>
                   } 
                 />
-                <Route 
-                  path="/notifications" 
+                <Route
+                  path="/notifications"
                   element={
                     <RouteErrorBoundary routeName="Notificaciones" fallbackRoute="/dashboard">
                       <ProtectedRoute>
                         <NotificationsPage />
                       </ProtectedRoute>
                     </RouteErrorBoundary>
-                  } 
+                  }
                 />
-                <Route 
+                <Route
+                  path="/projects/:id"
+                  element={
+                    <RouteErrorBoundary routeName="Detalle de Oportunidad" fallbackRoute="/opportunities">
+                      <ProtectedRoute>
+                        <AsyncErrorBoundary>
+                          <ProjectDetailPage />
+                        </AsyncErrorBoundary>
+                      </ProtectedRoute>
+                    </RouteErrorBoundary>
+                  }
+                />
+                <Route
                   path="/settings" 
                   element={
                     <RouteErrorBoundary routeName="Configuración" fallbackRoute="/dashboard">

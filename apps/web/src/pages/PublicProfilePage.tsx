@@ -164,7 +164,7 @@ function ProfileHeader({ profile }: ProfileHeaderProps) {
             <div className="flex space-x-8 pt-4 border-t border-white/10">
               <div className="text-center">
                 <div className="text-2xl font-bold text-primary">{completedProjects}</div>
-                <div className="text-sm text-muted-foreground">Proyectos</div>
+                <div className="text-sm text-muted-foreground">Oportunidades Completadas</div>
               </div>
               {rating > 0 && (
                 <div className="text-center">

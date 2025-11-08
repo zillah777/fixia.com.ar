@@ -150,7 +150,7 @@ const JobsPage: React.FC = () => {
           </div>
           <p className="text-lg sm:text-xl text-muted-foreground/80 leading-relaxed">
             {isProfessional
-              ? 'Gestiona tus trabajos activos y historial de proyectos'
+              ? 'Gestiona tus trabajos activos y historial de oportunidades'
               : 'Seguimiento de los trabajos que has contratado'
             }
           </p>

@@ -248,7 +248,7 @@ function NotificationSettings() {
           
           <div className="flex items-center justify-between">
             <div>
-              <h4 className="font-medium">Proyectos</h4>
+              <h4 className="font-medium">Oportunidades</h4>
               <p className="text-sm text-muted-foreground">Nuevas oportunidades de trabajo</p>
             </div>
             <Switch 
