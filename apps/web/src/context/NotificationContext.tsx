@@ -70,15 +70,29 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       // Use unreadCount from server response (authoritative source for total unread count)
       const serverUnreadCount = notificationsData.unreadCount || 0;
 
-      // Use server's unread count as it includes ALL unread notifications across all pages
-      // The actual visible unread count in this load might be less if there are more than 50 total
-      const finalUnreadCount = serverUnreadCount;
+      // CRITICAL FIX: Never show a badge count higher than visible unread notifications
+      // If server says 2 unread but we only see 0, use 0 to prevent phantom badges
+      // This is a safety net in case of server/database inconsistencies
+      let finalUnreadCount = serverUnreadCount;
+
+      // If we're loading ALL notifications (when limit > total notifications)
+      // then actualUnreadCount should match serverUnreadCount
+      // If actualUnreadCount is less, it means there are unread notifications beyond the limit
+      // But if actualUnreadCount is 0 and serverUnreadCount > 0, it's a phantom badge - use 0
+      if (actualUnreadCount === 0 && serverUnreadCount > 0 && convertedNotifications.length < 50) {
+        // We've loaded all notifications and none are unread, but server says some are
+        // This is definitely a phantom badge - override with 0
+        finalUnreadCount = 0;
+        console.error(`🚨 PHANTOM BADGE DETECTED: Server says ${serverUnreadCount} unread but none found in notifications for user ${user?.id}`);
+      }
 
       // Debug logging for notification issues
       if (actualUnreadCount !== serverUnreadCount) {
-        console.warn(`⚠️ Notification count insight for user ${user?.id}:`, {
+        console.warn(`⚠️ Notification count discrepancy for user ${user?.id}:`, {
           actualUnreadInThisLoad: actualUnreadCount,
           serverTotalUnread: serverUnreadCount,
+          finalUnreadCount: finalUnreadCount,
+          loadedCount: convertedNotifications.length,
           note: 'Server count may be higher if total unread > 50 (limit)'
         });
       }
