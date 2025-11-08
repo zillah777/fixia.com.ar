@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { formatDeadlineDate } from "../lib/utils/date";
 import { FixiaNavigation } from "../components/FixiaNavigation";
 import {
   Search, Filter, MapPin, Clock, DollarSign, Users, Heart, Zap,
@@ -709,7 +710,7 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
               {/* Deadline */}
               <div className="p-3 bg-white/5 rounded-lg border border-white/10 space-y-1">
                 <span className="text-xs font-semibold text-muted-foreground uppercase">📅 Vencimiento</span>
-                <p className="text-sm font-semibold text-foreground">{opportunity.deadline || 'Sin especificar'}</p>
+                <p className="text-sm font-semibold text-foreground">{formatDeadlineDate(opportunity.deadline)}</p>
               </div>
 
               {/* Priority */}
@@ -852,7 +853,7 @@ function ProposalForm({ opportunity, onClose, onSuccess }: { opportunity: Opport
               </div>
               <div>
                 <p className="text-xs text-foreground/60 font-semibold uppercase">Deadline</p>
-                <p className="text-base text-white font-bold mt-1">📅 {opportunity.deadline || 'No especificado'}</p>
+                <p className="text-base text-white font-bold mt-1">📅 {formatDeadlineDate(opportunity.deadline)}</p>
               </div>
             </div>
 
