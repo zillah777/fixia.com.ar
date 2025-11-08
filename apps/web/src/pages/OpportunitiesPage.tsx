@@ -488,10 +488,16 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
                   </div>
                   
                   <div className="text-right space-y-2">
-                    <div className="text-2xl font-bold text-success">
-                      ${opportunity.budget.min} - ${opportunity.budget.max}
+                    <div className="space-y-1">
+                      <div className="text-xs font-semibold text-muted-foreground uppercase">Presupuesto</div>
+                      <div className="text-2xl font-bold text-success">
+                        ${opportunity.budget.min.toLocaleString('es-AR')} - ${opportunity.budget.max.toLocaleString('es-AR')}
+                      </div>
                     </div>
-                    <div className="text-sm text-muted-foreground">{opportunity.duration}</div>
+                    <div className="space-y-1 pt-2">
+                      <div className="text-xs font-semibold text-muted-foreground uppercase">Duración</div>
+                      <div className="text-sm font-semibold text-foreground">{opportunity.duration}</div>
+                    </div>
                   </div>
                 </div>
                 
@@ -660,16 +666,22 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
           </div>
           
           {/* Budget and Duration */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Presupuesto</span>
-              <span className="font-semibold text-success">
-                ${opportunity.budget.min} - ${opportunity.budget.max}
-              </span>
+          <div className="grid grid-cols-2 gap-3 p-3 bg-gradient-to-r from-success/10 to-primary/10 rounded-lg border border-success/20">
+            <div className="space-y-1">
+              <span className="text-xs font-semibold text-muted-foreground uppercase">Presupuesto</span>
+              <div className="flex items-baseline gap-1">
+                <span className="text-lg font-bold text-success">
+                  ${opportunity.budget.min.toLocaleString('es-AR')}
+                </span>
+                <span className="text-xs text-muted-foreground">-</span>
+                <span className="text-lg font-bold text-success">
+                  ${opportunity.budget.max.toLocaleString('es-AR')}
+                </span>
+              </div>
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Duración</span>
-              <span className="text-sm">{opportunity.duration}</span>
+            <div className="space-y-1">
+              <span className="text-xs font-semibold text-muted-foreground uppercase">Duración</span>
+              <p className="text-sm font-semibold text-foreground">{opportunity.duration}</p>
             </div>
           </div>
           
