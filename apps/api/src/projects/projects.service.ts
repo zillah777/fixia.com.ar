@@ -288,11 +288,6 @@ export class ProjectsService {
       throw new ForbiddenException('You can only delete your own projects');
     }
 
-    // Don't allow deletion of projects with accepted proposals or in progress
-    if (project.status === 'in_progress') {
-      throw new ForbiddenException('Cannot delete projects in progress');
-    }
-
     await this.prisma.project.delete({
       where: { id },
     });
