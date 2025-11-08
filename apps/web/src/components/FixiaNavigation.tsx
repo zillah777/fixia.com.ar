@@ -226,12 +226,6 @@ export const FixiaNavigation = memo(function FixiaNavigation() {
                           Mis Anuncios
                         </DropdownMenuItem>
                       </Link>
-                      <Link to="/favorites">
-                        <DropdownMenuItem className="hover:bg-white/10 cursor-pointer">
-                          <Heart className="mr-3 h-4 w-4" />
-                          Favoritos
-                        </DropdownMenuItem>
-                      </Link>
                       <Link to="/feedback">
                         <DropdownMenuItem className="hover:bg-white/10 cursor-pointer">
                           <MessageSquare className="mr-3 h-4 w-4" />
@@ -279,6 +273,12 @@ export const FixiaNavigation = memo(function FixiaNavigation() {
                     <DropdownMenuItem className="hover:bg-white/10 cursor-pointer">
                       <HelpCircle className="mr-3 h-4 w-4" />
                       Centro de Ayuda
+                    </DropdownMenuItem>
+                  </Link>
+                  <Link to="/favorites">
+                    <DropdownMenuItem className="hover:bg-white/10 cursor-pointer">
+                      <Heart className="mr-3 h-4 w-4" />
+                      Favoritos
                     </DropdownMenuItem>
                   </Link>
                   <DropdownMenuSeparator className="bg-white/10" />
