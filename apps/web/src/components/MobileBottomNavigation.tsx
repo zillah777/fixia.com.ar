@@ -24,8 +24,11 @@ interface NavItem {
 
 export const MobileBottomNavigation = memo<MobileBottomNavigationProps>(({ className }) => {
   const { user, isAuthenticated } = useSecureAuth();
-  const { unreadCount } = useNotifications();
+  const { notifications } = useNotifications();
   const location = useLocation();
+
+  // Calculate actual unread count from notifications to prevent phantom badges
+  const actualUnreadCount = notifications.filter(n => !n.read).length;
 
   const navItems: NavItem[] = useMemo(() => [
     {
@@ -41,7 +44,7 @@ export const MobileBottomNavigation = memo<MobileBottomNavigationProps>(({ class
     ...(isAuthenticated ? [
       {
         href: user?.userType === 'professional' ? '/opportunities' : '/new-project',
-        icon: user?.userType === 'professional' 
+        icon: user?.userType === 'professional'
           ? <Briefcase className="h-5 w-5" />
           : <Plus className="h-5 w-5" />,
         label: user?.userType === 'professional' ? 'Trabajos' : 'Crear',
@@ -52,7 +55,7 @@ export const MobileBottomNavigation = memo<MobileBottomNavigationProps>(({ class
         href: '/notifications',
         icon: <Bell className="h-5 w-5" />,
         label: 'Avisos',
-        badge: unreadCount > 0 ? unreadCount : undefined,
+        badge: actualUnreadCount > 0 ? actualUnreadCount : undefined,
         requiresAuth: true
       },
       {
@@ -73,7 +76,7 @@ export const MobileBottomNavigation = memo<MobileBottomNavigationProps>(({ class
         label: 'Entrar'
       }
     ])
-  ], [isAuthenticated, user?.userType, unreadCount]);
+  ], [isAuthenticated, user?.userType, actualUnreadCount]);
 
   const isActivePath = (href: string) => {
     if (href === '/') {

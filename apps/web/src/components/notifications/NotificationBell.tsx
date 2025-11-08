@@ -36,7 +36,10 @@ const notificationTypeConfig = {
 
 export function NotificationBell({ className }: NotificationBellProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const { notifications, unreadCount, loading, markAsRead, markAllAsRead, deleteNotification } = useNotifications();
+  const { notifications, loading, markAsRead, markAllAsRead, deleteNotification } = useNotifications();
+
+  // Calculate actual unread count from notifications to prevent phantom badges
+  const actualUnreadCount = notifications.filter(n => !n.read).length;
 
 
   // Handle notification click
@@ -90,12 +93,12 @@ export function NotificationBell({ className }: NotificationBellProps) {
         onClick={() => setIsOpen(!isOpen)}
       >
         <Bell className="h-4 w-4" />
-        {unreadCount > 0 && (
-          <Badge 
-            variant="destructive" 
+        {actualUnreadCount > 0 && (
+          <Badge
+            variant="destructive"
             className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 text-xs flex items-center justify-center"
           >
-            {unreadCount > 99 ? '99+' : unreadCount}
+            {actualUnreadCount > 99 ? '99+' : actualUnreadCount}
           </Badge>
         )}
       </Button>
@@ -122,7 +125,7 @@ export function NotificationBell({ className }: NotificationBellProps) {
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-lg">Notificaciones</CardTitle>
                     <div className="flex items-center gap-2">
-                      {unreadCount > 0 && (
+                      {actualUnreadCount > 0 && (
                         <Button
                           variant="ghost"
                           size="sm"
@@ -142,9 +145,9 @@ export function NotificationBell({ className }: NotificationBellProps) {
                       </Button>
                     </div>
                   </div>
-                  {unreadCount > 0 && (
+                  {actualUnreadCount > 0 && (
                     <p className="text-sm text-muted-foreground">
-                      {unreadCount} notificación{unreadCount !== 1 ? 'es' : ''} sin leer
+                      {actualUnreadCount} notificación{actualUnreadCount !== 1 ? 'es' : ''} sin leer
                     </p>
                   )}
                 </CardHeader>
