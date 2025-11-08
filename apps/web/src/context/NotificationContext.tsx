@@ -236,7 +236,13 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     // Add the new notification to the list
     const convertedNotif = convertNotification(data.notification);
     setNotifications(prev => [convertedNotif, ...prev]);
-    setUnreadCount(prev => prev + 1);
+
+    // CRITICAL: Only increment unread count if the notification is actually unread
+    if (!data.notification.read) {
+      setUnreadCount(prev => prev + 1);
+    } else {
+      console.warn('⚠️ WebSocket sent notification that is already marked as read:', data.notification.id);
+    }
 
     // Update localStorage with sync time
     localStorage.setItem('fixia_last_notification_sync', new Date().toISOString());
@@ -253,8 +259,20 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
 
   // WebSocket event listener for unread count updates
   useWebSocketEvent(socket, 'notification:unread-count', (data: { count: number; updatedAt: string }) => {
-    console.log('📊 Unread count updated:', data.count);
-    setUnreadCount(data.count);
+    console.log('📊 Unread count updated from WebSocket:', data.count);
+    // CRITICAL: Validate against actual notifications before setting
+    // Calculate actual unread count from current notifications array
+    const actualUnread = notifications.filter(n => !n.read).length;
+
+    // If the count from server is higher than what we see, it's potentially a phantom badge
+    // Override with actual count from array
+    const safeCount = Math.min(data.count, actualUnread);
+
+    if (data.count !== safeCount) {
+      console.error(`🚨 PHANTOM BADGE PREVENTED: WebSocket tried to set count to ${data.count} but actual unread is ${actualUnread}, using ${safeCount}`);
+    }
+
+    setUnreadCount(safeCount);
   });
 
   // WebSocket event listener for sync requests

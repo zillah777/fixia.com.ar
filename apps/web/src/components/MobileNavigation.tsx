@@ -31,7 +31,7 @@ interface NavigationItem {
 export const MobileNavigation = memo<MobileNavigationProps>(({ className }) => {
   const [isOpen, setIsOpen] = useState(false);
   const { user, isAuthenticated, logout } = useSecureAuth();
-  const { unreadCount, notifications } = useNotifications();
+  const { notifications } = useNotifications();
   const location = useLocation();
 
   // Calculate actual unread count from notifications to prevent phantom badges
