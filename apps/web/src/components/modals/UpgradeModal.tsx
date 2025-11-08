@@ -58,24 +58,24 @@ export function UpgradeModal({ isOpen, onClose, limitType, limitReached }: Upgra
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Backdrop */}
+          {/* Backdrop - Fixed to prevent scrolling */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
             onClick={onClose}
             className="fixed inset-0 bg-black/60 backdrop-blur-sm z-modal-backdrop"
           />
 
-          {/* Modal */}
-          <div className="fixed inset-0 flex items-center justify-center z-modal-content p-4 sm:p-6">
+          {/* Modal Container - Completely Fixed, no movement */}
+          <div className="fixed inset-0 z-modal-content flex items-center justify-center p-4 sm:p-6" onClick={(e) => e.stopPropagation()}>
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              transition={{ duration: 0.3, ease: "easeOut" }}
-              className="w-full max-w-[95%] sm:max-w-lg"
-              onClick={(e) => e.stopPropagation()}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="w-full max-w-[90vw] sm:max-w-lg"
             >
               <Card className="glass-glow border-primary/40 relative shadow-2xl">
                 {/* Close button */}
@@ -91,9 +91,9 @@ export function UpgradeModal({ isOpen, onClose, limitType, limitReached }: Upgra
                   {/* Header */}
                   <div className="text-center mb-8">
                     <motion.div
-                      initial={{ scale: 0.8, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      transition={{ delay: 0.1, duration: 0.3 }}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.05, duration: 0.3 }}
                       className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-primary to-primary/60 mb-4 shadow-lg"
                     >
                       <Icon className="h-8 w-8 text-white" />
@@ -118,9 +118,9 @@ export function UpgradeModal({ isOpen, onClose, limitType, limitReached }: Upgra
                       {premiumFeatures.map((feature, index) => (
                         <motion.div
                           key={index}
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: 0.15 + index * 0.08 }}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ delay: 0.08 + index * 0.04 }}
                           className="flex items-center gap-3"
                         >
                           <CheckCircle2 className="h-4 w-4 text-success flex-shrink-0" />
@@ -132,9 +132,9 @@ export function UpgradeModal({ isOpen, onClose, limitType, limitReached }: Upgra
 
                   {/* Pricing */}
                   <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.6, duration: 0.3 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.15, duration: 0.3 }}
                     className="bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 rounded-xl p-5 mb-7 text-center"
                   >
                     <div className="flex items-baseline justify-center gap-2 mb-2">
@@ -149,9 +149,9 @@ export function UpgradeModal({ isOpen, onClose, limitType, limitReached }: Upgra
                   {/* Actions */}
                   <div className="space-y-3">
                     <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.7, duration: 0.3 }}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.2, duration: 0.3 }}
                     >
                       <Button
                         onClick={() => window.location.href = "/pricing"}
