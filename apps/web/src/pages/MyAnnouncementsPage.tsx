@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import {
   Plus, Eye, Edit, Trash2, Clock, Users, DollarSign,
   MapPin, Calendar, Tag, AlertCircle, CheckCircle2, XCircle,
-  MessageSquare, Heart, TrendingUp, Filter, Search, ThumbsUp, ThumbsDown, Loader2
+  MessageSquare, Heart, TrendingUp, Filter, Search, ThumbsUp, ThumbsDown, Loader2, Star
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
@@ -644,14 +644,14 @@ function ProposalsDialog({
                         <div className="flex items-start justify-between mb-2">
                           <div>
                             <h4 className="font-semibold">{proposal.professional.name}</h4>
-                            {proposal.professional.professional_profile && (
+                            {proposal.professional.professional_profile && proposal.professional.professional_profile.average_rating !== undefined && (
                               <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                                 <div className="flex items-center">
-                                  <Heart className="h-3 w-3 text-warning mr-1" />
-                                  <span>{proposal.professional.professional_profile.average_rating.toFixed(1)}</span>
+                                  <Star className="h-3 w-3 text-warning mr-1 fill-warning" />
+                                  <span>{(proposal.professional.professional_profile.average_rating ?? 0).toFixed(1)}</span>
                                 </div>
                                 <span>•</span>
-                                <span>{proposal.professional.professional_profile.total_reviews} reseñas</span>
+                                <span>{proposal.professional.professional_profile.total_reviews ?? 0} reseñas</span>
                               </div>
                             )}
                             {proposal.professional.location && (
