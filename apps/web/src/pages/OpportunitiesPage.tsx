@@ -775,7 +775,7 @@ function ProposalForm({ opportunity, onClose, onSuccess }: { opportunity: Opport
   return (
     <div className="space-y-6">
       {/* Opportunity Summary */}
-      <Card className="glass-medium border-white/20 bg-gradient-to-br from-primary/15 via-primary/5 to-transparent overflow-hidden">
+      <Card className="bg-slate-800/60 border-white/15 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-transparent to-transparent pointer-events-none"></div>
         <CardContent className="p-5 sm:p-6 relative">
           <div className="flex items-center justify-between gap-3">
@@ -798,13 +798,13 @@ function ProposalForm({ opportunity, onClose, onSuccess }: { opportunity: Opport
         <div className="space-y-3">
           <div className="flex items-center gap-2">
             <div className="h-1 w-1.5 rounded-full bg-gradient-to-r from-primary to-primary/60"></div>
-            <Label className="text-foreground/95 font-bold text-base">Carta de Presentación *</Label>
+            <Label className="text-white font-bold text-base">Carta de Presentación *</Label>
           </div>
           <Textarea
             placeholder="Cuéntale al cliente por qué eres el candidato perfecto. Destaca tus habilidades, experiencia relevante y por qué te apasiona este proyecto..."
             value={proposalData.message}
             onChange={(e) => setProposalData({ ...proposalData, message: e.target.value })}
-            className="glass border-white/30 min-h-32 text-foreground placeholder:text-foreground/40 focus:border-primary/50"
+            className="bg-slate-800/80 border-white/20 min-h-32 text-white placeholder:text-slate-400 focus:border-primary/50 rounded-lg"
             rows={6}
           />
           <div className="flex items-center justify-between">
@@ -821,7 +821,7 @@ function ProposalForm({ opportunity, onClose, onSuccess }: { opportunity: Opport
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <div className="h-1 w-1.5 rounded-full bg-gradient-to-r from-primary to-primary/60"></div>
-              <Label htmlFor="budget" className="text-foreground/95 font-bold text-base">Presupuesto (ARS) *</Label>
+              <Label htmlFor="budget" className="text-white font-bold text-base">Presupuesto (ARS) *</Label>
             </div>
             <div className="relative">
               <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-primary font-bold text-lg">$</span>
@@ -831,7 +831,7 @@ function ProposalForm({ opportunity, onClose, onSuccess }: { opportunity: Opport
                 placeholder="5000"
                 value={proposalData.proposedBudget === 0 ? '' : proposalData.proposedBudget}
                 onChange={(e) => setProposalData({ ...proposalData, proposedBudget: parseInt(e.target.value) || 0 })}
-                className="glass border-white/30 pl-10 text-foreground font-semibold text-lg placeholder:text-foreground/40 focus:border-primary/50"
+                className="bg-slate-800/80 border-white/20 pl-10 text-white font-semibold text-lg placeholder:text-slate-400 focus:border-primary/50 rounded-lg"
                 min="0"
                 step="100"
               />
@@ -848,7 +848,7 @@ function ProposalForm({ opportunity, onClose, onSuccess }: { opportunity: Opport
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <div className="h-1 w-1.5 rounded-full bg-gradient-to-r from-primary to-primary/60"></div>
-              <Label htmlFor="delivery" className="text-foreground/95 font-bold text-base">Tiempo de Entrega *</Label>
+              <Label htmlFor="delivery" className="text-white font-bold text-base">Tiempo de Entrega *</Label>
             </div>
             <Input
               id="delivery"
@@ -856,7 +856,7 @@ function ProposalForm({ opportunity, onClose, onSuccess }: { opportunity: Opport
               placeholder="Ej: 7 días"
               value={proposalData.estimatedDuration}
               onChange={(e) => setProposalData({ ...proposalData, estimatedDuration: e.target.value })}
-              className="glass border-white/30 text-foreground font-semibold text-lg placeholder:text-foreground/40 focus:border-primary/50"
+              className="bg-slate-800/80 border-white/20 text-white font-semibold text-lg placeholder:text-slate-400 focus:border-primary/50 rounded-lg"
             />
             <p className="text-xs text-foreground/60 font-medium">
               📅 Personaliza según tu disponibilidad
@@ -866,14 +866,14 @@ function ProposalForm({ opportunity, onClose, onSuccess }: { opportunity: Opport
       </div>
 
       <div className="border-t border-white/15 pt-6 mt-2">
-        <div className="text-xs text-foreground/70 mb-5 p-4 bg-white/5 rounded-lg border border-white/10">
+        <div className="text-xs text-slate-300 mb-5 p-4 bg-slate-800/60 rounded-lg border border-white/15">
           ✓ Al enviar esta propuesta, aceptas los <a href="/terms" className="text-primary font-semibold hover:underline">términos de servicio</a> de Fixia
         </div>
         <div className="flex items-center justify-end gap-3 flex-wrap">
           <Button
             variant="outline"
             onClick={onClose}
-            className="glass border-white/30 text-foreground hover:glass-medium text-sm font-semibold"
+            className="bg-slate-800/60 border-white/20 text-white hover:bg-slate-800/80 text-sm font-semibold"
             disabled={submitting}
           >
             Cancelar
