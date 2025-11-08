@@ -415,26 +415,22 @@ export default function MyAnnouncementsPage() {
                                 </div>
 
                                 <div className="flex items-center space-x-2">
-                                  {project.status === 'open' && (
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      onClick={() => handleEdit(project.id)}
-                                      aria-label="Editar anuncio"
-                                    >
-                                      <Edit className="h-4 w-4" aria-hidden="true" />
-                                    </Button>
-                                  )}
-                                  {project.status === 'open' && (
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      onClick={() => handleDeleteClick(project.id)}
-                                      aria-label="Eliminar anuncio"
-                                    >
-                                      <Trash2 className="h-4 w-4 text-destructive" aria-hidden="true" />
-                                    </Button>
-                                  )}
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleEdit(project.id)}
+                                    aria-label="Editar anuncio"
+                                  >
+                                    <Edit className="h-4 w-4" aria-hidden="true" />
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleDeleteClick(project.id)}
+                                    aria-label="Eliminar anuncio"
+                                  >
+                                    <Trash2 className="h-4 w-4 text-destructive" aria-hidden="true" />
+                                  </Button>
                                 </div>
                               </div>
                             </CardContent>
