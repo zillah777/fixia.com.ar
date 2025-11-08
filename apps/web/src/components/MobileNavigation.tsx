@@ -31,8 +31,11 @@ interface NavigationItem {
 export const MobileNavigation = memo<MobileNavigationProps>(({ className }) => {
   const [isOpen, setIsOpen] = useState(false);
   const { user, isAuthenticated, logout } = useSecureAuth();
-  const { unreadCount } = useNotifications();
+  const { unreadCount, notifications } = useNotifications();
   const location = useLocation();
+
+  // Calculate actual unread count from notifications to prevent phantom badges
+  const actualUnreadCount = notifications.filter(n => !n.read).length;
 
   const handleClose = useCallback(() => {
     setIsOpen(false);
@@ -108,7 +111,7 @@ export const MobileNavigation = memo<MobileNavigationProps>(({ className }) => {
       label: 'Notificaciones',
       href: '/notifications',
       icon: <Bell className="h-5 w-5" />,
-      badge: unreadCount > 0 ? unreadCount : undefined,
+      badge: actualUnreadCount > 0 ? actualUnreadCount : undefined,
       requiresAuth: true
     },
     {
