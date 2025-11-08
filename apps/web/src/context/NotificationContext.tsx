@@ -70,11 +70,19 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       // Calculate actual unread count from notifications to prevent mismatch
       const actualUnreadCount = convertedNotifications.filter(n => !n.read).length;
 
-      // Safety check: if we have notifications, verify the unread count matches
-      // If there's a mismatch, use the actual count from the data
-      const finalUnreadCount = actualUnreadCount > 0 ? Math.max(actualUnreadCount, unreadCountData) : 0;
+      // Safety check: always use the actual count from the notifications array
+      // This prevents phantom notifications where unreadCount > 0 but no notifications exist
+      const finalUnreadCount = actualUnreadCount;
 
       // Debug logging for notification issues
+      if (actualUnreadCount !== unreadCountData) {
+        console.warn(`⚠️ Notification count mismatch for user ${user?.id}:`, {
+          actualUnreadCount: actualUnreadCount,
+          serverUnreadCount: unreadCountData,
+          discrepancy: Math.abs(actualUnreadCount - unreadCountData)
+        });
+      }
+
       console.log(`📬 Notifications loaded for user ${user?.id}:`, {
         total: convertedNotifications.length,
         actualUnreadCount: actualUnreadCount,
