@@ -390,13 +390,13 @@ export const VerificationAdminPage = memo(() => {
 
       {/* Review Dialog */}
       <Dialog open={reviewDialog.open} onOpenChange={closeReviewDialog}>
-        <DialogContent className="max-w-[90vw] sm:max-w-md">
+        <DialogContent className="bg-slate-900/95 border-white/20 max-w-[90vw] sm:max-w-md backdrop-blur-xl">
           <DialogHeader>
-            <DialogTitle>
+            <DialogTitle className="text-white">
               {reviewDialog.action === 'approve' ? 'Aprobar' : 'Rechazar'} Verificación
             </DialogTitle>
-            <DialogDescription>
-              {reviewDialog.action === 'approve' 
+            <DialogDescription className="text-slate-300">
+              {reviewDialog.action === 'approve'
                 ? 'Esta acción aprobará la solicitud de verificación y actualizará el trust score del usuario.'
                 : 'Esta acción rechazará la solicitud. Por favor proporciona un motivo.'
               }
@@ -453,12 +453,12 @@ export const VerificationAdminPage = memo(() => {
       {/* Request Detail Dialog */}
       {selectedRequest && (
         <Dialog open={!!selectedRequest} onOpenChange={() => setSelectedRequest(null)}>
-          <DialogContent className="max-w-[90vw] sm:max-w-2xl max-h-[80vh] sm:max-h-[80vh] overflow-auto">
+          <DialogContent className="bg-slate-900/95 border-white/20 max-w-[90vw] sm:max-w-2xl max-h-[80vh] sm:max-h-[80vh] overflow-auto backdrop-blur-xl">
             <DialogHeader>
-              <DialogTitle>
+              <DialogTitle className="text-white">
                 Detalle de Verificación - {verificationService.getVerificationTypeLabel(selectedRequest.verificationType)}
               </DialogTitle>
-              <DialogDescription>
+              <DialogDescription className="text-slate-300">
                 Solicitud ID: {selectedRequest.id}
               </DialogDescription>
             </DialogHeader>

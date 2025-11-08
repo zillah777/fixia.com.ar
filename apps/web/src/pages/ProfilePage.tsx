@@ -805,7 +805,7 @@ function SettingsSection() {
                 Eliminar Cuenta
               </Button>
             </DialogTrigger>
-            <DialogContent className="glass-glow border-destructive/40 shadow-2xl">
+            <DialogContent className="bg-slate-900/95 border-destructive/40 shadow-2xl backdrop-blur-xl">
               <DialogHeader className="border-b border-destructive/20 pb-4">
                 <div className="flex items-center gap-2 mb-2">
                   <div className="p-2 rounded-lg bg-destructive/20">
@@ -813,7 +813,7 @@ function SettingsSection() {
                   </div>
                   <DialogTitle className="text-destructive text-xl">¿Eliminar cuenta permanentemente?</DialogTitle>
                 </div>
-                <DialogDescription className="text-white/70 ml-10 mt-2">
+                <DialogDescription className="text-slate-300 ml-10 mt-2">
                   Esta acción no se puede deshacer. Se eliminarán todos tus datos, servicios,
                   mensajes y cualquier información asociada a tu cuenta.
                 </DialogDescription>

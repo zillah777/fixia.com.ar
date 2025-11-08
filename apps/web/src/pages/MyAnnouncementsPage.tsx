@@ -479,10 +479,10 @@ export default function MyAnnouncementsPage() {
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <DialogContent className="glass border-white/10">
+        <DialogContent className="bg-slate-900/95 border-white/20 backdrop-blur-xl">
           <DialogHeader>
-            <DialogTitle>Eliminar Anuncio</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-white">Eliminar Anuncio</DialogTitle>
+            <DialogDescription className="text-slate-300">
               Esta acción no se puede deshacer. El anuncio será eliminado permanentemente.
             </DialogDescription>
           </DialogHeader>

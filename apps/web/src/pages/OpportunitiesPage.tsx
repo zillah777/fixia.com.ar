@@ -491,7 +491,10 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
                     <div className="space-y-1">
                       <div className="text-xs font-semibold text-muted-foreground uppercase">Presupuesto</div>
                       <div className="text-2xl font-bold text-success">
-                        ${opportunity.budget.min.toLocaleString('es-AR')} - ${opportunity.budget.max.toLocaleString('es-AR')}
+                        {opportunity.budget?.min && opportunity.budget?.max
+                          ? `$${(opportunity.budget.min ?? 0).toLocaleString('es-AR')} - $${(opportunity.budget.max ?? 0).toLocaleString('es-AR')}`
+                          : 'A convenir'
+                        }
                       </div>
                     </div>
                     <div className="space-y-1 pt-2">
@@ -564,10 +567,10 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
         
         {/* Proposal Modal */}
         <Dialog open={showProposal} onOpenChange={setShowProposal}>
-          <DialogContent className="glass border-white/20 max-w-[90vw] sm:max-w-2xl bg-gradient-to-br from-background/98 via-background/96 to-background/94 fixed backdrop-blur-xl shadow-2xl">
+          <DialogContent className="bg-slate-900/95 border-white/20 max-w-[90vw] sm:max-w-2xl fixed backdrop-blur-xl shadow-2xl">
             <DialogHeader className="border-b border-gradient-to-r from-primary/20 via-transparent to-transparent pb-6 mb-2">
-              <DialogTitle className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-primary via-primary/90 to-primary/70 bg-clip-text text-transparent">Enviar Tu Propuesta</DialogTitle>
-              <DialogDescription className="text-base text-foreground/90 font-medium mt-3">
+              <DialogTitle className="text-2xl sm:text-3xl font-bold text-white">Enviar Tu Propuesta</DialogTitle>
+              <DialogDescription className="text-base text-slate-300 font-medium mt-3">
                 {opportunity.title}
               </DialogDescription>
             </DialogHeader>
@@ -670,13 +673,19 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
             <div className="space-y-1">
               <span className="text-xs font-semibold text-muted-foreground uppercase">Presupuesto</span>
               <div className="flex items-baseline gap-1">
-                <span className="text-lg font-bold text-success">
-                  ${opportunity.budget.min.toLocaleString('es-AR')}
-                </span>
-                <span className="text-xs text-muted-foreground">-</span>
-                <span className="text-lg font-bold text-success">
-                  ${opportunity.budget.max.toLocaleString('es-AR')}
-                </span>
+                {opportunity.budget?.min && opportunity.budget?.max ? (
+                  <>
+                    <span className="text-lg font-bold text-success">
+                      ${(opportunity.budget.min ?? 0).toLocaleString('es-AR')}
+                    </span>
+                    <span className="text-xs text-muted-foreground">-</span>
+                    <span className="text-lg font-bold text-success">
+                      ${(opportunity.budget.max ?? 0).toLocaleString('es-AR')}
+                    </span>
+                  </>
+                ) : (
+                  <span className="text-sm text-muted-foreground">A convenir</span>
+                )}
               </div>
             </div>
             <div className="space-y-1">
@@ -716,10 +725,10 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
       
       {/* Proposal Modal */}
       <Dialog open={showProposal} onOpenChange={setShowProposal}>
-        <DialogContent className="glass border-white/20 max-w-[90vw] sm:max-w-2xl bg-gradient-to-br from-background/98 via-background/96 to-background/94 fixed backdrop-blur-xl shadow-2xl">
+        <DialogContent className="bg-slate-900/95 border-white/20 max-w-[90vw] sm:max-w-2xl fixed backdrop-blur-xl shadow-2xl">
           <DialogHeader className="border-b border-gradient-to-r from-primary/20 via-transparent to-transparent pb-6 mb-2">
-            <DialogTitle className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-primary via-primary/90 to-primary/70 bg-clip-text text-transparent">Enviar Tu Propuesta</DialogTitle>
-            <DialogDescription className="text-base text-foreground/90 font-medium mt-3">
+            <DialogTitle className="text-2xl sm:text-3xl font-bold text-white">Enviar Tu Propuesta</DialogTitle>
+            <DialogDescription className="text-base text-slate-300 font-medium mt-3">
               {opportunity.title}
             </DialogDescription>
           </DialogHeader>
@@ -773,7 +782,7 @@ function ProposalForm({ opportunity, onClose, onSuccess }: { opportunity: Opport
             <div className="flex-1 min-w-0">
               <h4 className="font-bold text-lg text-foreground truncate">{opportunity.title}</h4>
               <p className="text-sm text-primary/90 mt-2 font-semibold">
-                💰 Presupuesto referencial: ARS ${(opportunity.budget || 0).toLocaleString('es-AR')}
+                💰 Presupuesto referencial: ARS ${opportunity.budget?.min ? (opportunity.budget.min ?? 0).toLocaleString('es-AR') : '0'}
               </p>
             </div>
             <Badge className="bg-gradient-to-r from-primary to-primary/80 text-white border-0 flex-shrink-0 text-xs sm:text-sm whitespace-nowrap shadow-lg">
@@ -830,7 +839,7 @@ function ProposalForm({ opportunity, onClose, onSuccess }: { opportunity: Opport
             {proposalData.proposedBudget > 0 && (
               <div className="flex items-center gap-2 p-3 bg-primary/10 rounded-lg border border-primary/20">
                 <span className="text-sm text-primary font-semibold">
-                  💵 Tu propuesta: ARS ${proposalData.proposedBudget.toLocaleString('es-AR')}
+                  💵 Tu propuesta: ARS ${(proposalData.proposedBudget ?? 0).toLocaleString('es-AR')}
                 </span>
               </div>
             )}

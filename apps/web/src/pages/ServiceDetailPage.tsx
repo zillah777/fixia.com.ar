@@ -59,7 +59,7 @@ function ImageLightbox({
 }) {
   return (
     <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="max-w-[95vw] sm:max-w-7xl w-full h-[85vh] sm:h-[90vh] p-0 bg-background/95 backdrop-blur-xl border-white/10">
+      <DialogContent className="max-w-[95vw] sm:max-w-7xl w-full h-[85vh] sm:h-[90vh] p-0 bg-slate-900/95 backdrop-blur-xl border-white/10">
         <DialogTitle className="sr-only">Galería de imágenes</DialogTitle>
         <DialogDescription className="sr-only">
           Galería de imágenes del servicio. Imagen {currentIndex + 1} de {images.length}
