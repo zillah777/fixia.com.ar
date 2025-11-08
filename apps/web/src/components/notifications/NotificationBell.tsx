@@ -12,7 +12,7 @@ import { toast } from 'sonner';
 
 interface Notification {
   id: string;
-  type: 'message' | 'order' | 'payment' | 'review' | 'system' | 'promotion';
+  type: 'message' | 'order' | 'payment' | 'review' | 'system' | 'promotion' | 'proposal_received' | 'proposal_accepted' | 'job_started' | 'job_completed' | 'job_milestone' | 'review_received';
   title: string;
   message: string;
   read: boolean;
@@ -31,7 +31,13 @@ const notificationTypeConfig = {
   review: { color: 'bg-warning', icon: '⭐' },
   message: { color: 'bg-pink-500', icon: '💬' },
   promotion: { color: 'bg-orange-500', icon: '📋' },
-  system: { color: 'bg-gray-500', icon: '🔔' }
+  system: { color: 'bg-gray-500', icon: '🔔' },
+  proposal_received: { color: 'bg-purple-500', icon: '📋' },
+  proposal_accepted: { color: 'bg-green-500', icon: '✅' },
+  job_started: { color: 'bg-blue-500', icon: '🚀' },
+  job_completed: { color: 'bg-emerald-500', icon: '🎉' },
+  job_milestone: { color: 'bg-yellow-500', icon: '⭐' },
+  review_received: { color: 'bg-orange-500', icon: '⭐' }
 };
 
 export function NotificationBell({ className }: NotificationBellProps) {
