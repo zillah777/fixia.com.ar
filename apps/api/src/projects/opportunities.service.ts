@@ -1,11 +1,15 @@
 import { Injectable, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../common/prisma.service';
+import { NotificationsService } from '../notifications/notifications.service';
 
 // Interface removed - using direct transformation to frontend format
 
 @Injectable()
 export class OpportunitiesService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private notificationsService: NotificationsService,
+  ) {}
 
   async getOpportunities(
     userId: string,
@@ -382,7 +386,19 @@ export class OpportunitiesService {
       },
     });
 
-    // TODO: Send notification to client
+    // Send notification to client about new proposal
+    try {
+      await this.notificationsService.createProposalNotification(project.client_id, {
+        proposalId: proposal.id,
+        projectTitle: project.title,
+        professionalName: user.name,
+        amount: applicationData.proposedBudget,
+      });
+    } catch (error) {
+      // Log notification error but don't fail the proposal submission
+      console.error('Failed to send proposal notification:', error);
+    }
+
     // TODO: Send email to client
 
     return {
@@ -505,6 +521,19 @@ export class OpportunitiesService {
       };
     });
 
+    // Send notification to professional about proposal acceptance
+    try {
+      await this.notificationsService.createNotification({
+        userId: proposal.professional_id,
+        type: 'system',
+        title: 'Propuesta Aceptada',
+        message: `Tu propuesta para "${project.title}" ha sido aceptada! Puedes contactar al cliente por WhatsApp.`,
+        actionUrl: `/jobs/${result.job.id}`
+      });
+    } catch (error) {
+      console.error('Failed to send proposal acceptance notification:', error);
+    }
+
     return result;
   }
 
@@ -542,11 +571,29 @@ export class OpportunitiesService {
     // Update proposal to rejected
     const rejectedProposal = await this.prisma.proposal.update({
       where: { id: proposalId },
+      include: {
+        professional: {
+          select: { id: true, name: true },
+        },
+      },
       data: {
         status: 'rejected',
         rejected_at: new Date(),
       },
     });
+
+    // Send notification to professional about proposal rejection
+    try {
+      await this.notificationsService.createNotification({
+        userId: rejectedProposal.professional_id,
+        type: 'system',
+        title: 'Propuesta Rechazada',
+        message: `Tu propuesta para "${project.title}" ha sido rechazada. El cliente eligió otra opción.`,
+        actionUrl: `/opportunities`
+      });
+    } catch (error) {
+      console.error('Failed to send proposal rejection notification:', error);
+    }
 
     return {
       success: true,

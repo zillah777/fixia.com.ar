@@ -1,19 +1,21 @@
-import { 
-  Controller, 
-  Get, 
-  Post, 
-  Put, 
-  Delete, 
-  Param, 
-  Body, 
-  Query, 
-  UseGuards, 
-  HttpStatus, 
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Param,
+  Body,
+  Query,
+  UseGuards,
+  HttpStatus,
   HttpException,
   ParseIntPipe
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { Roles } from '../auth/decorators/roles.decorator';
 import { NotificationsService } from './notifications.service';
 import { 
   CreateNotificationDto, 
@@ -460,14 +462,15 @@ export class NotificationsController {
     }
   }
 
-  // Admin endpoints (would need role-based access control in production)
+  // Admin endpoints (role-based access control)
   @Get('admin/all')
+  @UseGuards(RolesGuard)
+  @Roles('admin')
   async getAllNotifications(
     @CurrentUser() user: User,
     @Query() filters: NotificationFiltersDto
   ) {
     try {
-      // TODO: Add admin role check
       const result = await this.notificationsService.getNotificationStats();
       return result;
     } catch (error) {
@@ -479,12 +482,13 @@ export class NotificationsController {
   }
 
   @Post('admin/bulk-notify')
+  @UseGuards(RolesGuard)
+  @Roles('admin')
   async sendBulkNotification(
     @CurrentUser() user: User,
     @Body() bulkNotificationDto: BulkNotificationDto
   ) {
     try {
-      // TODO: Add admin role check
       const notifications = bulkNotificationDto.userIds.map(userId => ({
         userId,
         type: bulkNotificationDto.type,
@@ -494,7 +498,7 @@ export class NotificationsController {
       }));
 
       const created = await this.notificationsService.createBulkNotifications(notifications);
-      
+
       return {
         message: `${created.length} notifications sent successfully`,
         count: created.length
@@ -508,6 +512,8 @@ export class NotificationsController {
   }
 
   @Post('admin/notify-professionals')
+  @UseGuards(RolesGuard)
+  @Roles('admin')
   async notifyAllProfessionals(
     @CurrentUser() user: User,
     @Body() notificationData: {
@@ -517,7 +523,6 @@ export class NotificationsController {
     }
   ) {
     try {
-      // TODO: Add admin role check
       const result = await this.notificationsService.notifyAllProfessionals(
         notificationData.title,
         notificationData.message,
@@ -537,14 +542,15 @@ export class NotificationsController {
   }
 
   @Delete('admin/cleanup')
+  @UseGuards(RolesGuard)
+  @Roles('admin')
   async cleanupOldNotifications(
     @CurrentUser() user: User,
     @Query('days', new ParseIntPipe({ optional: true })) days?: number
   ) {
     try {
-      // TODO: Add admin role check
       const result = await this.notificationsService.cleanOldNotifications(days || 90);
-      
+
       return {
         message: `${result.count} old notifications cleaned up`,
         count: result.count
