@@ -238,7 +238,8 @@ model Proposal {
   parent_proposal    Proposal?      @relation("CounterProposals", fields: [parent_proposal_id], references: [id], onDelete: Cascade)
   counter_proposals  Proposal[]     @relation("CounterProposals")
 
-  @@unique([project_id, professional_id, version])
+  // Index for performance (but not unique to allow 2 proposals per professional per opportunity)
+  @@index([project_id, professional_id])
   @@index([status])
   @@index([accepted_at])
   @@map("proposals")
