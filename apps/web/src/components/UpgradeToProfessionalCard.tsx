@@ -193,13 +193,13 @@ export function UpgradeToProfessionalCard({ userType, onUpgradeSuccess }: Upgrad
 
       {/* Upgrade Dialog */}
       <Dialog open={showUpgradeDialog} onOpenChange={setShowUpgradeDialog}>
-        <DialogContent className="max-w-[90vw] sm:max-w-[600px] max-h-[85vh] sm:max-h-[90vh] overflow-y-auto glass">
+        <DialogContent className="max-w-[90vw] sm:max-w-[600px] max-h-[85vh] sm:max-h-[90vh] overflow-y-auto bg-slate-900/95 border-white/20 backdrop-blur-xl">
           <DialogHeader>
-            <DialogTitle className="flex items-center space-x-2 text-2xl">
+            <DialogTitle className="flex items-center space-x-2 text-2xl text-white">
               <Sparkles className="h-6 w-6 text-primary" />
               <span>Actualizar a Profesional DUAL</span>
             </DialogTitle>
-            <DialogDescription className="text-base">
+            <DialogDescription className="text-base text-slate-300">
               Completa tu perfil profesional para comenzar a ofrecer servicios
             </DialogDescription>
           </DialogHeader>

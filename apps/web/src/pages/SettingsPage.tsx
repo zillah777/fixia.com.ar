@@ -488,7 +488,7 @@ function SecurityTab() {
 
       {/* Delete Account Confirmation Dialog */}
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <DialogContent className="glass-glow border-destructive/40 max-w-[95%] sm:max-w-md shadow-2xl">
+        <DialogContent className="bg-slate-900/95 border-destructive/40 max-w-[95%] sm:max-w-md shadow-2xl backdrop-blur-xl">
           <DialogHeader className="border-b border-destructive/20 pb-4">
             <div className="flex items-center space-x-2 mb-2">
               <div className="p-2 rounded-lg bg-destructive/20">
@@ -496,7 +496,7 @@ function SecurityTab() {
               </div>
               <DialogTitle className="text-destructive text-lg">Confirmar Eliminación de Cuenta</DialogTitle>
             </div>
-            <DialogDescription className="text-white/70 ml-10 mt-2">
+            <DialogDescription className="text-slate-300 ml-10 mt-2">
               Esta acción es permanente e irreversible. Se eliminarán todos tus datos.
             </DialogDescription>
           </DialogHeader>
@@ -1013,7 +1013,7 @@ function SubscriptionTab() {
 
       {/* Cancel Subscription Dialog */}
       <Dialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
-        <DialogContent className="glass-glow border-warning/40 max-w-[95%] sm:max-w-md shadow-2xl">
+        <DialogContent className="bg-slate-900/95 border-warning/40 max-w-[95%] sm:max-w-md shadow-2xl backdrop-blur-xl">
           <DialogHeader className="border-b border-warning/20 pb-4">
             <div className="flex items-center space-x-2 mb-2">
               <div className="p-2 rounded-lg bg-warning/20">
@@ -1021,7 +1021,7 @@ function SubscriptionTab() {
               </div>
               <DialogTitle className="text-warning text-lg">Cancelar Suscripción Premium</DialogTitle>
             </div>
-            <DialogDescription className="text-white/70 ml-10 mt-2">
+            <DialogDescription className="text-slate-300 ml-10 mt-2">
               ¿Estás seguro de que deseas cancelar tu suscripción profesional?
             </DialogDescription>
           </DialogHeader>

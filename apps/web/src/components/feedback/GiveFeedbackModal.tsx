@@ -85,7 +85,7 @@ export const GiveFeedbackModal: React.FC<GiveFeedbackModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="glass-glow border-white/30 max-w-[95%] sm:max-w-[500px] shadow-2xl">
+      <DialogContent className="bg-slate-900/95 border-white/30 max-w-[95%] sm:max-w-[500px] shadow-2xl backdrop-blur-xl">
         <DialogHeader className="border-b border-white/10 pb-4">
           <DialogTitle className="flex items-center gap-2 text-white">
             <div className="p-2 rounded-lg bg-primary/20">
@@ -93,7 +93,7 @@ export const GiveFeedbackModal: React.FC<GiveFeedbackModalProps> = ({
             </div>
             Dar Feedback
           </DialogTitle>
-          <DialogDescription className="text-white/70 mt-2">
+          <DialogDescription className="text-slate-300 mt-2">
             Comparte tu experiencia con <span className="font-semibold text-white">{toUser.name}</span>
           </DialogDescription>
         </DialogHeader>

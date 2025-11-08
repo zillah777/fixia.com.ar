@@ -85,10 +85,10 @@ export const SecureAvatarUpload = memo<SecureAvatarUploadProps>(({
         </Button>
       </DialogTrigger>
       
-      <DialogContent className="glass border-white/10 max-w-[90vw] sm:max-w-md">
+      <DialogContent className="bg-slate-900/95 border-white/20 max-w-[90vw] sm:max-w-md backdrop-blur-xl">
         <DialogHeader>
           <DialogTitle className="text-white">Cambiar Foto de Perfil</DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-slate-300">
             Sube una nueva foto de perfil (máximo 5MB, formatos: JPG, PNG, WebP)
           </DialogDescription>
         </DialogHeader>

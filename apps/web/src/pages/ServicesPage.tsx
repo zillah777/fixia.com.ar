@@ -271,10 +271,10 @@ function ContactProfessionalModal({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="glass border-white/10 sm:max-w-md">
+      <DialogContent className="bg-slate-900/95 border-white/20 sm:max-w-md backdrop-blur-xl">
         <DialogHeader>
-          <DialogTitle>Contactar a {service.professional.name}</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="text-white">Contactar a {service.professional.name}</DialogTitle>
+          <DialogDescription className="text-slate-300">
             Envía un mensaje sobre: {service.title}
           </DialogDescription>
         </DialogHeader>
