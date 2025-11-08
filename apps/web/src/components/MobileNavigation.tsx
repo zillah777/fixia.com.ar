@@ -147,66 +147,54 @@ export const MobileNavigation = memo<MobileNavigationProps>(({ className }) => {
         </Button>
       </SheetTrigger>
       
-      <SheetContent side="left" className="w-[90vw] xs:w-[80vw] sm:w-80 max-w-sm p-0 overflow-y-auto max-h-screen">
-        <div className="flex flex-col min-h-full">
-          {/* Header - Compact */}
-          <SheetHeader className="p-3 xs:p-4 pb-2 xs:pb-3 flex-shrink-0">
+      <SheetContent side="left" className="w-[80vw] sm:w-72 max-w-xs p-0 overflow-y-auto max-h-screen">
+        <div className="flex flex-col h-full">
+          {/* Header - Ultra Compact */}
+          <SheetHeader className="p-2 sm:p-3 pb-1 sm:pb-2 flex-shrink-0 border-b border-border/50">
             <SheetTitle className="sr-only">Menú de Navegación</SheetTitle>
-            <div className="flex items-center justify-between gap-2">
-              <Link to="/" onClick={handleClose} className="flex items-center gap-1.5 xs:gap-2 flex-shrink-0">
-                <motion.div
-                  className="relative flex-shrink-0"
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                >
-                  <img
-                    src="/logo.png"
-                    alt="Fixia Logo"
-                    className="h-9 w-9 xs:h-11 xs:w-11 object-contain drop-shadow-lg relative z-10"
-                  />
-                  <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-blue-500/20 rounded-xl blur opacity-30 animate-pulse-slow"></div>
-                </motion.div>
-                <div className="flex flex-col justify-center min-w-0">
-                  <span className="text-base xs:text-lg font-semibold tracking-tight text-foreground truncate">Fixia</span>
-                  <span className="text-[10px] xs:text-xs text-muted-foreground -mt-0.5 line-clamp-1">
-                    Conecta. Confía.
-                  </span>
-                </div>
-              </Link>
-            </div>
+            <Link to="/" onClick={handleClose} className="flex items-center gap-1.5 flex-shrink-0">
+              <motion.div
+                className="relative flex-shrink-0"
+                whileHover={{ scale: 1.05 }}
+                transition={{ type: "spring", stiffness: 400, damping: 10 }}
+              >
+                <img
+                  src="/logo.png"
+                  alt="Fixia Logo"
+                  className="h-8 w-8 sm:h-9 sm:w-9 object-contain drop-shadow-lg relative z-10"
+                />
+              </motion.div>
+              <span className="text-sm sm:text-base font-semibold tracking-tight text-foreground truncate">Fixia</span>
+            </Link>
           </SheetHeader>
 
-          {/* User Info - Compact */}
+          {/* User Info - Ultra Compact */}
           {isAuthenticated && user && (
-            <div className="px-3 xs:px-4 py-2.5 xs:py-3 border-b border-border flex-shrink-0">
-              <div className="flex items-center gap-2">
-                <Avatar className="h-9 w-9 xs:h-10 xs:w-10 flex-shrink-0">
+            <div className="px-2 sm:px-3 py-2 sm:py-2.5 border-b border-border/50 flex-shrink-0">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <Avatar className="h-8 w-8 sm:h-9 sm:w-9 flex-shrink-0">
                   <AvatarImage src={user.avatar} />
                   <AvatarFallback className="text-xs">
                     {user.name?.charAt(0)?.toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-1">
-                    <h3 className="text-xs xs:text-sm font-medium text-foreground truncate">
-                      {user.name}
-                    </h3>
-                    {user.isVerified && (
-                      <Shield className="h-3 w-3 text-primary flex-shrink-0" />
-                    )}
-                  </div>
-                  <div className="flex items-center gap-1 mt-0.5 flex-wrap">
+                  <h3 className="text-[11px] sm:text-xs font-medium text-foreground truncate">
+                    {user.name}
+                  </h3>
+                  <div className="flex items-center gap-0.5 mt-0.5 flex-wrap">
                     <Badge
-                      variant={user.userType === 'professional' ? 'default' : 'secondary'}
-                      className="text-[9px] xs:text-[10px] px-1 xs:px-1.5 py-0 h-4 xs:h-5"
+                      className={cn(
+                        "text-[8px] px-2 py-0.5 h-auto font-semibold whitespace-nowrap",
+                        user.userType === 'professional'
+                          ? 'bg-gradient-to-r from-primary to-primary/80 text-white shadow-md'
+                          : 'bg-gradient-to-r from-blue-400 to-blue-500 text-white shadow-md'
+                      )}
                     >
-                      {user.userType === 'professional' ? 'Pro' : 'Cli'}
+                      {user.userType === 'professional' ? 'Pro' : 'Cliente'}
                     </Badge>
-                    {user.planType === 'premium' && (
-                      <Badge variant="outline" className="text-[9px] xs:text-[10px] px-1 xs:px-1.5 py-0 h-4 xs:h-5 gap-0.5">
-                        <Crown className="h-2 w-2 xs:h-2.5 xs:w-2.5" />
-                        Prem
-                      </Badge>
+                    {user.isVerified && (
+                      <Shield className="h-2.5 w-2.5 text-primary flex-shrink-0" />
                     )}
                   </div>
                 </div>
@@ -215,11 +203,11 @@ export const MobileNavigation = memo<MobileNavigationProps>(({ className }) => {
           )}
 
           {/* Navigation Items */}
-          <nav className="flex-1 overflow-y-auto py-2 xs:py-4">
-            <div className="space-y-0.5 xs:space-y-1 px-2 xs:px-3">
+          <nav className="flex-1 overflow-y-auto py-1 sm:py-2">
+            <div className="space-y-0 px-1.5 sm:px-2">
               {/* Public Navigation - Hidden when authenticated */}
               {!isAuthenticated && (
-                <div className="space-y-0.5 xs:space-y-1">
+                <div className="space-y-0.5">
                   {publicNavigation.map((item) => (
                     <NavigationLink
                       key={item.href}
@@ -234,8 +222,8 @@ export const MobileNavigation = memo<MobileNavigationProps>(({ className }) => {
               {/* Authenticated Navigation */}
               {isAuthenticated && (
                 <>
-                  <Separator className="my-2 xs:my-4" />
-                  <div className="space-y-0.5 xs:space-y-1">
+                  <Separator className="my-1 sm:my-2" />
+                  <div className="space-y-0.5">
                     {authenticatedNavigation
                       .filter(shouldShowItem)
                       .map((item) => (
@@ -253,30 +241,30 @@ export const MobileNavigation = memo<MobileNavigationProps>(({ className }) => {
           </nav>
 
           {/* Auth Actions */}
-          <div className="p-3 xs:p-4 xs:pt-3 pt-2 border-t border-border flex-shrink-0">
+          <div className="p-1.5 sm:p-2 border-t border-border/50 flex-shrink-0 space-y-1 sm:space-y-1.5">
             {isAuthenticated ? (
               <Button
                 variant="outline"
-                className="w-full justify-start text-xs xs:text-sm h-9 xs:h-10"
+                className="w-full justify-start text-[11px] sm:text-xs h-8 sm:h-9"
                 onClick={handleLogout}
               >
-                <LogOut className="h-3.5 w-3.5 xs:h-4 xs:w-4 mr-1.5 xs:mr-2 flex-shrink-0" />
+                <LogOut className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1 sm:mr-1.5 flex-shrink-0" />
                 <span className="truncate">Cerrar Sesión</span>
               </Button>
             ) : (
-              <div className="space-y-2">
+              <>
                 <Link to="/login" onClick={handleClose} className="block">
-                  <Button variant="outline" className="w-full text-xs xs:text-sm h-9 xs:h-10">
+                  <Button variant="outline" className="w-full text-[11px] sm:text-xs h-8 sm:h-9">
                     Iniciar Sesión
                   </Button>
                 </Link>
                 <Link to="/register" onClick={handleClose} className="block">
-                  <Button className="w-full liquid-gradient text-xs xs:text-sm h-9 xs:h-10">
-                    <Gift className="h-3.5 w-3.5 xs:h-4 xs:w-4 mr-1 xs:mr-2 flex-shrink-0" />
+                  <Button className="w-full liquid-gradient text-[11px] sm:text-xs h-8 sm:h-9">
+                    <Gift className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1 flex-shrink-0" />
                     <span className="truncate">Únete Gratis</span>
                   </Button>
                 </Link>
-              </div>
+              </>
             )}
           </div>
         </div>
@@ -298,18 +286,18 @@ const NavigationLink = memo<NavigationLinkProps>(({ item, isActive, onClick }) =
       to={item.href}
       onClick={onClick}
       className={cn(
-        "flex items-center gap-2 xs:gap-3 px-2.5 xs:px-4 py-2 xs:py-3 rounded-md text-xs xs:text-sm font-medium transition-colors min-h-10 xs:min-h-12",
+        "flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 rounded text-[11px] sm:text-xs font-medium transition-colors min-h-8 sm:min-h-9",
         isActive
           ? "bg-primary text-primary-foreground"
-          : "text-foreground hover:bg-accent hover:text-accent-foreground"
+          : "text-foreground hover:bg-accent/50 hover:text-accent-foreground"
       )}
     >
-      <span className="h-4 w-4 xs:h-5 xs:w-5 flex-shrink-0 flex items-center justify-center">
+      <span className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0 flex items-center justify-center">
         {item.icon}
       </span>
-      <span className="flex-1 truncate">{item.label}</span>
+      <span className="flex-1 truncate text-left">{item.label}</span>
       {item.badge && item.badge > 0 && (
-        <Badge variant="destructive" className="text-[9px] xs:text-xs px-1 xs:px-1.5 py-0 h-4 xs:h-5 flex-shrink-0">
+        <Badge variant="destructive" className="text-[7px] sm:text-[8px] px-0.5 py-0 h-3 sm:h-3.5 flex-shrink-0">
           {item.badge > 99 ? '99+' : item.badge}
         </Badge>
       )}

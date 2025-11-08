@@ -558,10 +558,10 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
         
         {/* Proposal Modal */}
         <Dialog open={showProposal} onOpenChange={setShowProposal}>
-          <DialogContent className="glass border-white/10 max-w-[90vw] sm:max-w-2xl bg-gradient-to-br from-background/95 via-background to-background/95 fixed">
-            <DialogHeader className="border-b border-white/10 pb-4">
-              <DialogTitle className="text-lg sm:text-xl font-bold text-foreground">Enviar Tu Propuesta</DialogTitle>
-              <DialogDescription className="text-sm text-foreground/80 font-medium mt-2">
+          <DialogContent className="glass border-white/20 max-w-[90vw] sm:max-w-2xl bg-gradient-to-br from-background/98 via-background/96 to-background/94 fixed backdrop-blur-xl shadow-2xl">
+            <DialogHeader className="border-b border-gradient-to-r from-primary/20 via-transparent to-transparent pb-6 mb-2">
+              <DialogTitle className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-primary via-primary/90 to-primary/70 bg-clip-text text-transparent">Enviar Tu Propuesta</DialogTitle>
+              <DialogDescription className="text-base text-foreground/90 font-medium mt-3">
                 {opportunity.title}
               </DialogDescription>
             </DialogHeader>
@@ -704,10 +704,10 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
       
       {/* Proposal Modal */}
       <Dialog open={showProposal} onOpenChange={setShowProposal}>
-        <DialogContent className="glass border-white/10 max-w-[90vw] sm:max-w-2xl bg-gradient-to-br from-background/95 via-background to-background/95 fixed">
-          <DialogHeader className="border-b border-white/10 pb-4">
-            <DialogTitle className="text-lg sm:text-xl font-bold text-foreground">Enviar Tu Propuesta</DialogTitle>
-            <DialogDescription className="text-sm text-foreground/80 font-medium mt-2">
+        <DialogContent className="glass border-white/20 max-w-[90vw] sm:max-w-2xl bg-gradient-to-br from-background/98 via-background/96 to-background/94 fixed backdrop-blur-xl shadow-2xl">
+          <DialogHeader className="border-b border-gradient-to-r from-primary/20 via-transparent to-transparent pb-6 mb-2">
+            <DialogTitle className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-primary via-primary/90 to-primary/70 bg-clip-text text-transparent">Enviar Tu Propuesta</DialogTitle>
+            <DialogDescription className="text-base text-foreground/90 font-medium mt-3">
               {opportunity.title}
             </DialogDescription>
           </DialogHeader>
@@ -754,105 +754,122 @@ function ProposalForm({ opportunity, onClose, onSuccess }: { opportunity: Opport
   return (
     <div className="space-y-6">
       {/* Opportunity Summary */}
-      <Card className="glass-medium border-white/10 bg-gradient-to-br from-primary/10 via-transparent to-transparent">
-        <CardContent className="p-4 sm:p-5">
+      <Card className="glass-medium border-white/20 bg-gradient-to-br from-primary/15 via-primary/5 to-transparent overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-transparent to-transparent pointer-events-none"></div>
+        <CardContent className="p-5 sm:p-6 relative">
           <div className="flex items-center justify-between gap-3">
             <div className="flex-1 min-w-0">
-              <h4 className="font-bold text-foreground text-sm sm:text-base truncate">{opportunity.title}</h4>
-              <p className="text-xs sm:text-sm text-foreground/80 mt-1 font-medium">
-                Presupuesto referencial: ARS ${(opportunity.budget || 0).toLocaleString('es-AR')}
+              <h4 className="font-bold text-lg text-foreground truncate">{opportunity.title}</h4>
+              <p className="text-sm text-primary/90 mt-2 font-semibold">
+                💰 Presupuesto referencial: ARS ${(opportunity.budget || 0).toLocaleString('es-AR')}
               </p>
             </div>
-            <Badge className="bg-primary/90 text-white border-0 flex-shrink-0 text-xs sm:text-sm whitespace-nowrap">
-              <Target className="h-3 w-3 mr-1" />
-              {opportunity.proposals} propuestas
+            <Badge className="bg-gradient-to-r from-primary to-primary/80 text-white border-0 flex-shrink-0 text-xs sm:text-sm whitespace-nowrap shadow-lg">
+              <Target className="h-4 w-4 mr-1.5" />
+              {opportunity.proposals}
             </Badge>
           </div>
         </CardContent>
       </Card>
 
       {/* Proposal Form */}
-      <div className="space-y-5">
-        <div className="space-y-2">
-          <Label className="text-foreground font-semibold text-sm">Carta de Presentación *</Label>
+      <div className="space-y-6">
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <div className="h-1 w-1.5 rounded-full bg-gradient-to-r from-primary to-primary/60"></div>
+            <Label className="text-foreground/95 font-bold text-base">Carta de Presentación *</Label>
+          </div>
           <Textarea
-            placeholder="Explica por qué eres el candidato ideal para este proyecto..."
+            placeholder="Cuéntale al cliente por qué eres el candidato perfecto. Destaca tus habilidades, experiencia relevante y por qué te apasiona este proyecto..."
             value={proposalData.message}
             onChange={(e) => setProposalData({ ...proposalData, message: e.target.value })}
-            className="glass border-white/20 min-h-32"
+            className="glass border-white/30 min-h-32 text-foreground placeholder:text-foreground/40 focus:border-primary/50"
             rows={6}
           />
-          <div className="text-sm text-muted-foreground">
-            {proposalData.message.length}/1000 caracteres
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-foreground/60 font-medium">
+              {proposalData.message.length}/1000 caracteres
+            </span>
+            <span className={`text-xs font-semibold ${proposalData.message.length >= 100 ? 'text-success' : 'text-warning/70'}`}>
+              {proposalData.message.length >= 100 ? '✓ Bien' : 'Amplía tu mensaje'}
+            </span>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="budget" className="text-foreground font-semibold text-sm">Presupuesto Propuesto (ARS) *</Label>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <div className="h-1 w-1.5 rounded-full bg-gradient-to-r from-primary to-primary/60"></div>
+              <Label htmlFor="budget" className="text-foreground/95 font-bold text-base">Presupuesto (ARS) *</Label>
+            </div>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-foreground/60 font-semibold">$</span>
+              <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-primary font-bold text-lg">$</span>
               <Input
                 id="budget"
                 type="number"
                 placeholder="5000"
                 value={proposalData.proposedBudget === 0 ? '' : proposalData.proposedBudget}
                 onChange={(e) => setProposalData({ ...proposalData, proposedBudget: parseInt(e.target.value) || 0 })}
-                className="glass border-white/20 pl-8 text-foreground font-medium"
+                className="glass border-white/30 pl-10 text-foreground font-semibold text-lg placeholder:text-foreground/40 focus:border-primary/50"
                 min="0"
                 step="100"
               />
             </div>
             {proposalData.proposedBudget > 0 && (
-              <p className="text-xs text-primary font-semibold">
-                Ingresaste: ARS ${proposalData.proposedBudget.toLocaleString('es-AR')}
-              </p>
+              <div className="flex items-center gap-2 p-3 bg-primary/10 rounded-lg border border-primary/20">
+                <span className="text-sm text-primary font-semibold">
+                  💵 Tu propuesta: ARS ${proposalData.proposedBudget.toLocaleString('es-AR')}
+                </span>
+              </div>
             )}
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="delivery" className="text-foreground font-semibold text-sm">Tiempo de Entrega *</Label>
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <div className="h-1 w-1.5 rounded-full bg-gradient-to-r from-primary to-primary/60"></div>
+              <Label htmlFor="delivery" className="text-foreground/95 font-bold text-base">Tiempo de Entrega *</Label>
+            </div>
             <Input
               id="delivery"
               type="text"
               placeholder="Ej: 7 días"
               value={proposalData.estimatedDuration}
               onChange={(e) => setProposalData({ ...proposalData, estimatedDuration: e.target.value })}
-              className="glass border-white/20 text-foreground font-medium"
+              className="glass border-white/30 text-foreground font-semibold text-lg placeholder:text-foreground/40 focus:border-primary/50"
             />
-            <p className="text-xs text-muted-foreground/70">
-              Personaliza el tiempo según tus disponibilidad
+            <p className="text-xs text-foreground/60 font-medium">
+              📅 Personaliza según tu disponibilidad
             </p>
           </div>
         </div>
       </div>
 
-      <div className="border-t border-white/10 pt-5 mt-6">
-        <div className="text-xs text-muted-foreground/80 mb-4">
-          Al enviar esta propuesta, aceptas los <a href="/terms" className="text-primary hover:underline">términos de servicio</a> de Fixia
+      <div className="border-t border-white/15 pt-6 mt-2">
+        <div className="text-xs text-foreground/70 mb-5 p-4 bg-white/5 rounded-lg border border-white/10">
+          ✓ Al enviar esta propuesta, aceptas los <a href="/terms" className="text-primary font-semibold hover:underline">términos de servicio</a> de Fixia
         </div>
         <div className="flex items-center justify-end gap-3 flex-wrap">
           <Button
             variant="outline"
             onClick={onClose}
-            className="glass border-white/20 hover:glass-medium text-sm"
+            className="glass border-white/30 text-foreground hover:glass-medium text-sm font-semibold"
             disabled={submitting}
           >
             Cancelar
           </Button>
           <Button
             onClick={handleSubmit}
-            className="liquid-gradient hover:opacity-90 text-sm font-semibold shadow-lg"
+            className="liquid-gradient hover:opacity-95 text-sm font-bold shadow-lg hover:shadow-xl transition-all duration-200"
             disabled={!proposalData.message || !proposalData.estimatedDuration || submitting}
           >
             {submitting ? (
               <>
-                <div className="animate-spin rounded-full border-2 border-current border-t-transparent h-4 w-4 mr-2" />
+                <div className="animate-spin rounded-full border-2 border-white border-t-transparent h-4 w-4 mr-2" />
                 Enviando...
               </>
             ) : (
               <>
-                <Send className="h-4 w-4 mr-2" />
+                <Send className="h-5 w-5 mr-2" />
                 Enviar Propuesta
               </>
             )}
