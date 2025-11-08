@@ -22,6 +22,7 @@ import { ScrollArea } from "../components/ui/scroll-area";
 import { useToast } from "../components/ui/use-toast";
 import { FixiaNavigation } from "../components/FixiaNavigation";
 import { useSecureAuth } from "../context/SecureAuthContext";
+import { useNotifications } from "../context/NotificationContext";
 
 interface Notification {
   id: string;
@@ -328,174 +329,49 @@ function NotificationSettings() {
 
 export default function NotificationsPage() {
   const { user } = useSecureAuth();
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [stats, setStats] = useState<NotificationStats | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { notifications, loading, markAsRead, markAllAsRead, deleteNotification, unreadCount } = useNotifications();
   const [activeTab, setActiveTab] = useState("all");
   const [selectedNotifications, setSelectedNotifications] = useState<string[]>([]);
   const [currentFilter, setCurrentFilter] = useState<'all' | 'unread' | 'read'>('all');
   const [currentType, setCurrentType] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'type'>('newest');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const { toast } = useToast();
 
-  // Fetch notifications
-  const fetchNotifications = async () => {
-    try {
-      setLoading(true);
-      const token = localStorage.getItem('token');
-      
-      if (!token) return;
-
-      const params = new URLSearchParams({
-        page: currentPage.toString(),
-        limit: '20',
-        sortBy
-      });
-
-      if (currentFilter === 'unread') params.append('read', 'false');
-      if (currentFilter === 'read') params.append('read', 'true');
-      if (currentType !== 'all') params.append('type', currentType);
-
-      const response = await fetch(`/api/notifications?${params}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setNotifications(data.notifications || []);
-        setTotalPages(data.pagination?.pages || 1);
-      }
-    } catch (error) {
-      console.error('Error fetching notifications:', error);
-    } finally {
-      setLoading(false);
+  // Convert NotificationContext notifications to local Notification type
+  const pageNotifications: Notification[] = notifications.map(n => ({
+    id: n.id,
+    type: n.type as any,
+    title: n.title,
+    message: n.message,
+    read: n.read,
+    created_at: n.timestamp.toISOString(),
+    action_url: n.actionUrl,
+    user: {
+      id: 'system',
+      name: 'Sistema',
+      email: 'system@fixia.app'
     }
-  };
-
-  // Fetch stats
-  const fetchStats = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      
-      if (!token) return;
-
-      const response = await fetch('/api/notifications/stats', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setStats(data);
-      }
-    } catch (error) {
-      console.error('Error fetching stats:', error);
-    }
-  };
-
-  // Mark notification as read
-  const markAsRead = async (notificationId: string) => {
-    try {
-      const token = localStorage.getItem('token');
-      
-      if (!token) return;
-
-      const response = await fetch(`/api/notifications/${notificationId}/read`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (response.ok) {
-        setNotifications(prev => 
-          prev.map(n => 
-            n.id === notificationId ? { ...n, read: true } : n
-          )
-        );
-        fetchStats(); // Refresh stats
-      }
-    } catch (error) {
-      console.error('Error marking notification as read:', error);
-    }
-  };
-
-  // Mark all as read
-  const markAllAsRead = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      
-      if (!token) return;
-
-      const response = await fetch('/api/notifications/mark-all-read', {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (response.ok) {
-        setNotifications(prev => 
-          prev.map(n => ({ ...n, read: true }))
-        );
-        fetchStats();
-        toast({
-          title: "Todas las notificaciones marcadas como leídas",
-          variant: "default"
-        });
-      }
-    } catch (error) {
-      console.error('Error marking all notifications as read:', error);
-    }
-  };
-
-  // Delete notification
-  const deleteNotification = async (notificationId: string) => {
-    try {
-      const token = localStorage.getItem('token');
-      
-      if (!token) return;
-
-      const response = await fetch(`/api/notifications/${notificationId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (response.ok) {
-        setNotifications(prev => prev.filter(n => n.id !== notificationId));
-        fetchStats();
-        toast({
-          title: "Notificación eliminada",
-          variant: "default"
-        });
-      }
-    } catch (error) {
-      console.error('Error deleting notification:', error);
-    }
-  };
+  }));
 
   // Handle notification click
   const handleNotificationClick = (notification: Notification) => {
     if (!notification.read) {
       markAsRead(notification.id);
     }
-    
+
     if (notification.action_url) {
       window.location.href = notification.action_url;
     }
+  };
+
+  // Handle mark all as read
+  const handleMarkAllAsRead = async () => {
+    await markAllAsRead();
+    toast({
+      title: "Todas las notificaciones marcadas como leídas",
+      variant: "default"
+    });
   };
 
   // Format date
@@ -515,26 +391,34 @@ export default function NotificationsPage() {
     });
   };
 
-  // Filter notifications
-  const filteredNotifications = notifications.filter(notification => {
+  // Filter notifications based on current filters and search
+  const filteredNotifications = pageNotifications.filter(notification => {
+    // Search filter
     if (searchQuery && !notification.title.toLowerCase().includes(searchQuery.toLowerCase()) &&
         !notification.message.toLowerCase().includes(searchQuery.toLowerCase())) {
       return false;
     }
-    
+
+    // Status filter
+    if (currentFilter === 'unread' && notification.read) return false;
+    if (currentFilter === 'read' && !notification.read) return false;
+
+    // Type filter
+    if (currentType !== 'all' && notification.type !== currentType) return false;
+
+    // Tab filter
     if (activeTab === 'unread' && notification.read) return false;
-    
+
     return true;
   });
 
-  useEffect(() => {
-    if (user) {
-      fetchNotifications();
-      fetchStats();
-    }
-  }, [user, currentFilter, currentType, sortBy, currentPage, activeTab]);
-  
-  const unreadCount = stats?.unread || 0;
+  // Sort notifications
+  const sortedNotifications = [...filteredNotifications].sort((a, b) => {
+    if (sortBy === 'newest') return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    if (sortBy === 'oldest') return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+    if (sortBy === 'type') return a.type.localeCompare(b.type);
+    return 0;
+  });
 
   if (!user) {
     return (
@@ -582,7 +466,12 @@ export default function NotificationsPage() {
                 {unreadCount} sin leer
               </Badge>
             )}
-            <Button variant="outline" size="sm" className="glass border-white/20 text-xs sm:text-sm whitespace-nowrap">
+            <Button
+              variant="outline"
+              size="sm"
+              className="glass border-white/20 text-xs sm:text-sm whitespace-nowrap"
+              onClick={handleMarkAllAsRead}
+            >
               <Check className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
               <span className="hidden sm:inline">Marcar todas como leídas</span>
               <span className="sm:hidden">Marcar leídas</span>
@@ -594,7 +483,7 @@ export default function NotificationsPage() {
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="glass border-white/10 mb-8">
               <TabsTrigger value="all">
-                Todas ({notifications.length})
+                Todas ({pageNotifications.length})
               </TabsTrigger>
               <TabsTrigger value="unread">
                 Sin leer ({unreadCount})
@@ -649,54 +538,30 @@ export default function NotificationsPage() {
               </Card>
 
               {/* Stats Cards */}
-              {stats && (
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              {pageNotifications.length > 0 && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Card className="glass border-white/10">
                     <CardContent className="p-4">
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="text-sm font-medium text-muted-foreground">Total</p>
-                          <p className="text-2xl font-bold">{stats.total}</p>
+                          <p className="text-2xl font-bold">{pageNotifications.length}</p>
                         </div>
                         <Bell className="h-8 w-8 text-muted-foreground" />
                       </div>
                     </CardContent>
                   </Card>
-                  
+
                   <Card className="glass border-white/10">
                     <CardContent className="p-4">
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="text-sm font-medium text-muted-foreground">Sin leer</p>
-                          <p className="text-2xl font-bold text-secondary">{stats.unread}</p>
+                          <p className="text-2xl font-bold text-secondary">{unreadCount}</p>
                         </div>
                         <div className="h-8 w-8 bg-secondary/20 rounded-full flex items-center justify-center">
                           <Badge className="h-4 w-4 bg-secondary" />
                         </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                  
-                  <Card className="glass border-white/10">
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-sm font-medium text-muted-foreground">Últimos 7 días</p>
-                          <p className="text-2xl font-bold">{stats.last7Days}</p>
-                        </div>
-                        <Calendar className="h-8 w-8 text-muted-foreground" />
-                      </div>
-                    </CardContent>
-                  </Card>
-                  
-                  <Card className="glass border-white/10">
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-sm font-medium text-muted-foreground">Últimos 30 días</p>
-                          <p className="text-2xl font-bold">{stats.last30Days}</p>
-                        </div>
-                        <Calendar className="h-8 w-8 text-muted-foreground" />
                       </div>
                     </CardContent>
                   </Card>
@@ -712,7 +577,7 @@ export default function NotificationsPage() {
                     className="h-8 w-8 border-2 border-primary border-t-transparent rounded-full"
                   />
                 </div>
-              ) : filteredNotifications.length === 0 ? (
+              ) : sortedNotifications.length === 0 ? (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -723,17 +588,17 @@ export default function NotificationsPage() {
                     {searchQuery ? 'No se encontraron notificaciones' : 'No hay notificaciones'}
                   </h2>
                   <p className="text-muted-foreground max-w-md mx-auto">
-                    {searchQuery 
-                      ? 'No se encontraron notificaciones que coincidan con tu búsqueda.' 
+                    {searchQuery
+                      ? 'No se encontraron notificaciones que coincidan con tu búsqueda.'
                       : 'Cuando tengas nuevas notificaciones, aparecerán aquí'
                     }
                   </p>
                 </motion.div>
               ) : (
                 <div className="space-y-4">
-                  {filteredNotifications.map((notification) => (
-                    <NotificationCard 
-                      key={notification.id} 
+                  {sortedNotifications.map((notification) => (
+                    <NotificationCard
+                      key={notification.id}
                       notification={notification}
                       onMarkRead={markAsRead}
                       onDelete={deleteNotification}
@@ -742,60 +607,10 @@ export default function NotificationsPage() {
                 </div>
               )}
 
-              {/* Pagination */}
-              {totalPages > 1 && (
-                <div className="flex justify-center gap-2 mt-6">
-                  <Button
-                    variant="outline"
-                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                    disabled={currentPage === 1}
-                    className="glass border-white/20"
-                  >
-                    Anterior
-                  </Button>
-                  
-                  <div className="flex items-center gap-2">
-                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                      const pageNum = currentPage <= 3 ? i + 1 : currentPage - 2 + i;
-                      if (pageNum > totalPages) return null;
-                      
-                      return (
-                        <Button
-                          key={pageNum}
-                          variant={pageNum === currentPage ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => setCurrentPage(pageNum)}
-                          className={pageNum === currentPage ? "" : "glass border-white/20"}
-                        >
-                          {pageNum}
-                        </Button>
-                      );
-                    })}
-                  </div>
-                  
-                  <Button
-                    variant="outline"
-                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                    disabled={currentPage === totalPages}
-                    className="glass border-white/20"
-                  >
-                    Siguiente
-                  </Button>
-                </div>
-              )}
             </TabsContent>
             
             <TabsContent value="unread" className="space-y-4">
-              {filteredNotifications.filter(n => !n.read).map((notification) => (
-                <NotificationCard 
-                  key={notification.id} 
-                  notification={notification}
-                  onMarkRead={markAsRead}
-                  onDelete={deleteNotification}
-                />
-              ))}
-              
-              {filteredNotifications.filter(n => !n.read).length === 0 && (
+              {sortedNotifications.filter(n => !n.read).length === 0 ? (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -807,6 +622,17 @@ export default function NotificationsPage() {
                     Has leído todas tus notificaciones
                   </p>
                 </motion.div>
+              ) : (
+                <div className="space-y-4">
+                  {sortedNotifications.filter(n => !n.read).map((notification) => (
+                    <NotificationCard
+                      key={notification.id}
+                      notification={notification}
+                      onMarkRead={markAsRead}
+                      onDelete={deleteNotification}
+                    />
+                  ))}
+                </div>
               )}
             </TabsContent>
             
