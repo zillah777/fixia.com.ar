@@ -354,33 +354,27 @@ export default function NewOpportunityPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label className="text-sm text-muted-foreground">Mínimo</Label>
-                    <div className="relative">
-                      <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        type="number"
-                        placeholder="10.000"
-                        min="1000"
-                        max="10000000"
-                        value={formData.budget_min || ''}
-                        onChange={(e) => updateFormData('budget_min', parseInt(e.target.value) || 0)}
-                        className="glass border-white/20 pl-10"
-                      />
-                    </div>
+                    <Input
+                      type="number"
+                      placeholder="10.000"
+                      min="1000"
+                      max="10000000"
+                      value={formData.budget_min || ''}
+                      onChange={(e) => updateFormData('budget_min', parseInt(e.target.value) || 0)}
+                      className="glass border-white/20"
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label className="text-sm text-muted-foreground">Máximo</Label>
-                    <div className="relative">
-                      <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        type="number"
-                        placeholder="50.000"
-                        min="1000"
-                        max="10000000"
-                        value={formData.budget_max || ''}
-                        onChange={(e) => updateFormData('budget_max', parseInt(e.target.value) || 0)}
-                        className="glass border-white/20 pl-10"
-                      />
-                    </div>
+                    <Input
+                      type="number"
+                      placeholder="50.000"
+                      min="1000"
+                      max="10000000"
+                      value={formData.budget_max || ''}
+                      onChange={(e) => updateFormData('budget_max', parseInt(e.target.value) || 0)}
+                      className="glass border-white/20"
+                    />
                   </div>
                 </div>
                 <p className="text-xs text-muted-foreground">
@@ -391,29 +385,23 @@ export default function NewOpportunityPage() {
               {/* Deadline */}
               <div className="space-y-2">
                 <Label>Fecha Límite (Opcional)</Label>
-                <div className="relative">
-                  <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-                  <Input
-                    type="date"
-                    value={formData.deadline}
-                    onChange={(e) => updateFormData('deadline', e.target.value)}
-                    className="glass border-white/20 pl-10"
-                  />
-                </div>
+                <Input
+                  type="date"
+                  value={formData.deadline}
+                  onChange={(e) => updateFormData('deadline', e.target.value)}
+                  className="glass border-white/20"
+                />
               </div>
 
               {/* Location */}
               <div className="space-y-2">
                 <Label>Ubicación</Label>
-                <div className="relative">
-                  <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-                  <Input
-                    placeholder="Ej: Trelew, Chubut, Buenos Aires, o 'Remoto'"
-                    value={formData.location}
-                    onChange={(e) => updateFormData('location', e.target.value)}
-                    className="glass border-white/20 pl-10"
-                  />
-                </div>
+                <Input
+                  placeholder="Ej: Trelew, Chubut, Buenos Aires, o 'Remoto'"
+                  value={formData.location}
+                  onChange={(e) => updateFormData('location', e.target.value)}
+                  className="glass border-white/20"
+                />
                 <p className="text-xs text-muted-foreground">
                   Opcional: Especifica dónde necesitas el servicio o si puede ser remoto
                 </p>

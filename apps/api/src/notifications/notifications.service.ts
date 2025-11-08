@@ -266,7 +266,8 @@ export class NotificationsService {
   async createProposalNotification(
     userId: string,
     proposalData: {
-      proposalId: string;
+      projectId: string;
+      proposalId?: string;
       projectTitle: string;
       professionalName: string;
       amount: number;
@@ -277,7 +278,7 @@ export class NotificationsService {
       type: NotificationType.proposal_received,
       title: 'Nueva propuesta recibida',
       message: `${proposalData.professionalName} ha enviado una propuesta de $${proposalData.amount} para "${proposalData.projectTitle}"`,
-      actionUrl: `/projects/${proposalData.proposalId}`
+      actionUrl: `/projects/${proposalData.projectId}`
     });
   }
 

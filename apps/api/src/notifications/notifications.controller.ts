@@ -369,6 +369,7 @@ export class NotificationsController {
     @CurrentUser() user: User,
     @Body() proposalData: {
       userId: string;
+      projectId: string;
       proposalId: string;
       projectTitle: string;
       professionalName: string;
@@ -379,6 +380,7 @@ export class NotificationsController {
       const notification = await this.notificationsService.createProposalNotification(
         proposalData.userId,
         {
+          projectId: proposalData.projectId,
           proposalId: proposalData.proposalId,
           projectTitle: proposalData.projectTitle,
           professionalName: proposalData.professionalName,

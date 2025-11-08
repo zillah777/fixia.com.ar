@@ -389,6 +389,7 @@ export class OpportunitiesService {
     // Send notification to client about new proposal
     try {
       await this.notificationsService.createProposalNotification(project.client_id, {
+        projectId: project.id,
         proposalId: proposal.id,
         projectTitle: project.title,
         professionalName: user.name,
