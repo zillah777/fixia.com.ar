@@ -67,11 +67,20 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
 
       const convertedNotifications = notificationsData.notifications.map(convertNotification);
 
+      // Calculate actual unread count from notifications to prevent mismatch
+      const actualUnreadCount = convertedNotifications.filter(n => !n.read).length;
+
+      // Safety check: if we have notifications, verify the unread count matches
+      // If there's a mismatch, use the actual count from the data
+      const finalUnreadCount = actualUnreadCount > 0 ? Math.max(actualUnreadCount, unreadCountData) : 0;
+
       // Debug logging for notification issues
       console.log(`📬 Notifications loaded for user ${user?.id}:`, {
-        total: notificationsData.notifications.length,
-        unreadCount: unreadCountData,
-        notifications: notificationsData.notifications.map(n => ({
+        total: convertedNotifications.length,
+        actualUnreadCount: actualUnreadCount,
+        serverUnreadCount: unreadCountData,
+        finalUnreadCount: finalUnreadCount,
+        notifications: convertedNotifications.map(n => ({
           id: n.id,
           type: n.type,
           title: n.title,
@@ -81,7 +90,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       });
 
       setNotifications(convertedNotifications);
-      setUnreadCount(unreadCountData);
+      setUnreadCount(finalUnreadCount);
     } catch (error) {
       console.error('Error fetching notifications:', error);
       // Don't show error toast on initial load or polling failures
