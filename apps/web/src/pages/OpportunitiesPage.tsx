@@ -592,39 +592,67 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
     >
       <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 overflow-hidden group h-full">
         <CardHeader className="space-y-4">
-          {/* Client Info */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <Avatar className="h-10 w-10">
-                <AvatarImage src={opportunity.client.avatar} />
-                <AvatarFallback>{opportunity.client.name.charAt(0)}</AvatarFallback>
-              </Avatar>
-              <div>
-                <div className="flex items-center space-x-2">
-                  <span className="font-medium text-sm">{opportunity.client.name}</span>
+          {/* Client Info - Enhanced */}
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-start gap-3 flex-1 min-w-0">
+              {/* Avatar */}
+              <div className="relative flex-shrink-0">
+                <Avatar className="h-14 w-14 border-2 border-primary/30">
+                  <AvatarImage src={opportunity.client.avatar} />
+                  <AvatarFallback className="font-bold">{opportunity.client.name.charAt(0)}</AvatarFallback>
+                </Avatar>
+                {opportunity.client.verified && (
+                  <div className="absolute -bottom-1 -right-1 bg-success rounded-full p-1 border-2 border-background">
+                    <CheckCircle className="h-3 w-3 text-white" />
+                  </div>
+                )}
+              </div>
+
+              {/* Client Details */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 flex-wrap mb-1">
+                  <h4 className="font-bold text-foreground text-sm">{opportunity.client.name}</h4>
                   {opportunity.client.verified && (
-                    <CheckCircle className="h-4 w-4 text-success" />
+                    <Badge variant="outline" className="border-success/50 bg-success/10 text-success gap-1 text-xs h-5">
+                      <CheckCircle className="h-3 w-3" />
+                      Verificado
+                    </Badge>
                   )}
                 </div>
-                <div className="flex items-center space-x-2 text-xs text-muted-foreground">
-                  <Heart className="h-3 w-3 text-warning" />
-                  <span>{opportunity.client.rating}</span>
-                  <span>•</span>
-                  <span>{opportunity.client.projectsPosted} oportunidades publicadas</span>
+
+                {/* Rating and Reviews */}
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="flex items-center">
+                    {[...Array(5)].map((_, i) => (
+                      <Star
+                        key={i}
+                        className={`h-3 w-3 ${
+                          i < Math.floor(opportunity.client.averageRating || 0)
+                            ? 'fill-warning text-warning'
+                            : 'text-muted-foreground'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <span className="text-xs font-semibold text-foreground">{opportunity.client.averageRating?.toFixed(1) || '0.0'}</span>
+                  <span className="text-xs text-muted-foreground">({opportunity.client.totalProjects || 0} proyectos)</span>
+                </div>
+
+                {/* Client Trust Indicators */}
+                <div className="flex flex-wrap gap-1">
+                  <Badge variant="secondary" className="bg-primary/10 text-primary text-xs h-5">
+                    💼 {opportunity.client.totalProjects || 0} proyectos
+                  </Badge>
                 </div>
               </div>
             </div>
-            
-            <div className="flex items-center space-x-2">
-              {opportunity.featured && (
-                <Badge className="bg-warning/20 text-warning border-warning/30 text-xs">
-                  <Heart className="h-3 w-3 mr-1" />
-                  Destacado
-                </Badge>
-              )}
+
+            {/* Badges Section */}
+            <div className="flex flex-col gap-2 items-end flex-shrink-0">
               <Button
                 variant="ghost"
-                size="icon" className="h-9 w-9"
+                size="icon"
+                className="h-8 w-8"
                 onClick={() => setIsBookmarked(!isBookmarked)}
               >
                 <Bookmark className={`h-4 w-4 ${isBookmarked ? 'fill-current text-warning' : ''}`} />
@@ -668,29 +696,61 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
             )}
           </div>
           
-          {/* Budget and Duration */}
-          <div className="grid grid-cols-2 gap-3 p-3 bg-gradient-to-r from-success/10 to-primary/10 rounded-lg border border-success/20">
-            <div className="space-y-1">
-              <span className="text-xs font-semibold text-muted-foreground uppercase">Presupuesto</span>
-              <div className="flex items-baseline gap-1">
-                {opportunity.budget?.min && opportunity.budget?.max ? (
-                  <>
-                    <span className="text-lg font-bold text-success">
-                      ${(opportunity.budget.min ?? 0).toLocaleString('es-AR')}
-                    </span>
-                    <span className="text-xs text-muted-foreground">-</span>
-                    <span className="text-lg font-bold text-success">
-                      ${(opportunity.budget.max ?? 0).toLocaleString('es-AR')}
-                    </span>
-                  </>
-                ) : (
-                  <span className="text-sm text-muted-foreground">A convenir</span>
-                )}
+          {/* Budget and Timeline - Enhanced with Transparency */}
+          <div className="space-y-3">
+            {/* Budget Section - Highlighted */}
+            <div className="p-4 bg-gradient-to-br from-primary/20 via-primary/10 to-transparent rounded-lg border border-primary/30 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">💰 Presupuesto Ofrecido</span>
+                <Badge variant="secondary" className="bg-success/20 text-success text-xs">
+                  {opportunity.budgetType === 'fixed' ? 'Fijo' : opportunity.budgetType === 'hourly' ? 'Por Hora' : 'Negociable'}
+                </Badge>
+              </div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-3xl font-black text-primary">
+                  ARS ${opportunity.budget.toLocaleString('es-AR')}
+                </span>
+              </div>
+              <p className="text-xs text-muted-foreground">Monto que el cliente está dispuesto a pagar</p>
+            </div>
+
+            {/* Details Grid */}
+            <div className="grid grid-cols-2 gap-3">
+              {/* Deadline */}
+              <div className="p-3 bg-white/5 rounded-lg border border-white/10 space-y-1">
+                <span className="text-xs font-semibold text-muted-foreground uppercase">📅 Vencimiento</span>
+                <p className="text-sm font-semibold text-foreground">{opportunity.deadline || 'Sin especificar'}</p>
+              </div>
+
+              {/* Priority */}
+              <div className="p-3 bg-white/5 rounded-lg border border-white/10 space-y-1">
+                <span className="text-xs font-semibold text-muted-foreground uppercase">⚡ Prioridad</span>
+                <Badge
+                  className={`text-xs font-semibold w-fit ${
+                    opportunity.priority === 'urgent' ? 'bg-destructive/20 text-destructive' :
+                    opportunity.priority === 'high' ? 'bg-warning/20 text-warning' :
+                    'bg-primary/20 text-primary'
+                  }`}
+                >
+                  {opportunity.priority === 'urgent' ? '🔥 Urgente' :
+                   opportunity.priority === 'high' ? '⚠️ Alta' :
+                   opportunity.priority === 'medium' ? '📊 Media' : '✓ Baja'}
+                </Badge>
               </div>
             </div>
-            <div className="space-y-1">
-              <span className="text-xs font-semibold text-muted-foreground uppercase">Duración</span>
-              <p className="text-sm font-semibold text-foreground">{opportunity.duration}</p>
+
+            {/* Match Score */}
+            <div className="p-3 bg-gradient-to-r from-success/10 to-transparent rounded-lg border border-success/20 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-muted-foreground">Compatibilidad con tu perfil</span>
+                <span className="text-sm font-bold text-success">{opportunity.matchScore}%</span>
+              </div>
+              <div className="w-full bg-white/10 rounded-full h-2 overflow-hidden">
+                <div
+                  className="bg-gradient-to-r from-success to-primary h-full rounded-full transition-all"
+                  style={{ width: `${opportunity.matchScore}%` }}
+                />
+              </div>
             </div>
           </div>
           
