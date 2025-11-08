@@ -184,15 +184,15 @@ const mockOpportunitiesOld = [
 
 const categories = [
   "Todos",
-  "Desarrollo Web",
-  "Desarrollo Móvil",
-  "Diseño Gráfico",
-  "Marketing Digital",
-  "Video y Animación",
-  "Ciberseguridad",
-  "Redacción",
-  "Traducción",
-  "Consultoría"
+  "Plomería",
+  "Electricidad",
+  "Carpintería",
+  "Pintura",
+  "Jardinería",
+  "Limpieza",
+  "Reparación General",
+  "Construcción",
+  "Maestro de Obra"
 ];
 
 const sortOptions = [
