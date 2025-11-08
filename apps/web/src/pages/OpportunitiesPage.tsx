@@ -2,11 +2,11 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FixiaNavigation } from "../components/FixiaNavigation";
-import { 
+import {
   Search, Filter, MapPin, Clock, DollarSign, Users, Heart, Zap,
   ChevronDown, SlidersHorizontal, Grid3X3, List, Eye, ArrowRight,
-  Calendar, CheckCircle, AlertCircle, Heart, Briefcase, Globe,
-  FileText, MessageSquare, Heart, Share2, TrendingUp, Target,
+  Calendar, CheckCircle, AlertCircle, Briefcase, Globe,
+  FileText, MessageSquare, Share2, TrendingUp, Target, Star,
   Send, Bookmark, RefreshCw, Settings
 } from "lucide-react";
 import { Button } from "../components/ui/button";
@@ -457,14 +457,8 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
                       <h3 className="text-lg font-semibold hover:text-primary transition-colors cursor-pointer">
                         {opportunity.title}
                       </h3>
-                      {opportunity.featured && (
-                        <Badge className="bg-warning/20 text-warning border-warning/30">
-                          <Heart className="h-3 w-3 mr-1" />
-                          Destacado
-                        </Badge>
-                      )}
-                      <Badge className={getUrgencyColor(opportunity.urgency)}>
-                        {getUrgencyText(opportunity.urgency)}
+                      <Badge className={getUrgencyColor(opportunity.priority)}>
+                        {getUrgencyText(opportunity.priority)}
                       </Badge>
                     </div>
                     
@@ -478,7 +472,7 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
                       )}
                       <span className="flex items-center">
                         <Heart className="h-4 w-4 mr-1 text-warning" />
-                        {opportunity.client.rating}
+                        {opportunity.client.averageRating?.toFixed(1) || '0.0'}
                       </span>
                       <span className="flex items-center">
                         <MapPin className="h-4 w-4 mr-1" />
@@ -491,15 +485,11 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
                     <div className="space-y-1">
                       <div className="text-xs font-semibold text-muted-foreground uppercase">Presupuesto</div>
                       <div className="text-2xl font-bold text-success">
-                        {opportunity.budget?.min && opportunity.budget?.max
-                          ? `$${(opportunity.budget.min ?? 0).toLocaleString('es-AR')} - $${(opportunity.budget.max ?? 0).toLocaleString('es-AR')}`
+                        {opportunity.budget
+                          ? `ARS $${opportunity.budget.toLocaleString('es-AR')}`
                           : 'A convenir'
                         }
                       </div>
-                    </div>
-                    <div className="space-y-1 pt-2">
-                      <div className="text-xs font-semibold text-muted-foreground uppercase">Duración</div>
-                      <div className="text-sm font-semibold text-foreground">{opportunity.duration}</div>
                     </div>
                   </div>
                 </div>
@@ -666,8 +656,8 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
               <Badge variant="outline" className="glass border-white/20 text-xs">
                 {opportunity.category}
               </Badge>
-              <Badge className={getUrgencyColor(opportunity.urgency) + " text-xs"}>
-                {getUrgencyText(opportunity.urgency)}
+              <Badge className={getUrgencyColor(opportunity.priority) + " text-xs"}>
+                {getUrgencyText(opportunity.priority)}
               </Badge>
             </div>
             <h3 className="font-semibold line-clamp-2 group-hover:text-primary transition-colors">
@@ -857,7 +847,7 @@ function ProposalForm({ opportunity, onClose, onSuccess }: { opportunity: Opport
               <div>
                 <p className="text-xs text-foreground/60 font-semibold uppercase">Presupuesto</p>
                 <p className="text-base text-white font-bold mt-1">
-                  💰 ${opportunity.budget?.min ? (opportunity.budget.min ?? 0).toLocaleString('es-AR') : '0'} - ${opportunity.budget?.max ? (opportunity.budget.max ?? 0).toLocaleString('es-AR') : '0'}
+                  💰 ARS ${opportunity.budget?.toLocaleString('es-AR') || '0'}
                 </p>
               </div>
               <div>
@@ -879,7 +869,7 @@ function ProposalForm({ opportunity, onClose, onSuccess }: { opportunity: Opport
                     <div className="flex items-center gap-2 mt-0.5">
                       {opportunity.client.verified && <CheckCircle className="h-3 w-3 text-primary" />}
                       <span className="text-xs text-foreground/70">
-                        ⭐ {opportunity.client.rating?.toFixed(1) || '0.0'} · {opportunity.client.verified ? 'Verificado' : 'No verificado'}
+                        ⭐ {opportunity.client.averageRating?.toFixed(1) || '0.0'} · {opportunity.client.verified ? 'Verificado' : 'No verificado'}
                       </span>
                     </div>
                   </div>
@@ -973,7 +963,7 @@ function ProposalForm({ opportunity, onClose, onSuccess }: { opportunity: Opport
         >
           <Checkbox
             checked={proposalData.availableToStart}
-            onChange={(checked) => setProposalData({ ...proposalData, availableToStart: checked as boolean })}
+            onChange={(checked: any) => setProposalData({ ...proposalData, availableToStart: typeof checked === 'boolean' ? checked : !proposalData.availableToStart })}
             className="h-5 w-5 border-white/30"
           />
           <div className="flex-1">
@@ -987,7 +977,7 @@ function ProposalForm({ opportunity, onClose, onSuccess }: { opportunity: Opport
         >
           <Checkbox
             checked={proposalData.flexibleSchedule}
-            onChange={(checked) => setProposalData({ ...proposalData, flexibleSchedule: checked as boolean })}
+            onChange={(checked: any) => setProposalData({ ...proposalData, flexibleSchedule: typeof checked === 'boolean' ? checked : !proposalData.flexibleSchedule })}
             className="h-5 w-5 border-white/30"
           />
           <div className="flex-1">
@@ -1082,7 +1072,7 @@ export default function OpportunitiesPage() {
         const response = await opportunitiesService.getOpportunities(filters);
 
         setOpportunities(response.data || []);
-        setTotalPages(response.meta?.totalPages || 1);
+        setTotalPages(response.totalPages || 1);
       } catch (err: any) {
         console.error('Error fetching opportunities:', err);
         setError('Error al cargar oportunidades. Intenta nuevamente.');
@@ -1159,9 +1149,9 @@ export default function OpportunitiesPage() {
           </div>
 
           <div className="flex flex-wrap items-center gap-2 xs:gap-3 text-xs sm:text-sm text-muted-foreground">
-            <span>{opportunities.filter(o => o.urgency === 'urgent').length} urgentes</span>
+            <span>{opportunities.filter(o => o.priority === 'urgent').length} urgentes</span>
             <span>•</span>
-            <span>{opportunities.filter(o => o.featured).length} destacadas</span>
+            <span>{opportunities.filter(o => o.priority === 'high').length} de alta prioridad</span>
           </div>
         </motion.div>
 
