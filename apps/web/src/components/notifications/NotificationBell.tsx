@@ -45,8 +45,15 @@ export function NotificationBell({ className }: NotificationBellProps) {
       markAsRead(notification.id);
     }
 
+    // Close the notification panel
+    setIsOpen(false);
+
+    // Redirect to action URL if available, otherwise go to notifications page
     if (notification.actionUrl) {
       window.location.href = notification.actionUrl;
+    } else {
+      // Default redirect to notifications page if no specific action URL
+      window.location.href = '/notifications';
     }
   };
 
@@ -171,7 +178,7 @@ export function NotificationBell({ className }: NotificationBellProps) {
                               <div
                                 className={cn(
                                   "flex items-start gap-3 p-4 hover:bg-muted/50 cursor-pointer border-l-4 transition-colors",
-                                  !notification.read && "bg-blue-50 border-l-blue-500",
+                                  !notification.read && "bg-primary/10 border-l-primary",
                                   notification.read && "border-l-transparent"
                                 )}
                                 onClick={() => handleNotificationClick(notification)}
