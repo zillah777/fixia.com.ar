@@ -65,7 +65,22 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
         notificationsService.getUnreadCount(),
       ]);
 
-      setNotifications(notificationsData.notifications.map(convertNotification));
+      const convertedNotifications = notificationsData.notifications.map(convertNotification);
+
+      // Debug logging for notification issues
+      console.log(`📬 Notifications loaded for user ${user?.id}:`, {
+        total: notificationsData.notifications.length,
+        unreadCount: unreadCountData,
+        notifications: notificationsData.notifications.map(n => ({
+          id: n.id,
+          type: n.type,
+          title: n.title,
+          read: n.read,
+          created_at: n.created_at
+        }))
+      });
+
+      setNotifications(convertedNotifications);
       setUnreadCount(unreadCountData);
     } catch (error) {
       console.error('Error fetching notifications:', error);
