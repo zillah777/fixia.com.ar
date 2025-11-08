@@ -1213,26 +1213,31 @@ export default function SettingsPage() {
 
         <div className="max-w-4xl mx-auto">
           <Tabs defaultValue="profile" className="w-full">
-            <TabsList className="glass border-white/10 mb-6 sm:mb-8 grid grid-cols-2 sm:grid-cols-5 gap-1 w-full h-auto p-1">
-              <TabsTrigger value="profile" className="text-xs sm:text-sm px-1 sm:px-2 py-2 flex items-center justify-center space-x-1">
+            <TabsList className="glass border-white/10 mb-6 sm:mb-8 grid grid-cols-2 sm:grid-cols-5 gap-2 w-full h-auto p-1 text-foreground">
+              <TabsTrigger value="profile" className="text-sm sm:text-sm px-2 sm:px-3 py-2 flex items-center justify-center space-x-1 text-foreground data-[state=active]:text-foreground data-[state=inactive]:text-foreground/80 hover:text-foreground">
                 <User className="h-4 w-4 flex-shrink-0" />
                 <span className="hidden sm:inline font-medium">Perfil</span>
+                <span className="sm:hidden font-medium">P</span>
               </TabsTrigger>
-              <TabsTrigger value="security" className="text-xs sm:text-sm px-1 sm:px-2 py-2 flex items-center justify-center space-x-1">
+              <TabsTrigger value="security" className="text-sm sm:text-sm px-2 sm:px-3 py-2 flex items-center justify-center space-x-1 text-foreground data-[state=active]:text-foreground data-[state=inactive]:text-foreground/80 hover:text-foreground">
                 <Lock className="h-4 w-4 flex-shrink-0" />
                 <span className="hidden sm:inline font-medium">Seguridad</span>
+                <span className="sm:hidden font-medium">S</span>
               </TabsTrigger>
-              <TabsTrigger value="notifications" className="text-xs sm:text-sm px-1 sm:px-2 py-2 flex items-center justify-center space-x-1">
+              <TabsTrigger value="notifications" className="text-sm sm:text-sm px-2 sm:px-3 py-2 flex items-center justify-center space-x-1 text-foreground data-[state=active]:text-foreground data-[state=inactive]:text-foreground/80 hover:text-foreground">
                 <Bell className="h-4 w-4 flex-shrink-0" />
                 <span className="hidden sm:inline font-medium">Notif.</span>
+                <span className="sm:hidden font-medium">N</span>
               </TabsTrigger>
-              <TabsTrigger value="subscription" className="text-xs sm:text-sm px-1 sm:px-2 py-2 flex items-center justify-center space-x-1">
+              <TabsTrigger value="subscription" className="text-sm sm:text-sm px-2 sm:px-3 py-2 flex items-center justify-center space-x-1 text-foreground data-[state=active]:text-foreground data-[state=inactive]:text-foreground/80 hover:text-foreground">
                 <CreditCard className="h-4 w-4 flex-shrink-0" />
                 <span className="hidden sm:inline font-medium">Suscripción</span>
+                <span className="sm:hidden font-medium">Su</span>
               </TabsTrigger>
-              <TabsTrigger value="danger" className="text-xs sm:text-sm px-1 sm:px-2 py-2 flex items-center justify-center space-x-1">
+              <TabsTrigger value="danger" className="text-sm sm:text-sm px-2 sm:px-3 py-2 flex items-center justify-center space-x-1 text-foreground data-[state=active]:text-foreground data-[state=inactive]:text-foreground/80 hover:text-foreground">
                 <AlertCircle className="h-4 w-4 flex-shrink-0" />
                 <span className="hidden sm:inline font-medium">Cuenta</span>
+                <span className="sm:hidden font-medium">C</span>
               </TabsTrigger>
             </TabsList>
             
