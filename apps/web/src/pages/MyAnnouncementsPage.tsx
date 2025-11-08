@@ -552,21 +552,7 @@ function ProposalsDialog({
   const handleAcceptProposal = async (proposalId: string) => {
     try {
       setProcessingProposalId(proposalId);
-      const response = await fetch(
-        `/api/opportunities/${project.id}/proposals/${proposalId}/accept`,
-        {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        }
-      );
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Error al aceptar la propuesta');
-      }
+      await opportunitiesService.acceptProposal(project.id, proposalId);
 
       // Update local state
       setLocalProposals(prev =>
@@ -578,7 +564,7 @@ function ProposalsDialog({
       toast.success('¡Propuesta aceptada! Ahora puedes contactar al profesional por WhatsApp');
     } catch (error: any) {
       console.error('Error accepting proposal:', error);
-      toast.error(error.message || 'Error al aceptar la propuesta');
+      toast.error(error?.response?.data?.message || error.message || 'Error al aceptar la propuesta');
     } finally {
       setProcessingProposalId(null);
     }
@@ -587,21 +573,7 @@ function ProposalsDialog({
   const handleRejectProposal = async (proposalId: string) => {
     try {
       setProcessingProposalId(proposalId);
-      const response = await fetch(
-        `/api/opportunities/${project.id}/proposals/${proposalId}/reject`,
-        {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        }
-      );
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Error al rechazar la propuesta');
-      }
+      await opportunitiesService.rejectProposal(project.id, proposalId);
 
       // Update local state
       setLocalProposals(prev =>
@@ -613,7 +585,7 @@ function ProposalsDialog({
       toast.success('Propuesta rechazada');
     } catch (error: any) {
       console.error('Error rejecting proposal:', error);
-      toast.error(error.message || 'Error al rechazar la propuesta');
+      toast.error(error?.response?.data?.message || error.message || 'Error al rechazar la propuesta');
     } finally {
       setProcessingProposalId(null);
     }
