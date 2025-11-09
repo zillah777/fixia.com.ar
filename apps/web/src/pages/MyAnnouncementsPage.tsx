@@ -596,12 +596,12 @@ function ProposalsDialog({
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
               transition={{ duration: 0.3, ease: 'easeOut' }}
-              className="fixed z-modal-content flex flex-col inset-0 md:inset-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-3xl md:max-w-2xl md:h-auto md:max-h-[92vh] md:overflow-hidden"
+              className="fixed z-modal-content flex flex-col left-0 right-0 top-0 bottom-0 m-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-3xl md:w-full md:max-w-2xl md:h-auto md:max-h-[92vh]"
             >
               {/* ========================================
                   MODAL PANEL - Fixia Glass Design
                   ======================================== */}
-              <div className="w-full h-full flex flex-col bg-gradient-to-br from-slate-950/90 via-slate-900/85 to-slate-950/90 backdrop-blur-2xl border border-white/12 md:border-white/20 shadow-2xl md:rounded-3xl">
+              <div className="w-full h-full flex flex-col bg-gradient-to-br from-slate-950/90 via-slate-900/85 to-slate-950/90 backdrop-blur-2xl border border-white/12 md:border-white/20 shadow-2xl md:rounded-3xl rounded-none">
                 {/* ====================================
                     HEADER - Sticky with glass effect
                     ==================================== */}
