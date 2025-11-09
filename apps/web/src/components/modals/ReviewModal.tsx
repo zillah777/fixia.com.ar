@@ -77,39 +77,69 @@ export function ReviewModal({
   };
 
   return (
-    <AnimatePresence>
+    <AnimatePresence mode="wait">
       {isOpen && (
         <>
-          {/* Backdrop */}
+          {/* ============================================
+              BACKDROP - Glass morphism overlay
+              ============================================ */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
             onClick={handleClose}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-modal-backdrop"
+            className="fixed inset-0 bg-black/65 backdrop-blur-md z-modal-backdrop"
+            aria-hidden="true"
           />
 
-          {/* Modal */}
-          <div className="fixed inset-0 flex items-center justify-center z-modal-content p-4 sm:p-6">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="w-full max-w-[90vw] sm:max-w-md"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <Card className="glass-glow border-primary/40 relative shadow-2xl">
-                {/* Close Button */}
-                <button
-                  onClick={handleClose}
-                  className="absolute top-4 right-4 p-2 rounded-lg hover:bg-white/10 transition-colors"
-                  aria-label="Cerrar modal"
-                >
-                  <X className="h-5 w-5 text-muted-foreground" />
-                </button>
+          {/* ============================================
+              MODAL CONTAINER - Centered on desktop,
+              full-screen on mobile
+              ============================================ */}
+          <motion.div
+            initial={{ scale: 0.95, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.95, opacity: 0, y: 20 }}
+            transition={{ duration: 0.3, ease: 'easeOut' }}
+            className="fixed z-modal-content flex flex-col inset-0 md:inset-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-3xl md:max-w-lg md:h-auto md:max-h-[92vh] md:overflow-hidden"
+          >
+            {/* ========================================
+                MODAL PANEL - Fixia Glass Design
+                ======================================== */}
+            <div className="w-full h-full flex flex-col bg-gradient-to-br from-slate-950/90 via-slate-900/85 to-slate-950/90 backdrop-blur-2xl border border-white/12 md:border-white/20 shadow-2xl">
+              {/* ====================================
+                  HEADER - Sticky with glass effect
+                  ==================================== */}
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.08, duration: 0.3 }}
+                className="sticky top-0 z-10 bg-gradient-to-b from-slate-950/70 via-slate-900/60 to-slate-900/40 border-b border-white/15 px-4 sm:px-5 md:px-6 py-2.5 sm:py-3 md:py-4 backdrop-blur-2xl"
+              >
+                <div className="flex items-center justify-between gap-2 sm:gap-3">
+                  <div className="flex-1 min-w-0">
+                    <h2 className="text-base sm:text-lg md:text-xl font-bold text-white truncate leading-tight">
+                      Dejar Reseña
+                    </h2>
+                    <p className="text-xs text-slate-500 mt-0.5 truncate">
+                      {professionalName}
+                    </p>
+                  </div>
+                  <button
+                    onClick={handleClose}
+                    className="p-1.5 rounded-lg transition-all hover:bg-white/20 hover:backdrop-blur-md active:bg-white/30 border border-white/10 hover:border-white/20"
+                    aria-label="Cerrar modal"
+                  >
+                    <X className="h-4 w-4 text-slate-300 hover:text-white transition-colors" />
+                  </button>
+                </div>
+              </motion.div>
 
-                <CardContent className="p-6 sm:p-8">
+              {/* ====================================
+                  CONTENT - Scrollable area
+                  ==================================== */}
+              <div className="flex-1 overflow-y-auto px-4 sm:px-5 md:px-6 py-3 sm:py-3 md:py-4 space-y-2.5 sm:space-y-3 md:space-y-4 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-white/5">
                   <AnimatePresence mode="wait">
                     {step === 'rating' && (
                       <motion.div
@@ -253,10 +283,9 @@ export function ReviewModal({
                       </motion.div>
                     )}
                   </AnimatePresence>
-                </CardContent>
-              </Card>
-            </motion.div>
-          </div>
+              </div>
+            </div>
+          </motion.div>
         </>
       )}
     </AnimatePresence>
