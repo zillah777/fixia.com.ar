@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
-import { 
-  Bell, BellOff, Check, MoreHorizontal, Trash2, 
-  MessageSquare, Heart, Crown, AlertCircle, CheckCircle, 
+import {
+  Bell, BellOff, Check, MoreHorizontal, Trash2,
+  MessageSquare, Heart, Crown, AlertCircle, CheckCircle,
   Clock, User, Briefcase, Heart, Calendar, Settings,
   Search, Filter, CheckAll, Archive
 } from "lucide-react";
@@ -23,6 +23,7 @@ import { useToast } from "../components/ui/use-toast";
 import { FixiaNavigation } from "../components/FixiaNavigation";
 import { useSecureAuth } from "../context/SecureAuthContext";
 import { useNotifications } from "../context/NotificationContext";
+import { handleNotificationClick } from "../lib/utils/notificationErrorHandler";
 
 interface Notification {
   id: string;
@@ -96,39 +97,17 @@ function NotificationCard({ notification, onMarkRead, onDelete }: {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const handleCardClick = () => {
-    try {
-      if (!notification.read) onMarkRead(notification.id);
+  const handleCardClick = async () => {
+    // Mark as read if unread
+    if (!notification.read) onMarkRead(notification.id);
 
-      if (notification.action_url) {
-        try {
-          // Try to navigate with react-router first if it's a relative URL
-          if (notification.action_url.startsWith('/')) {
-            navigate(notification.action_url);
-          } else if (notification.action_url.startsWith('http')) {
-            // External URL
-            window.location.href = notification.action_url;
-          } else {
-            // Relative URL without leading slash
-            navigate('/' + notification.action_url);
-          }
-        } catch (error) {
-          console.warn('Failed to navigate to notification URL:', error);
-          toast({
-            title: "Recurso no disponible",
-            description: "El recurso que intentas acceder no está disponible",
-            variant: "destructive"
-          });
-        }
-      }
-    } catch (error) {
-      console.error('Error handling notification click:', error);
-      toast({
-        title: "Error",
-        description: "Ocurrió un error al procesar la notificación",
-        variant: "destructive"
-      });
-    }
+    // Use smart error handler for notification click
+    await handleNotificationClick(
+      notification.id,
+      notification.action_url,
+      notification.type,
+      (url) => navigate(url)
+    );
   };
 
   return (
@@ -151,7 +130,7 @@ function NotificationCard({ notification, onMarkRead, onDelete }: {
             </div>
 
             {/* Content */}
-            <div className="flex-1 min-w-0" onClick={handleCardClick}>
+            <div className="flex-1 min-w-0" onClick={() => handleCardClick()}>
               <div className="flex items-start justify-between mb-2">
                 <h3 className={`font-semibold text-sm group-hover:text-primary transition-colors ${
                   !notification.read ? 'text-foreground' : 'text-foreground/80'
