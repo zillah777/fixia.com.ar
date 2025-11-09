@@ -87,13 +87,50 @@ function NotificationIcon({ type }: { type: string }) {
   );
 }
 
-function NotificationCard({ notification, onMarkRead, onDelete }: { 
+function NotificationCard({ notification, onMarkRead, onDelete }: {
   notification: Notification;
   onMarkRead: (id: string) => void;
   onDelete: (id: string) => void;
 }) {
   const config = notificationTypeConfig[notification.type];
-  
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const handleCardClick = () => {
+    try {
+      if (!notification.read) onMarkRead(notification.id);
+
+      if (notification.action_url) {
+        try {
+          // Try to navigate with react-router first if it's a relative URL
+          if (notification.action_url.startsWith('/')) {
+            navigate(notification.action_url);
+          } else if (notification.action_url.startsWith('http')) {
+            // External URL
+            window.location.href = notification.action_url;
+          } else {
+            // Relative URL without leading slash
+            navigate('/' + notification.action_url);
+          }
+        } catch (error) {
+          console.warn('Failed to navigate to notification URL:', error);
+          toast({
+            title: "Recurso no disponible",
+            description: "El recurso que intentas acceder no está disponible",
+            variant: "destructive"
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Error handling notification click:', error);
+      toast({
+        title: "Error",
+        description: "Ocurrió un error al procesar la notificación",
+        variant: "destructive"
+      });
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -114,10 +151,7 @@ function NotificationCard({ notification, onMarkRead, onDelete }: {
             </div>
 
             {/* Content */}
-            <div className="flex-1 min-w-0" onClick={() => {
-              if (!notification.read) onMarkRead(notification.id);
-              if (notification.action_url) window.location.href = notification.action_url;
-            }}>
+            <div className="flex-1 min-w-0" onClick={handleCardClick}>
               <div className="flex items-start justify-between mb-2">
                 <h3 className={`font-semibold text-sm group-hover:text-primary transition-colors ${
                   !notification.read ? 'text-foreground' : 'text-foreground/80'
