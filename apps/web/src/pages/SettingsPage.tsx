@@ -966,7 +966,7 @@ function SubscriptionTab() {
                 </div>
 
                 <Button
-                  className="w-full h-12 bg-gradient-to-r from-primary via-primary to-primary/80 hover:from-primary/90 hover:via-primary/90 hover:to-primary/70 text-white font-bold shadow-lg hover:shadow-xl transition-all"
+                  className="w-full h-12 bg-gradient-to-r from-primary via-primary to-primary/80 hover:from-primary/90 hover:via-primary/90 hover:to-primary/70 text-white font-bold shadow-lg hover:shadow-xl transition-all flex items-center justify-center flex-wrap gap-1"
                   onClick={handleUpgradeClick}
                   disabled={isProcessing}
                   size="lg"
@@ -978,8 +978,8 @@ function SubscriptionTab() {
                     </>
                   ) : (
                     <>
-                      <Crown className="h-5 w-5 mr-2" />
-                      Upgradea a Plan Profesional - $4,500 ARS/mes
+                      <Crown className="h-5 w-5 flex-shrink-0" />
+                      <span className="text-sm sm:text-base">Upgrade - $3,900 ARS/mes</span>
                     </>
                   )}
                 </Button>
