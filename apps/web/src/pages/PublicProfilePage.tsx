@@ -16,6 +16,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { Progress } from "../components/ui/progress";
 import { FavoriteButton } from "../components/ui/FavoriteButton";
+import { VerificationBadge } from "../components/verification/VerificationBadge";
 import { userService } from "../lib/services";
 import { servicesService, Service } from "../lib/services/services.service";
 import { User } from "../context/SecureAuthContext";
@@ -55,11 +56,18 @@ function ProfileHeader({ profile }: ProfileHeaderProps) {
             </Avatar>
 
             {verified && (
-              <div className="absolute -top-2 -right-2">
-                <Badge className="bg-success/20 text-success border-success/30 text-xs px-2">
-                  <CheckCircle className="h-3 w-3 mr-1" />
-                  Verificado
-                </Badge>
+              <div className="absolute -bottom-1 -right-1">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-success/20 rounded-full blur-lg animate-pulse" />
+                  <VerificationBadge
+                    isVerified={verified}
+                    verificationLevel={level}
+                    userType={profile.userType || 'client'}
+                    size="md"
+                    showLabel={false}
+                    className="relative"
+                  />
+                </div>
               </div>
             )}
           </div>
@@ -67,10 +75,22 @@ function ProfileHeader({ profile }: ProfileHeaderProps) {
           {/* Profile Info */}
           <div className="flex-1 space-y-4">
             <div className="flex items-start justify-between">
-              <div>
-                <h1 className="text-3xl font-bold">
-                  {profile.name} {profile.lastName || ''}
-                </h1>
+              <div className="flex-1">
+                <div className="flex items-center gap-3">
+                  <h1 className="text-3xl font-bold">
+                    {profile.name} {profile.lastName || ''}
+                  </h1>
+                  {verified && (
+                    <VerificationBadge
+                      isVerified={verified}
+                      verificationLevel={level}
+                      userType={profile.userType || 'client'}
+                      size="md"
+                      showLabel={true}
+                      className="ml-2"
+                    />
+                  )}
+                </div>
 
                 <div className="flex items-center space-x-3 mt-2">
                   <Badge className="bg-primary/20 text-primary border-primary/30">

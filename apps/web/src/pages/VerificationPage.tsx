@@ -278,35 +278,92 @@ export const VerificationPage = memo(() => {
         </div>
 
         {/* Verification Info Section */}
-        <Card className="glass border-white/10 bg-blue-500/5">
-          <CardContent className="pt-6">
-            <h3 className="font-semibold text-foreground mb-3">¿Qué significa estar "Verificado"?</h3>
-            <p className="text-sm text-muted-foreground leading-relaxed mb-4">
-              {isClient
-                ? 'Ser "Verificado" en Fixia significa que has confirmado tu identidad y eres un usuario de confianza. Esto protege tanto a los clientes como a los profesionales, creando un ambiente seguro para hacer transacciones.'
-                : 'Ser "Verificado" en Fixia significa que has completado las validaciones requeridas de tu identidad, información de contacto y (opcionalmente) certificaciones profesionales. Los clientes confían más en profesionales verificados y tienes acceso a mejor visibilidad en la plataforma.'}
-            </p>
-            <div className="space-y-2 text-sm">
-              <p className="font-medium text-foreground">Beneficios de verificación:</p>
-              <ul className="list-disc list-inside text-muted-foreground space-y-1">
-                {isClient ? (
-                  <>
-                    <li>Mayor confianza de los profesionales</li>
-                    <li>Acceso a todas las características de la plataforma</li>
-                    <li>Protección contra fraude</li>
-                  </>
-                ) : (
-                  <>
-                    <li>Aparece con distintivo "Verificado" en tu perfil</li>
-                    <li>Mayor visibilidad en búsquedas y recomendaciones</li>
-                    <li>Acceso a más oportunidades de clientes</li>
-                    <li>Mejores posiciones en rankings de profesionales</li>
-                  </>
-                )}
-              </ul>
-            </div>
-          </CardContent>
-        </Card>
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
+          <Card className={`glass border-white/20 overflow-hidden ${
+            isClient
+              ? 'bg-gradient-to-br from-success/10 via-success/5 to-transparent border-success/20'
+              : 'bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border-primary/20'
+          }`}>
+            <CardContent className="pt-6">
+              <div className="flex items-start gap-4">
+                <div className={`p-3 rounded-lg ${
+                  isClient ? 'bg-success/20' : 'bg-primary/20'
+                }`}>
+                  <Shield className={`h-6 w-6 ${isClient ? 'text-success' : 'text-primary'}`} />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-bold text-lg text-foreground mb-2">¿Por qué es importante estar Verificado?</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+                    {isClient
+                      ? 'Ser "Verificado" en Fixia confirma tu identidad y te convierte en un usuario de confianza. Esto protege tanto a los profesionales como a otros usuarios, creando un ambiente seguro para todas las transacciones y evitando fraudes.'
+                      : 'Ser "Verificado" en Fixia valida tu identidad y credenciales profesionales. Los clientes tienen mayor confianza en profesionales verificados, lo que resulta en más oportunidades y mejor visibilidad en búsquedas.'}
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {isClient ? (
+                      <>
+                        <div className="flex items-start gap-2 text-sm">
+                          <div className="h-5 w-5 rounded-full bg-success/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <span className="text-success font-bold text-xs">✓</span>
+                          </div>
+                          <span className="text-foreground">Confianza garantizada con profesionales</span>
+                        </div>
+                        <div className="flex items-start gap-2 text-sm">
+                          <div className="h-5 w-5 rounded-full bg-success/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <span className="text-success font-bold text-xs">✓</span>
+                          </div>
+                          <span className="text-foreground">Acceso a todas las características</span>
+                        </div>
+                        <div className="flex items-start gap-2 text-sm">
+                          <div className="h-5 w-5 rounded-full bg-success/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <span className="text-success font-bold text-xs">✓</span>
+                          </div>
+                          <span className="text-foreground">Protección contra fraude</span>
+                        </div>
+                        <div className="flex items-start gap-2 text-sm">
+                          <div className="h-5 w-5 rounded-full bg-success/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <span className="text-success font-bold text-xs">✓</span>
+                          </div>
+                          <span className="text-foreground">Badge de verificación visible</span>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="flex items-start gap-2 text-sm">
+                          <div className="h-5 w-5 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <span className="text-primary font-bold text-xs">✓</span>
+                          </div>
+                          <span className="text-foreground">Aparece con distintivo en tu perfil</span>
+                        </div>
+                        <div className="flex items-start gap-2 text-sm">
+                          <div className="h-5 w-5 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <span className="text-primary font-bold text-xs">✓</span>
+                          </div>
+                          <span className="text-foreground">Mayor visibilidad en búsquedas</span>
+                        </div>
+                        <div className="flex items-start gap-2 text-sm">
+                          <div className="h-5 w-5 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <span className="text-primary font-bold text-xs">✓</span>
+                          </div>
+                          <span className="text-foreground">Más oportunidades de clientes</span>
+                        </div>
+                        <div className="flex items-start gap-2 text-sm">
+                          <div className="h-5 w-5 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <span className="text-primary font-bold text-xs">✓</span>
+                          </div>
+                          <span className="text-foreground">Mejor posición en rankings</span>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
       </motion.div>
 
       {/* Progress Overview */}
@@ -375,54 +432,108 @@ export const VerificationPage = memo(() => {
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
-              {verificationsData.map((verification) => (
-                <Card key={verification.type} className="glass border-white/20">
-                  <CardContent className="p-6">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-center space-x-3">
-                        {getVerificationIcon(verification.type, verification.isVerified)}
-                        <div>
-                          <h3 className="font-medium text-foreground">
-                            {verification.title}
-                            {verification.isRequired && (
-                              <span className="text-destructive ml-1">*</span>
-                            )}
-                          </h3>
-                          <p className="text-sm text-muted-foreground">
-                            {verification.description}
-                          </p>
+            {isClient && getVerificationProgress() === 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-gradient-to-r from-success/20 via-success/10 to-transparent border border-success/30 rounded-lg p-6"
+              >
+                <div className="flex items-start gap-4">
+                  <div className="p-3 bg-success/20 rounded-lg flex-shrink-0">
+                    <Shield className="h-6 w-6 text-success" />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-bold text-foreground mb-1">Comenzar tu Verificación</h4>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      Complete tu verificación de identidad en pocos pasos. Esto ayuda a mantener segura nuestra comunidad y te da acceso a todas las características de Fixia.
+                    </p>
+                    <Button
+                      className="bg-success hover:bg-success/90"
+                      onClick={() => {
+                        setSelectedVerificationType(VerificationType.IDENTITY);
+                        setShowRequestForm(true);
+                      }}
+                    >
+                      Comenzar Verificación
+                    </Button>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            <div className={`grid gap-6 ${isClient ? 'grid-cols-1' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'}`}>
+              {verificationsData.map((verification, index) => (
+                <motion.div
+                  key={verification.type}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <Card className={`glass border-white/20 h-full transition-all hover:border-white/40 ${
+                    verification.isVerified
+                      ? 'bg-success/5 border-success/30'
+                      : 'hover:shadow-lg'
+                  }`}>
+                    <CardContent className="p-6">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex items-center space-x-3 flex-1">
+                          <div className={`p-2 rounded-lg ${
+                            verification.isVerified ? 'bg-success/20' : 'bg-white/10'
+                          }`}>
+                            {getVerificationIcon(verification.type, verification.isVerified)}
+                          </div>
+                          <div>
+                            <h3 className="font-semibold text-foreground text-sm">
+                              {verification.title}
+                              {verification.isRequired && (
+                                <span className="text-destructive ml-1">*</span>
+                              )}
+                            </h3>
+                          </div>
                         </div>
-                      </div>
-                      
-                      <div className="flex flex-col items-end space-y-2">
+
                         <Badge
                           variant={verification.isVerified ? 'default' : 'outline'}
-                          className={verification.isVerified ? 'bg-success/20 text-success' : ''}
+                          className={verification.isVerified
+                            ? 'bg-success/20 text-success border-success/30'
+                            : 'bg-warning/20 text-warning border-warning/30'
+                          }
                         >
-                          {verification.isVerified ? 'Verificado' : 'Pendiente'}
+                          {verification.isVerified ? '✓ Verificado' : 'Pendiente'}
                         </Badge>
-                        
-                        {!verification.isVerified && (
-                          <Button
-                            size="sm"
-                            onClick={() => {
-                              setSelectedVerificationType(verification.type);
-                              setShowRequestForm(true);
-                            }}
-                          >
-                            <Plus className="h-4 w-4 mr-1" />
-                            Verificar
-                          </Button>
-                        )}
                       </div>
-                    </div>
-                    
-                    <div className="mt-4 text-xs text-muted-foreground">
-                      Tiempo estimado: {verificationService.getEstimatedProcessingTime(verification.type)}
-                    </div>
-                  </CardContent>
-                </Card>
+
+                      <p className="text-sm text-muted-foreground mb-4">
+                        {verification.description}
+                      </p>
+
+                      <div className="flex items-center justify-between text-xs text-muted-foreground mb-4">
+                        <span>⏱ {verificationService.getEstimatedProcessingTime(verification.type)}</span>
+                      </div>
+
+                      {!verification.isVerified && (
+                        <Button
+                          size="sm"
+                          className="w-full bg-primary hover:bg-primary/90"
+                          onClick={() => {
+                            setSelectedVerificationType(verification.type);
+                            setShowRequestForm(true);
+                          }}
+                        >
+                          <Plus className="h-4 w-4 mr-1" />
+                          {isClient ? 'Verificar Ahora' : 'Enviar Solicitud'}
+                        </Button>
+                      )}
+
+                      {verification.isVerified && (
+                        <div className="flex items-center justify-center text-success text-sm font-semibold">
+                          <CheckCircle className="h-4 w-4 mr-2" />
+                          Completado
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </motion.div>
               ))}
             </div>
           </TabsContent>
