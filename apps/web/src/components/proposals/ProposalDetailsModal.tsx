@@ -162,11 +162,11 @@ export function ProposalDetailsModal({
 
           {/* Modal Panel - Premium glass morphism centered on desktop, full-screen on mobile */}
           <motion.div
-            initial={{ y: '100%', opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: '100%', opacity: 0 }}
+            initial={{ scale: 0.95, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.95, opacity: 0, y: 20 }}
             transition={{ duration: 0.3, ease: 'easeOut' }}
-            className="fixed z-modal-content flex flex-col inset-0 md:inset-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-2xl md:max-w-2xl md:h-auto md:max-h-[90vh] md:overflow-hidden"
+            className="fixed z-modal-content flex flex-col inset-0 md:inset-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-3xl md:max-w-lg md:h-auto md:max-h-[92vh] md:overflow-hidden"
           >
             {/* Panel Container - Premium glass morphism with Fixia design */}
             <div className="w-full h-full flex flex-col bg-gradient-to-br from-slate-950/90 via-slate-900/85 to-slate-950/90 backdrop-blur-2xl border border-white/12 md:border-white/20 shadow-2xl">
@@ -175,36 +175,35 @@ export function ProposalDetailsModal({
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.08, duration: 0.3 }}
-                className="sticky top-0 z-10 bg-gradient-to-b from-slate-950/70 via-slate-900/60 to-slate-900/40 border-b border-white/15 px-4 sm:px-5 md:px-6 py-3 sm:py-4 md:py-5 backdrop-blur-2xl"
+                className="sticky top-0 z-10 bg-gradient-to-b from-slate-950/70 via-slate-900/60 to-slate-900/40 border-b border-white/15 px-4 sm:px-5 md:px-6 py-2.5 sm:py-3 md:py-4 backdrop-blur-2xl"
               >
-                <div className="flex items-start justify-between gap-2 sm:gap-3">
+                <div className="flex items-center justify-between gap-2 sm:gap-3">
                   <div className="flex-1 min-w-0">
-                    <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-white truncate leading-tight">
+                    <h2 className="text-base sm:text-lg md:text-xl font-bold text-white truncate leading-tight">
                       {professional.name}
                     </h2>
-                    <p className="text-xs sm:text-sm text-slate-400 mt-0.5 sm:mt-1 truncate">
-                      Propuesta para: {projectTitle}
+                    <p className="text-xs text-slate-500 mt-0.5 truncate">
+                      {projectTitle}
                     </p>
                   </div>
-                  <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
-                    <Badge className={`${currentStatus.color} border whitespace-nowrap text-xs sm:text-sm`}>
-                      <currentStatus.icon className="h-3 w-3 mr-1" />
-                      <span className="hidden sm:inline">{currentStatus.label}</span>
-                      <span className="sm:hidden">{currentStatus.label.split(' ')[0]}</span>
+                  <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+                    <Badge className={`${currentStatus.color} border whitespace-nowrap text-xs`}>
+                      <currentStatus.icon className="h-2.5 w-2.5 mr-0.5" />
+                      <span className="hidden sm:inline text-xs">{currentStatus.label.split(' ')[0]}</span>
                     </Badge>
                     <button
                       onClick={() => onOpenChange(false)}
-                      className="p-2 rounded-lg transition-all hover:bg-white/20 hover:backdrop-blur-md active:bg-white/30 touch-target border border-white/10 hover:border-white/20"
+                      className="p-1.5 rounded-lg transition-all hover:bg-white/20 hover:backdrop-blur-md active:bg-white/30 border border-white/10 hover:border-white/20"
                       aria-label="Cerrar modal"
                     >
-                      <X className="h-5 w-5 text-slate-300 hover:text-white transition-colors" />
+                      <X className="h-4 w-4 text-slate-300 hover:text-white transition-colors" />
                     </button>
                   </div>
                 </div>
               </motion.div>
 
               {/* Scrollable Content Area - Glass background */}
-              <div className="flex-1 overflow-y-auto px-4 sm:px-5 md:px-6 py-3 sm:py-4 md:py-5 space-y-3 sm:space-y-4 md:space-y-5 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-white/5">
+              <div className="flex-1 overflow-y-auto px-4 sm:px-5 md:px-6 py-3 sm:py-3 md:py-4 space-y-2.5 sm:space-y-3 md:space-y-4 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-white/5">
                 {/* Professional Info - Premium glass card */}
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
@@ -363,13 +362,25 @@ export function ProposalDetailsModal({
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.32, duration: 0.3 }}
-                className="sticky bottom-0 bg-gradient-to-t from-slate-950/90 via-slate-900/80 to-slate-900/60 border-t border-white/15 px-4 sm:px-5 md:px-6 py-3 sm:py-4 md:py-5 space-y-2 sm:space-y-3 md:space-y-4 backdrop-blur-2xl shadow-2xl"
+                className="sticky bottom-0 bg-gradient-to-t from-slate-950/90 via-slate-900/80 to-slate-900/60 border-t border-white/15 px-4 sm:px-5 md:px-6 py-3 sm:py-3 md:py-4 space-y-2 sm:space-y-2.5 md:space-y-3 backdrop-blur-2xl shadow-2xl"
               >
                 {proposal.status === 'pending' && (
                   <>
-                    <div className="bg-gradient-to-r from-primary/25 via-primary/15 to-primary/8 backdrop-blur-xl border border-primary/40 rounded-lg md:rounded-xl p-2.5 sm:p-3 text-xs md:text-sm text-white/85 hover:bg-primary/28 hover:border-primary/50 transition-all shadow-md">
-                      ✨ Aceptar te permitirá obtener el contacto del profesional y comenzar a colaborar.
-                    </div>
+                    <motion.div
+                      initial={{ opacity: 0, y: 5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.28, duration: 0.3 }}
+                      className="bg-gradient-to-r from-primary/30 via-primary/20 to-primary/10 backdrop-blur-xl border border-primary/50 rounded-xl md:rounded-2xl p-3 sm:p-4 md:p-5 hover:bg-primary/32 hover:border-primary/60 transition-all shadow-lg"
+                    >
+                      <div className="flex gap-2 sm:gap-3 items-start">
+                        <span className="text-lg sm:text-xl flex-shrink-0 mt-0.5">✨</span>
+                        <div className="min-w-0">
+                          <p className="text-xs sm:text-sm md:text-base text-white font-medium leading-relaxed">
+                            Aceptar te permitirá obtener el contacto del profesional y comenzar a colaborar.
+                          </p>
+                        </div>
+                      </div>
+                    </motion.div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
                       <Button
