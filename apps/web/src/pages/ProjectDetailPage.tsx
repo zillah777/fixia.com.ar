@@ -380,7 +380,7 @@ export default function ProjectDetailPage() {
                         transition={{ delay: index * 0.1 }}
                         className="p-5 rounded-lg border border-white/10 bg-gradient-to-br from-white/5 to-transparent hover:border-primary/30 hover:bg-white/10 transition-all duration-300"
                       >
-                        {/* Header with Professional Info */}
+                        {/* Header with Professional Info and Status */}
                         <div className="flex items-start justify-between gap-4 mb-4">
                           <div className="flex items-start gap-4 flex-1 min-w-0">
                             {/* Avatar with verification badge */}
@@ -399,6 +399,7 @@ export default function ProjectDetailPage() {
 
                             {/* Professional Details */}
                             <div className="flex-1 min-w-0">
+                              {/* Name and Verified Badge */}
                               <div className="flex items-center gap-2 flex-wrap mb-2">
                                 <h4 className="font-bold text-foreground text-lg">{proposal.professional.name}</h4>
                                 {proposal.professional.isVerified && (
@@ -409,10 +410,19 @@ export default function ProjectDetailPage() {
                                 )}
                               </div>
 
-                              {/* Trust Indicators */}
-                              <div className="grid grid-cols-2 gap-2 mb-3 text-sm">
-                                {/* Rating */}
-                                <div className="flex items-center gap-2">
+                              {/* Location and Response Time */}
+                              <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
+                                {proposal.professional.responseTime && (
+                                  <>
+                                    <Clock className="h-3 w-3" />
+                                    <span>{proposal.professional.responseTime}</span>
+                                  </>
+                                )}
+                              </div>
+
+                              {/* Trust Indicators - Rating and Reviews */}
+                              <div className="flex items-center gap-3 mb-3">
+                                <div className="flex items-center gap-1">
                                   <div className="flex items-center">
                                     {[...Array(5)].map((_, i) => (
                                       <Star
@@ -425,53 +435,50 @@ export default function ProjectDetailPage() {
                                       />
                                     ))}
                                   </div>
-                                  <span className="font-semibold">{proposal.professional.rating.toFixed(1)}</span>
+                                  <span className="font-semibold text-sm">{proposal.professional.rating.toFixed(1)}</span>
+                                  <span className="text-xs text-muted-foreground">
+                                    ({proposal.professional.totalReviews} {proposal.professional.totalReviews === 1 ? 'reseña' : 'reseñas'})
+                                  </span>
                                 </div>
-
-                                {/* Reviews Count */}
-                                <div className="text-xs text-muted-foreground">
-                                  {proposal.professional.totalReviews} {proposal.professional.totalReviews === 1 ? 'reseña' : 'reseñas'}
-                                </div>
-
-                                {/* Member Since */}
-                                {proposal.professional.memberSince && (
-                                  <div className="text-xs text-muted-foreground col-span-2">
-                                    📅 Miembro desde {new Date(proposal.professional.memberSince).toLocaleDateString('es-AR', {
-                                      month: 'short',
-                                      year: 'numeric'
-                                    })}
-                                  </div>
-                                )}
                               </div>
 
-                              {/* Trust Score / Experience Badges */}
-                              <div className="flex flex-wrap gap-1.5 mb-3">
-                                {proposal.professional.completedProjects && proposal.professional.completedProjects > 0 && (
-                                  <Badge variant="secondary" className="bg-primary/10 text-primary text-xs gap-1">
-                                    <Briefcase className="h-3 w-3" />
-                                    {proposal.professional.completedProjects} trabajos completados
-                                  </Badge>
-                                )}
+                              {/* Member Since and Completed Projects */}
+                              {(proposal.professional.memberSince || proposal.professional.completedProjects) && (
+                                <div className="flex items-center gap-3 text-xs text-muted-foreground mb-3">
+                                  {proposal.professional.memberSince && (
+                                    <span>📅 Miembro desde {new Date(proposal.professional.memberSince).toLocaleDateString('es-AR', {
+                                      month: 'short',
+                                      year: 'numeric'
+                                    })}</span>
+                                  )}
+                                  {proposal.professional.completedProjects && proposal.professional.completedProjects > 0 && (
+                                    <span>✓ {proposal.professional.completedProjects} trabajos completados</span>
+                                  )}
+                                </div>
+                              )}
+
+                              {/* Professional Description/Specialty */}
+                              {proposal.professional.description && (
+                                <p className="text-xs text-muted-foreground italic mb-2">
+                                  "{proposal.professional.description}"
+                                </p>
+                              )}
+
+                              {/* Trust Badges */}
+                              <div className="flex flex-wrap gap-1.5">
                                 {proposal.availableToStart && (
-                                  <Badge variant="secondary" className="bg-success/10 text-success text-xs gap-1">
+                                  <Badge className="bg-success/20 text-success text-xs gap-1 border-success/30">
                                     <Clock className="h-3 w-3" />
                                     Disponible ahora
                                   </Badge>
                                 )}
                                 {proposal.flexibleSchedule && (
-                                  <Badge variant="secondary" className="bg-blue-500/10 text-blue-400 text-xs gap-1">
+                                  <Badge className="bg-blue-500/20 text-blue-400 text-xs gap-1 border-blue-500/30">
                                     ⏱️
                                     Horarios flexibles
                                   </Badge>
                                 )}
                               </div>
-
-                              {/* Professional Description/Specialty */}
-                              {proposal.professional.description && (
-                                <p className="text-xs text-muted-foreground italic line-clamp-1">
-                                  "{proposal.professional.description}"
-                                </p>
-                              )}
                             </div>
                           </div>
 

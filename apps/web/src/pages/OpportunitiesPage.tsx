@@ -626,13 +626,13 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
                     ))}
                   </div>
                   <span className="text-xs font-semibold text-foreground">{opportunity.client.averageRating?.toFixed(1) || '0.0'}</span>
-                  <span className="text-xs text-muted-foreground">({opportunity.client.totalProjects || 0} proyectos)</span>
+                  <span className="text-xs text-muted-foreground">({opportunity.proposals || 0} {(opportunity.proposals || 0) === 1 ? 'propuesta' : 'propuestas'})</span>
                 </div>
 
                 {/* Client Trust Indicators */}
                 <div className="flex flex-wrap gap-1">
                   <Badge variant="secondary" className="bg-primary/10 text-primary text-xs h-5">
-                    💼 {opportunity.client.totalProjects || 0} proyectos
+                    📢 {opportunity.client.totalProjects || 1} {(opportunity.client.totalProjects || 1) === 1 ? 'anuncio' : 'anuncios'} publicado{(opportunity.client.totalProjects || 1) === 1 ? '' : 's'}
                   </Badge>
                 </div>
               </div>
