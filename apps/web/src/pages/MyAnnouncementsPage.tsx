@@ -596,7 +596,7 @@ function ProposalsDialog({
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
               transition={{ duration: 0.3, ease: 'easeOut' }}
-              className="fixed z-modal-content flex flex-col inset-0 md:inset-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-3xl md:max-w-2xl md:h-auto md:max-h-[92vh] md:overflow-hidden"
+              className="fixed z-modal-content flex flex-col left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[95vw] max-w-2xl h-auto max-h-[90vh] rounded-2xl overflow-hidden"
             >
               {/* ========================================
                   MODAL PANEL - Fixia Glass Design
@@ -613,10 +613,10 @@ function ProposalsDialog({
                 >
                   <div className="flex items-center justify-between gap-2 sm:gap-3">
                     <div className="flex-1 min-w-0">
-                      <h2 className="text-base sm:text-lg md:text-xl font-bold text-white truncate leading-tight">
+                      <h2 className="text-base sm:text-lg md:text-xl font-bold text-[#5B7FFF] truncate leading-tight">
                         Propuestas Recibidas
                       </h2>
-                      <p className="text-xs text-slate-500 mt-0.5 truncate">
+                      <p className="text-xs text-slate-400 mt-0.5 truncate">
                         {project.title}
                       </p>
                     </div>
@@ -665,7 +665,7 @@ function ProposalsDialog({
                                       <h4 className="font-semibold text-white text-xs sm:text-sm md:text-base truncate">
                                         {proposal.professional.name}
                                       </h4>
-                                      <span className="flex-shrink-0 bg-gradient-to-r from-primary to-primary/80 text-white border border-primary/30 text-xs px-2.5 py-1 whitespace-nowrap rounded-md font-bold shadow-sm">
+                                      <span className="flex-shrink-0 text-[#5B7FFF] border border-[#5B7FFF]/30 bg-[#5B7FFF]/10 text-xs sm:text-sm px-2.5 py-1 whitespace-nowrap rounded-md font-bold shadow-sm">
                                         ${proposal.quoted_price.toLocaleString()}
                                       </span>
                                     </div>
@@ -676,12 +676,12 @@ function ProposalsDialog({
                                       return (
                                         <div className="flex items-center gap-1 mb-1.5 flex-wrap">
                                           {badgeInfo.isNew && (
-                                            <Badge className="bg-success/20 text-success border-success/30 text-xs px-2 py-0.5 rounded">
+                                            <Badge className="bg-[#4ADE80]/20 text-[#4ADE80] border-[#4ADE80]/30 text-xs px-2 py-0.5 rounded">
                                               ✨ Nueva
                                             </Badge>
                                           )}
                                           {badgeInfo.isDuplicate && (
-                                            <Badge className="bg-primary/20 text-primary border-primary/30 text-xs px-2 py-0.5 rounded">
+                                            <Badge className="bg-[#5B7FFF]/20 text-[#5B7FFF] border-[#5B7FFF]/30 text-xs px-2 py-0.5 rounded">
                                               🔄 {badgeInfo.duplicateCount} propuestas
                                             </Badge>
                                           )}
