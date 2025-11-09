@@ -12,6 +12,7 @@ import { Skeleton } from '../components/ui/skeleton';
 import { FixiaNavigation } from '../components/FixiaNavigation';
 import { MobileBottomNavigation } from '../components/MobileBottomNavigation';
 import { ReviewModal } from '../components/modals/ReviewModal';
+import { CompletionModal } from '../components/modals/CompletionModal';
 import {
   Briefcase,
   TrendingUp,
@@ -24,7 +25,8 @@ import {
   Calendar,
   AlertTriangle,
   Sparkles,
-  Star
+  Star,
+  CheckCheck
 } from 'lucide-react';
 
 const JobsPage: React.FC = () => {
@@ -369,31 +371,37 @@ interface JobCardProps {
 
 const JobCard: React.FC<JobCardProps> = ({ job, onStatusUpdate, isProfessional }) => {
   const [showReviewModal, setShowReviewModal] = React.useState(false);
+  const [showCompletionModal, setShowCompletionModal] = React.useState(false);
+  const [completionMode, setCompletionMode] = React.useState<'request' | 'confirm'>('request');
   const progress = jobsService.calculateProgress(job.milestones);
 
   const getStatusActions = () => {
-    if (!isProfessional) return null;
-
     switch (job.status) {
       case 'not_started':
-        return (
-          <Button
-            onClick={() => onStatusUpdate(job.id, 'in_progress', 'Trabajo iniciado')}
-            size="sm"
-            className="liquid-gradient hover:opacity-90"
-          >
-            Iniciar Trabajo
-          </Button>
-        );
+        if (isProfessional) {
+          return (
+            <Button
+              onClick={() => onStatusUpdate(job.id, 'in_progress', 'Trabajo iniciado')}
+              size="sm"
+              className="liquid-gradient hover:opacity-90"
+            >
+              Iniciar Trabajo
+            </Button>
+          );
+        }
+        return null;
       case 'in_progress':
         return (
           <Button
-            onClick={() => onStatusUpdate(job.id, 'milestone_review', 'Solicitar revisión')}
+            onClick={() => {
+              setCompletionMode('request');
+              setShowCompletionModal(true);
+            }}
             size="sm"
-            variant="outline"
-            className="glass border-white/20 hover:glass-medium"
+            className="liquid-gradient hover:opacity-90 flex items-center gap-2"
           >
-            Solicitar Revisión
+            <CheckCheck className="h-4 w-4" />
+            {isProfessional ? 'Marcar Completado' : 'Confirmar Completado'}
           </Button>
         );
       case 'milestone_review':
@@ -502,6 +510,20 @@ const JobCard: React.FC<JobCardProps> = ({ job, onStatusUpdate, isProfessional }
           )}
         </div>
       </CardContent>
+
+      {/* Completion Modal */}
+      <CompletionModal
+        isOpen={showCompletionModal}
+        onClose={() => setShowCompletionModal(false)}
+        matchId={job.id}
+        mode={completionMode}
+        oppositePartyName={isProfessional ? job.client.name : job.professional.name}
+        onCompleted={() => {
+          setShowCompletionModal(false);
+          // Reload data after completion
+          onStatusUpdate(job.id, job.status, 'Trabajo completado');
+        }}
+      />
 
       {/* Review Modal */}
       {!isProfessional && (
