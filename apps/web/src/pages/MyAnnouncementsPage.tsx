@@ -665,9 +665,9 @@ function ProposalsDialog({
                                       <h4 className="font-semibold text-white text-xs sm:text-sm md:text-base truncate">
                                         {proposal.professional.name}
                                       </h4>
-                                      <Badge className="flex-shrink-0 bg-primary/20 text-primary border-primary/30 text-xs px-2 py-0.5 whitespace-nowrap rounded font-semibold">
+                                      <span className="flex-shrink-0 bg-gradient-to-r from-primary to-primary/80 text-white border border-primary/30 text-xs px-2.5 py-1 whitespace-nowrap rounded-md font-bold shadow-sm">
                                         ${proposal.quoted_price.toLocaleString()}
-                                      </Badge>
+                                      </span>
                                     </div>
 
                                     {/* Badge indicators for new or duplicate proposals */}
