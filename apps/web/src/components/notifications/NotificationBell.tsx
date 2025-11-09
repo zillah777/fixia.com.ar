@@ -8,6 +8,8 @@ import { ScrollArea } from '../ui/scroll-area';
 import { Separator } from '../ui/separator';
 import { cn } from '../ui/utils';
 import { useNotifications } from '../../context/NotificationContext';
+import { useSecureAuth } from '../../context/SecureAuthContext';
+import { getNotificationUrl, type NotificationType, type UserType } from '../../lib/utils/notificationRouting';
 import { toast } from 'sonner';
 
 interface Notification {
@@ -43,6 +45,7 @@ const notificationTypeConfig = {
 export function NotificationBell({ className }: NotificationBellProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { notifications, loading, markAsRead, markAllAsRead, deleteNotification } = useNotifications();
+  const { user } = useSecureAuth();
 
   // Calculate actual unread count from notifications to prevent phantom badges
   const actualUnreadCount = notifications.filter(n => !n.read).length;
@@ -57,13 +60,23 @@ export function NotificationBell({ className }: NotificationBellProps) {
     // Close the notification panel
     setIsOpen(false);
 
-    // Redirect to action URL if available, otherwise go to notifications page
+    // Get the appropriate redirect URL based on notification type and user role
+    let redirectUrl: string;
+
     if (notification.actionUrl) {
-      window.location.href = notification.actionUrl;
+      // Prefer existing actionUrl if available
+      redirectUrl = notification.actionUrl;
     } else {
-      // Default redirect to notifications page if no specific action URL
-      window.location.href = '/notifications';
+      // Use smart routing based on notification type and user role
+      const userType = (user?.userType || 'professional') as UserType;
+      redirectUrl = getNotificationUrl(
+        notification.type as NotificationType,
+        userType,
+        notification.metadata
+      );
     }
+
+    window.location.href = redirectUrl;
   };
 
   // Handle mark all as read
