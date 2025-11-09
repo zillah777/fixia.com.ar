@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Plus, Eye, Edit, Trash2, Clock, Users, DollarSign,
   MapPin, Calendar, Tag, AlertCircle, CheckCircle2, XCircle,
-  MessageSquare, Heart, TrendingUp, Filter, Search, ThumbsUp, ThumbsDown, Loader2, Star
+  MessageSquare, Heart, TrendingUp, Filter, Search, ThumbsUp, ThumbsDown, Loader2, Star, X
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
@@ -17,14 +17,7 @@ import { toast } from "sonner";
 import { opportunitiesService } from "../lib/services/opportunities.service";
 import { FixiaNavigation } from "../components/FixiaNavigation";
 import { Skeleton } from "../components/ui/skeleton";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "../components/ui/dialog";
-import { Separator } from "../components/ui/separator";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../components/ui/dialog";
 import { ProposalDetailsModal } from "../components/proposals/ProposalDetailsModal";
 
 interface Project {
@@ -551,6 +544,10 @@ function ProposalsDialog({
     onOpenChange(false);
   };
 
+  const handleClose = () => {
+    onOpenChange(false);
+  };
+
   // Get badge info for proposal (new, duplicate, etc)
   const getProposalBadgeInfo = (proposal: Proposal) => {
     const isNew = (createdAt: string) => {
@@ -574,121 +571,179 @@ function ProposalsDialog({
 
   return (
     <>
-      <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="bg-gradient-to-br from-slate-950/90 via-slate-900/85 to-slate-950/90 border-white/12 md:border-white/20 w-[95vw] sm:w-[90vw] md:w-[85vw] lg:w-auto lg:max-w-2xl max-h-[90vh] overflow-hidden backdrop-blur-2xl rounded-xl sm:rounded-2xl p-0 gap-0 flex flex-col shadow-2xl">
-          <DialogHeader className="bg-gradient-to-b from-slate-950/70 via-slate-900/60 to-slate-900/40 border-b border-white/15 px-4 sm:px-5 md:px-6 py-2.5 sm:py-3 md:py-4 backdrop-blur-2xl flex-shrink-0">
-            <DialogTitle className="text-white text-base sm:text-lg md:text-xl font-bold leading-tight">Propuestas Recibidas</DialogTitle>
-            <DialogDescription className="text-slate-500 text-xs sm:text-sm mt-0.5 truncate">
-              {project.title}
-            </DialogDescription>
-          </DialogHeader>
+      <AnimatePresence mode="wait">
+        {open && (
+          <>
+            {/* ============================================
+                BACKDROP - Glass morphism overlay
+                ============================================ */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={handleClose}
+              className="fixed inset-0 bg-black/65 backdrop-blur-md z-modal-backdrop"
+              aria-hidden="true"
+            />
 
-          <div className="flex-1 overflow-y-auto space-y-2 sm:space-y-2.5 md:space-y-3 px-4 sm:px-5 md:px-6 py-3 sm:py-4 md:py-5 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-white/5">
-            {localProposals && localProposals.length > 0 ? (
-              localProposals.map((proposal, index) => (
+            {/* ============================================
+                MODAL CONTAINER - Centered on desktop,
+                full-screen on mobile
+                ============================================ */}
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              transition={{ duration: 0.3, ease: 'easeOut' }}
+              className="fixed z-modal-content flex flex-col inset-0 md:inset-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-3xl md:max-w-2xl md:h-auto md:max-h-[92vh] md:overflow-hidden"
+            >
+              {/* ========================================
+                  MODAL PANEL - Fixia Glass Design
+                  ======================================== */}
+              <div className="w-full h-full flex flex-col bg-gradient-to-br from-slate-950/90 via-slate-900/85 to-slate-950/90 backdrop-blur-2xl border border-white/12 md:border-white/20 shadow-2xl md:rounded-3xl">
+                {/* ====================================
+                    HEADER - Sticky with glass effect
+                    ==================================== */}
                 <motion.div
-                  key={proposal.id}
-                  initial={{ opacity: 0, y: 10 }}
+                  initial={{ opacity: 0, y: -20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                  whileHover={{ scale: 1.02 }}
+                  transition={{ delay: 0.08, duration: 0.3 }}
+                  className="sticky top-0 z-10 bg-gradient-to-b from-slate-950/70 via-slate-900/60 to-slate-900/40 border-b border-white/15 px-4 sm:px-5 md:px-6 py-2.5 sm:py-3 md:py-4 backdrop-blur-2xl md:rounded-t-3xl"
                 >
-                  <Card
-                    className="bg-white/8 backdrop-blur-md border border-white/15 hover:border-white/25 hover:bg-white/12 transition-all cursor-pointer rounded-xl md:rounded-2xl active:bg-white/15 touch-target shadow-lg"
-                    onClick={() => handleProposalClick(proposal)}
-                    role="button"
-                    tabIndex={0}
-                  >
-                    <CardContent className="p-3 sm:p-4 md:p-5">
-                      <div className="flex items-start justify-between gap-2 sm:gap-3">
-                        <div className="flex items-start gap-2 sm:gap-3 flex-1 min-w-0">
-                          <Avatar className="h-11 w-11 sm:h-13 sm:w-13 md:h-14 md:w-14 flex-shrink-0 border border-white/10">
-                            <AvatarImage src={proposal.professional.avatar || undefined} />
-                            <AvatarFallback className="text-xs sm:text-sm font-bold">
-                              {proposal.professional.name.charAt(0).toUpperCase()}
-                            </AvatarFallback>
-                          </Avatar>
-
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-start justify-between gap-1.5 mb-1">
-                              <h4 className="font-semibold text-white text-xs sm:text-sm md:text-base truncate">
-                                {proposal.professional.name}
-                              </h4>
-                              <Badge className="flex-shrink-0 bg-success/20 text-success border-success/30 text-xs px-2 py-0.5 whitespace-nowrap rounded font-semibold">
-                                ${proposal.quoted_price.toLocaleString()}
-                              </Badge>
-                            </div>
-
-                            {/* Badge indicators for new or duplicate proposals */}
-                            {(() => {
-                              const badgeInfo = getProposalBadgeInfo(proposal);
-                              return (
-                                <div className="flex items-center gap-1 mb-1.5 flex-wrap">
-                                  {badgeInfo.isNew && (
-                                    <Badge className="bg-success/20 text-success border-success/30 text-xs px-2 py-0.5 rounded">
-                                      ✨ Nueva
-                                    </Badge>
-                                  )}
-                                  {badgeInfo.isDuplicate && (
-                                    <Badge className="bg-info/20 text-info border-info/30 text-xs px-2 py-0.5 rounded">
-                                      🔄 {badgeInfo.duplicateCount} propuestas
-                                    </Badge>
-                                  )}
-                                </div>
-                              );
-                            })()}
-
-                            {proposal.professional.professional_profile?.average_rating !== undefined && (
-                              <div className="flex items-center gap-1.5 text-xs text-slate-300 mb-1.5">
-                                <Star className="h-3 w-3 md:h-3.5 md:w-3.5 text-amber-400 fill-amber-400 flex-shrink-0" />
-                                <span className="font-semibold">{proposal.professional.professional_profile.average_rating.toFixed(1)}</span>
-                                <span className="text-slate-500">•</span>
-                                <span className="text-slate-400">{proposal.professional.professional_profile.total_reviews} reseñas</span>
-                              </div>
-                            )}
-
-                            <p className="text-xs sm:text-sm text-slate-300 line-clamp-2 leading-snug">
-                              {proposal.message}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
-                          <Badge
-                            className={`text-xs px-2.5 py-1 whitespace-nowrap rounded font-medium ${
-                              proposal.status === 'accepted'
-                                ? 'bg-success/20 text-success border-success/30'
-                                : proposal.status === 'rejected'
-                                ? 'bg-destructive/20 text-destructive border-destructive/30'
-                                : 'bg-warning/20 text-warning border-warning/30'
-                            }`}
-                          >
-                            {proposal.status === 'accepted'
-                              ? 'Aceptada ✓'
-                              : proposal.status === 'rejected'
-                              ? 'Rechazada'
-                              : 'Pendiente'}
-                          </Badge>
-                          <span className="text-xs text-slate-400 font-medium">
-                            {proposal.delivery_time_days}d
-                          </span>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
+                  <div className="flex items-center justify-between gap-2 sm:gap-3">
+                    <div className="flex-1 min-w-0">
+                      <h2 className="text-base sm:text-lg md:text-xl font-bold text-white truncate leading-tight">
+                        Propuestas Recibidas
+                      </h2>
+                      <p className="text-xs text-slate-500 mt-0.5 truncate">
+                        {project.title}
+                      </p>
+                    </div>
+                    <button
+                      onClick={handleClose}
+                      className="p-1.5 rounded-lg transition-all hover:bg-white/20 hover:backdrop-blur-md active:bg-white/30 border border-white/10 hover:border-white/20 flex-shrink-0"
+                      aria-label="Cerrar modal"
+                    >
+                      <X className="h-4 w-4 text-slate-300 hover:text-white transition-colors" />
+                    </button>
+                  </div>
                 </motion.div>
-              ))
-            ) : (
-              <div className="text-center py-12 sm:py-16 md:py-20 flex flex-col items-center justify-center">
-                <Users className="h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 mx-auto mb-3 sm:mb-4 text-slate-500" />
-                <p className="text-slate-300 text-xs sm:text-sm md:text-base">
-                  Aún no has recibido propuestas para este anuncio
-                </p>
+
+                {/* ====================================
+                    CONTENT - Scrollable area
+                    ==================================== */}
+                <div className="flex-1 overflow-y-auto px-4 sm:px-5 md:px-6 py-3 sm:py-4 md:py-5 space-y-2 sm:space-y-2.5 md:space-y-3 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-white/5">
+                  {localProposals && localProposals.length > 0 ? (
+                    <AnimatePresence mode="wait">
+                      {localProposals.map((proposal, index) => (
+                        <motion.div
+                          key={proposal.id}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: index * 0.05 }}
+                          exit={{ opacity: 0, y: -10 }}
+                        >
+                          <Card
+                            className="bg-white/8 backdrop-blur-md border border-white/15 hover:border-white/25 hover:bg-white/12 transition-all cursor-pointer rounded-xl md:rounded-2xl active:bg-white/15 touch-target shadow-lg"
+                            onClick={() => handleProposalClick(proposal)}
+                            role="button"
+                            tabIndex={0}
+                          >
+                            <CardContent className="p-3 sm:p-4 md:p-5">
+                              <div className="flex items-start justify-between gap-2 sm:gap-3">
+                                <div className="flex items-start gap-2 sm:gap-3 flex-1 min-w-0">
+                                  <Avatar className="h-11 w-11 sm:h-13 sm:w-13 md:h-14 md:w-14 flex-shrink-0 border border-white/10">
+                                    <AvatarImage src={proposal.professional.avatar || undefined} />
+                                    <AvatarFallback className="text-xs sm:text-sm font-bold">
+                                      {proposal.professional.name.charAt(0).toUpperCase()}
+                                    </AvatarFallback>
+                                  </Avatar>
+
+                                  <div className="flex-1 min-w-0">
+                                    <div className="flex items-start justify-between gap-1.5 mb-1">
+                                      <h4 className="font-semibold text-white text-xs sm:text-sm md:text-base truncate">
+                                        {proposal.professional.name}
+                                      </h4>
+                                      <Badge className="flex-shrink-0 bg-primary/20 text-primary border-primary/30 text-xs px-2 py-0.5 whitespace-nowrap rounded font-semibold">
+                                        ${proposal.quoted_price.toLocaleString()}
+                                      </Badge>
+                                    </div>
+
+                                    {/* Badge indicators for new or duplicate proposals */}
+                                    {(() => {
+                                      const badgeInfo = getProposalBadgeInfo(proposal);
+                                      return (
+                                        <div className="flex items-center gap-1 mb-1.5 flex-wrap">
+                                          {badgeInfo.isNew && (
+                                            <Badge className="bg-success/20 text-success border-success/30 text-xs px-2 py-0.5 rounded">
+                                              ✨ Nueva
+                                            </Badge>
+                                          )}
+                                          {badgeInfo.isDuplicate && (
+                                            <Badge className="bg-primary/20 text-primary border-primary/30 text-xs px-2 py-0.5 rounded">
+                                              🔄 {badgeInfo.duplicateCount} propuestas
+                                            </Badge>
+                                          )}
+                                        </div>
+                                      );
+                                    })()}
+
+                                    {proposal.professional.professional_profile?.average_rating !== undefined && (
+                                      <div className="flex items-center gap-1.5 text-xs text-slate-300 mb-1.5">
+                                        <Star className="h-3 w-3 md:h-3.5 md:w-3.5 text-amber-400 fill-amber-400 flex-shrink-0" />
+                                        <span className="font-semibold">{proposal.professional.professional_profile.average_rating.toFixed(1)}</span>
+                                        <span className="text-slate-500">•</span>
+                                        <span className="text-slate-400">{proposal.professional.professional_profile.total_reviews} reseñas</span>
+                                      </div>
+                                    )}
+
+                                    <p className="text-xs sm:text-sm text-slate-300 line-clamp-2 leading-snug">
+                                      {proposal.message}
+                                    </p>
+                                  </div>
+                                </div>
+
+                                <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
+                                  <Badge
+                                    className={`text-xs px-2.5 py-1 whitespace-nowrap rounded font-medium ${
+                                      proposal.status === 'accepted'
+                                        ? 'bg-success/20 text-success border-success/30'
+                                        : proposal.status === 'rejected'
+                                        ? 'bg-destructive/20 text-destructive border-destructive/30'
+                                        : 'bg-warning/20 text-warning border-warning/30'
+                                    }`}
+                                  >
+                                    {proposal.status === 'accepted'
+                                      ? 'Aceptada ✓'
+                                      : proposal.status === 'rejected'
+                                      ? 'Rechazada'
+                                      : 'Pendiente'}
+                                  </Badge>
+                                  <span className="text-xs text-slate-400 font-medium">
+                                    {proposal.delivery_time_days}d
+                                  </span>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        </motion.div>
+                      ))}
+                    </AnimatePresence>
+                  ) : (
+                    <div className="text-center py-12 sm:py-16 md:py-20 flex flex-col items-center justify-center h-full">
+                      <Users className="h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 mx-auto mb-3 sm:mb-4 text-slate-500" />
+                      <p className="text-slate-300 text-xs sm:text-sm md:text-base">
+                        Aún no has recibido propuestas para este anuncio
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
       {/* Proposal Details Modal */}
       {selectedProposal && (
