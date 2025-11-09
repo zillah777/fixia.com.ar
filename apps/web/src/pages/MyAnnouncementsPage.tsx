@@ -575,8 +575,8 @@ function ProposalsDialog({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="bg-slate-900/95 border-white/20 w-[95vw] sm:w-[90vw] md:w-[85vw] lg:w-auto lg:max-w-2xl max-h-[90vh] overflow-hidden backdrop-blur-xl rounded-xl sm:rounded-2xl p-0 gap-0 flex flex-col">
-          <DialogHeader className="sticky top-0 z-10 bg-gradient-to-b from-slate-900 via-slate-900/95 to-slate-900/80 border-b border-white/10 px-4 sm:px-5 md:px-6 py-3 sm:py-4 md:py-5 backdrop-blur-sm flex-shrink-0">
+        <DialogContent className="bg-gradient-to-br from-slate-900/80 via-slate-900/75 to-slate-900/85 border-white/15 w-[95vw] sm:w-[90vw] md:w-[85vw] lg:w-auto lg:max-w-2xl max-h-[90vh] overflow-hidden backdrop-blur-xl rounded-xl sm:rounded-2xl p-0 gap-0 flex flex-col shadow-2xl hover:border-white/20 transition-colors">
+          <DialogHeader className="sticky top-0 z-10 bg-gradient-to-b from-slate-900/60 via-slate-900/50 to-slate-900/40 border-b border-white/10 px-4 sm:px-5 md:px-6 py-3 sm:py-4 md:py-5 backdrop-blur-md flex-shrink-0">
             <DialogTitle className="text-white text-base sm:text-lg md:text-xl font-bold leading-tight">Propuestas Recibidas</DialogTitle>
             <DialogDescription className="text-slate-400 text-xs sm:text-sm mt-1 truncate">
               {project.title}
@@ -594,7 +594,7 @@ function ProposalsDialog({
                   whileHover={{ scale: 1.02 }}
                 >
                   <Card
-                    className="bg-slate-800/50 border-white/15 hover:border-primary/40 hover:bg-slate-800/70 transition-all cursor-pointer rounded-lg md:rounded-xl active:bg-slate-800/80 touch-target"
+                    className="bg-white/8 backdrop-blur-md border border-white/15 hover:border-white/25 hover:bg-white/12 transition-all cursor-pointer rounded-xl md:rounded-2xl active:bg-white/15 touch-target shadow-lg"
                     onClick={() => handleProposalClick(proposal)}
                     role="button"
                     tabIndex={0}
