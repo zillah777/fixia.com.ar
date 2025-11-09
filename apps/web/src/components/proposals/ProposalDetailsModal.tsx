@@ -160,16 +160,16 @@ export function ProposalDetailsModal({
             className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
           />
 
-          {/* Modal Panel - Fixed side-panel on desktop, full-screen on mobile */}
+          {/* Modal Panel - Centered on desktop, full-screen on mobile */}
           <motion.div
-            initial={{ x: '100%', opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            exit={{ x: '100%', opacity: 0 }}
+            initial={{ y: '100%', opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: '100%', opacity: 0 }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed inset-0 z-50 overflow-hidden flex flex-col lg:inset-y-0 lg:right-0 lg:w-full lg:max-w-2xl"
+            className="fixed inset-0 z-50 overflow-hidden flex flex-col lg:inset-auto lg:left-1/2 lg:top-1/2 lg:-translate-x-1/2 lg:-translate-y-1/2 lg:w-full lg:max-w-2xl lg:h-auto lg:max-h-[90vh] lg:rounded-2xl"
           >
             {/* Panel Container - Responsive inner container */}
-            <div className="w-full h-full flex flex-col bg-gradient-to-b from-slate-900 via-slate-900/98 to-slate-800 lg:border-l lg:border-white/15">
+            <div className="w-full h-full flex flex-col bg-gradient-to-b from-slate-900 via-slate-900/98 to-slate-800 lg:border lg:border-white/15">
               {/* Sticky Header */}
               <motion.div
                 initial={{ opacity: 0, y: -20 }}

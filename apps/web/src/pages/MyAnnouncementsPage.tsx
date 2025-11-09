@@ -575,7 +575,7 @@ function ProposalsDialog({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="bg-slate-900/95 border-white/20 w-[95vw] sm:w-[90vw] md:w-full max-w-lg lg:max-w-2xl max-h-[90vh] overflow-hidden backdrop-blur-xl rounded-xl sm:rounded-2xl p-0 gap-0 flex flex-col">
+        <DialogContent className="bg-slate-900/95 border-white/20 w-[95vw] sm:w-[90vw] md:w-[85vw] lg:w-auto lg:max-w-2xl max-h-[90vh] overflow-hidden backdrop-blur-xl rounded-xl sm:rounded-2xl p-0 gap-0 flex flex-col">
           <DialogHeader className="sticky top-0 z-10 bg-gradient-to-b from-slate-900 via-slate-900/95 to-slate-900/80 border-b border-white/10 px-4 sm:px-5 md:px-6 py-3 sm:py-4 md:py-5 backdrop-blur-sm flex-shrink-0">
             <DialogTitle className="text-white text-base sm:text-lg md:text-xl font-bold leading-tight">Propuestas Recibidas</DialogTitle>
             <DialogDescription className="text-slate-400 text-xs sm:text-sm mt-1 truncate">
