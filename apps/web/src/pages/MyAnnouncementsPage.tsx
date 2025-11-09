@@ -547,15 +547,15 @@ function ProposalsDialog({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="bg-slate-900/95 border-white/20 max-w-[90vw] sm:max-w-4xl max-h-[80vh] overflow-y-auto backdrop-blur-xl">
-          <DialogHeader>
-            <DialogTitle className="text-white text-2xl font-bold">Propuestas Recibidas</DialogTitle>
-            <DialogDescription className="text-slate-300 mt-2">
+        <DialogContent className="bg-slate-900/95 border-white/20 w-[95vw] sm:w-[90vw] md:w-full max-w-xl lg:max-w-2xl max-h-[90vh] overflow-y-auto backdrop-blur-xl rounded-xl sm:rounded-2xl p-0 gap-0">
+          <DialogHeader className="sticky top-0 z-10 bg-gradient-to-b from-slate-900 via-slate-900/95 to-slate-900/80 border-b border-white/10 px-4 sm:px-6 py-4 sm:py-5 backdrop-blur-sm">
+            <DialogTitle className="text-white text-lg sm:text-xl font-bold">Propuestas Recibidas</DialogTitle>
+            <DialogDescription className="text-slate-400 text-xs sm:text-sm mt-1 truncate">
               {project.title}
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-3 mt-4">
+          <div className="space-y-2.5 sm:space-y-3 px-4 sm:px-6 py-4 sm:py-5">
             {localProposals && localProposals.length > 0 ? (
               localProposals.map((proposal) => (
                 <motion.div
@@ -565,53 +565,53 @@ function ProposalsDialog({
                   whileHover={{ scale: 1.01 }}
                 >
                   <Card
-                    className="bg-slate-800/50 border-white/15 hover:border-primary/40 hover:bg-slate-800/70 transition-all cursor-pointer"
+                    className="bg-slate-800/50 border-white/15 hover:border-primary/40 hover:bg-slate-800/70 transition-all cursor-pointer rounded-lg"
                     onClick={() => handleProposalClick(proposal)}
                   >
-                    <CardContent className="p-5">
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex items-start gap-4 flex-1">
-                          <Avatar className="h-14 w-14 flex-shrink-0">
+                    <CardContent className="p-3 sm:p-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex items-start gap-3 flex-1 min-w-0">
+                          <Avatar className="h-12 w-12 sm:h-14 sm:w-14 flex-shrink-0">
                             <AvatarImage src={proposal.professional.avatar || undefined} />
-                            <AvatarFallback>
+                            <AvatarFallback className="text-sm">
                               {proposal.professional.name.charAt(0).toUpperCase()}
                             </AvatarFallback>
                           </Avatar>
 
                           <div className="flex-1 min-w-0">
                             <div className="flex items-start justify-between gap-2 mb-1">
-                              <h4 className="font-semibold text-white text-sm sm:text-base truncate">
+                              <h4 className="font-semibold text-white text-xs sm:text-sm truncate">
                                 {proposal.professional.name}
                               </h4>
-                              <Badge className="flex-shrink-0 bg-blue-500/20 text-blue-300 border-blue-500/30 text-xs">
+                              <Badge className="flex-shrink-0 bg-blue-500/20 text-blue-300 border-blue-500/30 text-xs px-2 py-0.5 whitespace-nowrap">
                                 ${proposal.quoted_price.toLocaleString()}
                               </Badge>
                             </div>
 
                             {proposal.professional.professional_profile?.average_rating !== undefined && (
-                              <div className="flex items-center gap-2 text-xs text-slate-300 mb-2">
-                                <Star className="h-3 w-3 text-amber-400 fill-amber-400" />
-                                <span>{proposal.professional.professional_profile.average_rating.toFixed(1)}</span>
+                              <div className="flex items-center gap-1.5 text-xs text-slate-300 mb-1.5">
+                                <Star className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-amber-400 fill-amber-400 flex-shrink-0" />
+                                <span className="text-xs">{proposal.professional.professional_profile.average_rating.toFixed(1)}</span>
                                 <span className="text-slate-500">•</span>
-                                <span>{proposal.professional.professional_profile.total_reviews} reseñas</span>
+                                <span className="text-xs">{proposal.professional.professional_profile.total_reviews} reseñas</span>
                               </div>
                             )}
 
-                            <p className="text-xs sm:text-sm text-slate-300 line-clamp-2">
+                            <p className="text-xs text-slate-300 line-clamp-2 leading-snug">
                               {proposal.message}
                             </p>
                           </div>
                         </div>
 
-                        <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                        <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
                           <Badge
-                            className={
+                            className={`text-xs px-2 py-0.5 whitespace-nowrap ${
                               proposal.status === 'accepted'
                                 ? 'bg-success/20 text-success border-success/30'
                                 : proposal.status === 'rejected'
                                 ? 'bg-destructive/20 text-destructive border-destructive/30'
                                 : 'bg-warning/20 text-warning border-warning/30'
-                            }
+                            }`}
                           >
                             {proposal.status === 'accepted'
                               ? 'Aceptada ✓'
@@ -629,9 +629,9 @@ function ProposalsDialog({
                 </motion.div>
               ))
             ) : (
-              <div className="text-center py-16">
-                <Users className="h-16 w-16 mx-auto mb-4 text-slate-500" />
-                <p className="text-slate-300 text-sm sm:text-base">
+              <div className="text-center py-12 sm:py-16">
+                <Users className="h-12 w-12 sm:h-16 sm:w-16 mx-auto mb-3 sm:mb-4 text-slate-500" />
+                <p className="text-slate-300 text-xs sm:text-sm">
                   Aún no has recibido propuestas para este anuncio
                 </p>
               </div>
