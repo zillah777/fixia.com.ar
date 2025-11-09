@@ -6,7 +6,7 @@ import {
   User, Lock, Bell, CreditCard, Shield,
   Check, X, AlertCircle, Crown,
   Mail, Save, Trash2, LogOut,
-  Settings, Smartphone
+  Settings, Zap, Sparkles
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -265,8 +265,6 @@ function SecurityTab() {
   const [isDeletingAccount, setIsDeletingAccount] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [deletePassword, setDeletePassword] = useState('');
-  const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
-  const [isEnablingTwoFactor, setIsEnablingTwoFactor] = useState(false);
   const [formData, setFormData] = useState({
     currentPassword: '',
     newPassword: '',
@@ -293,6 +291,11 @@ function SecurityTab() {
 
     if (formData.newPassword !== formData.confirmPassword) {
       toast.error('Las contraseñas nuevas no coinciden');
+      return;
+    }
+
+    if (formData.newPassword.length < 8) {
+      toast.error('La contraseña debe tener al menos 8 caracteres');
       return;
     }
 
@@ -330,25 +333,6 @@ function SecurityTab() {
       console.error('Error deleting account:', error);
     } finally {
       setIsDeletingAccount(false);
-    }
-  };
-
-  const handleTwoFactorToggle = async (enabled: boolean) => {
-    setIsEnablingTwoFactor(true);
-    try {
-      // TODO: Implement 2FA API endpoint integration
-      // For now, just update local state with success feedback
-      setTwoFactorEnabled(enabled);
-      if (enabled) {
-        toast.success('Autenticación de dos factores habilitada');
-      } else {
-        toast.success('Autenticación de dos factores deshabilitada');
-      }
-    } catch (error: any) {
-      toast.error(error.message || 'Error al actualizar autenticación de dos factores');
-      console.error('Error toggling 2FA:', error);
-    } finally {
-      setIsEnablingTwoFactor(false);
     }
   };
 
@@ -437,32 +421,6 @@ function SecurityTab() {
             )}
             Cambiar Contraseña
           </Button>
-        </CardContent>
-      </Card>
-      
-      <Card className="glass border-white/10">
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Smartphone className="h-5 w-5" />
-            <span>Autenticación de Dos Factores</span>
-          </CardTitle>
-          <CardDescription>
-            Agrega una capa extra de seguridad a tu cuenta
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-between">
-            <div>
-              <h4 className="font-medium">Autenticación SMS</h4>
-              <p className="text-sm text-muted-foreground">Recibe códigos de verificación por SMS</p>
-            </div>
-            <Switch
-              checked={twoFactorEnabled}
-              onCheckedChange={handleTwoFactorToggle}
-              disabled={isEnablingTwoFactor}
-              aria-label="Habilitar autenticación de dos factores por SMS"
-            />
-          </div>
         </CardContent>
       </Card>
 
@@ -580,9 +538,7 @@ function NotificationsTab() {
 
   // Initialize from user context
   const [emailNotifications, setEmailNotifications] = useState({
-    messages: user?.notifications_messages !== false,
     orders: user?.notifications_orders !== false,
-    projects: user?.notifications_projects !== false,
     newsletter: user?.notifications_newsletter === true
   });
 
@@ -595,14 +551,12 @@ function NotificationsTab() {
       } catch {
         return {
           newOpportunities: true,
-          messages: true,
           reminders: false
         };
       }
     }
     return {
       newOpportunities: true,
-      messages: true,
       reminders: false
     };
   });
@@ -613,9 +567,7 @@ function NotificationsTab() {
       setIsSaving(true);
       try {
         await updateProfile({
-          notifications_messages: data.messages,
           notifications_orders: data.orders,
-          notifications_projects: data.projects,
           notifications_newsletter: data.newsletter
         });
         toast.success('Preferencias de notificaciones guardadas');
@@ -737,27 +689,6 @@ function NotificationsTab() {
 
           <div className="flex items-center justify-between">
             <div className="space-y-2">
-              <p className="font-medium">Mensajes y contactos</p>
-              <p className="text-sm text-muted-foreground">
-                Cuando alguien te contacta o te envía un mensaje
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              {isSaving && <div className="h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin"></div>}
-              <Switch
-                checked={emailNotifications.messages}
-                onCheckedChange={(checked) =>
-                  handleEmailNotificationChange('messages', checked)
-                }
-                disabled={isSaving}
-              />
-            </div>
-          </div>
-
-          <Separator className="bg-white/10" />
-
-          <div className="flex items-center justify-between">
-            <div className="space-y-2">
               <p className="font-medium">Noticias y ofertas</p>
               <p className="text-sm text-muted-foreground">
                 Promociones, noticias y tips de Fixia
@@ -769,27 +700,6 @@ function NotificationsTab() {
                 checked={emailNotifications.newsletter}
                 onCheckedChange={(checked) =>
                   handleEmailNotificationChange('newsletter', checked)
-                }
-                disabled={isSaving}
-              />
-            </div>
-          </div>
-
-          <Separator className="bg-white/10" />
-
-          <div className="flex items-center justify-between">
-            <div className="space-y-2">
-              <p className="font-medium">Alertas de seguridad</p>
-              <p className="text-sm text-muted-foreground">
-                Inicios de sesión y cambios importantes en tu cuenta
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              {isSaving && <div className="h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin"></div>}
-              <Switch
-                checked={emailNotifications.projects}
-                onCheckedChange={(checked) =>
-                  handleEmailNotificationChange('projects', checked)
                 }
                 disabled={isSaving}
               />
@@ -822,27 +732,6 @@ function NotificationsTab() {
                 checked={pushNotifications.newOpportunities}
                 onCheckedChange={(checked) =>
                   handlePushNotificationChange('newOpportunities', checked)
-                }
-                disabled={isPushSaving}
-              />
-            </div>
-          </div>
-
-          <Separator className="bg-white/10" />
-
-          <div className="flex items-center justify-between">
-            <div className="space-y-2">
-              <p className="font-medium">Mensajes</p>
-              <p className="text-sm text-muted-foreground">
-                Cuando recibes un mensaje directo
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              {isPushSaving && <div className="h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin"></div>}
-              <Switch
-                checked={pushNotifications.messages}
-                onCheckedChange={(checked) =>
-                  handlePushNotificationChange('messages', checked)
                 }
                 disabled={isPushSaving}
               />
@@ -995,38 +884,111 @@ function SubscriptionTab() {
               </div>
             </div>
           ) : (
-            <div className="space-y-4">
-              <div className="flex items-center space-x-4">
-                <div className="h-16 w-16 bg-muted/40 rounded-2xl flex items-center justify-center">
-                  <User className="h-8 w-8 text-muted-foreground" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-semibold text-xl">Plan Gratuito</h3>
-                  <p className="text-muted-foreground">Perfecto para encontrar servicios profesionales</p>
-                  <Badge variant="secondary" className="mt-2">Gratis</Badge>
+            <motion.div
+              className="space-y-6"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              {/* Free Plan Header */}
+              <div className="bg-gradient-to-br from-primary/20 via-primary/10 to-transparent rounded-2xl p-6 border border-primary/20">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex items-start gap-4 flex-1">
+                    <div className="h-20 w-20 bg-gradient-to-br from-primary to-primary/60 rounded-2xl flex items-center justify-center shadow-lg flex-shrink-0">
+                      <User className="h-10 w-10 text-white" />
+                    </div>
+                    <div className="flex-1 pt-1">
+                      <h3 className="font-bold text-2xl bg-gradient-to-r from-white via-white/90 to-white/80 bg-clip-text text-transparent mb-1">
+                        Plan Gratuito
+                      </h3>
+                      <p className="text-white/80 font-medium mb-3">
+                        Perfecto para encontrar servicios profesionales
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <Badge className="bg-primary/40 text-primary border border-primary/30">Activo</Badge>
+                        <span className="text-xl font-bold text-primary">Gratis</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
-              
-              <Alert className="glass border-white/20">
-                <Crown className="h-4 w-4" />
-                <AlertDescription>
-                  ¿Eres un profesional? Upgradea a nuestro plan profesional y comienza a ofrecer tus servicios sin comisiones.
-                </AlertDescription>
-              </Alert>
-              
-              <Button
-                className="liquid-gradient w-full"
-                onClick={handleUpgradeClick}
-                disabled={isProcessing}
-              >
-                {isProcessing ? (
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                ) : (
-                  <Crown className="h-4 w-4 mr-2" />
-                )}
-                {isProcessing ? 'Procesando...' : 'Actualizar a Profesional'}
-              </Button>
-            </div>
+
+              {/* Features as Client */}
+              <div className="space-y-3">
+                <h4 className="font-semibold text-white/90 uppercase tracking-wider text-xs flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 text-primary" />
+                  Que puedes hacer como Cliente
+                </h4>
+                <div className="grid grid-cols-1 gap-2 ml-1">
+                  <div className="flex items-center gap-3">
+                    <div className="h-2 w-2 rounded-full bg-primary flex-shrink-0"></div>
+                    <span className="text-sm text-white/80">Buscar y contratar profesionales</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="h-2 w-2 rounded-full bg-primary flex-shrink-0"></div>
+                    <span className="text-sm text-white/80">Crear anuncios de trabajo</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="h-2 w-2 rounded-full bg-primary flex-shrink-0"></div>
+                    <span className="text-sm text-white/80">Comunicación con profesionales</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="h-2 w-2 rounded-full bg-primary flex-shrink-0"></div>
+                    <span className="text-sm text-white/80">Ver reseñas y calificaciones</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Upgrade CTA */}
+              <div className="bg-gradient-to-br from-primary/30 via-primary/15 to-primary/10 border-2 border-primary/40 rounded-2xl p-6 space-y-4">
+                <div className="flex items-start gap-3">
+                  <Zap className="h-6 w-6 text-primary flex-shrink-0 mt-0.5" />
+                  <div className="flex-1">
+                    <h4 className="font-bold text-white mb-2">¿Eres un Profesional?</h4>
+                    <p className="text-sm text-white/80 mb-4">
+                      Actualiza tu cuenta a <span className="font-semibold text-primary">Plan Profesional</span> y comienza a ofrecer tus servicios <span className="font-semibold">SIN COMISIONES</span>.
+                    </p>
+                    <ul className="space-y-2 text-xs text-white/70">
+                      <li className="flex items-center gap-2">
+                        <Check className="h-4 w-4 text-success flex-shrink-0" />
+                        <span>Perfil verificado con badge profesional</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <Check className="h-4 w-4 text-success flex-shrink-0" />
+                        <span>Cero comisiones por cada servicio vendido</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <Check className="h-4 w-4 text-success flex-shrink-0" />
+                        <span>Estadísticas y análisis avanzados</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+                <Button
+                  className="w-full h-12 bg-gradient-to-r from-primary via-primary to-primary/80 hover:from-primary/90 hover:via-primary/90 hover:to-primary/70 text-white font-bold shadow-lg hover:shadow-xl transition-all"
+                  onClick={handleUpgradeClick}
+                  disabled={isProcessing}
+                  size="lg"
+                >
+                  {isProcessing ? (
+                    <>
+                      <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent mr-2"></div>
+                      Procesando pago...
+                    </>
+                  ) : (
+                    <>
+                      <Crown className="h-5 w-5 mr-2" />
+                      Upgradea a Plan Profesional - $4,500 ARS/mes
+                    </>
+                  )}
+                </Button>
+              </div>
+
+              <p className="text-xs text-white/50 text-center italic">
+                Serás redirigido a MercadoPago para completar el pago de forma segura
+              </p>
+            </motion.div>
           )}
         </CardContent>
       </Card>
