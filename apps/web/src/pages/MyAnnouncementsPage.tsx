@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   Plus, Eye, Edit, Trash2, Clock, Users, DollarSign,
-  MapPin, Calendar, Tag, AlertCircle, CheckCircle2, XCircle, X,
+  MapPin, Calendar, Tag, AlertCircle, CheckCircle2, XCircle,
   MessageSquare, Heart, TrendingUp, Filter, Search, ThumbsUp, ThumbsDown, Loader2, Star
 } from "lucide-react";
 import { Button } from "../components/ui/button";
@@ -576,20 +576,11 @@ function ProposalsDialog({
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="bg-gradient-to-br from-slate-950/90 via-slate-900/85 to-slate-950/90 border-white/12 md:border-white/20 w-[95vw] sm:w-[90vw] md:w-[85vw] lg:w-auto lg:max-w-2xl max-h-[90vh] overflow-hidden backdrop-blur-2xl rounded-xl sm:rounded-2xl p-0 gap-0 flex flex-col shadow-2xl">
-          <DialogHeader className="sticky top-0 z-20 bg-gradient-to-b from-slate-950/70 via-slate-900/60 to-slate-900/40 border-b border-white/15 px-4 sm:px-5 md:px-6 py-2.5 sm:py-3 md:py-4 backdrop-blur-2xl flex-shrink-0 flex items-start justify-between">
-            <div className="flex-1 min-w-0">
-              <DialogTitle className="text-white text-base sm:text-lg md:text-xl font-bold leading-tight">Propuestas Recibidas</DialogTitle>
-              <DialogDescription className="text-slate-500 text-xs sm:text-sm mt-0.5 truncate">
-                {project.title}
-              </DialogDescription>
-            </div>
-            <button
-              onClick={() => onOpenChange(false)}
-              className="ml-2 p-1.5 rounded-lg transition-all hover:bg-white/20 hover:backdrop-blur-md active:bg-white/30 border border-white/10 hover:border-white/20 flex-shrink-0"
-              aria-label="Cerrar modal"
-            >
-              <X className="h-4 w-4 text-slate-300 hover:text-white transition-colors" />
-            </button>
+          <DialogHeader className="bg-gradient-to-b from-slate-950/70 via-slate-900/60 to-slate-900/40 border-b border-white/15 px-4 sm:px-5 md:px-6 py-2.5 sm:py-3 md:py-4 backdrop-blur-2xl flex-shrink-0">
+            <DialogTitle className="text-white text-base sm:text-lg md:text-xl font-bold leading-tight">Propuestas Recibidas</DialogTitle>
+            <DialogDescription className="text-slate-500 text-xs sm:text-sm mt-0.5 truncate">
+              {project.title}
+            </DialogDescription>
           </DialogHeader>
 
           <div className="flex-1 overflow-y-auto space-y-2 sm:space-y-2.5 md:space-y-3 px-4 sm:px-5 md:px-6 py-3 sm:py-4 md:py-5 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-white/5">
