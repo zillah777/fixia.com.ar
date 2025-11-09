@@ -185,8 +185,8 @@ export function ReviewModal({
                         </div>
 
                         {/* Info Box */}
-                        <div className="bg-success/5 border border-success/20 rounded-xl p-4">
-                          <p className="text-xs text-white/70">
+                        <div className="bg-success/10 border border-success/20 rounded-xl p-4">
+                          <p className="text-xs text-white/80">
                             💡 Tu reseña ayuda a otros a tomar mejores decisiones y contribuye a mejorar la calidad de nuestro servicio.
                           </p>
                         </div>

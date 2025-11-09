@@ -390,7 +390,7 @@ export const VerificationAdminPage = memo(() => {
 
       {/* Review Dialog */}
       <Dialog open={reviewDialog.open} onOpenChange={closeReviewDialog}>
-        <DialogContent className="bg-slate-900/95 border-white/20 max-w-[90vw] sm:max-w-md backdrop-blur-xl">
+        <DialogContent className="glass-glow border-primary/20 max-w-[90vw] sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="text-white">
               {reviewDialog.action === 'approve' ? 'Aprobar' : 'Rechazar'} Verificación
@@ -453,7 +453,7 @@ export const VerificationAdminPage = memo(() => {
       {/* Request Detail Dialog */}
       {selectedRequest && (
         <Dialog open={!!selectedRequest} onOpenChange={() => setSelectedRequest(null)}>
-          <DialogContent className="bg-slate-900/95 border-white/20 max-w-[90vw] sm:max-w-2xl max-h-[80vh] sm:max-h-[80vh] overflow-auto backdrop-blur-xl">
+          <DialogContent className="glass-glow border-primary/20 max-w-[90vw] sm:max-w-2xl max-h-[80vh] sm:max-h-[80vh] overflow-auto">
             <DialogHeader>
               <DialogTitle className="text-white">
                 Detalle de Verificación - {verificationService.getVerificationTypeLabel(selectedRequest.verificationType)}

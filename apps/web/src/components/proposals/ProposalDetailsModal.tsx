@@ -157,7 +157,7 @@ export function ProposalDetailsModal({
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             onClick={() => onOpenChange(false)}
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-modal-backdrop"
           />
 
           {/* Modal Panel - Premium glass morphism centered on desktop, full-screen on mobile */}
@@ -166,7 +166,7 @@ export function ProposalDetailsModal({
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: '100%', opacity: 0 }}
             transition={{ duration: 0.3, ease: 'easeOut' }}
-            className="fixed z-50 flex flex-col inset-0 md:inset-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-2xl md:max-w-2xl md:h-auto md:max-h-[90vh] md:overflow-hidden"
+            className="fixed z-modal-content flex flex-col inset-0 md:inset-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-2xl md:max-w-2xl md:h-auto md:max-h-[90vh] md:overflow-hidden"
           >
             {/* Panel Container - Glass morphism effect */}
             <div className="w-full h-full flex flex-col bg-gradient-to-br from-slate-900/80 via-slate-900/75 to-slate-900/85 backdrop-blur-xl border border-white/10 md:border-white/15 shadow-2xl">
