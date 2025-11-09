@@ -166,10 +166,10 @@ export function ProposalDetailsModal({
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: '100%', opacity: 0 }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed inset-0 z-50 overflow-hidden flex flex-col lg:inset-auto lg:left-1/2 lg:top-1/2 lg:-translate-x-1/2 lg:-translate-y-1/2 lg:w-full lg:max-w-2xl lg:h-auto lg:max-h-[90vh] lg:rounded-2xl"
+            className="fixed z-50 flex flex-col md:inset-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-2xl md:border md:border-white/15 inset-0 md:max-w-2xl md:h-auto md:max-h-[90vh] md:overflow-hidden"
           >
             {/* Panel Container - Responsive inner container */}
-            <div className="w-full h-full flex flex-col bg-gradient-to-b from-slate-900 via-slate-900/98 to-slate-800 lg:border lg:border-white/15">
+            <div className="w-full h-full flex flex-col bg-gradient-to-b from-slate-900 via-slate-900/98 to-slate-800">
               {/* Sticky Header */}
               <motion.div
                 initial={{ opacity: 0, y: -20 }}
