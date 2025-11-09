@@ -657,23 +657,23 @@ function NotificationsTab() {
     >
       <Card className="glass border-white/10">
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Mail className="h-5 w-5" />
+          <CardTitle className="flex items-center space-x-2 text-base sm:text-lg">
+            <Mail className="h-5 w-5 flex-shrink-0" />
             <span>Notificaciones por Email</span>
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-xs sm:text-sm">
             Recibe actualizaciones importantes en tu email
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="flex items-center justify-between">
-            <div className="space-y-2">
-              <p className="font-medium">Nuevas oportunidades</p>
-              <p className="text-sm text-muted-foreground">
+        <CardContent className="space-y-4 sm:space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+            <div className="space-y-1 flex-1 min-w-0">
+              <p className="font-medium text-sm sm:text-base">Nuevas oportunidades</p>
+              <p className="text-xs sm:text-sm text-muted-foreground leading-tight">
                 Cuando hay trabajos que coinciden con tu perfil
               </p>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-shrink-0">
               {isSaving && <div className="h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin"></div>}
               <Switch
                 checked={emailNotifications.orders}
@@ -687,14 +687,14 @@ function NotificationsTab() {
 
           <Separator className="bg-white/10" />
 
-          <div className="flex items-center justify-between">
-            <div className="space-y-2">
-              <p className="font-medium">Noticias y ofertas</p>
-              <p className="text-sm text-muted-foreground">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+            <div className="space-y-1 flex-1 min-w-0">
+              <p className="font-medium text-sm sm:text-base">Noticias y ofertas</p>
+              <p className="text-xs sm:text-sm text-muted-foreground leading-tight">
                 Promociones, noticias y tips de Fixia
               </p>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-shrink-0">
               {isSaving && <div className="h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin"></div>}
               <Switch
                 checked={emailNotifications.newsletter}
@@ -710,23 +710,23 @@ function NotificationsTab() {
 
       <Card className="glass border-white/10">
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Bell className="h-5 w-5" />
+          <CardTitle className="flex items-center space-x-2 text-base sm:text-lg">
+            <Bell className="h-5 w-5 flex-shrink-0" />
             <span>Notificaciones Push</span>
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-xs sm:text-sm">
             Recibe notificaciones instantáneas en tu dispositivo
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="flex items-center justify-between">
-            <div className="space-y-2">
-              <p className="font-medium">Nuevas oportunidades</p>
-              <p className="text-sm text-muted-foreground">
+        <CardContent className="space-y-4 sm:space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+            <div className="space-y-1 flex-1 min-w-0">
+              <p className="font-medium text-sm sm:text-base">Nuevas oportunidades</p>
+              <p className="text-xs sm:text-sm text-muted-foreground leading-tight">
                 Notificación inmediata de trabajos relevantes
               </p>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-shrink-0">
               {isPushSaving && <div className="h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin"></div>}
               <Switch
                 checked={pushNotifications.newOpportunities}
@@ -740,14 +740,14 @@ function NotificationsTab() {
 
           <Separator className="bg-white/10" />
 
-          <div className="flex items-center justify-between">
-            <div className="space-y-2">
-              <p className="font-medium">Recordatorios</p>
-              <p className="text-sm text-muted-foreground">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+            <div className="space-y-1 flex-1 min-w-0">
+              <p className="font-medium text-sm sm:text-base">Recordatorios</p>
+              <p className="text-xs sm:text-sm text-muted-foreground leading-tight">
                 Recordatorios de trabajos pendientes y citas
               </p>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-shrink-0">
               {isPushSaving && <div className="h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin"></div>}
               <Switch
                 checked={pushNotifications.reminders}
@@ -1068,68 +1068,6 @@ function SubscriptionTab() {
   );
 }
 
-function DangerZone() {
-  const navigate = useNavigate();
-  const { logout } = useSecureAuth();
-
-  const handleLogout = () => {
-    logout();
-    navigate('/');
-  };
-
-  const handleDeleteClick = () => {
-    toast.info('Por favor, dirígete a la pestaña de Seguridad para eliminar tu cuenta');
-  };
-
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.3 }}
-      className="space-y-6"
-    >
-      <Card className="glass border-destructive/20">
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2 text-destructive">
-            <AlertCircle className="h-5 w-5" />
-            <span>Zona de Peligro</span>
-          </CardTitle>
-          <CardDescription>
-            Acciones irreversibles que afectan tu cuenta
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between p-4 border border-destructive/20 rounded-lg">
-            <div>
-              <h4 className="font-medium">Cerrar Sesión</h4>
-              <p className="text-sm text-muted-foreground">Cerrar sesión en este dispositivo</p>
-            </div>
-            <Button variant="outline" onClick={handleLogout} className="border-destructive/50 text-destructive hover:bg-destructive/10">
-              <LogOut className="h-4 w-4 mr-2" />
-              Cerrar Sesión
-            </Button>
-          </div>
-
-          <div className="flex items-center justify-between p-4 border border-destructive/20 rounded-lg">
-            <div>
-              <h4 className="font-medium text-destructive">Eliminar Cuenta</h4>
-              <p className="text-sm text-muted-foreground">Eliminar permanentemente tu cuenta y todos los datos</p>
-            </div>
-            <Button
-              variant="outline"
-              className="border-destructive/50 text-destructive hover:bg-destructive/10"
-              onClick={handleDeleteClick}
-            >
-              <Trash2 className="h-4 w-4 mr-2" />
-              Eliminar Cuenta
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    </motion.div>
-  );
-}
-
 export default function SettingsPage() {
   const { user } = useSecureAuth();
 
@@ -1196,11 +1134,6 @@ export default function SettingsPage() {
                 <span className="hidden sm:inline font-medium">Suscripción</span>
                 <span className="sm:hidden font-medium">Su</span>
               </TabsTrigger>
-              <TabsTrigger value="danger" className="text-sm sm:text-sm px-2 sm:px-3 py-2 flex items-center justify-center space-x-1 text-foreground data-[state=active]:text-foreground data-[state=inactive]:text-foreground/80 hover:text-foreground">
-                <AlertCircle className="h-4 w-4 flex-shrink-0" />
-                <span className="hidden sm:inline font-medium">Cuenta</span>
-                <span className="sm:hidden font-medium">C</span>
-              </TabsTrigger>
             </TabsList>
             
             <TabsContent value="profile">
@@ -1217,10 +1150,6 @@ export default function SettingsPage() {
             
             <TabsContent value="subscription">
               <SubscriptionTab />
-            </TabsContent>
-            
-            <TabsContent value="danger">
-              <DangerZone />
             </TabsContent>
           </Tabs>
         </div>

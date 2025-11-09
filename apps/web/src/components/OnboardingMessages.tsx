@@ -41,12 +41,17 @@ interface OnboardingMessagesProps {
 export function OnboardingMessages({ user, dashboardData, clientStats }: OnboardingMessagesProps): ReactNode {
   const [dismissedMessages, setDismissedMessages] = useState<string[]>([]);
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
+  const [isDismissing, setIsDismissing] = useState(false);
 
   // Load dismissed messages from localStorage
   useEffect(() => {
-    const dismissed = localStorage.getItem('dismissedOnboarding');
-    if (dismissed) {
-      setDismissedMessages(JSON.parse(dismissed));
+    try {
+      const dismissed = localStorage.getItem('dismissedOnboarding');
+      if (dismissed) {
+        setDismissedMessages(JSON.parse(dismissed));
+      }
+    } catch (error) {
+      console.warn('Failed to load dismissed messages from localStorage:', error);
     }
   }, []);
 
@@ -286,6 +291,12 @@ export function OnboardingMessages({ user, dashboardData, clientStats }: Onboard
     .sort((a, b) => a.priority - b.priority);
 
   const handleDismiss = (messageId: string) => {
+    // Prevent double dismissal
+    if (isDismissing || dismissedMessages.includes(messageId)) {
+      return;
+    }
+
+    setIsDismissing(true);
     try {
       const updated = [...dismissedMessages, messageId];
       setDismissedMessages(updated);
@@ -303,6 +314,8 @@ export function OnboardingMessages({ user, dashboardData, clientStats }: Onboard
     } catch (error) {
       console.error('Error dismissing onboarding message:', error);
       // Don't show error to user - just continue
+    } finally {
+      setIsDismissing(false);
     }
   };
 

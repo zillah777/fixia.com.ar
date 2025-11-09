@@ -81,6 +81,13 @@ async function main() {
       icon: 'PenTool',
       popular: false,
       description: 'Tutorías, clases particulares y capacitación profesional'
+    },
+    {
+      name: 'Mecánica',
+      slug: 'mecanica',
+      icon: 'Wrench',
+      popular: true,
+      description: 'Reparación y mantenimiento de vehículos, mecánica automotriz y servicio técnico'
     }
   ];
 

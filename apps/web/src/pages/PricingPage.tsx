@@ -278,12 +278,12 @@ function PricingCardsSection() {
               </Badge>
               <CardHeader className="text-center pb-3 sm:pb-4 pt-6 sm:pt-8">
                 <Crown className="h-8 w-8 sm:h-10 sm:w-10 text-primary mx-auto mb-2" />
-                <CardTitle className="text-lg sm:text-xl">Profesional</CardTitle>
-                <div className="text-2xl sm:text-3xl font-bold mt-2 text-primary">$3,900</div>
+                <CardTitle className="text-base sm:text-lg lg:text-xl">Profesional</CardTitle>
+                <div className="text-xl sm:text-2xl lg:text-3xl font-bold mt-2 text-primary leading-tight">$3,900</div>
                 <div className="text-xs sm:text-sm text-muted-foreground">ARS/mes</div>
               </CardHeader>
-              <CardContent className="space-y-3 p-4 sm:p-6">
-                <div className="space-y-2 text-xs sm:text-sm">
+              <CardContent className="space-y-4 sm:space-y-6 p-4 sm:p-6 flex flex-col h-full">
+                <div className="space-y-2 text-xs sm:text-sm flex-1">
                   {SUBSCRIPTION_PLANS.basic.features.map((feature, idx) => (
                     <div key={idx} className="flex items-center gap-2">
                       <Check className="h-4 w-4 text-success flex-shrink-0" />
@@ -292,10 +292,10 @@ function PricingCardsSection() {
                   ))}
                 </div>
                 {user?.isSubscriptionActive && user?.subscriptionStatus === 'active' ? (
-                  <div className="space-y-2">
+                  <div className="space-y-2 mt-auto">
                     <Button
                       disabled
-                      className="w-full bg-success/50 cursor-not-allowed"
+                      className="w-full bg-success/50 cursor-not-allowed text-xs sm:text-sm"
                       size="sm"
                     >
                       ✓ Suscripción Activa
@@ -308,10 +308,12 @@ function PricingCardsSection() {
                   <Button
                     onClick={() => handleSelectPlan('basic')}
                     disabled={isProcessing === 'basic'}
-                    className="w-full liquid-gradient hover:opacity-90"
+                    className="w-full liquid-gradient hover:opacity-90 text-xs sm:text-sm px-3 mt-auto"
                     size="sm"
                   >
-                    {isProcessing === 'basic' ? 'Procesando...' : 'Seleccionar Plan Profesional'}
+                    <span className="block truncate">
+                      {isProcessing === 'basic' ? 'Procesando...' : 'Seleccionar Plan'}
+                    </span>
                   </Button>
                 )}
               </CardContent>

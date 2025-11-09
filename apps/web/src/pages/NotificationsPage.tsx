@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { 
   Bell, BellOff, Check, MoreHorizontal, Trash2, 
   MessageSquare, Heart, Crown, AlertCircle, CheckCircle, 
@@ -329,6 +329,7 @@ function NotificationSettings() {
 
 export default function NotificationsPage() {
   const { user } = useSecureAuth();
+  const navigate = useNavigate();
   const { notifications, loading, markAsRead, markAllAsRead, deleteNotification, unreadCount } = useNotifications();
   const [activeTab, setActiveTab] = useState("all");
   const [selectedNotifications, setSelectedNotifications] = useState<string[]>([]);
@@ -356,12 +357,39 @@ export default function NotificationsPage() {
 
   // Handle notification click
   const handleNotificationClick = (notification: Notification) => {
-    if (!notification.read) {
-      markAsRead(notification.id);
-    }
+    try {
+      if (!notification.read) {
+        markAsRead(notification.id);
+      }
 
-    if (notification.action_url) {
-      window.location.href = notification.action_url;
+      if (notification.action_url) {
+        try {
+          // Try to navigate with react-router first if it's a relative URL
+          if (notification.action_url.startsWith('/')) {
+            navigate(notification.action_url);
+          } else if (notification.action_url.startsWith('http')) {
+            // External URL
+            window.location.href = notification.action_url;
+          } else {
+            // Relative URL without leading slash
+            navigate('/' + notification.action_url);
+          }
+        } catch (error) {
+          console.warn('Failed to navigate to notification URL:', error);
+          toast({
+            title: "Recurso no disponible",
+            description: "El recurso que intentas acceder no está disponible",
+            variant: "destructive"
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Error handling notification click:', error);
+      toast({
+        title: "Error",
+        description: "Ocurrió un error al procesar la notificación",
+        variant: "destructive"
+      });
     }
   };
 
@@ -480,18 +508,44 @@ export default function NotificationsPage() {
         </motion.div>
 
         <div className="max-w-4xl mx-auto">
+          <div className="flex items-center justify-between mb-8 gap-4">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <TabsList className="glass border-white/10">
+                <TabsTrigger value="all">
+                  Todas ({pageNotifications.length})
+                </TabsTrigger>
+                <TabsTrigger value="unread">
+                  Sin leer ({unreadCount})
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+            {pageNotifications.length > 0 && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={async () => {
+                  if (pageNotifications.length === 0) return;
+                  // Delete all notifications
+                  for (const notif of pageNotifications) {
+                    await deleteNotification(notif.id);
+                  }
+                  toast({
+                    title: "Notificaciones eliminadas",
+                    description: `Se eliminaron ${pageNotifications.length} notificación${pageNotifications.length !== 1 ? 'es' : ''}`,
+                    variant: "default"
+                  });
+                }}
+                className="whitespace-nowrap glass border-white/20 text-xs sm:text-sm"
+              >
+                <Trash2 className="h-4 w-4 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">Limpiar todas</span>
+                <span className="sm:hidden">Limpiar</span>
+              </Button>
+            )}
+          </div>
+
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="glass border-white/10 mb-8">
-              <TabsTrigger value="all">
-                Todas ({pageNotifications.length})
-              </TabsTrigger>
-              <TabsTrigger value="unread">
-                Sin leer ({unreadCount})
-              </TabsTrigger>
-              <TabsTrigger value="settings">
-                Configuración
-              </TabsTrigger>
-            </TabsList>
+            {/* Tab content below */}
             
             <TabsContent value="all" className="space-y-6">
               {/* Search and Filters */}
@@ -634,10 +688,6 @@ export default function NotificationsPage() {
                   ))}
                 </div>
               )}
-            </TabsContent>
-            
-            <TabsContent value="settings">
-              <NotificationSettings />
             </TabsContent>
           </Tabs>
         </div>
