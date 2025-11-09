@@ -25,6 +25,7 @@ import {
   DialogTitle,
 } from "../components/ui/dialog";
 import { Separator } from "../components/ui/separator";
+import { ProposalDetailsModal } from "../components/proposals/ProposalDetailsModal";
 
 interface Project {
   id: string;
@@ -515,8 +516,9 @@ function ProposalsDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
-  const [processingProposalId, setProcessingProposalId] = useState<string | null>(null);
   const [localProposals, setLocalProposals] = useState<Proposal[]>([]);
+  const [selectedProposal, setSelectedProposal] = useState<Proposal | null>(null);
+  const [showDetailModal, setShowDetailModal] = useState(false);
 
   // Update local proposals when project changes
   useEffect(() => {
@@ -527,241 +529,128 @@ function ProposalsDialog({
 
   if (!project) return null;
 
-  const handleContactProfessional = (professional: Proposal['professional'], proposalStatus: string) => {
-    // Only show contact button if proposal is accepted (match established)
-    if (proposalStatus !== 'accepted') {
-      toast.error('Debes aceptar la propuesta primero para ver el contacto del profesional');
-      return;
-    }
-
-    const phone = professional.whatsapp_number || professional.phone;
-    if (phone) {
-      const message = encodeURIComponent(
-        `Hola ${professional.name}, vi tu propuesta para mi anuncio "${project.title}" en Fixia. Me gustaría conversar contigo.`
-      );
-      window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
-    } else {
-      toast.error('Este profesional no tiene WhatsApp registrado');
-    }
+  const handleProposalClick = (proposal: Proposal) => {
+    setSelectedProposal(proposal);
+    setShowDetailModal(true);
   };
 
-  const handleAcceptProposal = async (proposalId: string) => {
-    try {
-      setProcessingProposalId(proposalId);
-      await opportunitiesService.acceptProposal(project.id, proposalId);
-
-      // Update local state
-      setLocalProposals(prev =>
-        prev.map(p =>
-          p.id === proposalId ? { ...p, status: 'accepted' as const } : p
-        )
-      );
-
-      toast.success('¡Propuesta aceptada! Ahora puedes contactar al profesional por WhatsApp');
-    } catch (error: any) {
-      console.error('Error accepting proposal:', error);
-      toast.error(error?.response?.data?.message || error.message || 'Error al aceptar la propuesta');
-    } finally {
-      setProcessingProposalId(null);
-    }
-  };
-
-  const handleRejectProposal = async (proposalId: string) => {
-    try {
-      setProcessingProposalId(proposalId);
-      await opportunitiesService.rejectProposal(project.id, proposalId);
-
-      // Update local state
-      setLocalProposals(prev =>
-        prev.map(p =>
-          p.id === proposalId ? { ...p, status: 'rejected' as const } : p
-        )
-      );
-
-      toast.success('Propuesta rechazada');
-    } catch (error: any) {
-      console.error('Error rejecting proposal:', error);
-      toast.error(error?.response?.data?.message || error.message || 'Error al rechazar la propuesta');
-    } finally {
-      setProcessingProposalId(null);
-    }
-  };
-
-  const getProposalStatusColor = (status: string) => {
-    switch (status) {
-      case 'accepted':
-        return 'bg-success/20 text-success border-success/30';
-      case 'rejected':
-        return 'bg-destructive/20 text-destructive border-destructive/30';
-      case 'pending':
-      default:
-        return 'bg-warning/20 text-warning border-warning/30';
-    }
-  };
-
-  const getProposalStatusLabel = (status: string) => {
-    switch (status) {
-      case 'accepted':
-        return 'Aceptada ✓';
-      case 'rejected':
-        return 'Rechazada';
-      case 'pending':
-      default:
-        return 'Pendiente';
-    }
+  const handleProposalUpdated = (proposalId: string, status: 'accepted' | 'rejected') => {
+    // Update local state
+    setLocalProposals(prev =>
+      prev.map(p =>
+        p.id === proposalId ? { ...p, status } : p
+      )
+    );
+    setShowDetailModal(false);
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-slate-900/95 border-white/20 max-w-[90vw] sm:max-w-4xl max-h-[80vh] sm:max-h-[80vh] overflow-y-auto backdrop-blur-xl">
-        <DialogHeader>
-          <DialogTitle className="text-white text-2xl font-bold">Propuestas Recibidas</DialogTitle>
-          <DialogDescription className="text-slate-300 mt-2">
-            {project.title}
-          </DialogDescription>
-        </DialogHeader>
+    <>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="bg-slate-900/95 border-white/20 max-w-[90vw] sm:max-w-4xl max-h-[80vh] overflow-y-auto backdrop-blur-xl">
+          <DialogHeader>
+            <DialogTitle className="text-white text-2xl font-bold">Propuestas Recibidas</DialogTitle>
+            <DialogDescription className="text-slate-300 mt-2">
+              {project.title}
+            </DialogDescription>
+          </DialogHeader>
 
-        <div className="space-y-4 mt-4">
-          {localProposals && localProposals.length > 0 ? (
-            localProposals.map((proposal) => (
-              <Card key={proposal.id} className="bg-slate-800/50 border-white/15 hover:border-white/25 transition-colors">
-                <CardContent className="p-6">
-                  <div className="space-y-4">
-                    {/* Header with avatar and basic info */}
-                    <div className="flex items-start space-x-4">
-                      <Avatar className="h-12 w-12">
-                        <AvatarImage src={proposal.professional.avatar || undefined} />
-                        <AvatarFallback>
-                          {proposal.professional.name.charAt(0).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
+          <div className="space-y-3 mt-4">
+            {localProposals && localProposals.length > 0 ? (
+              localProposals.map((proposal) => (
+                <motion.div
+                  key={proposal.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  whileHover={{ scale: 1.01 }}
+                >
+                  <Card
+                    className="bg-slate-800/50 border-white/15 hover:border-primary/40 hover:bg-slate-800/70 transition-all cursor-pointer"
+                    onClick={() => handleProposalClick(proposal)}
+                  >
+                    <CardContent className="p-5">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex items-start gap-4 flex-1">
+                          <Avatar className="h-14 w-14 flex-shrink-0">
+                            <AvatarImage src={proposal.professional.avatar || undefined} />
+                            <AvatarFallback>
+                              {proposal.professional.name.charAt(0).toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
 
-                      <div className="flex-1">
-                        <div className="flex items-start justify-between mb-2">
-                          <div>
-                            <h4 className="font-semibold text-white">{proposal.professional.name}</h4>
-                            {proposal.professional.professional_profile && proposal.professional.professional_profile.average_rating !== undefined && (
-                              <div className="flex items-center space-x-2 text-sm text-slate-300">
-                                <div className="flex items-center">
-                                  <Star className="h-3 w-3 text-amber-400 mr-1 fill-amber-400" />
-                                  <span>{(proposal.professional.professional_profile.average_rating ?? 0).toFixed(1)}</span>
-                                </div>
-                                <span>•</span>
-                                <span>{proposal.professional.professional_profile.total_reviews ?? 0} reseñas</span>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-start justify-between gap-2 mb-1">
+                              <h4 className="font-semibold text-white text-sm sm:text-base truncate">
+                                {proposal.professional.name}
+                              </h4>
+                              <Badge className="flex-shrink-0 bg-blue-500/20 text-blue-300 border-blue-500/30 text-xs">
+                                ${proposal.quoted_price.toLocaleString()}
+                              </Badge>
+                            </div>
+
+                            {proposal.professional.professional_profile?.average_rating !== undefined && (
+                              <div className="flex items-center gap-2 text-xs text-slate-300 mb-2">
+                                <Star className="h-3 w-3 text-amber-400 fill-amber-400" />
+                                <span>{proposal.professional.professional_profile.average_rating.toFixed(1)}</span>
+                                <span className="text-slate-500">•</span>
+                                <span>{proposal.professional.professional_profile.total_reviews} reseñas</span>
                               </div>
                             )}
-                            {proposal.professional.location && (
-                              <div className="flex items-center space-x-1 text-xs text-slate-400 mt-1">
-                                <MapPin className="h-3 w-3" />
-                                <span>{proposal.professional.location}</span>
-                              </div>
-                            )}
-                          </div>
-                          <div className="flex flex-col items-end gap-2">
-                            <Badge className={getProposalStatusColor(proposal.status)}>
-                              {getProposalStatusLabel(proposal.status)}
-                            </Badge>
-                            <Badge className="bg-blue-500/20 text-blue-300 border-blue-500/30">
-                              ${proposal.quoted_price.toLocaleString()}
-                            </Badge>
+
+                            <p className="text-xs sm:text-sm text-slate-300 line-clamp-2">
+                              {proposal.message}
+                            </p>
                           </div>
                         </div>
-                      </div>
-                    </div>
 
-                    {/* Proposal message */}
-                    <p className="text-sm text-slate-200">{proposal.message}</p>
-
-                    {/* Proposal details */}
-                    <div className="flex items-center space-x-4 text-xs text-slate-400 pt-2">
-                      <div className="flex items-center space-x-1">
-                        <Clock className="h-3 w-3" />
-                        <span>{proposal.delivery_time_days} días de entrega</span>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <Calendar className="h-3 w-3" />
-                        <span>
-                          Enviado {new Date(proposal.created_at).toLocaleDateString('es-AR')}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Action buttons */}
-                    <div className="flex items-center justify-between pt-4 border-t border-white/15">
-                      <div className="text-xs">
-                        {proposal.status === 'accepted' && (
-                          <span className="text-emerald-400 flex items-center gap-1">
-                            <CheckCircle2 className="h-3 w-3" />
-                            Match realizado - Ambas partes pueden verse por WhatsApp
-                          </span>
-                        )}
-                        {proposal.status === 'rejected' && (
-                          <span className="text-red-400 flex items-center gap-1">
-                            <XCircle className="h-3 w-3" />
-                            Propuesta rechazada
-                          </span>
-                        )}
-                      </div>
-
-                      <div className="flex items-center space-x-2">
-                        {proposal.status === 'pending' ? (
-                          <>
-                            <Button
-                              onClick={() => handleRejectProposal(proposal.id)}
-                              variant="outline"
-                              size="sm"
-                              disabled={processingProposalId !== null}
-                            >
-                              {processingProposalId === proposal.id ? (
-                                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                              ) : (
-                                <ThumbsDown className="h-4 w-4 mr-2" />
-                              )}
-                              Rechazar
-                            </Button>
-                            <Button
-                              onClick={() => handleAcceptProposal(proposal.id)}
-                              className="liquid-gradient"
-                              size="sm"
-                              disabled={processingProposalId !== null}
-                            >
-                              {processingProposalId === proposal.id ? (
-                                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                              ) : (
-                                <ThumbsUp className="h-4 w-4 mr-2" />
-                              )}
-                              Aceptar
-                            </Button>
-                          </>
-                        ) : (
-                          <Button
-                            onClick={() => handleContactProfessional(proposal.professional, proposal.status)}
-                            className="liquid-gradient"
-                            size="sm"
-                            disabled={proposal.status !== 'accepted'}
+                        <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                          <Badge
+                            className={
+                              proposal.status === 'accepted'
+                                ? 'bg-success/20 text-success border-success/30'
+                                : proposal.status === 'rejected'
+                                ? 'bg-destructive/20 text-destructive border-destructive/30'
+                                : 'bg-warning/20 text-warning border-warning/30'
+                            }
                           >
-                            <MessageSquare className="h-4 w-4 mr-2" />
                             {proposal.status === 'accepted'
-                              ? 'Contactar por WhatsApp'
-                              : 'WhatsApp Bloqueado'}
-                          </Button>
-                        )}
+                              ? 'Aceptada ✓'
+                              : proposal.status === 'rejected'
+                              ? 'Rechazada'
+                              : 'Pendiente'}
+                          </Badge>
+                          <span className="text-xs text-slate-400">
+                            {proposal.delivery_time_days}d
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))
-          ) : (
-            <div className="text-center py-12">
-              <Users className="h-16 w-16 mx-auto mb-4 text-slate-500" />
-              <p className="text-slate-300">
-                Aún no has recibido propuestas para este anuncio
-              </p>
-            </div>
-          )}
-        </div>
-      </DialogContent>
-    </Dialog>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))
+            ) : (
+              <div className="text-center py-16">
+                <Users className="h-16 w-16 mx-auto mb-4 text-slate-500" />
+                <p className="text-slate-300 text-sm sm:text-base">
+                  Aún no has recibido propuestas para este anuncio
+                </p>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Proposal Details Modal */}
+      {selectedProposal && (
+        <ProposalDetailsModal
+          proposal={selectedProposal}
+          projectId={project.id}
+          projectTitle={project.title}
+          open={showDetailModal}
+          onOpenChange={setShowDetailModal}
+          onProposalUpdated={handleProposalUpdated}
+        />
+      )}
+    </>
   );
 }
