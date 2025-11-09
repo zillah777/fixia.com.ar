@@ -150,14 +150,14 @@ export function ProposalDetailsModal({
     <AnimatePresence mode="wait">
       {open && (
         <>
-          {/* Backdrop - Fixed overlay with blur effect */}
+          {/* Backdrop - Premium fixed overlay with enhanced blur */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             onClick={() => onOpenChange(false)}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-modal-backdrop"
+            className="fixed inset-0 bg-black/65 backdrop-blur-md z-modal-backdrop"
           />
 
           {/* Modal Panel - Premium glass morphism centered on desktop, full-screen on mobile */}
@@ -168,14 +168,14 @@ export function ProposalDetailsModal({
             transition={{ duration: 0.3, ease: 'easeOut' }}
             className="fixed z-modal-content flex flex-col inset-0 md:inset-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-2xl md:max-w-2xl md:h-auto md:max-h-[90vh] md:overflow-hidden"
           >
-            {/* Panel Container - Glass morphism effect */}
-            <div className="w-full h-full flex flex-col bg-gradient-to-br from-slate-900/80 via-slate-900/75 to-slate-900/85 backdrop-blur-xl border border-white/10 md:border-white/15 shadow-2xl">
-              {/* Sticky Header - Glass effect */}
+            {/* Panel Container - Premium glass morphism with Fixia design */}
+            <div className="w-full h-full flex flex-col bg-gradient-to-br from-slate-950/90 via-slate-900/85 to-slate-950/90 backdrop-blur-2xl border border-white/12 md:border-white/20 shadow-2xl">
+              {/* Sticky Header - Premium glass effect with enhanced blur */}
               <motion.div
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.08, duration: 0.3 }}
-                className="sticky top-0 z-10 bg-gradient-to-b from-slate-900/60 via-slate-900/50 to-slate-900/40 border-b border-white/10 px-4 sm:px-5 md:px-6 py-3 sm:py-4 md:py-5 backdrop-blur-md"
+                className="sticky top-0 z-10 bg-gradient-to-b from-slate-950/70 via-slate-900/60 to-slate-900/40 border-b border-white/15 px-4 sm:px-5 md:px-6 py-3 sm:py-4 md:py-5 backdrop-blur-2xl"
               >
                 <div className="flex items-start justify-between gap-2 sm:gap-3">
                   <div className="flex-1 min-w-0">
@@ -205,12 +205,12 @@ export function ProposalDetailsModal({
 
               {/* Scrollable Content Area - Glass background */}
               <div className="flex-1 overflow-y-auto px-4 sm:px-5 md:px-6 py-3 sm:py-4 md:py-5 space-y-3 sm:space-y-4 md:space-y-5 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-white/5">
-                {/* Professional Info - Glass card */}
+                {/* Professional Info - Premium glass card */}
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.12, duration: 0.3 }}
-                  className="bg-gradient-to-br from-white/8 via-white/6 to-white/4 backdrop-blur-md border border-white/15 rounded-xl md:rounded-2xl p-3 sm:p-4 md:p-5 space-y-3 hover:border-white/20 transition-colors"
+                  className="bg-gradient-to-br from-white/10 via-white/8 to-white/5 backdrop-blur-xl border border-white/20 rounded-xl md:rounded-2xl p-3 sm:p-4 md:p-5 space-y-3 hover:bg-white/12 hover:border-white/30 transition-all shadow-lg"
                 >
                   <div className="flex gap-3 sm:gap-4">
                     {/* Avatar */}
@@ -241,10 +241,10 @@ export function ProposalDetailsModal({
                         )}
                       </div>
 
-                      {/* Stats Grid */}
+                      {/* Stats Grid - Premium glass design */}
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-1.5 sm:gap-2">
                         {/* Rating */}
-                        <div className="bg-white/8 backdrop-blur-sm border border-white/15 rounded-lg p-2 sm:p-2.5 min-h-[60px] flex flex-col justify-between hover:bg-white/12 hover:border-white/20 transition-all">
+                        <div className="bg-gradient-to-br from-white/12 to-white/8 backdrop-blur-lg border border-white/20 rounded-lg p-2 sm:p-2.5 min-h-[60px] flex flex-col justify-between hover:bg-white/14 hover:border-white/30 transition-all shadow-md">
                           <div>
                             <div className="flex items-center gap-1 mb-0.5">
                               <Star className="h-3 w-3 md:h-3.5 md:w-3.5 text-amber-400 fill-amber-400 flex-shrink-0" />
@@ -253,32 +253,32 @@ export function ProposalDetailsModal({
                               </span>
                             </div>
                           </div>
-                          <p className="text-xs text-slate-500 leading-tight">Calificación</p>
+                          <p className="text-xs text-slate-400 leading-tight">Calificación</p>
                         </div>
 
                         {/* Reviews */}
-                        <div className="bg-white/8 backdrop-blur-sm border border-white/15 rounded-lg p-2 sm:p-2.5 min-h-[60px] flex flex-col justify-between hover:bg-white/12 hover:border-white/20 transition-all">
+                        <div className="bg-gradient-to-br from-white/12 to-white/8 backdrop-blur-lg border border-white/20 rounded-lg p-2 sm:p-2.5 min-h-[60px] flex flex-col justify-between hover:bg-white/14 hover:border-white/30 transition-all shadow-md">
                           <div className="text-xs font-bold text-white">
                             {professional.professional_profile?.total_reviews ?? 0}
                           </div>
-                          <p className="text-xs text-slate-500 leading-tight">Reseñas</p>
+                          <p className="text-xs text-slate-400 leading-tight">Reseñas</p>
                         </div>
 
                         {/* Compatibility */}
-                        <div className="bg-white/8 backdrop-blur-sm border border-white/15 rounded-lg p-2 sm:p-2.5 min-h-[60px] flex flex-col justify-between hover:bg-white/12 hover:border-white/20 transition-all">
+                        <div className="bg-gradient-to-br from-white/12 to-white/8 backdrop-blur-lg border border-white/20 rounded-lg p-2 sm:p-2.5 min-h-[60px] flex flex-col justify-between hover:bg-white/14 hover:border-white/30 transition-all shadow-md">
                           <div className="flex items-center gap-1">
                             <TrendingUp className="h-3 w-3 md:h-3.5 md:w-3.5 text-success flex-shrink-0" />
                             <span className="text-xs font-bold text-success">{compatibilityScore}%</span>
                           </div>
-                          <p className="text-xs text-slate-500 leading-tight">Compatibilidad</p>
+                          <p className="text-xs text-slate-400 leading-tight">Compatibilidad</p>
                         </div>
 
                         {/* Tenure */}
-                        <div className="bg-white/8 backdrop-blur-sm border border-white/15 rounded-lg p-2 sm:p-2.5 min-h-[60px] flex flex-col justify-between hover:bg-white/12 hover:border-white/20 transition-all">
+                        <div className="bg-gradient-to-br from-white/12 to-white/8 backdrop-blur-lg border border-white/20 rounded-lg p-2 sm:p-2.5 min-h-[60px] flex flex-col justify-between hover:bg-white/14 hover:border-white/30 transition-all shadow-md">
                           <div className="text-xs font-bold text-white">
                             {monthsActive}m
                           </div>
-                          <p className="text-xs text-slate-500 leading-tight">Antigüedad</p>
+                          <p className="text-xs text-slate-400 leading-tight">Antigüedad</p>
                         </div>
                       </div>
 
@@ -300,12 +300,12 @@ export function ProposalDetailsModal({
                   )}
                 </motion.div>
 
-                {/* Price Section - Glass success accent */}
+                {/* Price Section - Premium glass success accent */}
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.16, duration: 0.3 }}
-                  className="bg-gradient-to-r from-success/15 via-success/10 to-transparent backdrop-blur-md border border-success/30 rounded-xl md:rounded-2xl p-3 sm:p-4 md:p-5 hover:border-success/40 transition-colors"
+                  className="bg-gradient-to-r from-success/20 via-success/15 to-success/8 backdrop-blur-xl border border-success/40 rounded-xl md:rounded-2xl p-3 sm:p-4 md:p-5 hover:bg-success/22 hover:border-success/50 transition-all shadow-lg"
                 >
                   <p className="text-xs md:text-sm text-slate-400 mb-2 sm:mb-1">Presupuesto Propuesto</p>
                   <div className="flex items-baseline gap-2">
@@ -316,12 +316,12 @@ export function ProposalDetailsModal({
                   </div>
                 </motion.div>
 
-                {/* Delivery Time - Glass blue accent */}
+                {/* Delivery Time - Premium glass blue accent */}
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.20, duration: 0.3 }}
-                  className="flex items-center gap-2 sm:gap-3 p-3 sm:p-4 md:p-5 bg-gradient-to-r from-blue-500/15 to-blue-500/5 backdrop-blur-md border border-blue-500/30 rounded-xl md:rounded-2xl hover:border-blue-500/40 transition-colors"
+                  className="flex items-center gap-2 sm:gap-3 p-3 sm:p-4 md:p-5 bg-gradient-to-r from-blue-500/20 to-blue-500/10 backdrop-blur-xl border border-blue-500/40 rounded-xl md:rounded-2xl hover:bg-blue-500/22 hover:border-blue-500/50 transition-all shadow-lg"
                 >
                   <Clock className="h-4 w-4 md:h-5 md:w-5 text-blue-400 flex-shrink-0" />
                   <div className="min-w-0">
@@ -332,12 +332,12 @@ export function ProposalDetailsModal({
                   </div>
                 </motion.div>
 
-                {/* Message - Glass card */}
+                {/* Message - Premium glass card */}
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.24, duration: 0.3 }}
-                  className="p-3 sm:p-4 md:p-5 bg-white/8 backdrop-blur-md border border-white/15 rounded-xl md:rounded-2xl hover:bg-white/10 hover:border-white/20 transition-all"
+                  className="p-3 sm:p-4 md:p-5 bg-gradient-to-br from-white/12 to-white/8 backdrop-blur-xl border border-white/20 rounded-xl md:rounded-2xl hover:bg-white/14 hover:border-white/30 transition-all shadow-lg"
                 >
                   <p className="text-xs md:text-sm text-slate-500 mb-2 flex items-center gap-2">
                     <MessageSquare className="h-3.5 w-3.5 md:h-4 md:w-4 flex-shrink-0" />
@@ -358,16 +358,16 @@ export function ProposalDetailsModal({
                 </p>
               </div>
 
-              {/* Sticky Footer Actions - Glass effect */}
+              {/* Sticky Footer Actions - Premium glass effect */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.32, duration: 0.3 }}
-                className="sticky bottom-0 bg-gradient-to-t from-slate-900/80 via-slate-900/70 to-slate-900/60 border-t border-white/10 px-4 sm:px-5 md:px-6 py-3 sm:py-4 md:py-5 space-y-2 sm:space-y-3 md:space-y-4 backdrop-blur-md"
+                className="sticky bottom-0 bg-gradient-to-t from-slate-950/90 via-slate-900/80 to-slate-900/60 border-t border-white/15 px-4 sm:px-5 md:px-6 py-3 sm:py-4 md:py-5 space-y-2 sm:space-y-3 md:space-y-4 backdrop-blur-2xl shadow-2xl"
               >
                 {proposal.status === 'pending' && (
                   <>
-                    <div className="bg-gradient-to-r from-primary/15 to-transparent backdrop-blur-md border border-primary/30 rounded-lg md:rounded-xl p-2.5 sm:p-3 text-xs md:text-sm text-white/80 hover:border-primary/40 transition-colors">
+                    <div className="bg-gradient-to-r from-primary/25 via-primary/15 to-primary/8 backdrop-blur-xl border border-primary/40 rounded-lg md:rounded-xl p-2.5 sm:p-3 text-xs md:text-sm text-white/85 hover:bg-primary/28 hover:border-primary/50 transition-all shadow-md">
                       ✨ Aceptar te permitirá obtener el contacto del profesional y comenzar a colaborar.
                     </div>
 
@@ -414,12 +414,12 @@ export function ProposalDetailsModal({
 
                 {proposal.status === 'accepted' && (
                   <>
-                    <div className="bg-gradient-to-r from-success/20 to-success/10 border border-success/30 rounded p-3 sm:p-4">
+                    <div className="bg-gradient-to-r from-success/25 via-success/18 to-success/10 backdrop-blur-xl border border-success/40 rounded p-3 sm:p-4 shadow-lg">
                       <div className="flex gap-2 sm:gap-3">
                         <CheckCircle className="h-5 w-5 md:h-6 md:w-6 text-success flex-shrink-0 mt-0.5" />
                         <div className="min-w-0">
                           <p className="font-semibold text-success text-sm md:text-base">¡Propuesta Aceptada!</p>
-                          <p className="text-xs md:text-sm text-success/80 mt-1">
+                          <p className="text-xs md:text-sm text-success/85 mt-1">
                             Contacta por WhatsApp para coordinar.
                           </p>
                         </div>
@@ -438,12 +438,12 @@ export function ProposalDetailsModal({
                 )}
 
                 {proposal.status === 'rejected' && (
-                  <div className="bg-gradient-to-r from-destructive/20 to-destructive/10 border border-destructive/30 rounded p-3 sm:p-4">
+                  <div className="bg-gradient-to-r from-destructive/25 via-destructive/18 to-destructive/10 backdrop-blur-xl border border-destructive/40 rounded p-3 sm:p-4 shadow-lg">
                     <div className="flex gap-2 sm:gap-3">
                       <AlertCircle className="h-5 w-5 md:h-6 md:w-6 text-destructive flex-shrink-0 mt-0.5" />
                       <div className="min-w-0">
                         <p className="font-semibold text-destructive text-sm md:text-base">Propuesta Rechazada</p>
-                        <p className="text-xs md:text-sm text-destructive/80 mt-1">
+                        <p className="text-xs md:text-sm text-destructive/85 mt-1">
                           Seleccionaste otra propuesta.
                         </p>
                       </div>
