@@ -1,8 +1,4 @@
-import React, { useState } from 'react';
-import {
-  Dialog,
-  DialogContent,
-} from '../ui/dialog';
+import React, { useState, useEffect } from 'react';
 import { Button } from '../ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { Badge } from '../ui/badge';
@@ -10,7 +6,7 @@ import {
   Star, MapPin, Clock, DollarSign, CheckCircle, AlertCircle,
   TrendingUp, MessageSquare, X
 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { opportunitiesService } from '../../lib/services/opportunities.service';
 import { VerificationBadge } from '../verification/VerificationBadge';
@@ -138,287 +134,324 @@ export function ProposalDetailsModal({
 
   const currentStatus = statusConfig[proposal.status];
 
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [open]);
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[95vw] sm:w-[90vw] md:w-full max-w-lg lg:max-w-xl max-h-[90vh] bg-gradient-to-b from-slate-900 via-slate-900/98 to-slate-800 border-white/15 overflow-y-auto rounded-xl sm:rounded-2xl p-0 gap-0">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="sticky top-0 z-10 bg-gradient-to-b from-slate-900 via-slate-900/95 to-slate-900/80 border-b border-white/10 px-4 sm:px-6 py-4 sm:py-5 backdrop-blur-sm"
-        >
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex-1 min-w-0">
-              <h2 className="text-xl sm:text-2xl font-bold text-white truncate">
-                {professional.name}
-              </h2>
-              <p className="text-xs sm:text-sm text-slate-400 mt-1 truncate">
-                Propuesta para: {projectTitle}
-              </p>
-            </div>
-            <div className="flex items-center gap-2 flex-shrink-0">
-              <Badge className={`${currentStatus.color} border whitespace-nowrap`}>
-                <currentStatus.icon className="h-3 w-3 mr-1" />
-                <span className="hidden sm:inline">{currentStatus.label}</span>
-                <span className="sm:hidden text-xs">{currentStatus.label.split(' ')[0]}</span>
-              </Badge>
-              <button
-                onClick={() => onOpenChange(false)}
-                className="p-1.5 hover:bg-white/10 rounded-lg transition-colors"
+    <AnimatePresence mode="wait">
+      {open && (
+        <>
+          {/* Backdrop - Fixed overlay with blur effect */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={() => onOpenChange(false)}
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
+          />
+
+          {/* Modal Panel - Fixed side-panel on desktop, full-screen on mobile */}
+          <motion.div
+            initial={{ x: '100%', opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: '100%', opacity: 0 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            className="fixed inset-0 z-50 overflow-hidden flex flex-col md:inset-y-0 md:right-0 md:w-full md:max-w-2xl"
+          >
+            {/* Panel Container - Responsive inner container */}
+            <div className="w-full h-full flex flex-col bg-gradient-to-b from-slate-900 via-slate-900/98 to-slate-800 border-l border-white/15">
+              {/* Sticky Header */}
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.05 }}
+                className="sticky top-0 z-10 bg-gradient-to-b from-slate-900 via-slate-900/95 to-slate-900/80 border-b border-white/10 px-4 sm:px-6 py-4 sm:py-5 backdrop-blur-sm"
               >
-                <X className="h-5 w-5 text-slate-400" />
-              </button>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Content */}
-        <div className="px-3 sm:px-5 py-3 sm:py-4 space-y-3 sm:space-y-4">
-          {/* Professional Info */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.05 }}
-            className="bg-gradient-to-br from-slate-800/50 via-slate-800/30 to-slate-900/50 border border-white/10 rounded-lg sm:rounded-xl p-3 sm:p-4"
-          >
-            <div className="flex gap-3 sm:gap-4">
-              {/* Avatar */}
-              <Avatar className="h-16 w-16 sm:h-20 sm:w-20 flex-shrink-0 border-2 border-primary/40 ring-2 ring-primary/20">
-                <AvatarImage src={professional.avatar || undefined} />
-                <AvatarFallback className="text-lg sm:text-xl font-bold bg-primary/20">
-                  {professional.name.charAt(0).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-
-              {/* Info */}
-              <div className="flex-1 min-w-0 space-y-2">
-                {/* Verification */}
-                <div className="flex items-center gap-2 flex-wrap">
-                  {professional.isVerified ? (
-                    <VerificationBadge
-                      isVerified={true}
-                      verificationLevel={professional.verificationLevel}
-                      userType={professional.userType}
-                      size="sm"
-                      showLabel={true}
-                    />
-                  ) : (
-                    <Badge variant="outline" className="border-warning/40 text-warning/80 text-xs">
-                      <AlertCircle className="h-3 w-3 mr-1" />
-                      No verificado
-                    </Badge>
-                  )}
-                </div>
-
-                {/* Stats Grid */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 sm:gap-2">
-                  {/* Rating */}
-                  <div className="bg-white/5 border border-white/10 rounded p-2 sm:p-2.5">
-                    <div className="flex items-center gap-1 mb-0.5">
-                      <Star className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-amber-400 fill-amber-400" />
-                      <span className="text-xs font-bold text-white">
-                        {(professional.professional_profile?.average_rating ?? 0).toFixed(1)}
-                      </span>
-                    </div>
-                    <p className="text-xs text-slate-500 leading-tight">Calificación</p>
-                  </div>
-
-                  {/* Reviews */}
-                  <div className="bg-white/5 border border-white/10 rounded p-2 sm:p-2.5">
-                    <div className="text-xs font-bold text-white mb-0.5">
-                      {professional.professional_profile?.total_reviews ?? 0}
-                    </div>
-                    <p className="text-xs text-slate-500 leading-tight">Reseñas</p>
-                  </div>
-
-                  {/* Compatibility */}
-                  <div className="bg-white/5 border border-white/10 rounded p-2 sm:p-2.5">
-                    <div className="flex items-center gap-1 mb-0.5">
-                      <TrendingUp className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-success" />
-                      <span className="text-xs font-bold text-success">{compatibilityScore}%</span>
-                    </div>
-                    <p className="text-xs text-slate-500 leading-tight">Compatibilidad</p>
-                  </div>
-
-                  {/* Tenure */}
-                  <div className="bg-white/5 border border-white/10 rounded p-2 sm:p-2.5">
-                    <div className="text-xs font-bold text-white mb-0.5">
-                      {monthsActive}m
-                    </div>
-                    <p className="text-xs text-slate-500 leading-tight">Antigüedad</p>
-                  </div>
-                </div>
-
-                {/* Location */}
-                {professional.location && (
-                  <div className="flex items-center gap-2 text-xs text-slate-300 pt-1">
-                    <MapPin className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-slate-500 flex-shrink-0" />
-                    <span className="truncate">{professional.location}</span>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Bio */}
-            {professional.professional_profile?.bio && (
-              <p className="text-xs text-slate-300 mt-2 p-2 sm:p-2.5 bg-white/5 rounded border border-white/5 italic line-clamp-2">
-                "{professional.professional_profile.bio}"
-              </p>
-            )}
-          </motion.div>
-
-          {/* Price Section */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="bg-gradient-to-r from-success/20 via-success/15 to-transparent border border-success/30 rounded-lg sm:rounded-xl p-3 sm:p-4"
-          >
-            <p className="text-xs text-slate-400 mb-1">Presupuesto Propuesto</p>
-            <div className="flex items-baseline gap-2">
-              <span className="text-2xl sm:text-3xl font-bold text-success">
-                ${proposal.quoted_price.toLocaleString('es-AR')}
-              </span>
-              <span className="text-xs text-slate-400">ARS</span>
-            </div>
-          </motion.div>
-
-          {/* Delivery Time */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15 }}
-            className="flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3 bg-gradient-to-r from-blue-500/15 to-blue-500/5 border border-blue-500/30 rounded-lg sm:rounded-xl"
-          >
-            <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-blue-400 flex-shrink-0" />
-            <div className="min-w-0">
-              <p className="text-xs text-slate-400">Tiempo de Entrega</p>
-              <p className="font-semibold text-white text-xs sm:text-sm">
-                {proposal.delivery_time_days} {proposal.delivery_time_days === 1 ? 'día' : 'días'}
-              </p>
-            </div>
-          </motion.div>
-
-          {/* Message */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="p-2.5 sm:p-3 bg-white/5 border border-white/10 rounded-lg sm:rounded-xl"
-          >
-            <p className="text-xs text-slate-500 mb-2 flex items-center gap-2">
-              <MessageSquare className="h-3.5 w-3.5" />
-              Mensaje del Profesional
-            </p>
-            <p className="text-xs sm:text-sm text-white leading-relaxed break-words max-h-24 overflow-y-auto">
-              {proposal.message}
-            </p>
-          </motion.div>
-
-          {/* Date */}
-          <p className="text-xs text-slate-500 text-center py-1">
-            Propuesta enviada el {new Date(proposal.created_at).toLocaleDateString('es-AR', {
-              day: 'numeric',
-              month: 'long',
-              year: 'numeric'
-            })}
-          </p>
-        </div>
-
-        {/* Actions Footer */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.25 }}
-          className="sticky bottom-0 bg-gradient-to-t from-slate-900 via-slate-900/95 to-slate-900/80 border-t border-white/10 px-3 sm:px-5 py-3 sm:py-4 space-y-2 sm:space-y-3 backdrop-blur-sm"
-        >
-          {proposal.status === 'pending' && (
-            <>
-              <div className="bg-gradient-to-r from-primary/15 to-transparent border border-primary/20 rounded p-2.5 text-xs text-white/70">
-                ✨ Aceptar te permitirá obtener el contacto del profesional y comenzar a colaborar.
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <Button
-                  onClick={handleAcceptProposal}
-                  disabled={isProcessing || isLoading}
-                  className="h-10 sm:h-11 bg-gradient-to-r from-success via-success to-success/80 hover:from-success/90 hover:via-success/90 hover:to-success/70 text-white font-semibold shadow-lg hover:shadow-xl transition-all disabled:opacity-50 text-sm"
-                >
-                  {isProcessing ? (
-                    <>
-                      <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                      <span className="hidden sm:inline">Aceptando...</span>
-                      <span className="sm:hidden">Aceptar...</span>
-                    </>
-                  ) : (
-                    <>
-                      <CheckCircle className="h-4 w-4 mr-1.5" />
-                      <span className="hidden sm:inline">Aceptar Propuesta</span>
-                      <span className="sm:hidden">Aceptar</span>
-                    </>
-                  )}
-                </Button>
-
-                <Button
-                  onClick={handleRejectProposal}
-                  disabled={isProcessing || isLoading}
-                  variant="outline"
-                  className="h-10 sm:h-11 border-destructive/30 text-destructive hover:bg-destructive/10 font-semibold disabled:opacity-50 text-sm"
-                >
-                  {isProcessing ? (
-                    <>
-                      <div className="h-4 w-4 border-2 border-destructive border-t-transparent rounded-full animate-spin mr-2" />
-                      <span className="hidden sm:inline">Rechazando...</span>
-                      <span className="sm:hidden">Rechazar...</span>
-                    </>
-                  ) : (
-                    <span>Rechazar</span>
-                  )}
-                </Button>
-              </div>
-            </>
-          )}
-
-          {proposal.status === 'accepted' && (
-            <>
-              <div className="bg-gradient-to-r from-success/20 to-success/10 border border-success/30 rounded p-2.5 sm:p-3">
-                <div className="flex gap-2 sm:gap-3">
-                  <CheckCircle className="h-4 w-4 text-success flex-shrink-0 mt-0.5" />
-                  <div className="min-w-0">
-                    <p className="font-semibold text-success text-xs sm:text-sm">¡Propuesta Aceptada!</p>
-                    <p className="text-xs text-success/80 mt-0.5">
-                      Contacta por WhatsApp para coordinar.
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex-1 min-w-0">
+                    <h2 className="text-xl sm:text-2xl font-bold text-white truncate">
+                      {professional.name}
+                    </h2>
+                    <p className="text-xs sm:text-sm text-slate-400 mt-1 truncate">
+                      Propuesta para: {projectTitle}
                     </p>
                   </div>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <Badge className={`${currentStatus.color} border whitespace-nowrap`}>
+                      <currentStatus.icon className="h-3 w-3 mr-1" />
+                      <span className="hidden sm:inline">{currentStatus.label}</span>
+                      <span className="sm:hidden text-xs">{currentStatus.label.split(' ')[0]}</span>
+                    </Badge>
+                    <button
+                      onClick={() => onOpenChange(false)}
+                      className="p-1.5 hover:bg-white/10 rounded-lg transition-colors"
+                    >
+                      <X className="h-5 w-5 text-slate-400" />
+                    </button>
+                  </div>
                 </div>
-              </div>
+              </motion.div>
 
-              <Button
-                onClick={handleContactWhatsApp}
-                className="w-full h-10 sm:h-11 bg-gradient-to-r from-green-500 via-green-500 to-green-600 hover:from-green-600 hover:via-green-600 hover:to-green-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all text-sm"
-              >
-                <MessageSquare className="h-4 w-4 mr-1.5" />
-                <span className="hidden sm:inline">Contactar por WhatsApp</span>
-                <span className="sm:hidden">WhatsApp</span>
-              </Button>
-            </>
-          )}
+              {/* Scrollable Content Area */}
+              <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 sm:py-5 space-y-3 sm:space-y-4">
+                {/* Professional Info */}
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 }}
+                  className="bg-gradient-to-br from-slate-800/50 via-slate-800/30 to-slate-900/50 border border-white/10 rounded-lg sm:rounded-xl p-3 sm:p-4"
+                >
+                  <div className="flex gap-3 sm:gap-4">
+                    {/* Avatar */}
+                    <Avatar className="h-16 w-16 sm:h-20 sm:w-20 flex-shrink-0 border-2 border-primary/40 ring-2 ring-primary/20">
+                      <AvatarImage src={professional.avatar || undefined} />
+                      <AvatarFallback className="text-lg sm:text-xl font-bold bg-primary/20">
+                        {professional.name.charAt(0).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
 
-          {proposal.status === 'rejected' && (
-            <div className="bg-gradient-to-r from-destructive/20 to-destructive/10 border border-destructive/30 rounded p-2.5 sm:p-3">
-              <div className="flex gap-2 sm:gap-3">
-                <AlertCircle className="h-4 w-4 text-destructive flex-shrink-0 mt-0.5" />
-                <div className="min-w-0">
-                  <p className="font-semibold text-destructive text-xs sm:text-sm">Propuesta Rechazada</p>
-                  <p className="text-xs text-destructive/80 mt-0.5">
-                    Seleccionaste otra propuesta.
+                    {/* Info */}
+                    <div className="flex-1 min-w-0 space-y-2">
+                      {/* Verification */}
+                      <div className="flex items-center gap-2 flex-wrap">
+                        {professional.isVerified ? (
+                          <VerificationBadge
+                            isVerified={true}
+                            verificationLevel={professional.verificationLevel}
+                            userType={professional.userType}
+                            size="sm"
+                            showLabel={true}
+                          />
+                        ) : (
+                          <Badge variant="outline" className="border-warning/40 text-warning/80 text-xs">
+                            <AlertCircle className="h-3 w-3 mr-1" />
+                            No verificado
+                          </Badge>
+                        )}
+                      </div>
+
+                      {/* Stats Grid */}
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 sm:gap-2">
+                        {/* Rating */}
+                        <div className="bg-white/5 border border-white/10 rounded p-2 sm:p-2.5">
+                          <div className="flex items-center gap-1 mb-0.5">
+                            <Star className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-amber-400 fill-amber-400" />
+                            <span className="text-xs font-bold text-white">
+                              {(professional.professional_profile?.average_rating ?? 0).toFixed(1)}
+                            </span>
+                          </div>
+                          <p className="text-xs text-slate-500 leading-tight">Calificación</p>
+                        </div>
+
+                        {/* Reviews */}
+                        <div className="bg-white/5 border border-white/10 rounded p-2 sm:p-2.5">
+                          <div className="text-xs font-bold text-white mb-0.5">
+                            {professional.professional_profile?.total_reviews ?? 0}
+                          </div>
+                          <p className="text-xs text-slate-500 leading-tight">Reseñas</p>
+                        </div>
+
+                        {/* Compatibility */}
+                        <div className="bg-white/5 border border-white/10 rounded p-2 sm:p-2.5">
+                          <div className="flex items-center gap-1 mb-0.5">
+                            <TrendingUp className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-success" />
+                            <span className="text-xs font-bold text-success">{compatibilityScore}%</span>
+                          </div>
+                          <p className="text-xs text-slate-500 leading-tight">Compatibilidad</p>
+                        </div>
+
+                        {/* Tenure */}
+                        <div className="bg-white/5 border border-white/10 rounded p-2 sm:p-2.5">
+                          <div className="text-xs font-bold text-white mb-0.5">
+                            {monthsActive}m
+                          </div>
+                          <p className="text-xs text-slate-500 leading-tight">Antigüedad</p>
+                        </div>
+                      </div>
+
+                      {/* Location */}
+                      {professional.location && (
+                        <div className="flex items-center gap-2 text-xs text-slate-300 pt-1">
+                          <MapPin className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-slate-500 flex-shrink-0" />
+                          <span className="truncate">{professional.location}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Bio */}
+                  {professional.professional_profile?.bio && (
+                    <p className="text-xs text-slate-300 mt-2 p-2 sm:p-2.5 bg-white/5 rounded border border-white/5 italic line-clamp-2">
+                      "{professional.professional_profile.bio}"
+                    </p>
+                  )}
+                </motion.div>
+
+                {/* Price Section */}
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.15 }}
+                  className="bg-gradient-to-r from-success/20 via-success/15 to-transparent border border-success/30 rounded-lg sm:rounded-xl p-3 sm:p-4"
+                >
+                  <p className="text-xs text-slate-400 mb-1">Presupuesto Propuesto</p>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-2xl sm:text-3xl font-bold text-success">
+                      ${proposal.quoted_price.toLocaleString('es-AR')}
+                    </span>
+                    <span className="text-xs text-slate-400">ARS</span>
+                  </div>
+                </motion.div>
+
+                {/* Delivery Time */}
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3 bg-gradient-to-r from-blue-500/15 to-blue-500/5 border border-blue-500/30 rounded-lg sm:rounded-xl"
+                >
+                  <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-blue-400 flex-shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-xs text-slate-400">Tiempo de Entrega</p>
+                    <p className="font-semibold text-white text-xs sm:text-sm">
+                      {proposal.delivery_time_days} {proposal.delivery_time_days === 1 ? 'día' : 'días'}
+                    </p>
+                  </div>
+                </motion.div>
+
+                {/* Message */}
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.25 }}
+                  className="p-2.5 sm:p-3 bg-white/5 border border-white/10 rounded-lg sm:rounded-xl"
+                >
+                  <p className="text-xs text-slate-500 mb-2 flex items-center gap-2">
+                    <MessageSquare className="h-3.5 w-3.5" />
+                    Mensaje del Profesional
                   </p>
-                </div>
+                  <p className="text-xs sm:text-sm text-white leading-relaxed break-words">
+                    {proposal.message}
+                  </p>
+                </motion.div>
+
+                {/* Date */}
+                <p className="text-xs text-slate-500 text-center py-1">
+                  Propuesta enviada el {new Date(proposal.created_at).toLocaleDateString('es-AR', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric'
+                  })}
+                </p>
               </div>
+
+              {/* Sticky Footer Actions */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="sticky bottom-0 bg-gradient-to-t from-slate-900 via-slate-900/95 to-slate-900/80 border-t border-white/10 px-4 sm:px-6 py-3 sm:py-4 space-y-2 sm:space-y-3 backdrop-blur-sm"
+              >
+                {proposal.status === 'pending' && (
+                  <>
+                    <div className="bg-gradient-to-r from-primary/15 to-transparent border border-primary/20 rounded p-2.5 text-xs text-white/70">
+                      ✨ Aceptar te permitirá obtener el contacto del profesional y comenzar a colaborar.
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      <Button
+                        onClick={handleAcceptProposal}
+                        disabled={isProcessing || isLoading}
+                        className="h-10 sm:h-11 bg-gradient-to-r from-success via-success to-success/80 hover:from-success/90 hover:via-success/90 hover:to-success/70 text-white font-semibold shadow-lg hover:shadow-xl transition-all disabled:opacity-50 text-sm"
+                      >
+                        {isProcessing ? (
+                          <>
+                            <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                            <span className="hidden sm:inline">Aceptando...</span>
+                            <span className="sm:hidden">Aceptar...</span>
+                          </>
+                        ) : (
+                          <>
+                            <CheckCircle className="h-4 w-4 mr-1.5" />
+                            <span className="hidden sm:inline">Aceptar Propuesta</span>
+                            <span className="sm:hidden">Aceptar</span>
+                          </>
+                        )}
+                      </Button>
+
+                      <Button
+                        onClick={handleRejectProposal}
+                        disabled={isProcessing || isLoading}
+                        variant="outline"
+                        className="h-10 sm:h-11 border-destructive/30 text-destructive hover:bg-destructive/10 font-semibold disabled:opacity-50 text-sm"
+                      >
+                        {isProcessing ? (
+                          <>
+                            <div className="h-4 w-4 border-2 border-destructive border-t-transparent rounded-full animate-spin mr-2" />
+                            <span className="hidden sm:inline">Rechazando...</span>
+                            <span className="sm:hidden">Rechazar...</span>
+                          </>
+                        ) : (
+                          <span>Rechazar</span>
+                        )}
+                      </Button>
+                    </div>
+                  </>
+                )}
+
+                {proposal.status === 'accepted' && (
+                  <>
+                    <div className="bg-gradient-to-r from-success/20 to-success/10 border border-success/30 rounded p-2.5 sm:p-3">
+                      <div className="flex gap-2 sm:gap-3">
+                        <CheckCircle className="h-4 w-4 text-success flex-shrink-0 mt-0.5" />
+                        <div className="min-w-0">
+                          <p className="font-semibold text-success text-xs sm:text-sm">¡Propuesta Aceptada!</p>
+                          <p className="text-xs text-success/80 mt-0.5">
+                            Contacta por WhatsApp para coordinar.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <Button
+                      onClick={handleContactWhatsApp}
+                      className="w-full h-10 sm:h-11 bg-gradient-to-r from-green-500 via-green-500 to-green-600 hover:from-green-600 hover:via-green-600 hover:to-green-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all text-sm"
+                    >
+                      <MessageSquare className="h-4 w-4 mr-1.5" />
+                      <span className="hidden sm:inline">Contactar por WhatsApp</span>
+                      <span className="sm:hidden">WhatsApp</span>
+                    </Button>
+                  </>
+                )}
+
+                {proposal.status === 'rejected' && (
+                  <div className="bg-gradient-to-r from-destructive/20 to-destructive/10 border border-destructive/30 rounded p-2.5 sm:p-3">
+                    <div className="flex gap-2 sm:gap-3">
+                      <AlertCircle className="h-4 w-4 text-destructive flex-shrink-0 mt-0.5" />
+                      <div className="min-w-0">
+                        <p className="font-semibold text-destructive text-xs sm:text-sm">Propuesta Rechazada</p>
+                        <p className="text-xs text-destructive/80 mt-0.5">
+                          Seleccionaste otra propuesta.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </motion.div>
             </div>
-          )}
-        </motion.div>
-      </DialogContent>
-    </Dialog>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
   );
 }
