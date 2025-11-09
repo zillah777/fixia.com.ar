@@ -535,6 +535,8 @@ function ProposalsDialog({
   const handleProposalClick = (proposal: Proposal) => {
     setSelectedProposal(proposal);
     setShowDetailModal(true);
+    // Close the list modal when opening detail modal
+    onOpenChange(false);
   };
 
   const handleProposalUpdated = (proposalId: string, status: 'accepted' | 'rejected') => {
@@ -545,6 +547,8 @@ function ProposalsDialog({
       )
     );
     setShowDetailModal(false);
+    // Keep the list modal closed after update
+    onOpenChange(false);
   };
 
   // Get badge info for proposal (new, duplicate, etc)
