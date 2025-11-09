@@ -11,16 +11,12 @@ import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
   
-  // Railway port configuration
+  // Server port configuration
   const port = parseInt(process.env.PORT) || 3001;
   const host = '0.0.0.0';
-  
-  logger.log(`🚀 Starting Fixia API on ${host}:${port} - With JS 404 fix`);
+
+  logger.log(`🚀 Starting Fixia API on ${host}:${port}`);
   logger.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
-  
-  if (process.env.RAILWAY_ENVIRONMENT) {
-    logger.log(`🚂 Railway deployment detected: ${process.env.RAILWAY_SERVICE_NAME}`);
-  }
 
   try {
     // Create NestJS application

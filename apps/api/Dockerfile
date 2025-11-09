@@ -1,4 +1,4 @@
-# Railway Dockerfile for NestJS API
+# Dockerfile for NestJS API
 # Multi-stage build for production optimization
 FROM node:18-slim AS base
 
