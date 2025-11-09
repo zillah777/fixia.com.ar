@@ -14,7 +14,7 @@ import { toast } from 'sonner';
 
 interface Notification {
   id: string;
-  type: 'message' | 'order' | 'payment' | 'review' | 'system' | 'promotion' | 'proposal_received' | 'proposal_accepted' | 'job_started' | 'job_completed' | 'job_milestone' | 'review_received';
+  type: 'message' | 'system' | 'proposal_received' | 'review_received' | 'job_started' | 'job_completed' | 'job_milestone' | 'payment_received' | 'new_project' | 'match_created' | 'match_completed' | 'phone_revealed' | 'review_requested';
   title: string;
   message: string;
   read: boolean;

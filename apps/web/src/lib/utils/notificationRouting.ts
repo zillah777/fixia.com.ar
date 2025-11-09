@@ -5,17 +5,18 @@
 
 export type NotificationType =
   | 'message'
-  | 'order'
-  | 'payment'
-  | 'review'
   | 'system'
-  | 'promotion'
   | 'proposal_received'
-  | 'proposal_accepted'
+  | 'review_received'
   | 'job_started'
   | 'job_completed'
   | 'job_milestone'
-  | 'review_received';
+  | 'payment_received'
+  | 'new_project'
+  | 'match_created'
+  | 'match_completed'
+  | 'phone_revealed'
+  | 'review_requested';
 
 export type UserType = 'professional' | 'client' | 'dual';
 
@@ -44,12 +45,6 @@ const notificationRoutes: Record<NotificationType, NotificationRoute> = {
     dual: '/projects', // Dual role as client
   },
 
-  'proposal_accepted': {
-    professional: '/my-jobs', // Professional sees accepted proposals in jobs
-    client: '/projects', // Client can view from projects
-    dual: '/my-jobs',
-  },
-
   // Job/Work related
   'job_started': {
     professional: '/my-jobs',
@@ -69,41 +64,54 @@ const notificationRoutes: Record<NotificationType, NotificationRoute> = {
     dual: '/my-jobs',
   },
 
-  // Reviews - Both types receive reviews
-  'review': {
-    professional: '/profile', // View profile to see reviews
-    client: '/profile',
-    dual: '/profile',
-  },
-
+  // Reviews
   'review_received': {
     professional: '/profile',
     client: '/profile',
     dual: '/profile',
   },
 
+  'review_requested': {
+    professional: '/my-jobs', // Professional needs to write a review
+    client: '/projects',
+    dual: '/my-jobs',
+  },
+
   // Payments
-  'payment': {
+  'payment_received': {
     professional: '/wallet', // Professional receives payments
     client: '/wallet', // Client sends payments
     dual: '/wallet',
   },
 
-  // Orders
-  'order': {
-    professional: '/orders',
-    client: '/orders',
-    dual: '/orders',
+  // New projects/opportunities
+  'new_project': {
+    professional: '/opportunities', // Professional sees new projects
+    client: '/projects', // Client's own projects
+    dual: '/opportunities',
   },
 
-  // Promotions and system messages
-  'promotion': {
-    professional: '/notifications',
-    client: '/notifications',
-    dual: '/notifications',
-    fallback: '/notifications',
+  // Matching system
+  'match_created': {
+    professional: '/opportunities',
+    client: '/projects',
+    dual: '/opportunities',
   },
 
+  'match_completed': {
+    professional: '/my-jobs',
+    client: '/projects',
+    dual: '/my-jobs',
+  },
+
+  // Phone revealed notification
+  'phone_revealed': {
+    professional: '/profile',
+    client: '/profile',
+    dual: '/profile',
+  },
+
+  // System and general notifications
   'system': {
     professional: '/notifications',
     client: '/notifications',
@@ -174,15 +182,16 @@ export function getNotificationActionLabel(notificationType: NotificationType): 
   const labels: Record<NotificationType, string> = {
     'message': 'Ver mensaje',
     'proposal_received': 'Ver propuesta',
-    'proposal_accepted': 'Ver trabajo',
     'job_started': 'Ver trabajo',
     'job_completed': 'Ver trabajo',
-    'job_milestone': 'Ver trabajo',
-    'review': 'Ver reseña',
+    'job_milestone': 'Ver hito',
     'review_received': 'Ver reseña',
-    'payment': 'Ver pago',
-    'order': 'Ver pedido',
-    'promotion': 'Ver promoción',
+    'review_requested': 'Escribir reseña',
+    'payment_received': 'Ver pago',
+    'new_project': 'Ver anuncio',
+    'match_created': 'Ver coincidencia',
+    'match_completed': 'Ver resultado',
+    'phone_revealed': 'Ver contacto',
     'system': 'Ver más',
   };
 
