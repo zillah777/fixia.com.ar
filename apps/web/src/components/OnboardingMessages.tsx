@@ -41,7 +41,6 @@ interface OnboardingMessagesProps {
 export function OnboardingMessages({ user, dashboardData, clientStats }: OnboardingMessagesProps): ReactNode {
   const [dismissedMessages, setDismissedMessages] = useState<string[]>([]);
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
-  const [isDismissing, setIsDismissing] = useState(false);
 
   // Load dismissed messages from localStorage
   useEffect(() => {
@@ -290,55 +289,64 @@ export function OnboardingMessages({ user, dashboardData, clientStats }: Onboard
     .filter(msg => msg.condition(user, mergedStats))
     .sort((a, b) => a.priority - b.priority);
 
+  // Synchronous dismissal without state race conditions
   const handleDismiss = (messageId: string) => {
-    // Prevent double dismissal
-    if (isDismissing || dismissedMessages.includes(messageId)) {
+    // Avoid dismissing already dismissed messages
+    if (dismissedMessages.includes(messageId)) {
       return;
     }
 
-    setIsDismissing(true);
+    // Update dismissed messages synchronously
+    const updated = [...dismissedMessages, messageId];
+    setDismissedMessages(updated);
+
+    // Try to save to localStorage, but don't fail if it doesn't work
     try {
-      const updated = [...dismissedMessages, messageId];
-      setDismissedMessages(updated);
-
-      try {
-        localStorage.setItem('dismissedOnboarding', JSON.stringify(updated));
-      } catch (storageError) {
-        console.warn('Failed to save dismissed messages to localStorage:', storageError);
-        // Continue anyway - dismissal is not critical
-      }
-
-      if (currentMessageIndex < activeMessages.length - 1) {
-        setCurrentMessageIndex(prev => prev + 1);
-      }
-    } catch (error) {
-      console.error('Error dismissing onboarding message:', error);
-      // Don't show error to user - just continue
-    } finally {
-      setIsDismissing(false);
+      localStorage.setItem('dismissedOnboarding', JSON.stringify(updated));
+    } catch (storageError) {
+      // Silently fail - dismissal in memory is sufficient for this session
+      console.warn('Failed to save dismissed messages to localStorage:', storageError);
     }
+
+    // Reset message index if needed - allows showing next message
+    setCurrentMessageIndex(0);
   };
 
   const handleDismissAll = () => {
-    try {
-      const allIds = activeMessages.map(m => m.id);
-      setDismissedMessages(allIds);
+    // Get all active message IDs and mark them as dismissed
+    const allIds = activeMessages.map(m => m.id);
+    const updated = [...dismissedMessages, ...allIds];
 
-      try {
-        localStorage.setItem('dismissedOnboarding', JSON.stringify(allIds));
-      } catch (storageError) {
-        console.warn('Failed to save dismissed messages to localStorage:', storageError);
-        // Continue anyway - dismissal is not critical
-      }
-    } catch (error) {
-      console.error('Error dismissing all onboarding messages:', error);
-      // Don't show error to user - just continue
+    // Remove duplicates
+    const uniqueIds = Array.from(new Set(updated));
+    setDismissedMessages(uniqueIds);
+
+    // Try to save to localStorage
+    try {
+      localStorage.setItem('dismissedOnboarding', JSON.stringify(uniqueIds));
+    } catch (storageError) {
+      // Silently fail - dismissal in memory is sufficient for this session
+      console.warn('Failed to save dismissed messages to localStorage:', storageError);
     }
+
+    // Reset message index
+    setCurrentMessageIndex(0);
   };
 
-  if (activeMessages.length === 0) return null;
+  // No active messages to show
+  if (activeMessages.length === 0) {
+    return null;
+  }
 
-  const currentMessage = activeMessages[currentMessageIndex];
+  // Ensure currentMessageIndex is within bounds
+  const safeIndex = Math.min(Math.max(currentMessageIndex, 0), activeMessages.length - 1);
+  const currentMessage = activeMessages[safeIndex];
+
+  // Fallback in case something goes wrong
+  if (!currentMessage) {
+    return null;
+  }
+
   const Icon = currentMessage.icon;
 
   return (
@@ -394,7 +402,7 @@ export function OnboardingMessages({ user, dashboardData, clientStats }: Onboard
                   <div
                     key={idx}
                     className={`h-1.5 rounded-full transition-all ${
-                      idx === currentMessageIndex ? 'w-8 bg-white' : 'w-1.5 bg-white/40'
+                      idx === safeIndex ? 'w-8 bg-white' : 'w-1.5 bg-white/40'
                     }`}
                   />
                 ))}
