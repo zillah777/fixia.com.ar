@@ -137,7 +137,7 @@ export class OpportunitiesService {
       take: limit,
     });
 
-    // Get list of projects user has already applied to
+    // Get list of projects user has already applied to WITH proposal counts
     const appliedProjects = await this.prisma.proposal.findMany({
       where: {
         professional_id: userId,
@@ -147,6 +147,22 @@ export class OpportunitiesService {
       },
     });
     const appliedProjectIds = new Set(appliedProjects.map(p => p.project_id));
+
+    // Get proposal counts per project for current user
+    const proposalCountsByProject = await this.prisma.proposal.groupBy({
+      by: ['project_id'],
+      where: {
+        professional_id: userId,
+        status: { not: 'withdrawn' },
+      },
+      _count: {
+        id: true,
+      },
+    });
+
+    const userProposalCounts = new Map(
+      proposalCountsByProject.map(row => [row.project_id, row._count.id])
+    );
 
     // Transform to frontend expected format
     const opportunities = projects.map(project => {
@@ -184,6 +200,7 @@ export class OpportunitiesService {
         proposals: project._count.proposals,
         matchScore: matchScore,
         isApplied: appliedProjectIds.has(project.id),
+        myProposals: userProposalCounts.get(project.id) || 0, // Number of proposals user has submitted
         createdAt: project.created_at.toISOString(),
       };
     });
