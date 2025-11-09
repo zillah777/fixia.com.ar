@@ -211,11 +211,15 @@ apiClient.interceptors.response.use(
         case 401:
           // Silent auth check for public pages - don't show errors
           const isPublicAuthCheck = error.config?.url?.includes('/auth/verify') ||
-                                   error.config?.url?.includes('/favorites/') ||
+                                   (error.config?.url?.includes('/favorites/') && error.config?.url?.includes('/check')) ||
                                    error.config?.url?.includes('/auth/login');
 
           if (!isPublicAuthCheck) {
             console.info('Authentication required - redirecting to login');
+            // Only show toast for authenticated operations (add/remove favorites)
+            if (error.config?.url?.includes('/favorites/') && !error.config?.url?.includes('/check')) {
+              toast.error('Debes iniciar sesión para agregar favoritos');
+            }
           }
           // Suppress console logs for expected 401s on public pages
           break;

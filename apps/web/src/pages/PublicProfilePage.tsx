@@ -493,9 +493,9 @@ export default function PublicProfilePage() {
         // Fetch user profile
         const profileData = await userService.getPublicProfile(userId);
 
-        // Validate that user is a professional
-        if (profileData.userType !== 'professional') {
-          setError("Este perfil no pertenece a un profesional");
+        // Validate that profile exists
+        if (!profileData) {
+          setError("El perfil no existe");
           setLoading(false);
           return;
         }

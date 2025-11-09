@@ -220,11 +220,9 @@ export default function ServiceDetailPage() {
         toast.success('Agregado a favoritos');
       }
     } catch (error: any) {
-      if (error?.response?.status === 401) {
-        toast.error('Debes iniciar sesión para agregar favoritos');
-      } else {
-        toast.error('Error al actualizar favoritos');
-      }
+      console.error('Error toggling favorite:', error);
+      // Error message already shown by api interceptor
+      // Just ensure loading state is reset
     } finally {
       setFavoriteLoading(false);
     }
@@ -537,7 +535,7 @@ export default function ServiceDetailPage() {
                 {/* Professional Info */}
                 <div className="flex items-center justify-between flex-wrap gap-4">
                   <Link
-                    to={`/profile/${service.professional.id}`}
+                    to={service.professional?.id ? `/profile/${service.professional.id}` : '#'}
                     className="flex items-center gap-3 group"
                   >
                     <Avatar className="h-12 w-12 border-2 border-white/20">
@@ -932,7 +930,7 @@ export default function ServiceDetailPage() {
 
                           {feedback.length > 5 && (
                             <div className="text-center pt-4">
-                              <Link to={`/profile/${service.professional.id}`}>
+                              <Link to={service.professional?.id ? `/profile/${service.professional.id}` : '#'}>
                                 <Button variant="outline" className="glass border-white/20 hover:glass-medium">
                                   Ver todo el feedback ({feedback.length})
                                 </Button>
@@ -1046,7 +1044,7 @@ export default function ServiceDetailPage() {
                     </div>
                   </div>
 
-                  <Link to={`/profile/${service.professional.id}`}>
+                  <Link to={service.professional?.id ? `/profile/${service.professional.id}` : '#'}>
                     <Button variant="outline" className="w-full glass border-white/20">
                       Ver perfil completo
                     </Button>
