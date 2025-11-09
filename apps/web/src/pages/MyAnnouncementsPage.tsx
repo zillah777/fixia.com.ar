@@ -65,8 +65,11 @@ interface Proposal {
     location: string | null;
     phone: string | null;
     whatsapp_number: string | null;
+    isVerified?: boolean;
+    userType?: 'client' | 'professional' | 'dual';
+    created_at?: string;
     professional_profile?: {
-      description: string;
+      bio?: string;
       average_rating: number;
       total_reviews: number;
     };
@@ -544,6 +547,27 @@ function ProposalsDialog({
     setShowDetailModal(false);
   };
 
+  // Get badge info for proposal (new, duplicate, etc)
+  const getProposalBadgeInfo = (proposal: Proposal) => {
+    const isNew = (createdAt: string) => {
+      const daysSince = Math.floor(
+        (Date.now() - new Date(createdAt).getTime()) / (1000 * 60 * 60 * 24)
+      );
+      return daysSince <= 1; // Less than 1 day old
+    };
+
+    const isDuplicate = (proposalId: string) => {
+      const professionalId = localProposals.find(p => p.id === proposalId)?.professional.id;
+      return localProposals.filter(p => p.professional.id === professionalId).length > 1;
+    };
+
+    return {
+      isNew: isNew(proposal.created_at),
+      isDuplicate: isDuplicate(proposal.id),
+      duplicateCount: localProposals.filter(p => p.professional.id === proposal.professional.id).length
+    };
+  };
+
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
@@ -587,6 +611,25 @@ function ProposalsDialog({
                                 ${proposal.quoted_price.toLocaleString()}
                               </Badge>
                             </div>
+
+                            {/* Badge indicators for new or duplicate proposals */}
+                            {(() => {
+                              const badgeInfo = getProposalBadgeInfo(proposal);
+                              return (
+                                <div className="flex items-center gap-1.5 mb-1.5 flex-wrap">
+                                  {badgeInfo.isNew && (
+                                    <Badge className="bg-success/20 text-success border-success/30 text-xs px-1.5 py-0.5">
+                                      ✨ Nueva
+                                    </Badge>
+                                  )}
+                                  {badgeInfo.isDuplicate && (
+                                    <Badge className="bg-info/20 text-info border-info/30 text-xs px-1.5 py-0.5">
+                                      🔄 {badgeInfo.duplicateCount} propuestas
+                                    </Badge>
+                                  )}
+                                </div>
+                              );
+                            })()}
 
                             {proposal.professional.professional_profile?.average_rating !== undefined && (
                               <div className="flex items-center gap-1.5 text-xs text-slate-300 mb-1.5">

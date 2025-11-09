@@ -141,11 +141,15 @@ export class ProjectsService {
                   location: true,
                   phone: true,
                   whatsapp_number: true,
+                  verified: true,
+                  user_type: true,
+                  created_at: true,
                   professional_profile: {
                     select: {
                       bio: true,
                       rating: true,
                       review_count: true,
+                      level: true,
                     },
                   },
                 },

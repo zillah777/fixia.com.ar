@@ -129,7 +129,31 @@ export const opportunitiesService = {
   },
 
   async getMyProjects(): Promise<any[]> {
-    return api.get('/projects');
+    const projects = await api.get('/projects');
+
+    // Map professional profile fields to match frontend expectations
+    return projects.map((project: any) => ({
+      ...project,
+      proposals: (project.proposals || []).map((proposal: any) => ({
+        ...proposal,
+        professional: {
+          ...proposal.professional,
+          professional_profile: proposal.professional?.professional_profile
+            ? {
+                bio: proposal.professional.professional_profile.bio,
+                average_rating: proposal.professional.professional_profile.rating || 0,
+                total_reviews: proposal.professional.professional_profile.review_count || 0,
+              }
+            : undefined,
+          // Map user_type to expected name
+          userType: proposal.professional?.user_type,
+          // Map verified field
+          isVerified: proposal.professional?.verified || false,
+          // Map creation date
+          created_at: proposal.professional?.created_at,
+        },
+      })),
+    }));
   },
 
   async updateProject(projectId: string, projectData: Partial<CreateOpportunityData>): Promise<any> {
