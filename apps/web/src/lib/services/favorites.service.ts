@@ -108,6 +108,14 @@ export const favoritesService = {
     const response = await api.get(`/favorites/services/${serviceId}/check`);
     return response.data;
   },
+
+  /**
+   * Check if professional is in favorites
+   */
+  async isProfessionalFavorite(professionalId: string): Promise<{ is_favorite: boolean; favorite_id?: string }> {
+    const response = await api.get(`/favorites/professionals/${professionalId}/check`);
+    return response.data;
+  },
 };
 
 export default favoritesService;

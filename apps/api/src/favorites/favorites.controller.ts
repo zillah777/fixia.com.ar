@@ -217,4 +217,25 @@ export class FavoritesController {
       );
     }
   }
+
+  @Get('professionals/:professionalId/check')
+  @ApiOperation({ summary: 'Check if professional is in favorites' })
+  @ApiParam({ name: 'professionalId', description: 'Professional ID' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Check result returned',
+  })
+  async isProfessionalFavorite(
+    @CurrentUser() user: any,
+    @Param('professionalId') professionalId: string,
+  ) {
+    try {
+      return await this.favoritesService.isProfessionalFavorite(user.sub, professionalId);
+    } catch (error) {
+      throw new HttpException(
+        error.message || 'Failed to check favorite status',
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
 }

@@ -15,6 +15,7 @@ import { Badge } from "../components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { Progress } from "../components/ui/progress";
+import { FavoriteButton } from "../components/ui/FavoriteButton";
 import { userService } from "../lib/services";
 import { servicesService, Service } from "../lib/services/services.service";
 import { User } from "../context/SecureAuthContext";
@@ -86,14 +87,14 @@ function ProfileHeader({ profile }: ProfileHeaderProps) {
               </div>
 
               <div className="flex items-center space-x-2">
-                <Button
-                  onClick={() => setIsFollowing(!isFollowing)}
-                  variant={isFollowing ? "outline" : "default"}
-                  className={isFollowing ? "glass border-white/20" : "liquid-gradient"}
-                >
-                  <Heart className={`h-4 w-4 mr-2 ${isFollowing ? 'fill-current' : ''}`} />
-                  {isFollowing ? 'Siguiendo' : 'Seguir'}
-                </Button>
+                <FavoriteButton
+                  userId={profile.id}
+                  userName={profile.name}
+                  size="md"
+                  variant="ghost"
+                  className="h-10 w-10 p-0"
+                  title="Agregar a favoritos"
+                />
                 <Button className="liquid-gradient">
                   <MessageSquare className="h-4 w-4 mr-2" />
                   Contactar

@@ -11,6 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../co
 import { Badge } from '../components/ui/badge';
 import { Separator } from '../components/ui/separator';
 import { Alert, AlertDescription } from '../components/ui/alert';
+import { FavoriteButton } from '../components/ui/FavoriteButton';
 import { useSecureAuth } from '../context/SecureAuthContext';
 import { opportunitiesService } from '../lib/services/opportunities.service';
 import { toast } from 'sonner';
@@ -535,7 +536,7 @@ export default function ProjectDetailPage() {
                         </div>
 
                         {/* Action Buttons */}
-                        <div className="flex gap-2 pt-2">
+                        <div className="flex gap-2 pt-2 items-center">
                           <Button
                             variant="outline"
                             size="sm"
@@ -552,6 +553,13 @@ export default function ProjectDetailPage() {
                               Aceptar
                             </Button>
                           )}
+                          <FavoriteButton
+                            userId={proposal.professional.id}
+                            userName={proposal.professional.name}
+                            size="sm"
+                            variant="ghost"
+                            className="h-9 w-9 p-0"
+                          />
                         </div>
                       </motion.div>
                     ))}

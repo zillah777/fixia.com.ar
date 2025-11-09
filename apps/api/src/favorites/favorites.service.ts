@@ -345,4 +345,20 @@ export class FavoritesService {
       favorite_id: favorite?.id,
     };
   }
+
+  async isProfessionalFavorite(userId: string, professionalId: string) {
+    const favorite = await this.prisma.favorite.findFirst({
+      where: {
+        user_id: userId,
+        professional_id: professionalId,
+        service_id: null,
+      },
+      select: { id: true },
+    });
+
+    return {
+      is_favorite: !!favorite,
+      favorite_id: favorite?.id,
+    };
+  }
 }
