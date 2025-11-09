@@ -166,35 +166,36 @@ export function ProposalDetailsModal({
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: '100%', opacity: 0 }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed inset-0 z-50 overflow-hidden flex flex-col md:inset-y-0 md:right-0 md:w-full md:max-w-2xl"
+            className="fixed inset-0 z-50 overflow-hidden flex flex-col lg:inset-y-0 lg:right-0 lg:w-full lg:max-w-2xl"
           >
             {/* Panel Container - Responsive inner container */}
-            <div className="w-full h-full flex flex-col bg-gradient-to-b from-slate-900 via-slate-900/98 to-slate-800 border-l border-white/15">
+            <div className="w-full h-full flex flex-col bg-gradient-to-b from-slate-900 via-slate-900/98 to-slate-800 lg:border-l lg:border-white/15">
               {/* Sticky Header */}
               <motion.div
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.05 }}
-                className="sticky top-0 z-10 bg-gradient-to-b from-slate-900 via-slate-900/95 to-slate-900/80 border-b border-white/10 px-4 sm:px-6 py-4 sm:py-5 backdrop-blur-sm"
+                className="sticky top-0 z-10 bg-gradient-to-b from-slate-900 via-slate-900/95 to-slate-900/80 border-b border-white/10 px-4 sm:px-5 md:px-6 py-3 sm:py-4 md:py-5 backdrop-blur-sm"
               >
-                <div className="flex items-start justify-between gap-3">
+                <div className="flex items-start justify-between gap-2 sm:gap-3">
                   <div className="flex-1 min-w-0">
-                    <h2 className="text-xl sm:text-2xl font-bold text-white truncate">
+                    <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-white truncate leading-tight">
                       {professional.name}
                     </h2>
-                    <p className="text-xs sm:text-sm text-slate-400 mt-1 truncate">
+                    <p className="text-xs sm:text-sm text-slate-400 mt-0.5 sm:mt-1 truncate">
                       Propuesta para: {projectTitle}
                     </p>
                   </div>
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    <Badge className={`${currentStatus.color} border whitespace-nowrap`}>
+                  <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+                    <Badge className={`${currentStatus.color} border whitespace-nowrap text-xs sm:text-sm`}>
                       <currentStatus.icon className="h-3 w-3 mr-1" />
                       <span className="hidden sm:inline">{currentStatus.label}</span>
-                      <span className="sm:hidden text-xs">{currentStatus.label.split(' ')[0]}</span>
+                      <span className="sm:hidden">{currentStatus.label.split(' ')[0]}</span>
                     </Badge>
                     <button
                       onClick={() => onOpenChange(false)}
-                      className="p-1.5 hover:bg-white/10 rounded-lg transition-colors"
+                      className="p-2 hover:bg-white/10 rounded-lg transition-colors active:bg-white/20 touch-target"
+                      aria-label="Cerrar modal"
                     >
                       <X className="h-5 w-5 text-slate-400" />
                     </button>
@@ -203,19 +204,19 @@ export function ProposalDetailsModal({
               </motion.div>
 
               {/* Scrollable Content Area */}
-              <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 sm:py-5 space-y-3 sm:space-y-4">
+              <div className="flex-1 overflow-y-auto px-4 sm:px-5 md:px-6 py-3 sm:py-4 md:py-5 space-y-3 sm:space-y-4 md:space-y-5 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-white/5">
                 {/* Professional Info */}
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 }}
-                  className="bg-gradient-to-br from-slate-800/50 via-slate-800/30 to-slate-900/50 border border-white/10 rounded-lg sm:rounded-xl p-3 sm:p-4"
+                  className="bg-gradient-to-br from-slate-800/50 via-slate-800/30 to-slate-900/50 border border-white/10 rounded-lg md:rounded-xl p-3 sm:p-4 md:p-5 space-y-3"
                 >
                   <div className="flex gap-3 sm:gap-4">
                     {/* Avatar */}
-                    <Avatar className="h-16 w-16 sm:h-20 sm:w-20 flex-shrink-0 border-2 border-primary/40 ring-2 ring-primary/20">
+                    <Avatar className="h-14 w-14 sm:h-16 sm:w-16 md:h-20 md:w-20 flex-shrink-0 border-2 border-primary/40 ring-2 ring-primary/20">
                       <AvatarImage src={professional.avatar || undefined} />
-                      <AvatarFallback className="text-lg sm:text-xl font-bold bg-primary/20">
+                      <AvatarFallback className="text-base sm:text-lg md:text-xl font-bold bg-primary/20">
                         {professional.name.charAt(0).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
@@ -241,38 +242,40 @@ export function ProposalDetailsModal({
                       </div>
 
                       {/* Stats Grid */}
-                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 sm:gap-2">
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-1.5 sm:gap-2">
                         {/* Rating */}
-                        <div className="bg-white/5 border border-white/10 rounded p-2 sm:p-2.5">
-                          <div className="flex items-center gap-1 mb-0.5">
-                            <Star className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-amber-400 fill-amber-400" />
-                            <span className="text-xs font-bold text-white">
-                              {(professional.professional_profile?.average_rating ?? 0).toFixed(1)}
-                            </span>
+                        <div className="bg-white/5 border border-white/10 rounded p-2 sm:p-2.5 min-h-[60px] flex flex-col justify-between">
+                          <div>
+                            <div className="flex items-center gap-1 mb-0.5">
+                              <Star className="h-3 w-3 md:h-3.5 md:w-3.5 text-amber-400 fill-amber-400 flex-shrink-0" />
+                              <span className="text-xs font-bold text-white">
+                                {(professional.professional_profile?.average_rating ?? 0).toFixed(1)}
+                              </span>
+                            </div>
                           </div>
                           <p className="text-xs text-slate-500 leading-tight">Calificación</p>
                         </div>
 
                         {/* Reviews */}
-                        <div className="bg-white/5 border border-white/10 rounded p-2 sm:p-2.5">
-                          <div className="text-xs font-bold text-white mb-0.5">
+                        <div className="bg-white/5 border border-white/10 rounded p-2 sm:p-2.5 min-h-[60px] flex flex-col justify-between">
+                          <div className="text-xs font-bold text-white">
                             {professional.professional_profile?.total_reviews ?? 0}
                           </div>
                           <p className="text-xs text-slate-500 leading-tight">Reseñas</p>
                         </div>
 
                         {/* Compatibility */}
-                        <div className="bg-white/5 border border-white/10 rounded p-2 sm:p-2.5">
-                          <div className="flex items-center gap-1 mb-0.5">
-                            <TrendingUp className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-success" />
+                        <div className="bg-white/5 border border-white/10 rounded p-2 sm:p-2.5 min-h-[60px] flex flex-col justify-between">
+                          <div className="flex items-center gap-1">
+                            <TrendingUp className="h-3 w-3 md:h-3.5 md:w-3.5 text-success flex-shrink-0" />
                             <span className="text-xs font-bold text-success">{compatibilityScore}%</span>
                           </div>
                           <p className="text-xs text-slate-500 leading-tight">Compatibilidad</p>
                         </div>
 
                         {/* Tenure */}
-                        <div className="bg-white/5 border border-white/10 rounded p-2 sm:p-2.5">
-                          <div className="text-xs font-bold text-white mb-0.5">
+                        <div className="bg-white/5 border border-white/10 rounded p-2 sm:p-2.5 min-h-[60px] flex flex-col justify-between">
+                          <div className="text-xs font-bold text-white">
                             {monthsActive}m
                           </div>
                           <p className="text-xs text-slate-500 leading-tight">Antigüedad</p>
@@ -282,7 +285,7 @@ export function ProposalDetailsModal({
                       {/* Location */}
                       {professional.location && (
                         <div className="flex items-center gap-2 text-xs text-slate-300 pt-1">
-                          <MapPin className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-slate-500 flex-shrink-0" />
+                          <MapPin className="h-3 w-3 md:h-3.5 md:w-3.5 text-slate-500 flex-shrink-0" />
                           <span className="truncate">{professional.location}</span>
                         </div>
                       )}
@@ -291,7 +294,7 @@ export function ProposalDetailsModal({
 
                   {/* Bio */}
                   {professional.professional_profile?.bio && (
-                    <p className="text-xs text-slate-300 mt-2 p-2 sm:p-2.5 bg-white/5 rounded border border-white/5 italic line-clamp-2">
+                    <p className="text-xs md:text-sm text-slate-300 p-2 sm:p-3 bg-white/5 rounded border border-white/5 italic line-clamp-2">
                       "{professional.professional_profile.bio}"
                     </p>
                   )}
@@ -302,14 +305,14 @@ export function ProposalDetailsModal({
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.15 }}
-                  className="bg-gradient-to-r from-success/20 via-success/15 to-transparent border border-success/30 rounded-lg sm:rounded-xl p-3 sm:p-4"
+                  className="bg-gradient-to-r from-success/20 via-success/15 to-transparent border border-success/30 rounded-lg md:rounded-xl p-3 sm:p-4 md:p-5"
                 >
-                  <p className="text-xs text-slate-400 mb-1">Presupuesto Propuesto</p>
+                  <p className="text-xs md:text-sm text-slate-400 mb-2 sm:mb-1">Presupuesto Propuesto</p>
                   <div className="flex items-baseline gap-2">
-                    <span className="text-2xl sm:text-3xl font-bold text-success">
+                    <span className="text-2xl sm:text-3xl md:text-4xl font-bold text-success">
                       ${proposal.quoted_price.toLocaleString('es-AR')}
                     </span>
-                    <span className="text-xs text-slate-400">ARS</span>
+                    <span className="text-xs md:text-sm text-slate-400">ARS</span>
                   </div>
                 </motion.div>
 
@@ -318,12 +321,12 @@ export function ProposalDetailsModal({
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
-                  className="flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3 bg-gradient-to-r from-blue-500/15 to-blue-500/5 border border-blue-500/30 rounded-lg sm:rounded-xl"
+                  className="flex items-center gap-2 sm:gap-3 p-3 sm:p-4 md:p-5 bg-gradient-to-r from-blue-500/15 to-blue-500/5 border border-blue-500/30 rounded-lg md:rounded-xl"
                 >
-                  <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-blue-400 flex-shrink-0" />
+                  <Clock className="h-4 w-4 md:h-5 md:w-5 text-blue-400 flex-shrink-0" />
                   <div className="min-w-0">
-                    <p className="text-xs text-slate-400">Tiempo de Entrega</p>
-                    <p className="font-semibold text-white text-xs sm:text-sm">
+                    <p className="text-xs md:text-sm text-slate-400">Tiempo de Entrega</p>
+                    <p className="font-semibold text-white text-sm md:text-base">
                       {proposal.delivery_time_days} {proposal.delivery_time_days === 1 ? 'día' : 'días'}
                     </p>
                   </div>
@@ -334,19 +337,19 @@ export function ProposalDetailsModal({
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.25 }}
-                  className="p-2.5 sm:p-3 bg-white/5 border border-white/10 rounded-lg sm:rounded-xl"
+                  className="p-3 sm:p-4 md:p-5 bg-white/5 border border-white/10 rounded-lg md:rounded-xl"
                 >
-                  <p className="text-xs text-slate-500 mb-2 flex items-center gap-2">
-                    <MessageSquare className="h-3.5 w-3.5" />
+                  <p className="text-xs md:text-sm text-slate-500 mb-2 flex items-center gap-2">
+                    <MessageSquare className="h-3.5 w-3.5 md:h-4 md:w-4 flex-shrink-0" />
                     Mensaje del Profesional
                   </p>
-                  <p className="text-xs sm:text-sm text-white leading-relaxed break-words">
+                  <p className="text-xs sm:text-sm md:text-base text-white leading-relaxed break-words">
                     {proposal.message}
                   </p>
                 </motion.div>
 
                 {/* Date */}
-                <p className="text-xs text-slate-500 text-center py-1">
+                <p className="text-xs text-slate-500 text-center py-2">
                   Propuesta enviada el {new Date(proposal.created_at).toLocaleDateString('es-AR', {
                     day: 'numeric',
                     month: 'long',
@@ -360,31 +363,31 @@ export function ProposalDetailsModal({
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className="sticky bottom-0 bg-gradient-to-t from-slate-900 via-slate-900/95 to-slate-900/80 border-t border-white/10 px-4 sm:px-6 py-3 sm:py-4 space-y-2 sm:space-y-3 backdrop-blur-sm"
+                className="sticky bottom-0 bg-gradient-to-t from-slate-900 via-slate-900/95 to-slate-900/80 border-t border-white/10 px-4 sm:px-5 md:px-6 py-3 sm:py-4 md:py-5 space-y-2 sm:space-y-3 md:space-y-4 backdrop-blur-sm"
               >
                 {proposal.status === 'pending' && (
                   <>
-                    <div className="bg-gradient-to-r from-primary/15 to-transparent border border-primary/20 rounded p-2.5 text-xs text-white/70">
+                    <div className="bg-gradient-to-r from-primary/15 to-transparent border border-primary/20 rounded p-2.5 sm:p-3 text-xs md:text-sm text-white/70">
                       ✨ Aceptar te permitirá obtener el contacto del profesional y comenzar a colaborar.
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
                       <Button
                         onClick={handleAcceptProposal}
                         disabled={isProcessing || isLoading}
-                        className="h-10 sm:h-11 bg-gradient-to-r from-success via-success to-success/80 hover:from-success/90 hover:via-success/90 hover:to-success/70 text-white font-semibold shadow-lg hover:shadow-xl transition-all disabled:opacity-50 text-sm"
+                        className="h-10 sm:h-11 md:h-12 bg-gradient-to-r from-success via-success to-success/80 hover:from-success/90 hover:via-success/90 hover:to-success/70 text-white font-semibold shadow-lg hover:shadow-xl transition-all disabled:opacity-50 text-xs sm:text-sm md:text-base rounded-lg"
                       >
                         {isProcessing ? (
                           <>
                             <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
                             <span className="hidden sm:inline">Aceptando...</span>
-                            <span className="sm:hidden">Aceptar...</span>
+                            <span className="sm:hidden text-xs">Aceptar...</span>
                           </>
                         ) : (
                           <>
-                            <CheckCircle className="h-4 w-4 mr-1.5" />
+                            <CheckCircle className="h-4 w-4 md:h-5 md:w-5 mr-1.5 flex-shrink-0" />
                             <span className="hidden sm:inline">Aceptar Propuesta</span>
-                            <span className="sm:hidden">Aceptar</span>
+                            <span className="sm:hidden text-xs">Aceptar</span>
                           </>
                         )}
                       </Button>
@@ -393,13 +396,13 @@ export function ProposalDetailsModal({
                         onClick={handleRejectProposal}
                         disabled={isProcessing || isLoading}
                         variant="outline"
-                        className="h-10 sm:h-11 border-destructive/30 text-destructive hover:bg-destructive/10 font-semibold disabled:opacity-50 text-sm"
+                        className="h-10 sm:h-11 md:h-12 border-destructive/30 text-destructive hover:bg-destructive/10 font-semibold disabled:opacity-50 text-xs sm:text-sm md:text-base rounded-lg"
                       >
                         {isProcessing ? (
                           <>
                             <div className="h-4 w-4 border-2 border-destructive border-t-transparent rounded-full animate-spin mr-2" />
                             <span className="hidden sm:inline">Rechazando...</span>
-                            <span className="sm:hidden">Rechazar...</span>
+                            <span className="sm:hidden text-xs">Rechazar...</span>
                           </>
                         ) : (
                           <span>Rechazar</span>
@@ -411,12 +414,12 @@ export function ProposalDetailsModal({
 
                 {proposal.status === 'accepted' && (
                   <>
-                    <div className="bg-gradient-to-r from-success/20 to-success/10 border border-success/30 rounded p-2.5 sm:p-3">
+                    <div className="bg-gradient-to-r from-success/20 to-success/10 border border-success/30 rounded p-3 sm:p-4">
                       <div className="flex gap-2 sm:gap-3">
-                        <CheckCircle className="h-4 w-4 text-success flex-shrink-0 mt-0.5" />
+                        <CheckCircle className="h-5 w-5 md:h-6 md:w-6 text-success flex-shrink-0 mt-0.5" />
                         <div className="min-w-0">
-                          <p className="font-semibold text-success text-xs sm:text-sm">¡Propuesta Aceptada!</p>
-                          <p className="text-xs text-success/80 mt-0.5">
+                          <p className="font-semibold text-success text-sm md:text-base">¡Propuesta Aceptada!</p>
+                          <p className="text-xs md:text-sm text-success/80 mt-1">
                             Contacta por WhatsApp para coordinar.
                           </p>
                         </div>
@@ -425,22 +428,22 @@ export function ProposalDetailsModal({
 
                     <Button
                       onClick={handleContactWhatsApp}
-                      className="w-full h-10 sm:h-11 bg-gradient-to-r from-green-500 via-green-500 to-green-600 hover:from-green-600 hover:via-green-600 hover:to-green-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all text-sm"
+                      className="w-full h-10 sm:h-11 md:h-12 bg-gradient-to-r from-green-500 via-green-500 to-green-600 hover:from-green-600 hover:via-green-600 hover:to-green-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all text-xs sm:text-sm md:text-base rounded-lg"
                     >
-                      <MessageSquare className="h-4 w-4 mr-1.5" />
+                      <MessageSquare className="h-4 w-4 md:h-5 md:w-5 mr-1.5 flex-shrink-0" />
                       <span className="hidden sm:inline">Contactar por WhatsApp</span>
-                      <span className="sm:hidden">WhatsApp</span>
+                      <span className="sm:hidden text-xs">WhatsApp</span>
                     </Button>
                   </>
                 )}
 
                 {proposal.status === 'rejected' && (
-                  <div className="bg-gradient-to-r from-destructive/20 to-destructive/10 border border-destructive/30 rounded p-2.5 sm:p-3">
+                  <div className="bg-gradient-to-r from-destructive/20 to-destructive/10 border border-destructive/30 rounded p-3 sm:p-4">
                     <div className="flex gap-2 sm:gap-3">
-                      <AlertCircle className="h-4 w-4 text-destructive flex-shrink-0 mt-0.5" />
+                      <AlertCircle className="h-5 w-5 md:h-6 md:w-6 text-destructive flex-shrink-0 mt-0.5" />
                       <div className="min-w-0">
-                        <p className="font-semibold text-destructive text-xs sm:text-sm">Propuesta Rechazada</p>
-                        <p className="text-xs text-destructive/80 mt-0.5">
+                        <p className="font-semibold text-destructive text-sm md:text-base">Propuesta Rechazada</p>
+                        <p className="text-xs md:text-sm text-destructive/80 mt-1">
                           Seleccionaste otra propuesta.
                         </p>
                       </div>
