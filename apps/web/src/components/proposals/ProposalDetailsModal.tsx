@@ -315,14 +315,14 @@ export function ProposalDetailsModal({
                   </div>
                 </motion.div>
 
-                {/* Delivery Time - Premium glass blue accent */}
+                {/* Delivery Time - Premium glass primary accent */}
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.20, duration: 0.3 }}
-                  className="flex items-center gap-2 sm:gap-3 p-3 sm:p-4 md:p-5 bg-gradient-to-r from-blue-500/20 to-blue-500/10 backdrop-blur-xl border border-blue-500/40 rounded-xl md:rounded-2xl hover:bg-blue-500/22 hover:border-blue-500/50 transition-all shadow-lg"
+                  className="flex items-center gap-2 sm:gap-3 p-3 sm:p-4 md:p-5 bg-gradient-to-r from-primary/20 via-primary/15 to-primary/8 backdrop-blur-xl border border-primary/40 rounded-xl md:rounded-2xl hover:bg-primary/22 hover:border-primary/50 transition-all shadow-lg"
                 >
-                  <Clock className="h-4 w-4 md:h-5 md:w-5 text-blue-400 flex-shrink-0" />
+                  <Clock className="h-4 w-4 md:h-5 md:w-5 text-primary/80 flex-shrink-0" />
                   <div className="min-w-0">
                     <p className="text-xs md:text-sm text-slate-400">Tiempo de Entrega</p>
                     <p className="font-semibold text-white text-sm md:text-base">
