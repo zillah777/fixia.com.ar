@@ -148,12 +148,12 @@ export class OpportunitiesService {
     });
     const appliedProjectIds = new Set(appliedProjects.map(p => p.project_id));
 
-    // Get proposal counts per project for current user
+    // Get proposal counts per project for current user (only active proposals)
     const proposalCountsByProject = await this.prisma.proposal.groupBy({
       by: ['project_id'],
       where: {
         professional_id: userId,
-        status: { not: 'withdrawn' },
+        status: { in: ['pending', 'accepted'] }, // Only count active proposals
       },
       _count: {
         id: true,
@@ -370,12 +370,13 @@ export class OpportunitiesService {
       throw new BadRequestException('This opportunity is no longer accepting proposals');
     }
 
-    // Check proposal count - allow up to 2 proposals per opportunity per professional
+    // Check proposal count - allow up to 2 ACTIVE proposals per opportunity per professional
+    // Don't count withdrawn or rejected proposals (only pending and accepted)
     const proposalCount = await this.prisma.proposal.count({
       where: {
         project_id: opportunityId,
         professional_id: professionalId,
-        status: { not: 'withdrawn' }, // Don't count withdrawn proposals
+        status: { in: ['pending', 'accepted'] }, // Only count active proposals
       },
     });
 
