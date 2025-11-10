@@ -1452,7 +1452,7 @@ export default function DashboardPage() {
                 transition={{ duration: 0.6, delay: 0.5 }}
               >
                 <div className="mb-6 sm:mb-8">
-                  <h2 className="text-lg sm:text-xl md:text-2xl font-bold mb-4 sm:mb-6">Mis Matches Activos</h2>
+                  <h2 className="text-lg sm:text-xl md:text-2xl font-bold mb-4 sm:mb-6 text-white">Mis Matches Activos</h2>
                   <MatchesListSection
                     userId={user.id}
                     limit={5}
