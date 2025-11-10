@@ -132,8 +132,26 @@ export default function MyAnnouncementsPage() {
   };
 
   const handleViewProposals = async (project: Project) => {
-    setSelectedProject(project);
-    setShowProposals(true);
+    try {
+      // If proposals are not loaded, we need to ensure they are available
+      // The getMyProjects already includes proposals, but double-check
+      if (!project.proposals || project.proposals.length === 0) {
+        // Refetch the specific project to ensure we have the latest proposals
+        const updatedProjects = await opportunitiesService.getMyProjects();
+        const updatedProject = updatedProjects.find(p => p.id === project.id);
+        if (updatedProject) {
+          setSelectedProject(updatedProject);
+        } else {
+          setSelectedProject(project);
+        }
+      } else {
+        setSelectedProject(project);
+      }
+      setShowProposals(true);
+    } catch (error) {
+      console.error('Error loading proposals:', error);
+      toast.error('Error al cargar las propuestas');
+    }
   };
 
   const getStatusColor = (status: string) => {

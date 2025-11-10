@@ -13,6 +13,7 @@ import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Card, CardContent } from '../ui/card';
 import { Match, CompletionStatus } from '@/lib/services/match.service';
+import { FeedbackCard } from '../feedback/FeedbackCard';
 
 interface MatchDetailCardProps {
   match: Match;
@@ -37,6 +38,7 @@ export function MatchDetailCard({
 }: MatchDetailCardProps) {
   const isClient = match.clientId === currentUserId;
   const oppositeParty = isClient ? match.professional : match.client;
+  const [showFeedbackCard, setShowFeedbackCard] = useState(false);
 
   const getStatusBadge = () => {
     const statusStyles: Record<string, { bg: string; text: string; icon: any }> = {
@@ -231,15 +233,30 @@ export function MatchDetailCard({
           </div>
 
           {/* Review Button (if completed) */}
-          {completionStatus?.canLeaveReview && (
+          {completionStatus?.canLeaveReview && !showFeedbackCard && (
             <Button
-              onClick={onLeaveReview}
+              onClick={() => setShowFeedbackCard(true)}
               disabled={isLoading}
               className="w-full mt-3 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
               size="sm"
             >
-              Dejar Calificación
+              Dar Feedback
             </Button>
+          )}
+          {showFeedbackCard && (
+            <div className="mt-3">
+              <FeedbackCard
+                toUser={{
+                  id: oppositeParty.id,
+                  name: oppositeParty.name,
+                  avatar: oppositeParty.avatar,
+                  userType: isClient ? 'professional' : 'client',
+                }}
+                jobId={match.jobId}
+                onClose={() => setShowFeedbackCard(false)}
+                onSuccess={() => setShowFeedbackCard(false)}
+              />
+            </div>
           )}
         </CardContent>
       </Card>

@@ -11,7 +11,7 @@ import { Alert, AlertDescription } from '../components/ui/alert';
 import { Skeleton } from '../components/ui/skeleton';
 import { FixiaNavigation } from '../components/FixiaNavigation';
 import { MobileBottomNavigation } from '../components/MobileBottomNavigation';
-import { ReviewModal } from '../components/modals/ReviewModal';
+import { ReviewCard } from '../components/modals/ReviewCard';
 import { CompletionModal } from '../components/modals/CompletionModal';
 import {
   Briefcase,
@@ -370,7 +370,7 @@ interface JobCardProps {
 }
 
 const JobCard: React.FC<JobCardProps> = ({ job, onStatusUpdate, isProfessional }) => {
-  const [showReviewModal, setShowReviewModal] = React.useState(false);
+  const [showReviewCard, setShowReviewCard] = React.useState(false);
   const [showCompletionModal, setShowCompletionModal] = React.useState(false);
   const [completionMode, setCompletionMode] = React.useState<'request' | 'confirm'>('request');
   const progress = jobsService.calculateProgress(job.milestones);
@@ -472,12 +472,12 @@ const JobCard: React.FC<JobCardProps> = ({ job, onStatusUpdate, isProfessional }
             {/* Leave a Review Button - For Clients on Completed Jobs */}
             {!isProfessional && job.status === 'completed' && (
               <Button
-                onClick={() => setShowReviewModal(true)}
+                onClick={() => setShowReviewCard(!showReviewCard)}
                 size="sm"
                 className="glass border-white/20 hover:glass-medium bg-gradient-to-r from-primary/20 to-primary/10 border-primary/40 hover:border-primary/60"
               >
                 <Star className="h-4 w-4 mr-2 text-primary" />
-                Dejar Reseña
+                {showReviewCard ? 'Cerrar Reseña' : 'Dejar Reseña'}
               </Button>
             )}
             <Button variant="outline" size="sm" className="glass border-white/20 hover:glass-medium">
@@ -525,16 +525,16 @@ const JobCard: React.FC<JobCardProps> = ({ job, onStatusUpdate, isProfessional }
         }}
       />
 
-      {/* Review Modal */}
-      {!isProfessional && (
-        <ReviewModal
-          isOpen={showReviewModal}
-          onClose={() => setShowReviewModal(false)}
+      {/* Review Card - For Clients on Completed Jobs */}
+      {!isProfessional && job.status === 'completed' && (
+        <ReviewCard
+          isOpen={showReviewCard}
+          onClose={() => setShowReviewCard(false)}
           professionalName={job.professional.name}
           jobId={job.id}
           professionalId={job.professional.id}
           onSuccess={() => {
-            setShowReviewModal(false);
+            setShowReviewCard(false);
           }}
         />
       )}
