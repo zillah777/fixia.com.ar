@@ -36,18 +36,16 @@ export function BaseModal({
             aria-hidden="true"
           />
 
-          {/* Modal Container - Centered with responsive positioning */}
+          {/* Modal Container - Bottom sheet on mobile, centered on desktop */}
           <motion.div
-            initial={{ scale: 0.95, opacity: 0, y: 20 }}
-            animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.95, opacity: 0, y: 20 }}
+            initial={{ y: 500, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 500, opacity: 0 }}
             transition={{ duration: 0.3, ease: 'easeOut' }}
-            className={`fixed z-modal-content flex flex-col left-1/2 -translate-x-1/2 w-[95vw] ${maxWidth} h-auto rounded-2xl overflow-hidden pointer-events-auto`}
+            className={`fixed z-modal-content flex flex-col w-screen sm:w-[95vw] ${maxWidth} h-auto sm:left-1/2 sm:-translate-x-1/2 sm:top-1/2 sm:-translate-y-1/2 bottom-0 sm:bottom-auto rounded-t-3xl sm:rounded-2xl overflow-hidden pointer-events-auto`}
             style={{
-              top: '50%',
-              transform: 'translate(-50%, -50%)',
-              maxHeight: 'calc(100vh - 40px)',
-              maxWidth: '95vw'
+              maxHeight: 'calc(100vh - 60px)',
+              borderRadius: 'var(--radius, 1rem)'
             }}
           >
             {/* Modal Panel - Glass morphism */}
