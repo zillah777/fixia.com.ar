@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, Star, MapPin, Clock, DollarSign, CheckCircle, AlertCircle, MessageSquare, Loader2 } from 'lucide-react';
+import { ChevronDown, Star, MapPin, Clock, DollarSign, CheckCircle, AlertCircle, MessageSquare, Loader2, ClipboardCheck, Phone } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
@@ -58,6 +58,7 @@ export function ProposalCard({
 }: ProposalCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [showWhatsApp, setShowWhatsApp] = useState(false);
   const professional = proposal.professional;
 
   const statusConfig = {
@@ -72,8 +73,9 @@ export function ProposalCard({
     setIsProcessing(true);
     try {
       await opportunitiesService.acceptProposal(projectId, proposal.id);
-      toast.success('Propuesta aceptada exitosamente');
+      toast.success('Propuesta aceptada exitosamente. Ya puedes contactar al profesional por WhatsApp.');
       onProposalUpdated?.(proposal.id, 'accepted');
+      setShowWhatsApp(true);
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Error al aceptar la propuesta');
     } finally {
@@ -328,6 +330,35 @@ export function ProposalCard({
                       )}
                     </Button>
                   </motion.div>
+                )}
+                {/* WhatsApp Contacto: Solo si aceptada */}
+                {((proposal.status === 'accepted') || showWhatsApp) && professional.whatsapp_number && (
+                  <div className="mt-4 p-4 rounded-lg bg-gradient-to-br from-green-900/60 to-green-700/30 border border-success/30 shadow-lg flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                    <Phone className="h-6 w-6 text-success flex-shrink-0" />
+                    <div className="flex-1">
+                      <span className="block text-white font-semibold text-sm mb-1">¡Puedes contactar directamente a {professional.name} por WhatsApp!</span>
+                      <span className="block text-lg font-mono tracking-wide bg-black/30 px-2 py-1 rounded text-success mb-2">{professional.whatsapp_number}</span>
+                      <div className="flex flex-wrap gap-2">
+                        <Button
+                          size="sm"
+                          onClick={() => {
+                            navigator.clipboard.writeText(professional.whatsapp_number || '');
+                            toast.success('Número de WhatsApp copiado');
+                          }}
+                          variant="outline"
+                        >
+                          <ClipboardCheck className="h-4 w-4 mr-1" /> Copiar número
+                        </Button>
+                        <Button
+                          size="sm"
+                          className="bg-success/70 hover:bg-success text-white shadow"
+                          onClick={() => window.open(`https://wa.me/${professional.whatsapp_number}`,'_blank')}
+                        >
+                          <Phone className="h-4 w-4 mr-2" /> WhatsApp Directo
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
                 )}
               </div>
             </motion.div>
