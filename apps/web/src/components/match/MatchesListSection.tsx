@@ -156,7 +156,7 @@ export function MatchesListSection({
     <>
       <Card className="glass-glow border-primary/20">
         <CardHeader>
-          <CardTitle className="text-xl">Mis Matches Activos</CardTitle>
+          <CardTitle className="text-xl text-white">Mis Matches Activos</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <motion.div className="space-y-4" variants={{ hidden: { opacity: 0 }, visible: { opacity: 1 } }} initial="hidden" animate="visible">
