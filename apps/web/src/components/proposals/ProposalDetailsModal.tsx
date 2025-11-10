@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button } from '../ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { Badge } from '../ui/badge';
 import {
   Star, MapPin, Clock, DollarSign, CheckCircle, AlertCircle,
-  TrendingUp, MessageSquare, X
+  TrendingUp, MessageSquare, Loader2
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { opportunitiesService } from '../../lib/services/opportunities.service';
 import { VerificationBadge } from '../verification/VerificationBadge';
+import { BaseModal } from '../modals/BaseModal';
 
 interface Professional {
   id: string;
@@ -56,416 +57,206 @@ export function ProposalDetailsModal({
   open,
   onOpenChange,
   onProposalUpdated,
-  isLoading = false
+  isLoading = false,
 }: ProposalDetailsModalProps) {
   const [isProcessing, setIsProcessing] = useState(false);
 
   if (!proposal) return null;
 
   const professional = proposal.professional;
-  const profileCreatedDate = professional.created_at ? new Date(professional.created_at) : null;
-  const monthsActive = profileCreatedDate
-    ? Math.floor((Date.now() - profileCreatedDate.getTime()) / (1000 * 60 * 60 * 24 * 30))
-    : 0;
+  const statusConfig = {
+    pending: { label: 'Pendiente', color: 'bg-warning/20 text-warning border-warning/30', icon: AlertCircle },
+    accepted: { label: 'Aceptada', color: 'bg-success/20 text-success border-success/30', icon: CheckCircle },
+    rejected: { label: 'Rechazada', color: 'bg-destructive/20 text-destructive border-destructive/30', icon: AlertCircle },
+  };
 
-  const compatibilityScore = proposal.professional.professional_profile?.average_rating
-    ? Math.round((proposal.professional.professional_profile.average_rating / 5) * 100)
-    : 0;
+  const currentStatus = statusConfig[proposal.status];
 
   const handleAcceptProposal = async () => {
+    setIsProcessing(true);
     try {
-      setIsProcessing(true);
-      await opportunitiesService.acceptProposal(projectId, proposal.id);
-      toast.success('¡Propuesta aceptada! Ahora puedes contactar al profesional por WhatsApp');
+      await opportunitiesService.updateProposalStatus(
+        projectId,
+        proposal.id,
+        'accepted'
+      );
+      toast.success('Propuesta aceptada exitosamente');
       onProposalUpdated?.(proposal.id, 'accepted');
       onOpenChange(false);
-    } catch (error: any) {
-      console.error('Error accepting proposal:', error);
-      toast.error(error?.response?.data?.message || 'Error al aceptar la propuesta');
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : 'Error al aceptar la propuesta'
+      );
     } finally {
       setIsProcessing(false);
     }
   };
 
   const handleRejectProposal = async () => {
+    setIsProcessing(true);
     try {
-      setIsProcessing(true);
-      await opportunitiesService.rejectProposal(projectId, proposal.id);
+      await opportunitiesService.updateProposalStatus(
+        projectId,
+        proposal.id,
+        'rejected'
+      );
       toast.success('Propuesta rechazada');
       onProposalUpdated?.(proposal.id, 'rejected');
       onOpenChange(false);
-    } catch (error: any) {
-      console.error('Error rejecting proposal:', error);
-      toast.error(error?.response?.data?.message || 'Error al rechazar la propuesta');
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : 'Error al rechazar la propuesta'
+      );
     } finally {
       setIsProcessing(false);
     }
   };
 
-  const handleContactWhatsApp = () => {
-    const phone = professional.whatsapp_number || professional.phone;
-    if (phone) {
-      const message = encodeURIComponent(
-        `Hola ${professional.name}, vi tu propuesta para "${projectTitle}" en Fixia. Me gustaría conversar contigo.`
-      );
-      window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
-    } else {
-      toast.error('Este profesional no tiene WhatsApp registrado');
-    }
-  };
-
-  const statusConfig = {
-    pending: {
-      color: 'bg-warning/15 border-warning/40 text-warning',
-      label: 'Pendiente',
-      icon: AlertCircle
-    },
-    accepted: {
-      color: 'bg-success/15 border-success/40 text-success',
-      label: 'Aceptada ✓',
-      icon: CheckCircle
-    },
-    rejected: {
-      color: 'bg-destructive/15 border-destructive/40 text-destructive',
-      label: 'Rechazada',
-      icon: AlertCircle
-    }
-  };
-
-  const currentStatus = statusConfig[proposal.status];
-
-  // Prevent body scroll when modal is open
-  useEffect(() => {
-    if (open) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, [open]);
-
   return (
-    <AnimatePresence mode="wait">
-      {open && (
-        <>
-          {/* Backdrop - Premium fixed overlay with enhanced blur */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            onClick={() => onOpenChange(false)}
-            className="fixed inset-0 bg-black/65 backdrop-blur-md z-modal-backdrop"
-          />
-
-          {/* Modal Panel - Premium glass morphism centered on desktop, full-screen on mobile */}
-          <motion.div
-            initial={{ scale: 0.95, opacity: 0, y: 20 }}
-            animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.95, opacity: 0, y: 20 }}
-            transition={{ duration: 0.3, ease: 'easeOut' }}
-            className="fixed z-modal-content flex flex-col inset-0 md:inset-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-3xl md:max-w-lg md:h-auto md:max-h-[92vh] md:overflow-hidden"
-          >
-            {/* Panel Container - Premium glass morphism with Fixia design */}
-            <div className="w-full h-full flex flex-col bg-gradient-to-br from-slate-950/90 via-slate-900/85 to-slate-950/90 backdrop-blur-2xl border border-white/12 md:border-white/20 shadow-2xl">
-              {/* Sticky Header - Premium glass effect with enhanced blur */}
-              <motion.div
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.08, duration: 0.3 }}
-                className="sticky top-0 z-10 bg-gradient-to-b from-slate-950/70 via-slate-900/60 to-slate-900/40 border-b border-white/15 px-4 sm:px-5 md:px-6 py-2.5 sm:py-3 md:py-4 backdrop-blur-2xl"
-              >
-                <div className="flex items-center justify-between gap-2 sm:gap-3">
-                  <div className="flex-1 min-w-0">
-                    <h2 className="text-base sm:text-lg md:text-xl font-bold text-white truncate leading-tight">
-                      {professional.name}
-                    </h2>
-                    <p className="text-xs text-slate-500 mt-0.5 truncate">
-                      {projectTitle}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
-                    <Badge className={`${currentStatus.color} border whitespace-nowrap text-xs`}>
-                      <currentStatus.icon className="h-2.5 w-2.5 mr-0.5" />
-                      <span className="hidden sm:inline text-xs">{currentStatus.label.split(' ')[0]}</span>
-                    </Badge>
-                    <button
-                      onClick={() => onOpenChange(false)}
-                      className="p-1.5 rounded-lg transition-all hover:bg-white/20 hover:backdrop-blur-md active:bg-white/30 border border-white/10 hover:border-white/20"
-                      aria-label="Cerrar modal"
-                    >
-                      <X className="h-4 w-4 text-slate-300 hover:text-white transition-colors" />
-                    </button>
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* Scrollable Content Area - Glass background */}
-              <div className="flex-1 overflow-y-auto px-4 sm:px-5 md:px-6 py-3 sm:py-3 md:py-4 space-y-2.5 sm:space-y-3 md:space-y-4 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-white/5">
-                {/* Professional Info - Premium glass card */}
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.12, duration: 0.3 }}
-                  className="bg-gradient-to-br from-white/10 via-white/8 to-white/5 backdrop-blur-xl border border-white/20 rounded-xl md:rounded-2xl p-3 sm:p-4 md:p-5 space-y-3 hover:bg-white/12 hover:border-white/30 transition-all shadow-lg"
-                >
-                  <div className="flex gap-3 sm:gap-4">
-                    {/* Avatar */}
-                    <Avatar className="h-14 w-14 sm:h-16 sm:w-16 md:h-20 md:w-20 flex-shrink-0 border-2 border-primary/40 ring-2 ring-primary/20">
-                      <AvatarImage src={professional.avatar || undefined} />
-                      <AvatarFallback className="text-base sm:text-lg md:text-xl font-bold bg-primary/20">
-                        {professional.name.charAt(0).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-
-                    {/* Info */}
-                    <div className="flex-1 min-w-0 space-y-2">
-                      {/* Verification */}
-                      <div className="flex items-center gap-2 flex-wrap">
-                        {professional.isVerified ? (
-                          <VerificationBadge
-                            isVerified={true}
-                            verificationLevel={professional.verificationLevel}
-                            userType={professional.userType}
-                            size="sm"
-                            showLabel={true}
-                          />
-                        ) : (
-                          <Badge variant="outline" className="border-warning/40 text-warning/80 text-xs">
-                            <AlertCircle className="h-3 w-3 mr-1" />
-                            No verificado
-                          </Badge>
-                        )}
-                      </div>
-
-                      {/* Stats Grid - Premium glass design */}
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-1.5 sm:gap-2">
-                        {/* Rating */}
-                        <div className="bg-gradient-to-br from-white/12 to-white/8 backdrop-blur-lg border border-white/20 rounded-lg p-2 sm:p-2.5 min-h-[60px] flex flex-col justify-between hover:bg-white/14 hover:border-white/30 transition-all shadow-md">
-                          <div>
-                            <div className="flex items-center gap-1 mb-0.5">
-                              <Star className="h-3 w-3 md:h-3.5 md:w-3.5 text-amber-400 fill-amber-400 flex-shrink-0" />
-                              <span className="text-xs font-bold text-white">
-                                {(professional.professional_profile?.average_rating ?? 0).toFixed(1)}
-                              </span>
-                            </div>
-                          </div>
-                          <p className="text-xs text-slate-400 leading-tight">Calificación</p>
-                        </div>
-
-                        {/* Reviews */}
-                        <div className="bg-gradient-to-br from-white/12 to-white/8 backdrop-blur-lg border border-white/20 rounded-lg p-2 sm:p-2.5 min-h-[60px] flex flex-col justify-between hover:bg-white/14 hover:border-white/30 transition-all shadow-md">
-                          <div className="text-xs font-bold text-white">
-                            {professional.professional_profile?.total_reviews ?? 0}
-                          </div>
-                          <p className="text-xs text-slate-400 leading-tight">Reseñas</p>
-                        </div>
-
-                        {/* Compatibility */}
-                        <div className="bg-gradient-to-br from-white/12 to-white/8 backdrop-blur-lg border border-white/20 rounded-lg p-2 sm:p-2.5 min-h-[60px] flex flex-col justify-between hover:bg-white/14 hover:border-white/30 transition-all shadow-md">
-                          <div className="flex items-center gap-1">
-                            <TrendingUp className="h-3 w-3 md:h-3.5 md:w-3.5 text-success flex-shrink-0" />
-                            <span className="text-xs font-bold text-success">{compatibilityScore}%</span>
-                          </div>
-                          <p className="text-xs text-slate-400 leading-tight">Compatibilidad</p>
-                        </div>
-
-                        {/* Tenure */}
-                        <div className="bg-gradient-to-br from-white/12 to-white/8 backdrop-blur-lg border border-white/20 rounded-lg p-2 sm:p-2.5 min-h-[60px] flex flex-col justify-between hover:bg-white/14 hover:border-white/30 transition-all shadow-md">
-                          <div className="text-xs font-bold text-white">
-                            {monthsActive}m
-                          </div>
-                          <p className="text-xs text-slate-400 leading-tight">Antigüedad</p>
-                        </div>
-                      </div>
-
-                      {/* Location */}
-                      {professional.location && (
-                        <div className="flex items-center gap-2 text-xs text-slate-300 pt-1">
-                          <MapPin className="h-3 w-3 md:h-3.5 md:w-3.5 text-slate-500 flex-shrink-0" />
-                          <span className="truncate">{professional.location}</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Bio */}
-                  {professional.professional_profile?.bio && (
-                    <p className="text-xs md:text-sm text-slate-300 p-2 sm:p-3 bg-white/5 rounded border border-white/5 italic line-clamp-2">
-                      "{professional.professional_profile.bio}"
-                    </p>
-                  )}
-                </motion.div>
-
-                {/* Price Section - Premium glass success accent */}
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.16, duration: 0.3 }}
-                  className="bg-gradient-to-r from-success/20 via-success/15 to-success/8 backdrop-blur-xl border border-success/40 rounded-xl md:rounded-2xl p-3 sm:p-4 md:p-5 hover:bg-success/22 hover:border-success/50 transition-all shadow-lg"
-                >
-                  <p className="text-xs md:text-sm text-slate-400 mb-2 sm:mb-1">Presupuesto Propuesto</p>
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-2xl sm:text-3xl md:text-4xl font-bold text-success">
-                      ${proposal.quoted_price.toLocaleString('es-AR')}
-                    </span>
-                    <span className="text-xs md:text-sm text-slate-400">ARS</span>
-                  </div>
-                </motion.div>
-
-                {/* Delivery Time - Premium glass primary accent */}
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.20, duration: 0.3 }}
-                  className="flex items-center gap-2 sm:gap-3 p-3 sm:p-4 md:p-5 bg-gradient-to-r from-primary/20 via-primary/15 to-primary/8 backdrop-blur-xl border border-primary/40 rounded-xl md:rounded-2xl hover:bg-primary/22 hover:border-primary/50 transition-all shadow-lg"
-                >
-                  <Clock className="h-4 w-4 md:h-5 md:w-5 text-primary/80 flex-shrink-0" />
-                  <div className="min-w-0">
-                    <p className="text-xs md:text-sm text-slate-400">Tiempo de Entrega</p>
-                    <p className="font-semibold text-white text-sm md:text-base">
-                      {proposal.delivery_time_days} {proposal.delivery_time_days === 1 ? 'día' : 'días'}
-                    </p>
-                  </div>
-                </motion.div>
-
-                {/* Message - Premium glass card */}
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.24, duration: 0.3 }}
-                  className="p-3 sm:p-4 md:p-5 bg-gradient-to-br from-white/12 to-white/8 backdrop-blur-xl border border-white/20 rounded-xl md:rounded-2xl hover:bg-white/14 hover:border-white/30 transition-all shadow-lg"
-                >
-                  <p className="text-xs md:text-sm text-slate-500 mb-2 flex items-center gap-2">
-                    <MessageSquare className="h-3.5 w-3.5 md:h-4 md:w-4 flex-shrink-0" />
-                    Mensaje del Profesional
-                  </p>
-                  <p className="text-xs sm:text-sm md:text-base text-white leading-relaxed break-words">
-                    {proposal.message}
-                  </p>
-                </motion.div>
-
-                {/* Date */}
-                <p className="text-xs text-slate-500 text-center py-2">
-                  Propuesta enviada el {new Date(proposal.created_at).toLocaleDateString('es-AR', {
-                    day: 'numeric',
-                    month: 'long',
-                    year: 'numeric'
-                  })}
-                </p>
+    <BaseModal
+      isOpen={open}
+      onClose={() => onOpenChange(false)}
+      title={professional.name}
+      subtitle={projectTitle}
+      maxWidth="max-w-lg"
+    >
+      <div className="space-y-4">
+        {/* Professional Info Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-gradient-to-br from-white/10 via-white/8 to-white/5 backdrop-blur-xl border border-white/20 rounded-xl p-4 space-y-3"
+        >
+          <div className="flex gap-3 sm:gap-4">
+            <Avatar className="h-14 w-14 ring-2 ring-primary/40">
+              <AvatarImage src={professional.avatar || undefined} />
+              <AvatarFallback className="bg-primary/20">
+                {professional.name.charAt(0).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2">
+                <p className="font-semibold text-white truncate">{professional.name}</p>
+                {professional.isVerified && (
+                  <VerificationBadge level={professional.verificationLevel || 'basic'} />
+                )}
               </div>
-
-              {/* Sticky Footer Actions - Premium glass effect */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.32, duration: 0.3 }}
-                className="sticky bottom-0 bg-gradient-to-t from-slate-950/90 via-slate-900/80 to-slate-900/60 border-t border-white/15 px-4 sm:px-5 md:px-6 py-3 sm:py-3 md:py-4 space-y-2 sm:space-y-2.5 md:space-y-3 backdrop-blur-2xl shadow-2xl"
-              >
-                {proposal.status === 'pending' && (
-                  <>
-                    <motion.div
-                      initial={{ opacity: 0, y: 5 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.28, duration: 0.3 }}
-                      className="bg-gradient-to-r from-primary/30 via-primary/20 to-primary/10 backdrop-blur-xl border border-primary/50 rounded-xl md:rounded-2xl p-3 sm:p-4 md:p-5 hover:bg-primary/32 hover:border-primary/60 transition-all shadow-lg"
-                    >
-                      <div className="flex gap-2 sm:gap-3 items-start">
-                        <span className="text-lg sm:text-xl flex-shrink-0 mt-0.5">✨</span>
-                        <div className="min-w-0">
-                          <p className="text-xs sm:text-sm md:text-base text-white font-medium leading-relaxed">
-                            Aceptar te permitirá obtener el contacto del profesional y comenzar a colaborar.
-                          </p>
-                        </div>
-                      </div>
-                    </motion.div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
-                      <Button
-                        onClick={handleAcceptProposal}
-                        disabled={isProcessing || isLoading}
-                        className="h-10 sm:h-11 md:h-12 bg-gradient-to-r from-success via-success to-success/80 hover:from-success/90 hover:via-success/90 hover:to-success/70 text-white font-semibold shadow-lg hover:shadow-xl transition-all disabled:opacity-50 text-xs sm:text-sm md:text-base rounded-lg"
-                      >
-                        {isProcessing ? (
-                          <>
-                            <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                            <span className="hidden sm:inline">Aceptando...</span>
-                            <span className="sm:hidden text-xs">Aceptar...</span>
-                          </>
-                        ) : (
-                          <>
-                            <CheckCircle className="h-4 w-4 md:h-5 md:w-5 mr-1.5 flex-shrink-0" />
-                            <span className="hidden sm:inline">Aceptar Propuesta</span>
-                            <span className="sm:hidden text-xs">Aceptar</span>
-                          </>
-                        )}
-                      </Button>
-
-                      <Button
-                        onClick={handleRejectProposal}
-                        disabled={isProcessing || isLoading}
-                        variant="outline"
-                        className="h-10 sm:h-11 md:h-12 border-destructive/30 text-destructive hover:bg-destructive/10 font-semibold disabled:opacity-50 text-xs sm:text-sm md:text-base rounded-lg"
-                      >
-                        {isProcessing ? (
-                          <>
-                            <div className="h-4 w-4 border-2 border-destructive border-t-transparent rounded-full animate-spin mr-2" />
-                            <span className="hidden sm:inline">Rechazando...</span>
-                            <span className="sm:hidden text-xs">Rechazar...</span>
-                          </>
-                        ) : (
-                          <span>Rechazar</span>
-                        )}
-                      </Button>
-                    </div>
-                  </>
-                )}
-
-                {proposal.status === 'accepted' && (
-                  <>
-                    <div className="bg-gradient-to-r from-success/25 via-success/18 to-success/10 backdrop-blur-xl border border-success/40 rounded p-3 sm:p-4 shadow-lg">
-                      <div className="flex gap-2 sm:gap-3">
-                        <CheckCircle className="h-5 w-5 md:h-6 md:w-6 text-success flex-shrink-0 mt-0.5" />
-                        <div className="min-w-0">
-                          <p className="font-semibold text-success text-sm md:text-base">¡Propuesta Aceptada!</p>
-                          <p className="text-xs md:text-sm text-success/85 mt-1">
-                            Contacta por WhatsApp para coordinar.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <Button
-                      onClick={handleContactWhatsApp}
-                      className="w-full h-10 sm:h-11 md:h-12 bg-gradient-to-r from-green-500 via-green-500 to-green-600 hover:from-green-600 hover:via-green-600 hover:to-green-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all text-xs sm:text-sm md:text-base rounded-lg"
-                    >
-                      <MessageSquare className="h-4 w-4 md:h-5 md:w-5 mr-1.5 flex-shrink-0" />
-                      <span className="hidden sm:inline">Contactar por WhatsApp</span>
-                      <span className="sm:hidden text-xs">WhatsApp</span>
-                    </Button>
-                  </>
-                )}
-
-                {proposal.status === 'rejected' && (
-                  <div className="bg-gradient-to-r from-destructive/25 via-destructive/18 to-destructive/10 backdrop-blur-xl border border-destructive/40 rounded p-3 sm:p-4 shadow-lg">
-                    <div className="flex gap-2 sm:gap-3">
-                      <AlertCircle className="h-5 w-5 md:h-6 md:w-6 text-destructive flex-shrink-0 mt-0.5" />
-                      <div className="min-w-0">
-                        <p className="font-semibold text-destructive text-sm md:text-base">Propuesta Rechazada</p>
-                        <p className="text-xs md:text-sm text-destructive/85 mt-1">
-                          Seleccionaste otra propuesta.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </motion.div>
+              {professional.location && (
+                <div className="flex items-center gap-1 text-sm text-white/60 mt-1">
+                  <MapPin className="h-3 w-3" />
+                  <span>{professional.location}</span>
+                </div>
+              )}
             </div>
+          </div>
+
+          {/* Rating & Reviews */}
+          {professional.professional_profile && (
+            <div className="flex items-center gap-3 text-sm">
+              <div className="flex items-center gap-1">
+                <Star className="h-4 w-4 text-amber-400 fill-amber-400" />
+                <span className="font-semibold text-white">
+                  {professional.professional_profile.average_rating.toFixed(1)}
+                </span>
+              </div>
+              <span className="text-white/60">
+                ({professional.professional_profile.total_reviews} reseñas)
+              </span>
+            </div>
+          )}
+        </motion.div>
+
+        {/* Proposal Details */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05 }}
+          className="bg-gradient-to-br from-white/10 via-white/8 to-white/5 backdrop-blur-xl border border-white/20 rounded-xl p-4 space-y-3"
+        >
+          {/* Price */}
+          <div>
+            <p className="text-xs text-white/60 mb-1">Precio Ofrecido</p>
+            <div className="flex items-baseline gap-2">
+              <span className="text-3xl font-bold text-primary">
+                ${proposal.quoted_price.toLocaleString('es-AR')}
+              </span>
+              <span className="text-sm text-white/60">ARS</span>
+            </div>
+          </div>
+
+          {/* Delivery Time */}
+          <div className="flex items-center gap-3 p-3 bg-white/5 rounded-lg">
+            <Clock className="h-5 w-5 text-primary/80 flex-shrink-0" />
+            <div className="min-w-0">
+              <p className="text-xs text-white/60">Tiempo de Entrega</p>
+              <p className="text-white font-semibold">
+                {proposal.delivery_time_days} {proposal.delivery_time_days === 1 ? 'día' : 'días'}
+              </p>
+            </div>
+          </div>
+
+          {/* Status Badge */}
+          <div className="flex items-center justify-between pt-2">
+            <p className="text-xs text-white/60">Estado</p>
+            <Badge className={`${currentStatus.color} border text-xs`}>
+              <currentStatus.icon className="h-3 w-3 mr-1" />
+              {currentStatus.label}
+            </Badge>
+          </div>
+        </motion.div>
+
+        {/* Proposal Message */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="bg-gradient-to-br from-white/10 via-white/8 to-white/5 backdrop-blur-xl border border-white/20 rounded-xl p-4"
+        >
+          <div className="flex items-start gap-2 mb-3">
+            <MessageSquare className="h-4 w-4 text-primary/80 flex-shrink-0 mt-1" />
+            <p className="text-xs text-white/60">Mensaje de la Propuesta</p>
+          </div>
+          <p className="text-white/90 text-sm leading-relaxed">
+            {proposal.message}
+          </p>
+        </motion.div>
+
+        {/* Action Buttons */}
+        {proposal.status === 'pending' && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            className="flex gap-3 pt-2"
+          >
+            <Button
+              onClick={handleRejectProposal}
+              disabled={isProcessing || isLoading}
+              variant="outline"
+              className="flex-1 border-destructive/30 text-destructive/80 hover:text-destructive hover:bg-destructive/10"
+            >
+              Rechazar
+            </Button>
+            <Button
+              onClick={handleAcceptProposal}
+              disabled={isProcessing || isLoading}
+              className="flex-1 bg-gradient-to-r from-success via-success to-success/80 hover:from-success/90 hover:to-success/70 text-white font-semibold shadow-lg transition-all disabled:opacity-50"
+            >
+              {isProcessing ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Procesando...
+                </>
+              ) : (
+                <>
+                  <CheckCircle className="h-4 w-4 mr-2" />
+                  Aceptar
+                </>
+              )}
+            </Button>
           </motion.div>
-        </>
-      )}
-    </AnimatePresence>
+        )}
+      </div>
+    </BaseModal>
   );
 }

@@ -558,17 +558,8 @@
     border-radius: 0.375rem;
   }
 
-  /* Sheet/Mobile menu fixes - ONLY for sheets, not all dialogs */
-  [data-radix-dialog-content][role="dialog"][aria-describedby*="sheet"] {
-    background: hsl(var(--background)) !important;
-    color: hsl(var(--foreground)) !important;
-  }
-
-  /* Specific sheet selector if the above doesn't work */
-  [data-slot="sheet-content"] {
-    background: hsl(var(--background)) !important;
-    color: hsl(var(--foreground)) !important;
-  }
+  /* NOTE: Removed ALL global Radix Dialog rules to prevent CSS conflicts
+     Modal styling is now handled at component level, NOT globally */
 
   /* Mobile-specific utilities */
   .safe-area-pb {
