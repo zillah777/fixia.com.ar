@@ -19,7 +19,7 @@ import { FixiaNavigation } from "../components/FixiaNavigation";
 import { Skeleton } from "../components/ui/skeleton";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../components/ui/dialog";
 import { ProposalDetailsModal } from "../components/proposals/ProposalDetailsModal";
-import { FixiaModalTemplate } from "../components/modals/FixiaModalTemplate";
+import { ProposalCard } from "../components/proposals/ProposalCard";
 
 interface Project {
   id: string;
@@ -468,12 +468,28 @@ export default function MyAnnouncementsPage() {
         </motion.div>
       </main>
 
-      {/* Proposals Modal */}
-      <ProposalsDialog
-        project={selectedProject}
-        open={showProposals}
-        onOpenChange={setShowProposals}
-      />
+      {/* Proposals Section - Inline Expandable Cards */}
+      {showProposals && (
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.3 }}
+          className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8"
+        >
+          <button
+            onClick={() => setShowProposals(false)}
+            className="mb-6 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 border border-white/20 text-white font-medium text-sm transition-all"
+          >
+            <X className="h-4 w-4" />
+            Cerrar propuestas
+          </button>
+          <ProposalsSection
+            project={selectedProject}
+            showProposals={showProposals}
+          />
+        </motion.section>
+      )}
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
@@ -504,18 +520,14 @@ export default function MyAnnouncementsPage() {
   );
 }
 
-function ProposalsDialog({
+function ProposalsSection({
   project,
-  open,
-  onOpenChange
+  showProposals
 }: {
   project: Project | null;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+  showProposals: boolean;
 }) {
   const [localProposals, setLocalProposals] = useState<Proposal[]>([]);
-  const [selectedProposal, setSelectedProposal] = useState<Proposal | null>(null);
-  const [showDetailModal, setShowDetailModal] = useState(false);
 
   useEffect(() => {
     if (project?.proposals) {
@@ -523,13 +535,7 @@ function ProposalsDialog({
     }
   }, [project]);
 
-  if (!project) return null;
-
-  const handleProposalClick = (proposal: Proposal) => {
-    setSelectedProposal(proposal);
-    setShowDetailModal(true);
-    onOpenChange(false);
-  };
+  if (!project || !showProposals) return null;
 
   const handleProposalUpdated = (proposalId: string, status: 'accepted' | 'rejected') => {
     setLocalProposals(prev =>
@@ -537,8 +543,6 @@ function ProposalsDialog({
         p.id === proposalId ? { ...p, status } : p
       )
     );
-    setShowDetailModal(false);
-    onOpenChange(false);
   };
 
   const getProposalBadgeInfo = (proposal: Proposal) => {
@@ -562,132 +566,47 @@ function ProposalsDialog({
   };
 
   return (
-    <>
-      <FixiaModalTemplate
-        open={open}
-        onOpenChange={onOpenChange}
-        title="Propuestas Recibidas"
-        subtitle={project.title}
-      >
-        {localProposals && localProposals.length > 0 ? (
-          <div className="space-y-2">
-            <AnimatePresence mode="wait">
-              {localProposals.map((proposal, index) => (
-                <motion.div
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.1 }}
+      className="space-y-4"
+    >
+      <h3 className="text-lg sm:text-xl font-bold text-white mb-4">
+        Propuestas Recibidas para: <span className="text-primary">{project.title}</span>
+      </h3>
+
+      {localProposals && localProposals.length > 0 ? (
+        <div className="space-y-3">
+          <AnimatePresence mode="wait">
+            {localProposals.map((proposal, index) => {
+              const badgeInfo = getProposalBadgeInfo(proposal);
+              return (
+                <ProposalCard
                   key={proposal.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.03 }}
-                  exit={{ opacity: 0, y: -10 }}
-                >
-                  <Card
-                    className="bg-white/8 backdrop-blur-md border border-white/15 hover:border-white/25 hover:bg-white/12 transition-all cursor-pointer rounded-xl active:bg-white/15 shadow-lg"
-                    onClick={() => handleProposalClick(proposal)}
-                    role="button"
-                    tabIndex={0}
-                  >
-                    <CardContent className="p-3 sm:p-4">
-                      <div className="flex items-start justify-between gap-2 sm:gap-3">
-                        <div className="flex items-start gap-2 sm:gap-3 flex-1 min-w-0">
-                          <Avatar className="h-11 w-11 sm:h-12 sm:w-12 flex-shrink-0 border border-white/10">
-                            <AvatarImage src={proposal.professional.avatar || undefined} />
-                            <AvatarFallback className="text-xs sm:text-sm font-bold">
-                              {proposal.professional.name.charAt(0).toUpperCase()}
-                            </AvatarFallback>
-                          </Avatar>
-
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-start justify-between gap-1.5 mb-1">
-                              <h4 className="font-semibold text-white text-xs sm:text-sm truncate">
-                                {proposal.professional.name}
-                              </h4>
-                              <span className="flex-shrink-0 text-[#5B7FFF] border border-[#5B7FFF]/30 bg-[#5B7FFF]/10 text-xs px-2 py-0.5 whitespace-nowrap rounded-md font-bold shadow-sm">
-                                ${proposal.quoted_price.toLocaleString()}
-                              </span>
-                            </div>
-
-                            {/* Badge indicators */}
-                            {(() => {
-                              const badgeInfo = getProposalBadgeInfo(proposal);
-                              return (
-                                <div className="flex items-center gap-1 mb-1.5 flex-wrap">
-                                  {badgeInfo.isNew && (
-                                    <Badge className="bg-[#4ADE80]/20 text-[#4ADE80] border-[#4ADE80]/30 text-xs px-2 py-0.5 rounded">
-                                      ✨ Nueva
-                                    </Badge>
-                                  )}
-                                  {badgeInfo.isDuplicate && (
-                                    <Badge className="bg-[#5B7FFF]/20 text-[#5B7FFF] border-[#5B7FFF]/30 text-xs px-2 py-0.5 rounded">
-                                      🔄 {badgeInfo.duplicateCount}
-                                    </Badge>
-                                  )}
-                                </div>
-                              );
-                            })()}
-
-                            {proposal.professional.professional_profile?.average_rating !== undefined && (
-                              <div className="flex items-center gap-1.5 text-xs text-slate-300 mb-1">
-                                <Star className="h-3 w-3 text-amber-400 fill-amber-400 flex-shrink-0" />
-                                <span className="font-semibold">{proposal.professional.professional_profile.average_rating.toFixed(1)}</span>
-                                <span className="text-slate-500">•</span>
-                                <span className="text-slate-400">{proposal.professional.professional_profile.total_reviews}</span>
-                              </div>
-                            )}
-
-                            <p className="text-xs sm:text-sm text-slate-300 line-clamp-2">
-                              {proposal.message}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
-                          <Badge
-                            className={`text-xs px-2 py-0.5 whitespace-nowrap rounded font-medium ${
-                              proposal.status === 'accepted'
-                                ? 'bg-success/20 text-success border-success/30'
-                                : proposal.status === 'rejected'
-                                ? 'bg-destructive/20 text-destructive border-destructive/30'
-                                : 'bg-warning/20 text-warning border-warning/30'
-                            }`}
-                          >
-                            {proposal.status === 'accepted'
-                              ? 'Aceptada ✓'
-                              : proposal.status === 'rejected'
-                              ? 'Rechazada'
-                              : 'Pendiente'}
-                          </Badge>
-                          <span className="text-xs text-slate-400 font-medium">
-                            {proposal.delivery_time_days}d
-                          </span>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </div>
-        ) : (
-          <div className="text-center py-12 flex flex-col items-center justify-center">
-            <Users className="h-12 w-12 mx-auto mb-3 text-slate-500" />
-            <p className="text-slate-300 text-sm">
-              Aún no has recibido propuestas para este anuncio
-            </p>
-          </div>
-        )}
-      </FixiaModalTemplate>
-
-      {/* Proposal Details Modal */}
-      {selectedProposal && (
-        <ProposalDetailsModal
-          proposal={selectedProposal}
-          projectId={project.id}
-          projectTitle={project.title}
-          open={showDetailModal}
-          onOpenChange={setShowDetailModal}
-          onProposalUpdated={handleProposalUpdated}
-        />
+                  proposal={proposal}
+                  projectId={project.id}
+                  projectTitle={project.title}
+                  isNew={badgeInfo.isNew}
+                  duplicateCount={badgeInfo.duplicateCount}
+                  onProposalUpdated={handleProposalUpdated}
+                />
+              );
+            })}
+          </AnimatePresence>
+        </div>
+      ) : (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center py-12 flex flex-col items-center justify-center rounded-xl border border-white/10 bg-white/5"
+        >
+          <Users className="h-12 w-12 mx-auto mb-3 text-slate-500" />
+          <p className="text-slate-300 text-sm">
+            Aún no has recibido propuestas para este anuncio
+          </p>
+        </motion.div>
       )}
-    </>
+    </motion.div>
   );
 }
