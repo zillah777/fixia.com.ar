@@ -36,15 +36,14 @@ export function BaseModal({
             aria-hidden="true"
           />
 
-          {/* Modal Container - Bottom sheet on mobile, centered on desktop */}
+          {/* Modal Container - Bottom sheet on mobile, top-positioned scrollable on desktop */}
           <motion.div
             initial={{ y: 500, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 500, opacity: 0 }}
             transition={{ duration: 0.3, ease: 'easeOut' }}
-            className={`fixed z-modal-content flex flex-col w-screen sm:w-[95vw] ${maxWidth} h-auto sm:left-1/2 sm:-translate-x-1/2 sm:top-1/2 sm:-translate-y-1/2 bottom-0 sm:bottom-auto rounded-t-3xl sm:rounded-2xl overflow-hidden pointer-events-auto`}
+            className={`fixed z-modal-content flex flex-col w-screen sm:w-[95vw] ${maxWidth} h-auto sm:max-h-[calc(100vh-40px)] bottom-0 sm:bottom-auto sm:top-5 sm:left-1/2 sm:-translate-x-1/2 rounded-t-3xl sm:rounded-2xl overflow-hidden sm:overflow-y-auto pointer-events-auto`}
             style={{
-              maxHeight: 'calc(100vh - 60px)',
               borderRadius: 'var(--radius, 1rem)'
             }}
           >
