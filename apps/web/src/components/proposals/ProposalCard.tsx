@@ -186,7 +186,7 @@ export function ProposalCard({
           </button>
         </CardContent>
 
-        {/* Expanded View */}
+        {/* Expanded View (solo contenido de la propuesta/detalles) */}
         <AnimatePresence>
           {isExpanded && (
             <motion.div
@@ -197,51 +197,7 @@ export function ProposalCard({
               className="overflow-hidden border-t border-white/15"
             >
               <div className="p-3 sm:p-4 space-y-4 bg-gradient-to-b from-white/2 to-transparent">
-                {/* Professional Info Card */}
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.05 }}
-                  className="bg-gradient-to-br from-white/10 via-white/8 to-white/5 backdrop-blur-xl border border-white/20 rounded-xl p-4 space-y-3"
-                >
-                  <div className="flex gap-3">
-                    <Avatar className="h-16 w-16 ring-2 ring-primary/40">
-                      <AvatarImage src={professional.avatar || undefined} />
-                      <AvatarFallback className="bg-primary/20 font-bold">
-                        {professional.name.charAt(0).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <p className="font-semibold text-white">{professional.name}</p>
-                        {professional.isVerified && (
-                          <VerificationBadge level={professional.verificationLevel || 'basic'} />
-                        )}
-                      </div>
-                      {professional.location && (
-                        <div className="flex items-center gap-1 text-sm text-white/60 mb-2">
-                          <MapPin className="h-3 w-3" />
-                          <span>{professional.location}</span>
-                        </div>
-                      )}
-                      {professional.professional_profile && (
-                        <div className="flex items-center gap-3 text-sm">
-                          <div className="flex items-center gap-1">
-                            <Star className="h-4 w-4 text-amber-400 fill-amber-400" />
-                            <span className="font-semibold text-white">
-                              {professional.professional_profile.average_rating.toFixed(1)}
-                            </span>
-                          </div>
-                          <span className="text-white/60">
-                            ({professional.professional_profile.total_reviews} reseñas)
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </motion.div>
-
-                {/* Proposal Details */}
+                {/* Proposal Details (sin info profesional duplicada) */}
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -258,7 +214,6 @@ export function ProposalCard({
                       <span className="text-sm text-white/60">ARS</span>
                     </div>
                   </div>
-
                   {/* Delivery Time */}
                   <div className="flex items-center gap-3 p-3 bg-white/5 rounded-lg">
                     <Clock className="h-5 w-5 text-primary/80 flex-shrink-0" />
@@ -269,7 +224,6 @@ export function ProposalCard({
                       </p>
                     </div>
                   </div>
-
                   {/* Status Badge */}
                   <div className="flex items-center justify-between pt-2">
                     <p className="text-xs text-white/60">Estado</p>
@@ -279,7 +233,6 @@ export function ProposalCard({
                     </Badge>
                   </div>
                 </motion.div>
-
                 {/* Proposal Message */}
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
@@ -295,7 +248,6 @@ export function ProposalCard({
                     {proposal.message}
                   </p>
                 </motion.div>
-
                 {/* Action Buttons */}
                 {proposal.status === 'pending' && (
                   <motion.div
