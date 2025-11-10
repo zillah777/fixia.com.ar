@@ -156,4 +156,11 @@ export const matchService = {
   async getRevealHistory(matchId: string): Promise<any[]> {
     return api.get<any[]>(`/matches/${matchId}/reveal-history`);
   },
+
+  /**
+   * Crear nuevo match al aceptar propuesta
+   */
+  async createMatch(payload: { proposalId: string, projectId: string, clientId: string, professionalId: string }) {
+    return api.post<Match>(`/matches`, payload);
+  },
 };

@@ -8,6 +8,8 @@ import { Card, CardContent } from '../ui/card';
 import { VerificationBadge } from '../verification/VerificationBadge';
 import { toast } from 'sonner';
 import opportunitiesService from '../../lib/services/opportunities.service';
+import { matchService } from '../../lib/services/match.service';
+import { useSecureAuth } from '../context/SecureAuthContext';
 
 interface Professional {
   id: string;
@@ -60,6 +62,7 @@ export function ProposalCard({
   const [isProcessing, setIsProcessing] = useState(false);
   const [showWhatsApp, setShowWhatsApp] = useState(false);
   const professional = proposal.professional;
+  const { user } = useSecureAuth();
 
   const statusConfig = {
     pending: { label: 'Pendiente', color: 'bg-warning/20 text-warning border-warning/30', icon: AlertCircle },
@@ -76,6 +79,24 @@ export function ProposalCard({
       toast.success('Propuesta aceptada exitosamente. Ya puedes contactar al profesional por WhatsApp.');
       onProposalUpdated?.(proposal.id, 'accepted');
       setShowWhatsApp(true);
+      // Crear match SOLO si es pending y tienes todos los datos
+      if (proposal.status === 'pending' && user && professional.id) {
+        try {
+          await matchService.createMatch({
+            proposalId: proposal.id,
+            projectId,
+            clientId: user.id,
+            professionalId: professional.id
+          });
+          toast.success('¡Match creado exitosamente! Ahora pueden avanzar al workflow de cierre y review.');
+        } catch (err: any) {
+          if (err?.response?.status === 409) {
+            toast('El match ya existe para esta propuesta/trabajo.');
+          } else {
+            toast.error('Error al crear el match.');
+          }
+        }
+      }
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Error al aceptar la propuesta');
     } finally {
