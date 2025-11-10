@@ -6,7 +6,7 @@ import { Textarea } from '../ui/textarea';
 import { Label } from '../ui/label';
 import { Switch } from '../ui/switch';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
-import { BaseModal } from '../modals/BaseModal';
+import { FixiaModalTemplate } from '../modals/FixiaModalTemplate';
 import { feedbackService, CreateFeedbackRequest, Feedback } from '../../lib/services/feedback.service';
 import { toast } from 'sonner';
 import { extractErrorMessage } from '../../utils/errorHandler';
@@ -77,9 +77,11 @@ export const GiveFeedbackModal: React.FC<GiveFeedbackModalProps> = ({
   };
 
   return (
-    <BaseModal
-      isOpen={isOpen}
-      onClose={handleClose}
+    <FixiaModalTemplate
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open) handleClose();
+      }}
       title="Dar Feedback"
       subtitle={`A ${toUser.name}`}
     >
@@ -190,6 +192,6 @@ export const GiveFeedbackModal: React.FC<GiveFeedbackModalProps> = ({
           </Button>
         </motion.div>
       </form>
-    </BaseModal>
+    </FixiaModalTemplate>
   );
 };

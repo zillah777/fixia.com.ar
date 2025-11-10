@@ -10,7 +10,7 @@ import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { opportunitiesService } from '../../lib/services/opportunities.service';
 import { VerificationBadge } from '../verification/VerificationBadge';
-import { BaseModal } from '../modals/BaseModal';
+import { FixiaModalTemplate } from '../modals/FixiaModalTemplate';
 
 interface Professional {
   id: string;
@@ -113,12 +113,11 @@ export function ProposalDetailsModal({
   };
 
   return (
-    <BaseModal
-      isOpen={open}
-      onClose={() => onOpenChange(false)}
+    <FixiaModalTemplate
+      open={open}
+      onOpenChange={onOpenChange}
       title={professional.name}
       subtitle={projectTitle}
-      maxWidth="max-w-lg"
     >
       <div className="space-y-4">
         {/* Professional Info Card */}
@@ -257,6 +256,6 @@ export function ProposalDetailsModal({
           </motion.div>
         )}
       </div>
-    </BaseModal>
+    </FixiaModalTemplate>
   );
 }

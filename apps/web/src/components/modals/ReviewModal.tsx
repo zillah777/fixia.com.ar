@@ -5,7 +5,7 @@ import { Button } from '../ui/button';
 import { Textarea } from '../ui/textarea';
 import { feedbackService } from '@/lib/services/feedback.service';
 import { useToast } from '@/lib/hooks/use-toast';
-import { BaseModal } from './BaseModal';
+import { FixiaModalTemplate } from './FixiaModalTemplate';
 
 interface ReviewModalProps {
   isOpen: boolean;
@@ -75,9 +75,11 @@ export function ReviewModal({
   };
 
   return (
-    <BaseModal
-      isOpen={isOpen}
-      onClose={handleClose}
+    <FixiaModalTemplate
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open) handleClose();
+      }}
       title="Dejar Reseña"
       subtitle={professionalName}
     >
@@ -208,6 +210,6 @@ export function ReviewModal({
           </Button>
         </motion.div>
       )}
-    </BaseModal>
+    </FixiaModalTemplate>
   );
 }

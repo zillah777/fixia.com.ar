@@ -19,7 +19,7 @@ import { FixiaNavigation } from "../components/FixiaNavigation";
 import { Skeleton } from "../components/ui/skeleton";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../components/ui/dialog";
 import { ProposalDetailsModal } from "../components/proposals/ProposalDetailsModal";
-import { BaseModal } from "../components/modals/BaseModal";
+import { FixiaModalTemplate } from "../components/modals/FixiaModalTemplate";
 
 interface Project {
   id: string;
@@ -563,12 +563,11 @@ function ProposalsDialog({
 
   return (
     <>
-      <BaseModal
-        isOpen={open}
-        onClose={() => onOpenChange(false)}
+      <FixiaModalTemplate
+        open={open}
+        onOpenChange={onOpenChange}
         title="Propuestas Recibidas"
         subtitle={project.title}
-        maxWidth="max-w-2xl"
       >
         {localProposals && localProposals.length > 0 ? (
           <div className="space-y-2">
@@ -676,7 +675,7 @@ function ProposalsDialog({
             </p>
           </div>
         )}
-      </BaseModal>
+      </FixiaModalTemplate>
 
       {/* Proposal Details Modal */}
       {selectedProposal && (
