@@ -7,7 +7,7 @@ import { Button } from '../ui/button';
 import { Card, CardContent } from '../ui/card';
 import { VerificationBadge } from '../verification/VerificationBadge';
 import { toast } from 'sonner';
-import { opportunitiesService } from '../../lib/services/opportunities.service';
+import opportunitiesService from '../../lib/services/opportunities.service';
 
 interface Professional {
   id: string;
@@ -71,7 +71,7 @@ export function ProposalCard({
   const handleAcceptProposal = async () => {
     setIsProcessing(true);
     try {
-      await opportunitiesService.updateProposalStatus(projectId, proposal.id, 'accepted');
+      await opportunitiesService.acceptProposal(projectId, proposal.id);
       toast.success('Propuesta aceptada exitosamente');
       onProposalUpdated?.(proposal.id, 'accepted');
     } catch (error) {
@@ -84,7 +84,7 @@ export function ProposalCard({
   const handleRejectProposal = async () => {
     setIsProcessing(true);
     try {
-      await opportunitiesService.updateProposalStatus(projectId, proposal.id, 'rejected');
+      await opportunitiesService.rejectProposal(projectId, proposal.id);
       toast.success('Propuesta rechazada');
       onProposalUpdated?.(proposal.id, 'rejected');
     } catch (error) {

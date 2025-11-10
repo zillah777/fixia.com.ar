@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
-import { opportunitiesService } from '../../lib/services/opportunities.service';
+import opportunitiesService from '../../lib/services/opportunities.service';
 import { VerificationBadge } from '../verification/VerificationBadge';
 import { FixiaModalTemplate } from '../modals/FixiaModalTemplate';
 
@@ -75,11 +75,7 @@ export function ProposalDetailsModal({
   const handleAcceptProposal = async () => {
     setIsProcessing(true);
     try {
-      await opportunitiesService.updateProposalStatus(
-        projectId,
-        proposal.id,
-        'accepted'
-      );
+      await opportunitiesService.acceptProposal(projectId, proposal.id);
       toast.success('Propuesta aceptada exitosamente');
       onProposalUpdated?.(proposal.id, 'accepted');
       onOpenChange(false);
@@ -95,11 +91,7 @@ export function ProposalDetailsModal({
   const handleRejectProposal = async () => {
     setIsProcessing(true);
     try {
-      await opportunitiesService.updateProposalStatus(
-        projectId,
-        proposal.id,
-        'rejected'
-      );
+      await opportunitiesService.rejectProposal(projectId, proposal.id);
       toast.success('Propuesta rechazada');
       onProposalUpdated?.(proposal.id, 'rejected');
       onOpenChange(false);
