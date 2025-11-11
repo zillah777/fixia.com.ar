@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useSecureAuth } from '../context/SecureAuthContext';
+import { useNavigate } from 'react-router-dom';
 import { jobsService, Job, JobStats, ConversionAnalytics } from '../lib/services/jobs.service';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
@@ -32,6 +33,7 @@ import { MatchesListSection } from '../components/match/MatchesListSection';
 
 const JobsPage: React.FC = () => {
   const { user } = useSecureAuth();
+  const navigate = useNavigate();
   const [jobs, setJobs] = useState<Job[]>([]);
   const [stats, setStats] = useState<JobStats | null>(null);
   const [analytics, setAnalytics] = useState<ConversionAnalytics | null>(null);
@@ -175,8 +177,7 @@ const JobsPage: React.FC = () => {
               userId={user.id}
               limit={5}
               onMatchSelect={(matchId) => {
-                // Navegación a detalle cuando esté habilitado
-                console.log('Match seleccionado:', matchId);
+                navigate(`/matches/${matchId}`);
               }}
             />
           </motion.div>
