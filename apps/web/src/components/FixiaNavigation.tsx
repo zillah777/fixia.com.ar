@@ -226,6 +226,18 @@ export const FixiaNavigation = memo(function FixiaNavigation() {
                           Mis Anuncios
                         </DropdownMenuItem>
                       </Link>
+                      <Link to="/favorites">
+                        <DropdownMenuItem className="hover:bg-white/10 cursor-pointer">
+                          <Heart className="mr-3 h-4 w-4" />
+                          Favoritos
+                        </DropdownMenuItem>
+                      </Link>
+                      <Link to="/jobs">
+                        <DropdownMenuItem className="hover:bg-white/10 cursor-pointer">
+                          <Briefcase className="mr-3 h-4 w-4" />
+                          Mis trabajos contratados
+                        </DropdownMenuItem>
+                      </Link>
                       <Link to="/feedback">
                         <DropdownMenuItem className="hover:bg-white/10 cursor-pointer">
                           <MessageSquare className="mr-3 h-4 w-4" />
