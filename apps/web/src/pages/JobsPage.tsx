@@ -175,6 +175,7 @@ const JobsPage: React.FC = () => {
             </div>
             <MatchesListSection
               userId={user.id}
+              role={user.userType === 'client' ? 'client' : 'professional'}
               limit={5}
               onMatchSelect={(matchId) => {
                 navigate(`/matches/${matchId}`);
