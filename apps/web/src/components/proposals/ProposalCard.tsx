@@ -9,7 +9,7 @@ import { VerificationBadge } from '../verification/VerificationBadge';
 import { toast } from 'sonner';
 import opportunitiesService from '../../lib/services/opportunities.service';
 import { matchService } from '../../lib/services/match.service';
-import { useSecureAuth } from '../context/SecureAuthContext';
+import { useSecureAuth } from '../../context/SecureAuthContext';
 
 interface Professional {
   id: string;
@@ -48,7 +48,8 @@ interface ProposalCardProps {
   isNew: boolean;
   duplicateCount: number;
   onProposalUpdated?: (proposalId: string, status: 'accepted' | 'rejected') => void;
-  onAfterMatchCreated?: () => void; // nuevo prop opcional
+  onAfterMatchCreated?: () => void;
+  userProposalsForProject: Proposal[]; // NUEVA PROP
 }
 
 export function ProposalCard({
@@ -59,6 +60,7 @@ export function ProposalCard({
   duplicateCount,
   onProposalUpdated,
   onAfterMatchCreated,
+  userProposalsForProject,
 }: ProposalCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -121,6 +123,17 @@ export function ProposalCard({
     }
   };
 
+  // Lógica robusta para máximo 2 propuestas
+  const numProposalsByUser = userProposalsForProject.length;
+  const rejectedProposals = userProposalsForProject.filter(p => p.status === 'rejected');
+  const canResend = numProposalsByUser === 1 && rejectedProposals.length === 1;
+  const hasReachedLimit = numProposalsByUser >= 2;
+
+  const VALID_LEVELS = ['Verificado', 'Elite', 'Avanzado', 'Intermedio', 'Básico', 'Principiante'];
+  const parsedLevel = VALID_LEVELS.includes(professional.verificationLevel as any)
+    ? (professional.verificationLevel as any)
+    : 'Básico';
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -152,7 +165,7 @@ export function ProposalCard({
                         {professional.name}
                       </h4>
                       {professional.isVerified && (
-                        <VerificationBadge level={professional.verificationLevel || 'basic'} />
+                        <VerificationBadge isVerified={Boolean(professional.isVerified)} verificationLevel={parsedLevel} userType={professional.userType || 'professional'} size="sm" />
                       )}
                     </div>
                     <span className="flex-shrink-0 text-primary border border-primary/30 bg-primary/10 text-xs px-2 py-0.5 whitespace-nowrap rounded-md font-bold shadow-sm">
@@ -329,7 +342,7 @@ export function ProposalCard({
                         <Button
                           size="sm"
                           className="bg-success/70 hover:bg-success text-white shadow"
-                          onClick={() => window.open(`https://wa.me/${professional.whatsapp_number}`,'_blank')}
+                          onClick={() => window.open(`https://wa.me/${professional.whatsapp_number}?text=${encodeURIComponent(`Hola ${user?.name || ''} (Cliente), vi tu propuesta para mi anuncio "${projectTitle}" en Fixia. Me gustaría conversar contigo.`)}`,'_blank')}
                         >
                           <Phone className="h-4 w-4 mr-2" /> WhatsApp Directo
                         </Button>

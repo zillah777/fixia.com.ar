@@ -32,22 +32,25 @@ interface Professional {
   };
 }
 
+interface Proposal {
+  id: string;
+  message: string;
+  quoted_price: number;
+  delivery_time_days: number;
+  status: 'pending' | 'accepted' | 'rejected';
+  created_at: string;
+  professional: Professional;
+}
+
 interface ProposalDetailsModalProps {
-  proposal: {
-    id: string;
-    message: string;
-    quoted_price: number;
-    delivery_time_days: number;
-    status: 'pending' | 'accepted' | 'rejected';
-    created_at: string;
-    professional: Professional;
-  } | null;
+  proposal: Proposal;
   projectId: string;
   projectTitle: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onProposalUpdated?: (proposalId: string, status: 'accepted' | 'rejected') => void;
   isLoading?: boolean;
+  userProposalsForProject: Proposal[]; // NUEVA PROP
 }
 
 export function ProposalDetailsModal({
@@ -58,6 +61,7 @@ export function ProposalDetailsModal({
   onOpenChange,
   onProposalUpdated,
   isLoading = false,
+  userProposalsForProject,
 }: ProposalDetailsModalProps) {
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -103,6 +107,12 @@ export function ProposalDetailsModal({
       setIsProcessing(false);
     }
   };
+
+  // Lógica robusta para máximo 2 propuestas
+  const numProposalsByUser = userProposalsForProject.length;
+  const rejectedProposals = userProposalsForProject.filter(p => p.status === 'rejected');
+  const canResend = numProposalsByUser === 1 && rejectedProposals.length === 1;
+  const hasReachedLimit = numProposalsByUser >= 2;
 
   return (
     <FixiaModalTemplate
@@ -246,6 +256,19 @@ export function ProposalDetailsModal({
               )}
             </Button>
           </motion.div>
+        )}
+
+        {/* Mensaje y botón para propuestas anteriores */}
+        {hasReachedLimit ? (
+          <div className="text-warning font-semibold bg-warning/10 border border-warning/25 rounded-lg p-3 shadow my-3 text-center">
+            Ya enviaste el máximo de 2 propuestas para este anuncio 🤝
+          </div>
+        ) : canResend ? (
+          <Button className="w-full mt-3 bg-gradient-to-r from-primary/80 to-primary/70 text-white font-bold shadow" /* onClick=abrir form nuevamente */>
+            Volver a Enviar Propuesta
+          </Button>
+        ) : (
+          /* Botón normal de enviar propuesta */
         )}
       </div>
     </FixiaModalTemplate>
