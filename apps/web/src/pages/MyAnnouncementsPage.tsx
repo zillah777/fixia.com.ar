@@ -548,9 +548,7 @@ function ProposalsSection({
   const [localProposals, setLocalProposals] = useState<Proposal[]>([]);
 
   useEffect(() => {
-    if (project?.proposals) {
-      setLocalProposals(project.proposals);
-    }
+    setLocalProposals(project?.proposals ?? []);
   }, [project]);
 
   if (!project || !showProposals) return null;
