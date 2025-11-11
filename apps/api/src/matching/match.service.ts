@@ -312,10 +312,11 @@ export class MatchService {
     newStatus: string,
   ) {
     const validTransitions: Record<string, string[]> = {
-      active: ['completed', 'disputed', 'cancelled'],
+      active: ['completed', 'disputed', 'cancelled', 'unsuccessful'],
       completed: ['disputed'],
       disputed: [],
       cancelled: [],
+      unsuccessful: []
     };
 
     if (!validTransitions[currentStatus]?.includes(newStatus)) {

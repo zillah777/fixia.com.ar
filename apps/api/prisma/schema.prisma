@@ -913,6 +913,7 @@ enum MatchStatus {
   completed        // Both parties confirmed service completion
   disputed         // Service disputed
   cancelled        // Match was cancelled
+  unsuccessful     // Match ended without success by either party (nuevo flujo)
 }
 
 enum NotificationType {
