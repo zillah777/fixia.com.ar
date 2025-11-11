@@ -23,6 +23,7 @@ interface MatchDetailCardProps {
   onRequestCompletion?: () => void;
   onConfirmCompletion?: () => void;
   onLeaveReview?: () => void;
+  onFinalizeUnsuccessful?: () => void; // NUEVO
   isLoading?: boolean;
 }
 
@@ -34,6 +35,7 @@ export function MatchDetailCard({
   onRequestCompletion,
   onConfirmCompletion,
   onLeaveReview,
+  onFinalizeUnsuccessful,
   isLoading = false,
 }: MatchDetailCardProps) {
   const isClient = match.clientId === currentUserId;
@@ -231,6 +233,18 @@ export function MatchDetailCard({
               </a>
             </Button>
           </div>
+
+          {match.status === 'active' && (
+            <Button
+              onClick={onFinalizeUnsuccessful}
+              disabled={isLoading}
+              variant="destructive"
+              className="w-full mt-3"
+              size="sm"
+            >
+              Finalizar sin Éxito
+            </Button>
+          )}
 
           {/* Review Button (if completed) */}
           {completionStatus?.canLeaveReview && !showFeedbackCard && (

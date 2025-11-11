@@ -7,7 +7,7 @@ export interface Match {
   professionalId: string;
   projectId: string;
   jobId?: string;
-  status: 'active' | 'completed' | 'disputed' | 'cancelled';
+  status: 'active' | 'completed' | 'disputed' | 'cancelled' | 'unsuccessful';
   phoneRevealedAt?: string;
   phoneRevealCount: number;
   createdAt: string;
@@ -85,7 +85,7 @@ export const matchService = {
    */
   async updateMatchStatus(
     matchId: string,
-    status: 'active' | 'completed' | 'disputed' | 'cancelled',
+    status: 'active' | 'completed' | 'disputed' | 'cancelled' | 'unsuccessful',
     reason?: string,
   ): Promise<Match> {
     return api.put<Match>(`/matches/${matchId}/status`, {

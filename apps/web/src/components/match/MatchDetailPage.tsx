@@ -89,6 +89,21 @@ export function MatchDetailPage({
     });
   };
 
+  const handleFinalizeUnsuccessful = async (matchId: string) => {
+    const ok = window.confirm('¿Confirmas que este trabajo se finalizó sin éxito?');
+    if (!ok) return;
+    try {
+      setIsLoading(true);
+      await matchService.updateMatchStatus(matchId, 'unsuccessful');
+      toast({ title: 'Match finalizado sin éxito', description: 'Se registró el cierre. Puedes dejar tu comentario/feedback.' });
+      await loadMatch();
+    } catch (e: any) {
+      toast({ title: 'No se pudo finalizar', description: e?.message || 'Intenta nuevamente', variant: 'destructive' });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleModalClose = () => {
     setPhoneRevealModal({ open: false });
     setCompletionModal({ open: false });
@@ -202,6 +217,7 @@ export function MatchDetailPage({
             isClient ? match.professional.name : match.client.name,
           )
         }
+        onFinalizeUnsuccessful={() => handleFinalizeUnsuccessful(match.id)}
         isLoading={false}
       />
 
