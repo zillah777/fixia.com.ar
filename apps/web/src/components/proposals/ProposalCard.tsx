@@ -48,6 +48,7 @@ interface ProposalCardProps {
   isNew: boolean;
   duplicateCount: number;
   onProposalUpdated?: (proposalId: string, status: 'accepted' | 'rejected') => void;
+  onAfterMatchCreated?: () => void; // nuevo prop opcional
 }
 
 export function ProposalCard({
@@ -57,6 +58,7 @@ export function ProposalCard({
   isNew,
   duplicateCount,
   onProposalUpdated,
+  onAfterMatchCreated,
 }: ProposalCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -88,10 +90,12 @@ export function ProposalCard({
             clientId: user.id,
             professionalId: professional.id
           });
-          toast.success('¡Match creado exitosamente! Ahora pueden avanzar al workflow de cierre y review.');
+          toast.success('¡Match creado exitosamente! El profesional puede marcar como completado cuando termine.');
+          onAfterMatchCreated?.(); // DISPARA refresh del Dashboard si está disponible
         } catch (err: any) {
           if (err?.response?.status === 409) {
             toast('El match ya existe para esta propuesta/trabajo.');
+            onAfterMatchCreated?.(); // Igual refresca, puede que haya cambios
           } else {
             toast.error('Error al crear el match.');
           }
