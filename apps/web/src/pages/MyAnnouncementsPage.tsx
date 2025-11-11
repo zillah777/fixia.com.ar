@@ -600,12 +600,13 @@ function ProposalsSection({
               return (
                 <ProposalCard
                   key={proposal.id}
-                  proposal={proposal}
+                  proposal={proposal as any}
                   projectId={project.id}
                   projectTitle={project.title}
                   isNew={badgeInfo.isNew}
                   duplicateCount={badgeInfo.duplicateCount}
                   onProposalUpdated={handleProposalUpdated}
+                  userProposalsForProject={[] as any}
                 />
               );
             })}

@@ -49,7 +49,7 @@ interface ProposalCardProps {
   duplicateCount: number;
   onProposalUpdated?: (proposalId: string, status: 'accepted' | 'rejected') => void;
   onAfterMatchCreated?: () => void;
-  userProposalsForProject: Proposal[]; // NUEVA PROP
+  userProposalsForProject?: Proposal[]; // opcional
 }
 
 export function ProposalCard({
@@ -60,7 +60,7 @@ export function ProposalCard({
   duplicateCount,
   onProposalUpdated,
   onAfterMatchCreated,
-  userProposalsForProject,
+  userProposalsForProject = [],
 }: ProposalCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -124,8 +124,9 @@ export function ProposalCard({
   };
 
   // Lógica robusta para máximo 2 propuestas
-  const numProposalsByUser = userProposalsForProject.length;
-  const rejectedProposals = userProposalsForProject.filter(p => p.status === 'rejected');
+  const proposalsSafe = userProposalsForProject ?? [];
+  const numProposalsByUser = proposalsSafe.length;
+  const rejectedProposals = proposalsSafe.filter(p => p.status === 'rejected');
   const canResend = numProposalsByUser === 1 && rejectedProposals.length === 1;
   const hasReachedLimit = numProposalsByUser >= 2;
 
