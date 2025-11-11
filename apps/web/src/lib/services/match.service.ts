@@ -65,19 +65,47 @@ export interface PhoneRevealed {
 }
 
 export const matchService = {
+  // Helper: transform backend match (snake_case) to frontend Match (camelCase)
+  _toCamel(match: any): Match {
+    return {
+      id: match.id,
+      proposalId: match.proposal_id ?? match.proposalId,
+      clientId: match.client_id ?? match.clientId,
+      professionalId: match.professional_id ?? match.professionalId,
+      projectId: match.project_id ?? match.projectId,
+      jobId: match.job_id ?? match.jobId,
+      status: match.status,
+      phoneRevealedAt: match.phone_revealed_at ?? match.phoneRevealedAt,
+      phoneRevealCount: match.phone_reveal_count ?? match.phoneRevealCount ?? 0,
+      createdAt: match.created_at ?? match.createdAt,
+      updatedAt: match.updated_at ?? match.updatedAt,
+      client: match.client,
+      professional: match.professional,
+      proposal: match.proposal ? {
+        id: match.proposal.id,
+        message: match.proposal.message,
+        quotedPrice: match.proposal.quoted_price ?? match.proposal.quotedPrice,
+        deliveryTimeDays: match.proposal.delivery_time_days ?? match.proposal.deliveryTimeDays,
+        status: match.proposal.status,
+        acceptedAt: match.proposal.accepted_at ?? match.proposal.acceptedAt,
+      } : match.proposal,
+    } as Match;
+  },
   /**
    * Get all matches for current user
    */
   async getMyMatches(role?: 'client' | 'professional'): Promise<Match[]> {
     const params = role ? `?role=${role}` : '';
-    return api.get<Match[]>(`/matches${params}`);
+    const data = await api.get<any[]>(`/matches${params}`);
+    return (data || []).map(m => matchService._toCamel(m));
   },
 
   /**
    * Get a specific match by ID
    */
   async getMatch(matchId: string): Promise<Match> {
-    return api.get<Match>(`/matches/${matchId}`);
+    const data = await api.get<any>(`/matches/${matchId}`);
+    return matchService._toCamel(data);
   },
 
   /**
