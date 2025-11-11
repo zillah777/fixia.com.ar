@@ -42,6 +42,12 @@ export function MatchDetailCard({
   const oppositeParty = isClient ? match.professional : match.client;
   const [showFeedbackCard, setShowFeedbackCard] = useState(false);
 
+  const isNewMatch = (() => {
+    const created = new Date(match.createdAt).getTime();
+    const hours = (Date.now() - created) / (1000 * 60 * 60);
+    return hours < 24;
+  })();
+
   const getStatusBadge = () => {
     const statusStyles: Record<string, { bg: string; text: string; icon: any }> = {
       active: {
@@ -154,7 +160,12 @@ export function MatchDetailCard({
                 {new Date(match.createdAt).toLocaleDateString('es-AR')}
               </p>
             </div>
-            {getStatusBadge()}
+            <div className="flex items-center gap-2">
+              {isNewMatch && (
+                <Badge className="bg-primary/20 text-primary border-primary/30">Nuevo</Badge>
+              )}
+              {getStatusBadge()}
+            </div>
           </div>
 
           {/* Opposite Party Info */}
