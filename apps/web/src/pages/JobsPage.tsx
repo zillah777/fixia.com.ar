@@ -28,6 +28,7 @@ import {
   Star,
   CheckCheck
 } from 'lucide-react';
+import { MatchesListSection } from '../components/match/MatchesListSection';
 
 const JobsPage: React.FC = () => {
   const { user } = useSecureAuth();
@@ -157,6 +158,29 @@ const JobsPage: React.FC = () => {
             }
           </p>
         </motion.div>
+
+        {/* Active Matches Section (para ver el match recién creado) */}
+        {user?.id && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="mb-10"
+          >
+            <div className="mb-4">
+              <h2 className="text-xl md:text-2xl font-bold text-white">Mis Matches Activos</h2>
+              <p className="text-sm text-white/60">Aquí verás los trabajos conectados por una propuesta aceptada.</p>
+            </div>
+            <MatchesListSection
+              userId={user.id}
+              limit={5}
+              onMatchSelect={(matchId) => {
+                // Navegación a detalle cuando esté habilitado
+                console.log('Match seleccionado:', matchId);
+              }}
+            />
+          </motion.div>
+        )}
 
         {/* Stats Cards */}
         {stats && (
