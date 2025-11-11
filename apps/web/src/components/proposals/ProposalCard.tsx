@@ -329,7 +329,7 @@ export function ProposalCard({
                     <div className="flex-1">
                       <span className="block text-white font-semibold text-sm mb-1">¡Puedes contactar directamente a {professional.name} por WhatsApp!</span>
                       <span className="block text-lg font-mono tracking-wide bg-black/30 px-2 py-1 rounded text-success mb-2">{professional.whatsapp_number}</span>
-                      <div className="flex flex-wrap gap-2">
+                      <div className="flex flex-wrap gap-2 mb-3">
                         <Button
                           size="sm"
                           onClick={() => {
@@ -348,6 +348,9 @@ export function ProposalCard({
                           <Phone className="h-4 w-4 mr-2" /> WhatsApp Directo
                         </Button>
                       </div>
+                      <p className="text-xs text-white/80 leading-relaxed">
+                        Ahora puedes contactar al profesional y negociar libremente las condiciones. El match ya fue realizado. Luego, en tu sección de trabajos, Fixia te pedirá <span className="font-semibold text-white">confirmar si el trabajo se completó con éxito o finalizó sin éxito</span>. Tras eso, recuerda <span className="font-semibold text-white">comentar y calificar al profesional</span> para ayudar a la comunidad.
+                      </p>
                     </div>
                   </div>
                 )}

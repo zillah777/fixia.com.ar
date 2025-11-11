@@ -176,11 +176,6 @@ export function MatchDetailCard({
                     </Badge>
                   )}
                 </div>
-                {oppositeParty.rating !== undefined && (
-                  <p className="text-xs text-white/60">
-                    Rating: {oppositeParty.rating?.toFixed(1)} ⭐
-                  </p>
-                )}
               </div>
             </div>
           </div>
@@ -244,6 +239,14 @@ export function MatchDetailCard({
             >
               Finalizar sin Éxito
             </Button>
+          )}
+
+          {match.status === 'active' && (
+            <div className="mt-3 bg-white/5 border border-white/10 rounded-lg p-3">
+              <p className="text-xs text-white/80 leading-relaxed">
+                Puedes contactar y negociar libremente con la otra parte. Cuando el trabajo termine, recuerda <span className="font-semibold text-white">marcar como completado</span> o <span className="font-semibold text-white">finalizar sin éxito</span>. Luego, deja tu <span className="font-semibold text-white">comentario y calificación</span> para cerrar el ciclo Fixia.
+              </p>
+            </div>
           )}
 
           {/* Review Button (if completed) */}
