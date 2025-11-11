@@ -50,6 +50,27 @@ export class MatchController {
   }
 
   /**
+   * POST /matches - Create a match (client accepts a proposal)
+   */
+  @Post()
+  @ApiOperation({ summary: 'Create a match when a proposal is accepted' })
+  async createMatch(
+    @Request() req,
+    @Body() body: { proposalId: string; projectId: string; clientId: string; professionalId: string }
+  ) {
+    if (!body?.proposalId || !body?.projectId || !body?.clientId || !body?.professionalId) {
+      throw new BadRequestException('Missing required fields');
+    }
+    // Optionally validate that req.user.id matches body.clientId or professionalId
+    return await this.matchService.createMatch(
+      body.proposalId,
+      body.clientId,
+      body.professionalId,
+      body.projectId,
+    );
+  }
+
+  /**
    * GET /matches/:matchId - Get match details
    */
   @Get(':matchId')
