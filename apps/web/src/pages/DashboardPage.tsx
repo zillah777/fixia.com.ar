@@ -1464,6 +1464,24 @@ export default function DashboardPage() {
                 </div>
               </motion.div>
             )}
+
+            {/* CTA Cliente: Ir a Trabajos Contratados */}
+            {user?.userType === 'client' && (
+              <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+                <div className="grid">
+                  <a href="/jobs" className="rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition-colors">
+                    <div className="p-4 sm:p-5 flex items-center justify-between">
+                      <div>
+                        <p className="text-sm text-white/70">Accede a tus</p>
+                        <p className="text-lg font-semibold text-white">Trabajos Contratados</p>
+                        <p className="text-xs text-white/60 mt-1">Revisa matches activos, confirma cierre y califica</p>
+                      </div>
+                      <div className="h-10 w-10 liquid-gradient rounded-lg flex items-center justify-center text-white font-bold">→</div>
+                    </div>
+                  </a>
+                </div>
+              </motion.div>
+            )}
           </div>
 
           {/* Recent Activity */}
