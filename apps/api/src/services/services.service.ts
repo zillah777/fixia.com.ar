@@ -10,17 +10,28 @@ export class ServicesService {
   constructor(private prisma: PrismaService) {}
 
   async create(userId: string, createServiceDto: CreateServiceDto) {
-    // Verify user is professional and get subscription info
+    // Verify user is professional or dual role (with active subscription)
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       select: {
         user_type: true,
         subscription_type: true,
+        is_professional_active: true,
+        subscription_status: true,
       },
     });
 
-    if (!user || user.user_type !== 'professional') {
-      throw new ForbiddenException('Only professionals can create services');
+    // Check if user is allowed to create services
+    const isProfessional = user?.user_type === 'professional';
+    const isDualWithActiveSubscription =
+      user?.user_type === 'dual' &&
+      user?.is_professional_active === true &&
+      user?.subscription_status === 'active';
+
+    if (!user || (!isProfessional && !isDualWithActiveSubscription)) {
+      throw new ForbiddenException(
+        'Only professionals and dual-role users with active subscriptions can create services'
+      );
     }
 
     // Check service limit for Basic users (5 services max)

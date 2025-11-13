@@ -8,6 +8,11 @@ export class MatchService {
 
   /**
    * Create a match when a proposal is accepted
+   * Validates:
+   * 1. Proposal exists and belongs to the project
+   * 2. Proposal is in 'accepted' status
+   * 3. Project belongs to the client
+   * 4. Match doesn't already exist for this proposal
    */
   async createMatch(
     proposalId: string,
@@ -16,6 +21,53 @@ export class MatchService {
     projectId: string,
     jobId?: string,
   ) {
+    // Validation 1: Check proposal exists and is accepted
+    const proposal = await this.prisma.proposal.findUnique({
+      where: { id: proposalId },
+      include: {
+        project: true,
+      },
+    });
+
+    if (!proposal) {
+      throw new NotFoundException(`Proposal ${proposalId} not found`);
+    }
+
+    if (proposal.status !== 'accepted') {
+      throw new BadRequestException(
+        `Proposal must be in 'accepted' status. Current status: ${proposal.status}`
+      );
+    }
+
+    // Validation 2: Check proposal belongs to the correct project
+    if (proposal.project_id !== projectId) {
+      throw new BadRequestException(
+        'Proposal does not belong to the specified project'
+      );
+    }
+
+    // Validation 3: Check user is the project owner
+    const project = await this.prisma.project.findUnique({
+      where: { id: projectId },
+      select: { client_id: true },
+    });
+
+    if (!project || project.client_id !== clientId) {
+      throw new ForbiddenException(
+        'Only the project owner can create matches'
+      );
+    }
+
+    // Validation 4: Check match doesn't already exist
+    const existingMatch = await this.prisma.match.findUnique({
+      where: { proposal_id: proposalId },
+    });
+
+    if (existingMatch) {
+      throw new BadRequestException('Match already exists for this proposal');
+    }
+
+    // Create the match atomically
     try {
       return await this.prisma.match.create({
         data: {

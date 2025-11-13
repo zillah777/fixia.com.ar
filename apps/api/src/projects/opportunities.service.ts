@@ -477,7 +477,7 @@ export class OpportunitiesService {
       throw new BadRequestException('Can only accept pending proposals');
     }
 
-    // ATOMIC TRANSACTION: Accept proposal, create Job, update project
+    // ATOMIC TRANSACTION: Accept proposal, create Job, create Match, update project
     const result = await this.prisma.$transaction(async (tx) => {
       // 1. Update proposal to accepted
       const acceptedProposal = await tx.proposal.update({
@@ -523,7 +523,38 @@ export class OpportunitiesService {
         },
       });
 
-      // 4. Create Conversation record for messaging
+      // 4. Create Match record (NUEVO: antes no se creaba)
+      const match = await tx.match.create({
+        data: {
+          proposal_id: proposalId,
+          client_id: clientId,
+          professional_id: proposal.professional_id,
+          project_id: projectId,
+          job_id: job.id,
+          status: 'active',
+        },
+        include: {
+          proposal: true,
+          client: {
+            select: {
+              id: true,
+              name: true,
+              avatar: true,
+              verified: true,
+            },
+          },
+          professional: {
+            select: {
+              id: true,
+              name: true,
+              avatar: true,
+              verified: true,
+            },
+          },
+        },
+      });
+
+      // 5. Create Conversation record for messaging
       await tx.conversation.create({
         data: {
           project_id: projectId,
@@ -537,21 +568,29 @@ export class OpportunitiesService {
         success: true,
         proposal: acceptedProposal,
         job: job,
+        match: match,
         message: 'Propuesta aceptada! Match realizado exitosamente. Ambas partes pueden verse por WhatsApp.',
       };
     });
 
-    // Send notification to professional about proposal acceptance
+    // Send notifications after successful transaction
     try {
+      // Notification 1: Proposal acceptance
       await this.notificationsService.createNotification({
         userId: proposal.professional_id,
         type: 'system',
         title: 'Propuesta Aceptada',
         message: `Tu propuesta para "${project.title}" ha sido aceptada! Puedes contactar al cliente por WhatsApp.`,
-        actionUrl: `/jobs/${result.job.id}`
+        actionUrl: `/matches/${result.match.id}`,
       });
+
+      // Notification 2: Match created (Socket.IO para real-time)
+      // Este evento se dispara para ambas partes del match
+      // TODO: Implementar WebSocket para notificaciones real-time
+      this.logger.log(`Match created: ${result.match.id} between client ${clientId} and professional ${proposal.professional_id}`);
     } catch (error) {
-      console.error('Failed to send proposal acceptance notification:', error);
+      this.logger.error('Failed to send match notifications:', error);
+      // Don't throw - notifications are non-critical
     }
 
     return result;
