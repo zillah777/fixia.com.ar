@@ -1,4 +1,5 @@
 import { api, PaginatedResponse } from '../api';
+import { emitMatchCreatedEvent } from '@/hooks/useMatchesRefresh';
 
 export interface Opportunity {
   id: string;
@@ -166,7 +167,20 @@ export const opportunitiesService = {
 
   // Proposal management methods
   async acceptProposal(projectId: string, proposalId: string): Promise<any> {
-    return api.put(`/opportunities/${projectId}/proposals/${proposalId}/accept`);
+    const result = await api.put(`/opportunities/${projectId}/proposals/${proposalId}/accept`);
+
+    // Emit event to trigger match refresh across all components
+    if (result?.match) {
+      emitMatchCreatedEvent({
+        matchId: result.match.id,
+        projectId: projectId,
+        clientId: result.match.client_id,
+        professionalId: result.match.professional_id,
+        status: result.match.status,
+      });
+    }
+
+    return result;
   },
 
   async rejectProposal(projectId: string, proposalId: string): Promise<any> {

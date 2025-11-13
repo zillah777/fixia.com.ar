@@ -139,7 +139,11 @@ export function ProposalDetailsModal({
               <div className="flex items-center gap-2">
                 <p className="font-semibold text-white truncate">{professional.name}</p>
                 {professional.isVerified && (
-                  <VerificationBadge level={professional.verificationLevel || 'basic'} />
+                  <VerificationBadge
+                    isVerified={professional.isVerified}
+                    verificationLevel={professional.verificationLevel as any}
+                    userType={professional.userType}
+                  />
                 )}
               </div>
               {professional.location && (
@@ -264,12 +268,10 @@ export function ProposalDetailsModal({
             Ya enviaste el máximo de 2 propuestas para este anuncio 🤝
           </div>
         ) : canResend ? (
-          <Button className="w-full mt-3 bg-gradient-to-r from-primary/80 to-primary/70 text-white font-bold shadow" /* onClick=abrir form nuevamente */>
+          <Button className="w-full mt-3 bg-gradient-to-r from-primary/80 to-primary/70 text-white font-bold shadow">
             Volver a Enviar Propuesta
           </Button>
-        ) : (
-          /* Botón normal de enviar propuesta */
-        )}
+        ) : null}
       </div>
     </FixiaModalTemplate>
   );

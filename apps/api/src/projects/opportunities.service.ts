@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException, BadRequestException, Logger } from '@nestjs/common';
 import { PrismaService } from '../common/prisma.service';
 import { NotificationsService } from '../notifications/notifications.service';
 
@@ -6,6 +6,8 @@ import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class OpportunitiesService {
+  private readonly logger = new Logger(OpportunitiesService.name);
+
   constructor(
     private prisma: PrismaService,
     private notificationsService: NotificationsService,

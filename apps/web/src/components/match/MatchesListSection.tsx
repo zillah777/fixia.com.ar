@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { AlertCircle, Loader2 } from 'lucide-react';
 import { Button } from '../ui/button';
@@ -7,6 +7,7 @@ import { MatchDetailCard } from './MatchDetailCard';
 import { PhoneRevealModal } from '../modals/PhoneRevealModal';
 import { CompletionModal } from '../modals/CompletionModal';
 import { matchService, Match, CompletionStatus } from '@/lib/services/match.service';
+import { useMatchesRefresh } from '@/hooks/useMatchesRefresh';
 
 interface MatchesListSectionProps {
   userId: string;
@@ -40,12 +41,8 @@ export function MatchesListSection({
     partyName?: string;
   }>({ open: false });
 
-  // Load matches
-  useEffect(() => {
-    loadMatches();
-  }, [role, userId]);
-
-  const loadMatches = async () => {
+  // Define loadMatches with useCallback to avoid re-creating on every render
+  const loadMatches = useCallback(async () => {
     try {
       setIsLoading(true);
       const data = await matchService.getMyMatches(role);
@@ -65,7 +62,15 @@ export function MatchesListSection({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [role, limit]);
+
+  // Setup refresh listener for when matches are created
+  useMatchesRefresh(loadMatches);
+
+  // Load matches on mount and when role/userId changes
+  useEffect(() => {
+    loadMatches();
+  }, [loadMatches, userId]);
 
   const handleRevealPhone = (matchId: string, partyName: string) => {
     setPhoneRevealModal({ open: true, matchId, partyName });

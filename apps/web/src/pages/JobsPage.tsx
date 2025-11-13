@@ -495,15 +495,15 @@ const JobCard: React.FC<JobCardProps> = ({ job, onStatusUpdate, isProfessional }
         <div className="flex flex-wrap justify-between items-center gap-3 pt-4 border-t border-white/10">
           <div className="flex gap-2 flex-wrap">
             {getStatusActions()}
-            {/* Leave a Review Button - For Clients on Completed Jobs */}
-            {!isProfessional && job.status === 'completed' && (
+            {/* Leave a Review Button - For Both Clients and Professionals on Completed Jobs */}
+            {job.status === 'completed' && (
               <Button
                 onClick={() => setShowReviewCard(!showReviewCard)}
                 size="sm"
                 className="glass border-white/20 hover:glass-medium bg-gradient-to-r from-primary/20 to-primary/10 border-primary/40 hover:border-primary/60"
               >
                 <Star className="h-4 w-4 mr-2 text-primary" />
-                {showReviewCard ? 'Cerrar Reseña' : 'Dejar Reseña'}
+                {showReviewCard ? 'Cerrar Reseña' : `Calificar ${isProfessional ? 'Cliente' : 'Profesional'}`}
               </Button>
             )}
             <Button variant="outline" size="sm" className="glass border-white/20 hover:glass-medium">
@@ -551,14 +551,14 @@ const JobCard: React.FC<JobCardProps> = ({ job, onStatusUpdate, isProfessional }
         }}
       />
 
-      {/* Review Card - For Clients on Completed Jobs */}
-      {!isProfessional && job.status === 'completed' && (
+      {/* Review Card - For Both Clients and Professionals on Completed Jobs */}
+      {job.status === 'completed' && (
         <ReviewCard
           isOpen={showReviewCard}
           onClose={() => setShowReviewCard(false)}
-          professionalName={job.professional.name}
+          professionalName={isProfessional ? job.client.name : job.professional.name}
           jobId={job.id}
-          professionalId={job.professional.id}
+          professionalId={isProfessional ? job.client.id : job.professional.id}
           onSuccess={() => {
             setShowReviewCard(false);
           }}
