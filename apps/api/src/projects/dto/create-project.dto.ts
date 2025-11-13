@@ -1,6 +1,6 @@
-import { 
-  IsString, 
-  IsNumber, 
+import {
+  IsString,
+  IsNumber,
   IsOptional,
   IsArray,
   IsUUID,
@@ -9,12 +9,16 @@ import {
   MaxLength,
   Min,
   Max,
+  Validate,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
+import { ValidBudgetRangeConstraint } from '../validators/budget-range.validator';
+import { FutureDeadline } from '../validators/future-deadline.validator';
 
+@Validate(ValidBudgetRangeConstraint)
 export class CreateProjectDto {
-  @ApiProperty({ 
+  @ApiProperty({
     example: 'Desarrollo de aplicación móvil para delivery',
     description: 'Título del proyecto'
   })
@@ -65,13 +69,14 @@ export class CreateProjectDto {
   @Max(10000000)
   budget_max?: number;
 
-  @ApiProperty({ 
+  @ApiProperty({
     example: '2024-12-31',
-    description: 'Fecha límite del proyecto (YYYY-MM-DD)',
+    description: 'Fecha límite del proyecto (YYYY-MM-DD), debe ser en el futuro',
     required: false
   })
   @IsOptional()
   @IsDateString()
+  @FutureDeadline({ message: 'Deadline must be in the future' })
   deadline?: string;
 
   @ApiProperty({ 
@@ -84,7 +89,7 @@ export class CreateProjectDto {
   @MaxLength(255)
   location?: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     example: ['React Native', 'Node.js', 'PostgreSQL', 'Stripe'],
     description: 'Habilidades requeridas para el proyecto',
     required: false
@@ -93,4 +98,29 @@ export class CreateProjectDto {
   @IsArray()
   @IsString({ each: true })
   skills_required?: string[];
+
+  @ApiProperty({
+    example: 'https://cdn.example.com/projects/main-image-123.jpg',
+    description: 'URL de la imagen principal del proyecto',
+    required: false
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(1000)
+  main_image_url?: string;
+
+  @ApiProperty({
+    example: [
+      'https://cdn.example.com/projects/gallery-1.jpg',
+      'https://cdn.example.com/projects/gallery-2.jpg',
+      'https://cdn.example.com/projects/gallery-3.jpg'
+    ],
+    description: 'URLs de imágenes de galería del proyecto (máximo 5 imágenes)',
+    required: false
+  })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  @MaxLength(1000, { each: true })
+  gallery_urls?: string[];
 }

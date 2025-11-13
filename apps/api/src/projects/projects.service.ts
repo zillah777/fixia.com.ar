@@ -2,6 +2,7 @@ import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/commo
 import { PrismaService } from '../common/prisma.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
+import { checkProjectLimit } from '../config/project-limits.config';
 
 @Injectable()
 export class ProjectsService {
@@ -22,32 +23,38 @@ export class ProjectsService {
       throw new ForbiddenException('Only clients and professionals can create projects');
     }
 
-    // Check monthly project limit for free users
-    const isFreeUser = !user.subscription_type || user.subscription_type === 'free' || user.subscription_status !== 'active';
+    // Check monthly project limit based on subscription
+    // Calculate start of current month
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
-    if (isFreeUser) {
-      // Calculate start of current month
-      const now = new Date();
-      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-
-      // Count projects created this month
-      const projectsThisMonth = await this.prisma.project.count({
-        where: {
-          client_id: userId,
-          created_at: {
-            gte: startOfMonth,
-          },
+    // Count projects created this month
+    const projectsThisMonth = await this.prisma.project.count({
+      where: {
+        client_id: userId,
+        created_at: {
+          gte: startOfMonth,
         },
-      });
+      },
+    });
 
-      // Free plan limit: 3 announcements per month
-      const FREE_PLAN_MONTHLY_LIMIT = 3;
+    // Check if user has exceeded their limit (from configurable config)
+    const limitCheck = checkProjectLimit(
+      projectsThisMonth,
+      user.subscription_type,
+      user.subscription_status
+    );
 
-      if (projectsThisMonth >= FREE_PLAN_MONTHLY_LIMIT) {
-        throw new ForbiddenException(
-          `Has alcanzado el límite de ${FREE_PLAN_MONTHLY_LIMIT} anuncios mensuales del plan gratuito. Actualiza a un plan premium para publicar anuncios ilimitados.`
-        );
-      }
+    if (limitCheck.exceeded) {
+      const planName = user.subscription_type === 'professional'
+        ? 'Professional'
+        : user.subscription_type === 'premium'
+          ? 'Premium'
+          : 'Free';
+
+      throw new ForbiddenException(
+        `Has alcanzado el límite de ${limitCheck.limit} anuncios mensuales del plan ${planName}. Actualiza tu plan para publicar más anuncios.`
+      );
     }
 
     // Verify category exists if provided
@@ -78,6 +85,8 @@ export class ProjectsService {
         deadline,
         location: createProjectDto.location,
         skills_required: createProjectDto.skills_required || [],
+        main_image_url: createProjectDto.main_image_url,
+        gallery_urls: createProjectDto.gallery_urls || [],
       },
       include: {
         client: {

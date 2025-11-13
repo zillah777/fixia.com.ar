@@ -7,6 +7,8 @@ import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
+import { RateLimitInterceptor } from './common/interceptors/rate-limit.interceptor';
+import { SnakeToCamelInterceptor } from './common/interceptors/snake-to-camel.interceptor';
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
@@ -163,6 +165,8 @@ async function bootstrap() {
     // Global error handling and interceptors
     app.useGlobalFilters(new HttpExceptionFilter());
     app.useGlobalInterceptors(new LoggingInterceptor());
+    app.useGlobalInterceptors(new RateLimitInterceptor()); // Rate limiting for POST/PUT/DELETE
+    app.useGlobalInterceptors(new SnakeToCamelInterceptor()); // Transform snake_case to camelCase
     app.useGlobalInterceptors(new TransformInterceptor());
 
     // Global validation pipe with error formatting
