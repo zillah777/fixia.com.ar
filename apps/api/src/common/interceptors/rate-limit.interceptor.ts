@@ -3,7 +3,8 @@ import {
   NestInterceptor,
   ExecutionContext,
   CallHandler,
-  TooManyRequestsException,
+  HttpException,
+  HttpStatus,
   Logger,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
@@ -29,7 +30,7 @@ export class RateLimitInterceptor implements NestInterceptor {
   >();
 
   // Clear old entries every 5 minutes
-  private cleanupInterval: NodeJS.Timer;
+  private cleanupInterval: NodeJS.Timeout;
 
   constructor() {
     this.cleanupInterval = setInterval(() => {
@@ -82,8 +83,9 @@ export class RateLimitInterceptor implements NestInterceptor {
           `Rate limit exceeded for IP: ${ip}, limit: ${limit}/min, remaining: ${remainingSeconds}s`
         );
 
-        throw new TooManyRequestsException(
-          `Rate limit exceeded. Maximum ${limit} requests per minute. Try again in ${remainingSeconds} seconds.`
+        throw new HttpException(
+          `Rate limit exceeded. Maximum ${limit} requests per minute. Try again in ${remainingSeconds} seconds.`,
+          HttpStatus.TOO_MANY_REQUESTS
         );
       }
     } else {

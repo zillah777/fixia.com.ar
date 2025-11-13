@@ -16,7 +16,7 @@ import { Transform, Type } from 'class-transformer';
 import { ValidBudgetRangeConstraint } from '../validators/budget-range.validator';
 import { FutureDeadline } from '../validators/future-deadline.validator';
 
-@Validate(ValidBudgetRangeConstraint)
+// Note: Budget range validation is handled at the property level
 export class CreateProjectDto {
   @ApiProperty({
     example: 'Desarrollo de aplicación móvil para delivery',
