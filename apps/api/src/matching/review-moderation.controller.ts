@@ -10,17 +10,16 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
 import { ReviewModerationService } from './review-moderation.service';
 import { ModerateReviewDto } from './dto/review-moderation.dto';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiParam, ApiQuery } from '@nestjs/swagger';
 
-// TODO: Implement admin role checking
-// For now, this is accessible to all authenticated users
-// In production, add @UseRoles('admin') or similar decorator
-
 @Controller('admin/reviews')
 @ApiTags('Admin - Review Moderation')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles('admin')
 @ApiBearerAuth()
 export class ReviewModerationController {
   constructor(private reviewModerationService: ReviewModerationService) {}
@@ -37,7 +36,6 @@ export class ReviewModerationController {
     @Query('limit') limit?: string,
     @Query('offset') offset?: string,
   ) {
-    // TODO: Add admin role check
     return await this.reviewModerationService.getPendingReviews(
       limit ? parseInt(limit, 10) : 20,
       offset ? parseInt(offset, 10) : 0,
@@ -56,7 +54,6 @@ export class ReviewModerationController {
     @Query('limit') limit?: string,
     @Query('offset') offset?: string,
   ) {
-    // TODO: Add admin role check
     return await this.reviewModerationService.getFlaggedReviews(
       limit ? parseInt(limit, 10) : 20,
       offset ? parseInt(offset, 10) : 0,
@@ -69,7 +66,6 @@ export class ReviewModerationController {
   @Get('stats')
   @ApiOperation({ summary: 'Get review moderation statistics (admin only)' })
   async getModerationStats(@Request() req) {
-    // TODO: Add admin role check
     return await this.reviewModerationService.getModerationStats();
   }
 
@@ -83,7 +79,6 @@ export class ReviewModerationController {
     @Request() req,
     @Param('reviewId') reviewId: string,
   ) {
-    // TODO: Add admin role check
     return await this.reviewModerationService.getReviewDetail(reviewId);
   }
 
@@ -98,7 +93,6 @@ export class ReviewModerationController {
     @Param('reviewId') reviewId: string,
     @Body() dto: ModerateReviewDto,
   ) {
-    // TODO: Add admin role check
     if (dto.action === 'approve') {
       return await this.reviewModerationService.approveReview(reviewId, req.user.id);
     } else if (dto.action === 'reject') {

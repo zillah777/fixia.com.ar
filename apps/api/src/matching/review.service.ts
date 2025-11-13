@@ -58,15 +58,30 @@ export class ReviewService {
       throw new BadRequestException('You already left a review for this match');
     }
 
-    // Verify completion status in job (if exists)
+    // Verify completion status in job
+    // IMPORTANTE: Si el match fue creado con job_id, DEBE validarse la completación
+    // Si no hay job_id, es un match antiguo y no se puede validar completación
     if (match.job_id) {
       const job = await this.prisma.job.findUnique({
         where: { id: match.job_id },
       });
 
-      if (!job || !job.completion_confirmed_by || !job.completion_confirmed_at) {
+      if (!job) {
+        throw new NotFoundException(`Associated job ${match.job_id} not found`);
+      }
+
+      // Require BOTH completion confirmation fields to be set
+      if (!job.completion_confirmed_by || !job.completion_confirmed_at) {
         throw new BadRequestException(
-          'Both parties must confirm service completion before leaving reviews',
+          'Both parties must confirm service completion before leaving reviews. ' +
+          'Wait for the opposite party to confirm completion.'
+        );
+      }
+    } else {
+      // Match sin job_id: validar que match.status sea 'completed'
+      if (match.status !== 'completed') {
+        throw new BadRequestException(
+          'Match must be marked as completed before leaving reviews'
         );
       }
     }
@@ -375,7 +390,7 @@ export class ReviewService {
   }
 
   /**
-   * Update a review (only before opposite party reviews)
+   * Update a review (only before opposite party reviews, within 24h of creation)
    */
   async updateReview(reviewId: string, userId: string, dto: UpdateMatchReviewDto) {
     const review = await this.prisma.matchReview.findUnique({
@@ -389,6 +404,17 @@ export class ReviewService {
 
     if (review.reviewer_id !== userId) {
       throw new ForbiddenException('You can only update your own reviews');
+    }
+
+    // NUEVA VALIDACIÓN: Check if 24 hours have passed since creation
+    const now = new Date();
+    const reviewCreatedAt = new Date(review.created_at);
+    const hoursElapsed = (now.getTime() - reviewCreatedAt.getTime()) / (1000 * 60 * 60);
+
+    if (hoursElapsed > 24) {
+      throw new BadRequestException(
+        'You can only update your review within 24 hours of creation'
+      );
     }
 
     // Check if opposite party has already reviewed
@@ -440,9 +466,10 @@ export class ReviewService {
   }
 
   /**
-   * Delete a review (only before opposite party reviews)
+   * Delete a review (soft delete for audit trail)
+   * Only before opposite party reviews or within reasonable period
    */
-  async deleteReview(reviewId: string, userId: string) {
+  async deleteReview(reviewId: string, userId: string, reason?: string) {
     const review = await this.prisma.matchReview.findUnique({
       where: { id: reviewId },
       include: { match: true },
@@ -450,6 +477,10 @@ export class ReviewService {
 
     if (!review) {
       throw new NotFoundException(`Review ${reviewId} not found`);
+    }
+
+    if (review.deleted_at !== null) {
+      throw new BadRequestException('This review has already been deleted');
     }
 
     if (review.reviewer_id !== userId) {
@@ -469,13 +500,22 @@ export class ReviewService {
       );
     }
 
-    await this.prisma.matchReview.delete({
+    // Soft delete: Mark as deleted with audit trail
+    const deletedReview = await this.prisma.matchReview.update({
       where: { id: reviewId },
+      data: {
+        deleted_at: new Date(),
+        deleted_by_user_id: userId,
+        deleted_reason: reason || 'User requested deletion',
+      },
     });
 
-    // Recalculate professional rating
+    // Recalculate professional rating (exclude deleted reviews)
     await this.updateProfessionalRating(review.reviewed_user_id);
 
-    return { message: 'Review deleted successfully' };
+    return {
+      message: 'Review deleted successfully',
+      deletedReview,
+    };
   }
 }
