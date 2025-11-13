@@ -283,6 +283,9 @@ model MatchReview {
   timeliness_rating   Int?            // 1-5
   comment             String?         // Review text
   verified_match      Boolean         @default(true)    // Always true for match reviews
+  deleted_at          DateTime?       // Soft delete timestamp
+  deleted_by_user_id  String?         // User who deleted the review (admin)
+  deleted_reason      String?         // Reason for deletion
   created_at          DateTime        @default(now())
   updated_at          DateTime        @updatedAt
 
@@ -296,6 +299,7 @@ model MatchReview {
   @@index([reviewed_user_id])
   @@index([overall_rating])
   @@index([created_at])
+  @@index([deleted_at])
   @@map("match_reviews")
 }
 
@@ -814,6 +818,7 @@ enum UserType {
   client
   professional
   dual
+  admin
 }
 
 enum ProfessionalLevel {

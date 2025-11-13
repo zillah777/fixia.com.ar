@@ -8,7 +8,10 @@ import { ERROR_CODES, createSecureError } from '../../common/constants/error-cod
 export interface JwtPayload {
   sub: string;
   email: string;
-  user_type: 'client' | 'professional';
+  user_type: 'client' | 'professional' | 'dual' | 'admin';
+  is_professional_active?: boolean;
+  subscription_status?: 'active' | 'inactive';
+  subscription_type?: 'free' | 'premium' | 'professional';
   iat?: number;
   exp?: number;
 }
@@ -73,15 +76,39 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         });
       }
 
+      // Fetch additional user data for comprehensive JWT payload
+      const fullUser = await this.prisma.user.findUnique({
+        where: { id: user.id },
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          user_type: true,
+          verified: true,
+          email_verified: true,
+          location: true,
+          is_professional_active: true,
+          subscription_status: true,
+          subscription_type: true,
+        },
+      });
+
+      if (!fullUser) {
+        throw createSecureError(ERROR_CODES.AUTH_USER_NOT_FOUND, UnauthorizedException);
+      }
+
       // Return user data that will be available in req.user
       return {
-        sub: user.id,
-        email: user.email,
-        name: user.name,
-        user_type: user.user_type,
-        verified: user.verified,
-        email_verified: user.email_verified,
-        location: user.location,
+        sub: fullUser.id,
+        email: fullUser.email,
+        name: fullUser.name,
+        user_type: fullUser.user_type,
+        is_professional_active: fullUser.is_professional_active,
+        subscription_status: fullUser.subscription_status,
+        subscription_type: fullUser.subscription_type,
+        verified: fullUser.verified,
+        email_verified: fullUser.email_verified,
+        location: fullUser.location,
         exp: payload.exp,
       };
     } catch (error) {

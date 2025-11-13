@@ -93,18 +93,21 @@ export class AuthService {
 
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
     const user = await this.validateUser(credentials.email, credentials.password);
-    
+
     // Check if email is verified - required for login security
     if (!user.email_verified) {
       throw createSecureError(ERROR_CODES.AUTH_EMAIL_NOT_VERIFIED, UnauthorizedException, { email: user.email });
     }
-    
-    const payload = { 
-      sub: user.id, 
-      email: user.email, 
-      user_type: user.user_type 
+
+    const payload = {
+      sub: user.id,
+      email: user.email,
+      user_type: user.user_type,
+      is_professional_active: user.is_professional_active,
+      subscription_status: user.subscription_status,
+      subscription_type: user.subscription_type,
     };
-    
+
     const access_token = this.jwtService.sign(payload);
     const refresh_token = this.jwtService.sign(payload, {
       expiresIn: this.configService.get<string>('JWT_REFRESH_EXPIRATION', '30d'),
