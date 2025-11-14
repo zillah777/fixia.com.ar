@@ -126,7 +126,7 @@ export class ProjectsService {
     // Users who can create projects should see their own projects with proposals
     // This includes: clients, professionals (who can now create projects), and dual role users
     if (user.user_type === 'client' || user.user_type === 'professional' || user.user_type === 'dual') {
-      return this.prisma.project.findMany({
+      const projects = await this.prisma.project.findMany({
         where: { client_id: userId },
         include: {
           category: {
@@ -171,6 +171,20 @@ export class ProjectsService {
         },
         orderBy: { created_at: 'desc' },
       });
+
+      // DEBUG: Log what Prisma returned
+      console.log('🔍 Backend findAll - Prisma returned:', {
+        projectCount: projects.length,
+        firstProject: projects[0] ? {
+          id: projects[0].id,
+          title: projects[0].title,
+          hasProposals: 'proposals' in projects[0],
+          proposalsType: Array.isArray(projects[0].proposals) ? 'array' : typeof projects[0].proposals,
+          proposalsLength: projects[0].proposals?.length,
+        } : null,
+      });
+
+      return projects;
     }
 
     // Default: return empty array for unknown user types
