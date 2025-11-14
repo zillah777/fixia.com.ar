@@ -25,14 +25,14 @@ interface Project {
   id: string;
   title: string;
   description: string;
-  budget_min: number | null;
-  budget_max: number | null;
+  budgetMin: number | null;
+  budgetMax: number | null;
   deadline: string | null;
   location: string | null;
-  skills_required: string[];
+  skillsRequired: string[];
   status: 'open' | 'in_progress' | 'completed' | 'cancelled';
-  created_at: string;
-  updated_at: string;
+  createdAt: string;
+  updatedAt: string;
   category: {
     name: string;
     slug: string;
@@ -47,8 +47,8 @@ interface Project {
 interface Proposal {
   id: string;
   message: string;
-  quoted_price: number;
-  delivery_time_days: number;
+  quotedPrice: number;
+  deliveryTimeDays: number;
   status: 'pending' | 'accepted' | 'rejected';
   created_at: string;
   professional: {
@@ -98,14 +98,7 @@ export default function MyAnnouncementsPage() {
     try {
       setLoading(true);
       const data = await opportunitiesService.getMyProjects();
-
-      // CRITICAL: Ensure data is array and filter out any invalid projects
-      const validData = Array.isArray(data)
-        ? data.filter(p => p && typeof p === 'object')
-        : [];
-
-      console.log(`📊 Loaded ${validData.length} valid projects out of ${data?.length || 0} total`);
-      setProjects(validData);
+      setProjects(Array.isArray(data) ? data : []);
     } catch (error: any) {
       console.error('Error loading projects:', error);
       toast.error('Error al cargar tus anuncios');
@@ -375,16 +368,16 @@ export default function MyAnnouncementsPage() {
                               </p>
 
                               {/* Skills */}
-                              {project.skills_required && project.skills_required.length > 0 && (
+                              {project.skillsRequired && project.skillsRequired.length > 0 && (
                                 <div className="flex flex-wrap gap-1 sm:gap-2">
-                                  {project.skills_required.slice(0, 4).map((skill) => (
+                                  {project.skillsRequired.slice(0, 4).map((skill) => (
                                     <Badge key={skill} variant="secondary" className="text-xs px-2 py-1 whitespace-nowrap">
                                       {skill}
                                     </Badge>
                                   ))}
-                                  {project.skills_required.length > 4 && (
+                                  {project.skillsRequired.length > 4 && (
                                     <Badge variant="outline" className="text-xs px-2 py-1">
-                                      +{project.skills_required.length - 4} más
+                                      +{project.skillsRequired.length - 4} más
                                     </Badge>
                                   )}
                                 </div>
@@ -394,7 +387,7 @@ export default function MyAnnouncementsPage() {
                               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                                 <div className="flex items-center space-x-2 text-muted-foreground">
                                   <DollarSign className="h-4 w-4" />
-                                  <span>{formatBudget(project.budget_min, project.budget_max)}</span>
+                                  <span>{formatBudget(project.budgetMin, project.budgetMax)}</span>
                                 </div>
                                 {project.location && (
                                   <div className="flex items-center space-x-2 text-muted-foreground">
@@ -410,7 +403,7 @@ export default function MyAnnouncementsPage() {
                                 )}
                                 <div className="flex items-center space-x-2 text-muted-foreground">
                                   <Clock className="h-4 w-4" />
-                                  <span>Publicado {formatDate(project.created_at)}</span>
+                                  <span>Publicado {formatDate(project.createdAt)}</span>
                                 </div>
                               </div>
 

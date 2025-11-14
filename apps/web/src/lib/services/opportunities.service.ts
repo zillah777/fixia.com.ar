@@ -132,54 +132,19 @@ export const opportunitiesService = {
   async getMyProjects(): Promise<any[]> {
     const projects = await api.get('/projects');
 
-    // DEBUG: Log raw response from backend
-    console.log('🔍 getMyProjects RAW response:', {
-      isArray: Array.isArray(projects),
-      length: projects?.length,
-      firstProject: projects?.[0],
-      firstProjectKeys: projects?.[0] ? Object.keys(projects[0]) : [],
-      hasProposalsKey: projects?.[0] ? 'proposals' in projects[0] : false,
-      proposalsValue: projects?.[0]?.proposals,
-      proposalsType: typeof projects?.[0]?.proposals,
-      proposalsIsArray: Array.isArray(projects?.[0]?.proposals),
-      hasNullElements: projects?.some((p: any) => p == null),
-    });
-
-    // CRITICAL: Filter out any undefined/null projects and ensure proposals is always an array
+    // Defensive: Filter out any null/undefined projects
     if (!Array.isArray(projects)) {
-      console.error('❌ getMyProjects received non-array:', projects);
       return [];
     }
 
-    // Filter and log null/undefined projects
-    const validProjects = projects.filter((project: any) => {
-      if (project == null) {
-        console.warn('⚠️ Found null/undefined project in array');
-        return false;
-      }
-      return true;
-    });
-
-    console.log(`✅ Filtered ${projects.length - validProjects.length} null projects, ${validProjects.length} remaining`);
-
-    return validProjects.map((project: any) => {
-      // DEBUG: Log proposals state for this project
-      if (!Array.isArray(project.proposals)) {
-        console.warn(`⚠️ Project ${project.id} has non-array proposals:`, project.proposals);
-      }
-
-      return {
+    return projects
+      .filter((project: any) => project != null)
+      .map((project: any) => ({
         ...project,
-        // Defensive: Guarantee proposals is always an array
+        // Ensure proposals is always an array and map professional data
         proposals: Array.isArray(project.proposals)
           ? project.proposals
-              .filter((proposal: any) => {
-                if (proposal == null) {
-                  console.warn(`⚠️ Found null/undefined proposal in project ${project.id}`);
-                  return false;
-                }
-                return true;
-              })
+              .filter((proposal: any) => proposal != null)
               .map((proposal: any) => ({
                 ...proposal,
                 professional: {
@@ -191,17 +156,13 @@ export const opportunitiesService = {
                         total_reviews: proposal.professional.professional_profile.review_count || 0,
                       }
                     : undefined,
-                  // Map user_type to expected name
                   userType: proposal.professional?.user_type,
-                  // Map verified field
                   isVerified: proposal.professional?.verified || false,
-                  // Map creation date
                   created_at: proposal.professional?.created_at,
                 },
               }))
-          : [], // Fallback to empty array if proposals is undefined/null
-      };
-    });
+          : [],
+      }));
   },
 
   async updateProject(projectId: string, projectData: Partial<CreateOpportunityData>): Promise<any> {
