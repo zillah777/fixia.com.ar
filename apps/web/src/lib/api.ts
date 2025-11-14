@@ -310,9 +310,27 @@ export const api = {
 
   post: <T = any>(url: string, data?: any, config?: any): Promise<T> => {
     return apiClient.post(url, data, config).then(response => {
+      // Debug logging for /auth/login endpoint
+      if (url.includes('/auth/login')) {
+        console.log('🔍 RAW response from /auth/login:', {
+          hasResponseData: !!response.data,
+          responseDataKeys: response.data ? Object.keys(response.data) : [],
+          hasSuccess: 'success' in (response.data || {}),
+          hasData: 'data' in (response.data || {}),
+          fullResponse: response.data,
+        });
+      }
+
       // Handle backend's TransformInterceptor wrapper format
       if (response.data && typeof response.data === 'object' && 'data' in response.data && 'success' in response.data) {
+        if (url.includes('/auth/login')) {
+          console.log('✅ Extracting response.data.data:', response.data.data);
+        }
         return response.data.data;
+      }
+
+      if (url.includes('/auth/login')) {
+        console.log('⚠️ Returning response.data directly (no wrapper):', response.data);
       }
       return response.data;
     });
