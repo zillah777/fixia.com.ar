@@ -86,8 +86,15 @@ export class SnakeToCamelInterceptor implements NestInterceptor {
   /**
    * Convierte string de snake_case a camelCase
    * Ejemplo: "user_id" -> "userId", "is_professional_active" -> "isProfessionalActive"
+   * IMPORTANTE: Preserva underscore inicial para campos especiales de Prisma como "_count"
    */
   private snakeToCamel(str: string): string {
+    // Si empieza con underscore, preservarlo y solo transformar el resto
+    if (str.startsWith('_')) {
+      const rest = str.slice(1); // Quitar el underscore inicial
+      return '_' + rest.replace(/_([a-z])/g, (match, letter) => letter.toUpperCase());
+    }
+    // Transformación normal para campos sin underscore inicial
     return str.replace(/_([a-z])/g, (match, letter) => letter.toUpperCase());
   }
 }
