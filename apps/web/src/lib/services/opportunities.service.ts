@@ -132,20 +132,49 @@ export const opportunitiesService = {
   async getMyProjects(): Promise<any[]> {
     const projects = await api.get('/projects');
 
+    // DEBUG: Log raw response from backend
+    console.log('🔍 getMyProjects RAW response:', {
+      isArray: Array.isArray(projects),
+      length: projects?.length,
+      firstProject: projects?.[0],
+      hasNullElements: projects?.some((p: any) => p == null),
+    });
+
     // CRITICAL: Filter out any undefined/null projects and ensure proposals is always an array
     if (!Array.isArray(projects)) {
-      console.error('getMyProjects received non-array:', projects);
+      console.error('❌ getMyProjects received non-array:', projects);
       return [];
     }
 
-    return projects
-      .filter((project: any) => project != null) // Filter out undefined/null projects
-      .map((project: any) => ({
+    // Filter and log null/undefined projects
+    const validProjects = projects.filter((project: any) => {
+      if (project == null) {
+        console.warn('⚠️ Found null/undefined project in array');
+        return false;
+      }
+      return true;
+    });
+
+    console.log(`✅ Filtered ${projects.length - validProjects.length} null projects, ${validProjects.length} remaining`);
+
+    return validProjects.map((project: any) => {
+      // DEBUG: Log proposals state for this project
+      if (!Array.isArray(project.proposals)) {
+        console.warn(`⚠️ Project ${project.id} has non-array proposals:`, project.proposals);
+      }
+
+      return {
         ...project,
         // Defensive: Guarantee proposals is always an array
         proposals: Array.isArray(project.proposals)
           ? project.proposals
-              .filter((proposal: any) => proposal != null) // Filter out undefined/null proposals
+              .filter((proposal: any) => {
+                if (proposal == null) {
+                  console.warn(`⚠️ Found null/undefined proposal in project ${project.id}`);
+                  return false;
+                }
+                return true;
+              })
               .map((proposal: any) => ({
                 ...proposal,
                 professional: {
@@ -166,7 +195,8 @@ export const opportunitiesService = {
                 },
               }))
           : [], // Fallback to empty array if proposals is undefined/null
-      }));
+      };
+    });
   },
 
   async updateProject(projectId: string, projectData: Partial<CreateOpportunityData>): Promise<any> {
