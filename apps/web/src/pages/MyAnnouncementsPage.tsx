@@ -198,6 +198,12 @@ export default function MyAnnouncementsPage() {
     });
   };
 
+  // Helper function to get proposals count (handles both _count and Count from backend)
+  const getProposalsCount = (project: any): number => {
+    if (!project) return 0;
+    return project._count?.proposals || (project as any).Count?.proposals || 0;
+  };
+
   if (!user) {
     return null;
   }
@@ -257,7 +263,7 @@ export default function MyAnnouncementsPage() {
                 <div>
                   <p className="text-sm text-muted-foreground">Abiertos</p>
                   <p className="text-2xl font-bold">
-                    {projects.filter(p => p.status === 'open').length}
+                    {projects.filter(p => p && p.status === 'open').length}
                   </p>
                 </div>
               </div>
@@ -273,7 +279,12 @@ export default function MyAnnouncementsPage() {
                 <div>
                   <p className="text-sm text-muted-foreground">Propuestas Recibidas</p>
                   <p className="text-2xl font-bold">
-                    {projects.reduce((sum, p) => sum + (p._count?.proposals || 0), 0)}
+                    {projects.reduce((sum, p) => {
+                      if (!p) return sum;
+                      // Handle both _count and Count (camelCase from backend)
+                      const count = (p._count?.proposals || (p as any).Count?.proposals || 0);
+                      return sum + count;
+                    }, 0)}
                   </p>
                 </div>
               </div>
@@ -289,7 +300,7 @@ export default function MyAnnouncementsPage() {
                 <div>
                   <p className="text-sm text-muted-foreground">En Progreso</p>
                   <p className="text-2xl font-bold">
-                    {projects.filter(p => p.status === 'in_progress').length}
+                    {projects.filter(p => p && p.status === 'in_progress').length}
                   </p>
                 </div>
               </div>
@@ -306,13 +317,13 @@ export default function MyAnnouncementsPage() {
           <Tabs defaultValue="all" className="w-full">
             <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 gap-2 p-1 h-auto">
               <TabsTrigger value="open" className="text-xs sm:text-sm">
-                Abiertos ({projects.filter(p => p.status === 'open').length})
+                Abiertos ({projects.filter(p => p && p.status === 'open').length})
               </TabsTrigger>
               <TabsTrigger value="in_progress" className="text-xs sm:text-sm">
-                En Progreso ({projects.filter(p => p.status === 'in_progress').length})
+                En Progreso ({projects.filter(p => p && p.status === 'in_progress').length})
               </TabsTrigger>
               <TabsTrigger value="completed" className="text-xs sm:text-sm">
-                Completados ({projects.filter(p => p.status === 'completed').length})
+                Completados ({projects.filter(p => p && p.status === 'completed').length})
               </TabsTrigger>
               <TabsTrigger value="all" className="text-xs sm:text-sm">
                 Todos ({projects.length})
@@ -336,7 +347,7 @@ export default function MyAnnouncementsPage() {
                 ) : (
                   <>
                     {projects
-                      .filter(p => tab === 'all' || p.status === tab)
+                      .filter(p => p && (tab === 'all' || p.status === tab))
                       .map((project) => (
                         <motion.div
                           key={project.id}
@@ -352,10 +363,10 @@ export default function MyAnnouncementsPage() {
                                     <Badge className={getStatusColor(project.status)}>
                                       {getStatusLabel(project.status)}
                                     </Badge>
-                                    {project._count.proposals > 0 && (
+                                    {getProposalsCount(project) > 0 && (
                                       <Badge variant="outline" className="glass border-primary/30 text-primary">
                                         <Users className="h-3 w-3 mr-1" />
-                                        {project._count.proposals} propuesta{project._count.proposals !== 1 ? 's' : ''}
+                                        {getProposalsCount(project)} propuesta{getProposalsCount(project) !== 1 ? 's' : ''}
                                       </Badge>
                                     )}
                                   </div>
@@ -417,17 +428,17 @@ export default function MyAnnouncementsPage() {
                               {/* Actions */}
                               <div className="flex items-center justify-between pt-4 border-t border-white/10">
                                 <div className="flex items-center space-x-2">
-                                  {project._count.proposals > 0 && (
+                                  {getProposalsCount(project) > 0 && (
                                     <Button
                                       onClick={() => handleViewProposals(project)}
                                       variant="default"
                                       className="liquid-gradient"
                                     >
                                       <Eye className="h-4 w-4 mr-2" />
-                                      Ver Propuestas ({project._count.proposals})
+                                      Ver Propuestas ({getProposalsCount(project)})
                                     </Button>
                                   )}
-                                  {project._count.proposals === 0 && project.status === 'open' && (
+                                  {getProposalsCount(project) === 0 && project.status === 'open' && (
                                     <Alert className="border-warning/20 bg-warning/5 py-2">
                                       <AlertCircle className="h-4 w-4 text-warning" />
                                       <AlertDescription className="text-sm">
