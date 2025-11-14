@@ -98,7 +98,14 @@ export default function MyAnnouncementsPage() {
     try {
       setLoading(true);
       const data = await opportunitiesService.getMyProjects();
-      setProjects(data);
+
+      // CRITICAL: Ensure data is array and filter out any invalid projects
+      const validData = Array.isArray(data)
+        ? data.filter(p => p && typeof p === 'object')
+        : [];
+
+      console.log(`📊 Loaded ${validData.length} valid projects out of ${data?.length || 0} total`);
+      setProjects(validData);
     } catch (error: any) {
       console.error('Error loading projects:', error);
       toast.error('Error al cargar tus anuncios');
