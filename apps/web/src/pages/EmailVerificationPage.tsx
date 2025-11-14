@@ -52,9 +52,16 @@ function EmailVerificationPage() {
 
   // Check for verification token in URL (both query params and path params)
   useEffect(() => {
+    // First check if we're coming from a successful verification
+    const verified = searchParams.get('verified');
+    if (verified === 'true') {
+      setState(prev => ({ ...prev, isVerified: true, isVerifying: false }));
+      return;
+    }
+
     // Try to get token from query params first
     let token = searchParams.get('token');
-    
+
     // If not found in query params, try to extract from path
     if (!token) {
       const pathSegments = location.pathname.split('/');
@@ -63,13 +70,13 @@ function EmailVerificationPage() {
         token = pathSegments[verifyIndex + 1];
       }
     }
-    
+
     const email = searchParams.get('email');
-    
+
     if (email) {
       setState(prev => ({ ...prev, email }));
     }
-    
+
     if (token) {
       handleVerification(token);
     }
