@@ -548,7 +548,8 @@ function ProposalsSection({
   const [localProposals, setLocalProposals] = useState<Proposal[]>([]);
 
   useEffect(() => {
-    setLocalProposals(project?.proposals ?? []);
+    // Ensure we always have an array, even if proposals is undefined or null
+    setLocalProposals(Array.isArray(project?.proposals) ? project.proposals : []);
   }, [project]);
 
   if (!project || !showProposals) return null;
