@@ -76,6 +76,14 @@ class SecureTokenManager {
     try {
       const data = await api.post('/auth/login', credentials);
 
+      // Debug: Log the actual response structure
+      console.log('🔍 Login response data:', {
+        hasUser: !!data?.user,
+        hasAccessToken: !!data?.access_token,
+        hasRefreshToken: !!data?.refresh_token,
+        dataKeys: Object.keys(data || {}),
+      });
+
       // API wrapper extracts the inner data automatically
       // So data is now: { user: {...}, access_token: "...", expires_in: ... }
       let userData;
@@ -102,6 +110,14 @@ class SecureTokenManager {
         };
       }
 
+      // Debug: Log token extraction
+      console.log('🔍 Extracted tokens:', {
+        hasAccessToken: !!accessToken,
+        hasRefreshToken: !!refreshToken,
+        accessTokenPreview: accessToken ? accessToken.substring(0, 20) + '...' : 'undefined',
+        refreshTokenPreview: refreshToken ? refreshToken.substring(0, 20) + '...' : 'undefined',
+      });
+
       // SECURITY: Primary authentication via httpOnly cookies (set by server)
       // FALLBACK: Also store tokens in localStorage for cross-domain scenarios
       // (www.fixia.app -> fixia-api.onrender.com requires explicit credential handling)
@@ -109,12 +125,19 @@ class SecureTokenManager {
       // Store tokens as fallback for Authorization header
       if (accessToken) {
         localStorage.setItem('fixia_access_token', accessToken);
-      }
-      if (refreshToken) {
-        localStorage.setItem('fixia_refresh_token', refreshToken);
+        console.log('✅ Access token stored in localStorage');
+      } else {
+        console.error('❌ No access token to store!');
       }
 
-      console.log('✅ Authentication successful - tokens stored (httpOnly cookies + localStorage fallback)');
+      if (refreshToken) {
+        localStorage.setItem('fixia_refresh_token', refreshToken);
+        console.log('✅ Refresh token stored in localStorage');
+      } else {
+        console.error('❌ No refresh token to store!');
+      }
+
+      console.log('✅ Authentication successful - tokens storage attempted');
 
       this.tokenInfo = {
         isAuthenticated: true,
