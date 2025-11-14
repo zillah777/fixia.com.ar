@@ -173,6 +173,10 @@ export const opportunitiesService = {
     return api.delete(`/projects/${projectId}`);
   },
 
+  async getProjectById(projectId: string): Promise<any> {
+    return api.get(`/projects/${projectId}`);
+  },
+
   // Proposal management methods
   async acceptProposal(projectId: string, proposalId: string): Promise<any> {
     const result = await api.put(`/opportunities/${projectId}/proposals/${proposalId}/accept`);
