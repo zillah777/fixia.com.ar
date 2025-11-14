@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Briefcase, Sparkles, Check, X, Plus, Loader2, Star, TrendingUp, Users, Zap, ChevronDown, ChevronUp, AlertCircle } from "lucide-react";
+import { Briefcase, Sparkles, Check, X, Plus, Loader2, Star, TrendingUp, Users, Zap, ChevronDown, ChevronUp, AlertCircle, CreditCard, ArrowRight } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { Label } from "./ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Badge } from "./ui/badge";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog";
 import { toast } from "sonner";
 import { api } from "../lib/api";
 import { extractErrorMessage } from "../utils/errorHandler";
@@ -19,6 +20,7 @@ interface UpgradeToProfessionalCardProps {
 export function UpgradeToProfessionalCard({ userType, onUpgradeSuccess }: UpgradeToProfessionalCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [formData, setFormData] = useState({
     bio: "",
     specialties: [] as string[],
@@ -390,21 +392,13 @@ export function UpgradeToProfessionalCard({ userType, onUpgradeSuccess }: Upgrad
                   {/* Submit Button */}
                   <Button
                     type="button"
-                    onClick={handleSubmit}
+                    onClick={() => setShowConfirmDialog(true)}
                     disabled={isSubmitting || !formData.bio.trim() || formData.bio.length < 50 || formData.specialties.length === 0}
                     className="w-full liquid-gradient text-white font-bold text-sm sm:text-base h-10 sm:h-11 shadow-xl hover:shadow-primary/50 transition-all"
                   >
-                    {isSubmitting ? (
-                      <>
-                        <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 mr-2 animate-spin" />
-                        Procesando...
-                      </>
-                    ) : (
-                      <>
-                        <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-                        Confirmar Actualización
-                      </>
-                    )}
+                    <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+                    Continuar con Actualización
+                    <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 ml-2" />
                   </Button>
                 </div>
               </motion.div>
@@ -412,6 +406,101 @@ export function UpgradeToProfessionalCard({ userType, onUpgradeSuccess }: Upgrad
           </AnimatePresence>
         </CardContent>
       </Card>
+
+      {/* Confirmation Dialog */}
+      <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+        <DialogContent className="sm:max-w-[500px] glass border-warning/30 backdrop-blur-xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-xl text-foreground">
+              <CreditCard className="h-5 w-5 text-warning" />
+              Confirmar Actualización a Profesional DUAL
+            </DialogTitle>
+            <DialogDescription className="text-base text-muted-foreground">
+              Antes de continuar, es importante que conozcas los siguientes detalles
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            {/* Subscription info */}
+            <div className="p-4 rounded-lg glass border border-warning/30 bg-warning/5">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="h-5 w-5 text-warning flex-shrink-0 mt-0.5" />
+                <div className="space-y-2 flex-1">
+                  <h4 className="font-semibold text-sm text-warning">Suscripción Premium Requerida</h4>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    Al confirmar, serás redirigido a la página de pago para activar tu suscripción Premium de <span className="font-bold text-foreground">$3.900/mes</span>.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Benefits reminder */}
+            <div className="space-y-2">
+              <h4 className="font-semibold text-sm text-foreground">¿Qué obtendrás?</h4>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li className="flex items-start gap-2">
+                  <Check className="h-4 w-4 text-success flex-shrink-0 mt-0.5" />
+                  <span>Publicar servicios profesionales ilimitados</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Check className="h-4 w-4 text-success flex-shrink-0 mt-0.5" />
+                  <span>Recibir propuestas de clientes potenciales</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Check className="h-4 w-4 text-success flex-shrink-0 mt-0.5" />
+                  <span>Acceso a todas las herramientas profesionales</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Check className="h-4 w-4 text-success flex-shrink-0 mt-0.5" />
+                  <span>Mantener tu cuenta de cliente (modo DUAL)</span>
+                </li>
+              </ul>
+            </div>
+
+            {/* Profile summary */}
+            <div className="p-3 rounded-lg glass border border-white/10">
+              <h4 className="font-semibold text-sm text-foreground mb-2">Tu perfil profesional:</h4>
+              <div className="space-y-1 text-sm text-muted-foreground">
+                <p>📝 Biografía: {formData.bio.length} caracteres</p>
+                <p>🎯 Especialidades: {formData.specialties.length} agregadas</p>
+                {formData.years_experience > 0 && (
+                  <p>⏱ Experiencia: {formData.years_experience} años</p>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter className="flex-col sm:flex-row gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setShowConfirmDialog(false)}
+              disabled={isSubmitting}
+              className="w-full sm:w-auto"
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="button"
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+              className="w-full sm:w-auto liquid-gradient text-white font-bold"
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Procesando...
+                </>
+              ) : (
+                <>
+                  <CreditCard className="h-4 w-4 mr-2" />
+                  Continuar al Pago
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </motion.div>
   );
 }
