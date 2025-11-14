@@ -137,6 +137,11 @@ export const opportunitiesService = {
       isArray: Array.isArray(projects),
       length: projects?.length,
       firstProject: projects?.[0],
+      firstProjectKeys: projects?.[0] ? Object.keys(projects[0]) : [],
+      hasProposalsKey: projects?.[0] ? 'proposals' in projects[0] : false,
+      proposalsValue: projects?.[0]?.proposals,
+      proposalsType: typeof projects?.[0]?.proposals,
+      proposalsIsArray: Array.isArray(projects?.[0]?.proposals),
       hasNullElements: projects?.some((p: any) => p == null),
     });
 
