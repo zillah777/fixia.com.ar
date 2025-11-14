@@ -103,6 +103,7 @@ export class AuthService {
       sub: user.id,
       email: user.email,
       user_type: user.user_type,
+      email_verified: user.email_verified,
       is_professional_active: user.is_professional_active,
       subscription_status: user.subscription_status,
       subscription_type: user.subscription_type,
@@ -187,11 +188,32 @@ export class AuthService {
         });
       }
 
-      // Generate new access token
+      // Generate new access token with fresh user data
+      const freshUser = await this.prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: {
+          id: true,
+          email: true,
+          user_type: true,
+          email_verified: true,
+          is_professional_active: true,
+          subscription_status: true,
+          subscription_type: true,
+        }
+      });
+
+      if (!freshUser) {
+        throw createSecureError(ERROR_CODES.AUTH_USER_NOT_FOUND, UnauthorizedException);
+      }
+
       const newPayload = {
-        sub: session.user.id,
-        email: session.user.email,
-        user_type: session.user.user_type,
+        sub: freshUser.id,
+        email: freshUser.email,
+        user_type: freshUser.user_type,
+        email_verified: freshUser.email_verified,
+        is_professional_active: freshUser.is_professional_active,
+        subscription_status: freshUser.subscription_status,
+        subscription_type: freshUser.subscription_type,
       };
 
       const access_token = this.jwtService.sign(newPayload);

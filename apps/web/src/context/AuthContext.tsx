@@ -682,15 +682,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const verifyEmail = async (token: string) => {
     try {
       await authService.verifyEmail(token);
-      
-      // Update user's email verification status if they're logged in
-      if (user) {
-        const updatedUser = { ...user, emailVerified: true, isVerified: true };
-        setUser(updatedUser);
-        localStorage.setItem('fixia_user', JSON.stringify(updatedUser));
-      }
-      
-      toast.success('¡Email verificado exitosamente!');
+
+      // Limpiar datos cacheados localmente para forzar actualización
+      localStorage.removeItem('fixia_user');
+      localStorage.removeItem('fixia_token');
+      localStorage.removeItem('fixia_refresh_token');
+      localStorage.removeItem('fixia_user_basic');
+
+      // Limpiar el estado del usuario para forzar re-login
+      setUser(null);
+
+      toast.success('¡Email verificado exitosamente! Ya puedes iniciar sesión.');
     } catch (error: any) {
       const errorMessage = error.response?.data?.message || error.message || 'Error al verificar el email';
       toast.error(errorMessage);

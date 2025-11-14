@@ -22,7 +22,7 @@ import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { Progress } from '../ui/progress';
-import { cn } from '../../lib/utils';
+import { cn } from '../ui/utils';
 import type { Job } from '../../lib/services/jobs.service';
 
 interface ActiveJobCardProps {

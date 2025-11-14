@@ -792,8 +792,17 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       await api.post('/auth/verify-email', { token });
 
-      toast.success('Email verificado exitosamente');
-      await refreshUserData();
+      // Limpiar datos cacheados localmente para forzar actualización
+      localStorage.removeItem('fixia_user_basic');
+      localStorage.removeItem('fixia_access_token');
+      localStorage.removeItem('fixia_refresh_token');
+
+      // Si el usuario está autenticado, refrescar sus datos
+      if (isAuthenticated) {
+        await refreshUserData();
+      }
+
+      toast.success('Email verificado exitosamente. Ya puedes iniciar sesión.');
     } catch (error: any) {
       toast.error(error.message || 'Error al verificar email');
       throw error;
