@@ -132,33 +132,41 @@ export const opportunitiesService = {
   async getMyProjects(): Promise<any[]> {
     const projects = await api.get('/projects');
 
-    // Map professional profile fields to match frontend expectations
-    // CRITICAL: Always ensure proposals is an array, never undefined
-    return projects.map((project: any) => ({
-      ...project,
-      // Defensive: Guarantee proposals is always an array
-      proposals: Array.isArray(project.proposals)
-        ? project.proposals.map((proposal: any) => ({
-            ...proposal,
-            professional: {
-              ...proposal.professional,
-              professional_profile: proposal.professional?.professional_profile
-                ? {
-                    bio: proposal.professional.professional_profile.bio,
-                    average_rating: proposal.professional.professional_profile.rating || 0,
-                    total_reviews: proposal.professional.professional_profile.review_count || 0,
-                  }
-                : undefined,
-              // Map user_type to expected name
-              userType: proposal.professional?.user_type,
-              // Map verified field
-              isVerified: proposal.professional?.verified || false,
-              // Map creation date
-              created_at: proposal.professional?.created_at,
-            },
-          }))
-        : [], // Fallback to empty array if proposals is undefined/null
-    }));
+    // CRITICAL: Filter out any undefined/null projects and ensure proposals is always an array
+    if (!Array.isArray(projects)) {
+      console.error('getMyProjects received non-array:', projects);
+      return [];
+    }
+
+    return projects
+      .filter((project: any) => project != null) // Filter out undefined/null projects
+      .map((project: any) => ({
+        ...project,
+        // Defensive: Guarantee proposals is always an array
+        proposals: Array.isArray(project.proposals)
+          ? project.proposals
+              .filter((proposal: any) => proposal != null) // Filter out undefined/null proposals
+              .map((proposal: any) => ({
+                ...proposal,
+                professional: {
+                  ...proposal.professional,
+                  professional_profile: proposal.professional?.professional_profile
+                    ? {
+                        bio: proposal.professional.professional_profile.bio,
+                        average_rating: proposal.professional.professional_profile.rating || 0,
+                        total_reviews: proposal.professional.professional_profile.review_count || 0,
+                      }
+                    : undefined,
+                  // Map user_type to expected name
+                  userType: proposal.professional?.user_type,
+                  // Map verified field
+                  isVerified: proposal.professional?.verified || false,
+                  // Map creation date
+                  created_at: proposal.professional?.created_at,
+                },
+              }))
+          : [], // Fallback to empty array if proposals is undefined/null
+      }));
   },
 
   async updateProject(projectId: string, projectData: Partial<CreateOpportunityData>): Promise<any> {
