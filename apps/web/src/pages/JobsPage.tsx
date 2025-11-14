@@ -4,32 +4,21 @@ import { useSecureAuth } from '../context/SecureAuthContext';
 import { useNavigate } from 'react-router-dom';
 import { jobsService, Job, JobStats, ConversionAnalytics } from '../lib/services/jobs.service';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { Badge } from '../components/ui/badge';
-import { Button } from '../components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
-import { Progress } from '../components/ui/progress';
 import { Alert, AlertDescription } from '../components/ui/alert';
 import { Skeleton } from '../components/ui/skeleton';
 import { FixiaNavigation } from '../components/FixiaNavigation';
 import { MobileBottomNavigation } from '../components/MobileBottomNavigation';
-import { ReviewCard } from '../components/modals/ReviewCard';
-import { CompletionModal } from '../components/modals/CompletionModal';
 import {
   Briefcase,
   TrendingUp,
-  MessageCircle,
   CheckCircle,
   Clock,
   DollarSign,
-  Users,
-  ArrowRight,
-  Calendar,
-  AlertTriangle,
-  Sparkles,
-  Star,
-  CheckCheck
+  AlertTriangle
 } from 'lucide-react';
 import { MatchesListSection } from '../components/match/MatchesListSection';
+import { ActiveJobCard } from '../components/jobs/ActiveJobCard';
 
 const JobsPage: React.FC = () => {
   const { user } = useSecureAuth();
@@ -350,6 +339,8 @@ interface JobsListProps {
 }
 
 const JobsList: React.FC<JobsListProps> = ({ jobs, onStatusUpdate, isProfessional }) => {
+  const navigate = useNavigate();
+
   if (jobs.length === 0) {
     return (
       <Card className="glass border-white/10">
@@ -370,201 +361,24 @@ const JobsList: React.FC<JobsListProps> = ({ jobs, onStatusUpdate, isProfessiona
   }
 
   return (
-    <div className="grid gap-6">
-      {jobs.map((job, index) => (
-        <motion.div
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+      {jobs.map((job) => (
+        <ActiveJobCard
           key={job.id}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: index * 0.05 }}
-        >
-          <JobCard
-            job={job}
-            onStatusUpdate={onStatusUpdate}
-            isProfessional={isProfessional}
-          />
-        </motion.div>
+          job={job}
+          userRole={isProfessional ? 'professional' : 'client'}
+          onViewDetails={() => navigate(`/jobs/${job.id}`)}
+          onSendMessage={() => {
+            const otherParty = isProfessional ? job.client : job.professional;
+            window.open(`https://wa.me/${otherParty.whatsapp_number}`, '_blank');
+          }}
+          onMarkComplete={() => {
+            onStatusUpdate(job.id, 'completed', 'Trabajo completado');
+          }}
+          onReview={() => navigate(`/jobs/${job.id}/review`)}
+        />
       ))}
     </div>
-  );
-};
-
-interface JobCardProps {
-  job: Job;
-  onStatusUpdate: (jobId: string, status: string, message?: string) => void;
-  isProfessional: boolean;
-}
-
-const JobCard: React.FC<JobCardProps> = ({ job, onStatusUpdate, isProfessional }) => {
-  const [showReviewCard, setShowReviewCard] = React.useState(false);
-  const [showCompletionModal, setShowCompletionModal] = React.useState(false);
-  const [completionMode, setCompletionMode] = React.useState<'request' | 'confirm'>('request');
-  const progress = jobsService.calculateProgress(job.milestones);
-
-  const getStatusActions = () => {
-    switch (job.status) {
-      case 'not_started':
-        if (isProfessional) {
-          return (
-            <Button
-              onClick={() => onStatusUpdate(job.id, 'in_progress', 'Trabajo iniciado')}
-              size="sm"
-              className="liquid-gradient hover:opacity-90"
-            >
-              Iniciar Trabajo
-            </Button>
-          );
-        }
-        return null;
-      case 'in_progress':
-        return (
-          <Button
-            onClick={() => {
-              setCompletionMode('request');
-              setShowCompletionModal(true);
-            }}
-            size="sm"
-            className="liquid-gradient hover:opacity-90 flex items-center gap-2"
-          >
-            <CheckCheck className="h-4 w-4" />
-            {isProfessional ? 'Marcar Completado' : 'Confirmar Completado'}
-          </Button>
-        );
-      case 'milestone_review':
-        return (
-          <Badge className="bg-warning/20 text-warning border-warning/40">
-            Esperando revisión del cliente
-          </Badge>
-        );
-      default:
-        return null;
-    }
-  };
-
-  return (
-    <Card className="glass-glow border-white/10 hover:glass-medium transition-all duration-300">
-      <CardHeader>
-        <div className="flex justify-between items-start gap-4">
-          <div className="flex-1 min-w-0">
-            <CardTitle className="text-xl text-white mb-2">{job.title}</CardTitle>
-            <CardDescription className="text-muted-foreground/80">
-              {isProfessional ? `Cliente: ${job.client.name}` : `Profesional: ${job.professional.name}`}
-            </CardDescription>
-          </div>
-          <Badge className={`${jobsService.getJobStatusColor(job.status)} flex-shrink-0`}>
-            {jobsService.getJobStatusLabel(job.status)}
-          </Badge>
-        </div>
-      </CardHeader>
-
-      <CardContent className="space-y-4">
-        <p className="text-muted-foreground/90 line-clamp-2">{job.description}</p>
-
-        {/* Progress Bar */}
-        {job.milestones && job.milestones.length > 0 && (
-          <div className="space-y-2 p-4 glass-medium rounded-lg">
-            <div className="flex justify-between text-sm text-white">
-              <span className="font-medium">Progreso</span>
-              <span className="font-bold">{progress}%</span>
-            </div>
-            <Progress value={progress} className="w-full h-2" />
-            <p className="text-xs text-muted-foreground/80">
-              {job.milestones.filter(m => m.completed).length} de {job.milestones.length} hitos completados
-            </p>
-          </div>
-        )}
-
-        {/* Job Info */}
-        <div className="grid grid-cols-2 gap-4">
-          <div className="p-4 glass-medium rounded-lg">
-            <span className="text-sm text-muted-foreground/80 block mb-1">Precio acordado</span>
-            <p className="text-lg font-bold text-success">
-              {jobsService.formatCurrency(job.agreed_price)}
-            </p>
-          </div>
-          <div className="p-4 glass-medium rounded-lg">
-            <span className="text-sm text-muted-foreground/80 block mb-1">Fecha de entrega</span>
-            <p className="text-lg font-bold text-white flex items-center gap-2">
-              <Calendar className="h-4 w-4 text-primary" />
-              {job.delivery_date ? new Date(job.delivery_date).toLocaleDateString('es-AR') : 'Sin fecha'}
-            </p>
-          </div>
-        </div>
-
-        {/* Actions */}
-        <div className="flex flex-wrap justify-between items-center gap-3 pt-4 border-t border-white/10">
-          <div className="flex gap-2 flex-wrap">
-            {getStatusActions()}
-            {/* Leave a Review Button - For Both Clients and Professionals on Completed Jobs */}
-            {job.status === 'completed' && (
-              <Button
-                onClick={() => setShowReviewCard(!showReviewCard)}
-                size="sm"
-                className="glass border-white/20 hover:glass-medium bg-gradient-to-r from-primary/20 to-primary/10 border-primary/40 hover:border-primary/60"
-              >
-                <Star className="h-4 w-4 mr-2 text-primary" />
-                {showReviewCard ? 'Cerrar Reseña' : `Calificar ${isProfessional ? 'Cliente' : 'Profesional'}`}
-              </Button>
-            )}
-            <Button variant="outline" size="sm" className="glass border-white/20 hover:glass-medium">
-              Ver Detalles
-              <ArrowRight className="h-4 w-4 ml-1" />
-            </Button>
-          </div>
-
-          {/* Contact Button */}
-          {isProfessional ? (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="hover:glass-medium"
-              onClick={() => window.open(`https://wa.me/${job.client.whatsapp_number}`, '_blank')}
-            >
-              <MessageCircle className="h-4 w-4 mr-2 text-success" />
-              <span className="text-white">Contactar Cliente</span>
-            </Button>
-          ) : (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="hover:glass-medium"
-              onClick={() => window.open(`https://wa.me/${job.professional.whatsapp_number}`, '_blank')}
-            >
-              <MessageCircle className="h-4 w-4 mr-2 text-success" />
-              <span className="text-white">Contactar Profesional</span>
-            </Button>
-          )}
-        </div>
-      </CardContent>
-
-      {/* Completion Modal */}
-      <CompletionModal
-        isOpen={showCompletionModal}
-        onClose={() => setShowCompletionModal(false)}
-        matchId={job.id}
-        mode={completionMode}
-        oppositePartyName={isProfessional ? job.client.name : job.professional.name}
-        onCompleted={() => {
-          setShowCompletionModal(false);
-          // Reload data after completion
-          onStatusUpdate(job.id, job.status, 'Trabajo completado');
-        }}
-      />
-
-      {/* Review Card - For Both Clients and Professionals on Completed Jobs */}
-      {job.status === 'completed' && (
-        <ReviewCard
-          isOpen={showReviewCard}
-          onClose={() => setShowReviewCard(false)}
-          professionalName={isProfessional ? job.client.name : job.professional.name}
-          jobId={job.id}
-          professionalId={isProfessional ? job.client.id : job.professional.id}
-          onSuccess={() => {
-            setShowReviewCard(false);
-          }}
-        />
-      )}
-    </Card>
   );
 };
 
