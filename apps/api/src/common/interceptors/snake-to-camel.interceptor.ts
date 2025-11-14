@@ -18,34 +18,7 @@ export class SnakeToCamelInterceptor implements NestInterceptor {
       map((data) => {
         // Solo transformar si es un objeto JSON
         if (data && typeof data === 'object') {
-          const transformed = this.transformSnakeToCamel(data);
-
-          // DEBUG: Log transformation for /projects endpoint
-          const request = context.switchToHttp().getRequest();
-          if (request.url === '/projects') {
-            console.log('🔄 SnakeToCamelInterceptor transformation:', {
-              beforeTransform: Array.isArray(data) ? {
-                isArray: true,
-                length: data.length,
-                firstProject: data[0] ? {
-                  id: data[0].id,
-                  hasProposals: 'proposals' in data[0],
-                  proposalsValue: data[0].proposals,
-                } : null,
-              } : 'not array',
-              afterTransform: Array.isArray(transformed) ? {
-                isArray: true,
-                length: transformed.length,
-                firstProject: transformed[0] ? {
-                  id: transformed[0].id,
-                  hasProposals: 'proposals' in transformed[0],
-                  proposalsValue: transformed[0].proposals,
-                } : null,
-              } : 'not array',
-            });
-          }
-
-          return transformed;
+          return this.transformSnakeToCamel(data);
         }
         return data;
       })
