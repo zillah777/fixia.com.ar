@@ -25,7 +25,8 @@
       "Bash(npm install:*)",
       "Bash(curl:*)",
       "Bash(nul)",
-      "Bash(npx prisma migrate:*)"
+      "Bash(npx prisma migrate:*)",
+      "Bash(cat:*)"
     ],
     "deny": []
   }

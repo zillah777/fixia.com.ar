@@ -85,9 +85,10 @@ export class ProjectsService {
         deadline,
         location: createProjectDto.location,
         skills_required: createProjectDto.skills_required || [],
-        // TODO: Uncomment when Prisma types are fully regenerated in production
-        // main_image_url: createProjectDto.main_image_url,
-        // gallery_urls: createProjectDto.gallery_urls || [],
+        // @ts-ignore - Field exists in DB, Prisma types need regeneration
+        main_image_url: createProjectDto.main_image_url,
+        // @ts-ignore - Field exists in DB, Prisma types need regeneration
+        gallery_urls: createProjectDto.gallery_urls || [],
       },
       include: {
         client: {

@@ -1,0 +1,159 @@
+ANALISIS DEL SISTEMA DE MATCHING - FIXIA.COM.AR
+
+1. COMO SE CREAN LOS MATCHES
+=============================
+
+Flujo actual (con problema):
+
+a) Profesional envia propuesta a Proyecto
+   - Endpoint: POST /opportunities/{opportunityId}/apply
+   - Estado: proposal.status = 'pending'
+
+b) Cliente acepta propuesta
+   - Endpoint: PUT /opportunities/{projectId}/proposals/{proposalId}/accept
+   - Archivo: apps/api/src/projects/opportunities.service.ts:435-558
+   - Transaccion: actualiza propuesta, crea Job, Conversation, notifica
+
+   PROBLEMA: El backend NO crea el Match!
+
+c) Frontend crea Match manualmente
+   - Archivo: apps/web/src/components/proposals/ProposalCard.tsx:87-104
+   - Llama: matchService.createMatch({proposalId, projectId, clientId, professionalId})
+   - RIESGO: Si falla el frontend, no hay match
+
+Datos del Match:
+- id, proposal_id (UNIQUE), client_id, professional_id, projectId, job_id
+- status: 'active'|'completed'|'disputed'|'cancelled'
+- phone_revealed_at, phone_reveal_count
+- created_at, updated_at
+- Relaciones: Proposal, Client, Professional
+
+2. LOGICA DE MATCHING
+====================
+
+Backend:
+- apps/api/src/matching/match.service.ts: MatchService
+- apps/api/src/matching/match.controller.ts: MatchController (endpoints)
+- apps/api/src/projects/opportunities.service.ts: acceptProposal (FALTA crear match)
+- apps/api/src/matching/notification.service.ts: NotificationService
+- apps/api/src/matching/phone-reveal.service.ts: PhoneRevealService
+
+Frontend:
+- apps/web/src/lib/services/match.service.ts: cliente API
+- apps/web/src/components/match/MatchDetailPage.tsx: vista principal
+- apps/web/src/components/proposals/ProposalCard.tsx: crea match (INCORRECTO)
+
+Validaciones de estado:
+  active -> [completed, disputed, cancelled, unsuccessful]
+  completed -> [disputed]
+  disputed -> []
+  cancelled -> []
+
+3. NOTIFICACIONES
+================
+
+PROBLEMA: notifyMatchCreated() existe pero NUNCA se invoca
+
+Ubicacion: apps/api/src/matching/notification.service.ts:106
+
+La funcion define:
+- notifyMatchCreated(userId, oppositePartyName, matchId)
+- Mensaje: "Nuevo Match! Puedes revelar el WhatsApp"
+
+Pero ninguna parte del codigo la llama. Usuarios NO se enteran de nuevos matches.
+
+Otros metodos de notificacion (SI funcionan):
+- notifyCompletionRequested()
+- notifyMatchCompleted()
+- notifyReviewReceived()
+
+4. ACEPTACION/RECHAZO
+====================
+
+ACEPTACION (crea Job, pero NO Match):
+POST -> acceptProposal() -> transaccion:
+  1. Propuesta: status=accepted, accepted_at=now
+  2. Proyecto: status=in_progress
+  3. Job: creado
+  4. Conversation: creado
+  5. Notificacion profesional
+
+LUEGO (frontend): createMatch() manualmente
+
+RECHAZO:
+PUT -> rejectProposal() ->
+  1. Propuesta: status=rejected
+  2. Notificacion profesional
+
+CAMBIO DE ESTADO DE MATCH:
+PUT /matches/{matchId}/status -> updateMatchStatus()
+
+FLUJO DE COMPLETACION:
+1. request-completion: job.completion_requested_by = userId
+2. confirm-completion: job.completion_confirmed_by = userId, match.status=completed
+   -> HABILITA reviews
+
+5. INFORMACION ALMACENADA
+========================
+
+Match:
+- proposal_id (UNIQUE 1:1), client_id, professional_id, project_id, job_id
+- status, phone_revealed_at, phone_reveal_count
+
+PhoneReveal (1:N con Match):
+- match_id, user_id, phone_number (ENCRIPTADO)
+- token, token_hash, expires_at (24h)
+- revealed_at, ip_address, user_agent (auditoria)
+
+MatchReview (1:N con Match):
+- match_id, reviewer_id, reviewed_user_id
+- overall_rating, communication_rating, quality_rating, etc (1-5)
+- comment, verified_match=true
+
+Job (tipicamente 1:1):
+- project_id, proposal_id, client_id, professional_id
+- agreed_price, delivery_date, status
+- completion_requested_by, completion_requested_at
+- completion_confirmed_by, completion_confirmed_at
+
+6. PROBLEMAS IDENTIFICADOS
+==========================
+
+CRITICOS:
+
+1. Match creado desde FRONTEND (ProposalCard.tsx:87-104)
+   - Entidad critica en cliente, no en backend
+   - Risk: fallo del frontend = sin match
+   - Risk: race conditions
+   - Risk: inconsistencia datos
+
+2. notifyMatchCreated() nunca se invoca
+   - Usuarios NO reciben notificacion
+   - No saben que pueden revelar WhatsApp
+   - Experiencia pobre
+
+3. acceptProposal() NO crea Match
+   - La transaccion deberia incluirlo
+   - Separacion de responsabilidades pobre
+   - Creates inconsistency
+
+IMPORTANTES:
+
+4. Sin validaciones en createMatch()
+   - No verifica si propuesta existe
+   - No verifica si propuesta esta aceptada
+   - No verifica si clientId es dueño del proyecto
+
+5. Sin timeout en flujo de completacion
+   - Si uno solicita, puede esperar indefinidamente
+   - Falta reminder automatico
+   - Falta opcion de disputar
+
+6. Indices faltantes en BD
+   - Faltan: (created_at, status), (job_id), (project_id)
+
+MENORES:
+
+7. No hay auditoria de creacion de match
+8. Match response siempre incluye propuesta completa (peso innecesario)
+

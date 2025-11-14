@@ -200,6 +200,8 @@ model Project {
   status               ProjectStatus        @default(open)
   location             String?
   skills_required      String[]
+  main_image_url       String?              // URL de la imagen principal del proyecto
+  gallery_urls         String[]             @default([])  // Array de URLs de galería
   proposals_count      Int                  @default(0)
   created_at           DateTime             @default(now())
   updated_at           DateTime             @updatedAt
