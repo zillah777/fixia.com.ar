@@ -4,14 +4,28 @@ export interface User {
   email: string;
   name: string;
   avatar?: string;
-  user_type: 'client' | 'professional';
+  user_type: 'client' | 'professional' | 'dual';
   location?: string;
   verified: boolean;
   email_verified: boolean;
   phone?: string;
   whatsapp_number?: string;
+  bio?: string;
+  social_linkedin?: string;
+  social_twitter?: string;
+  social_facebook?: string;
+  social_instagram?: string;
+  notifications_messages?: boolean;
+  notifications_orders?: boolean;
+  notifications_projects?: boolean;
+  notifications_newsletter?: boolean;
+  timezone?: string;
+  createdAt?: string;
   created_at: string;
   updated_at: string;
+  professionalProfile?: ProfessionalProfile;
+  userType?: 'client' | 'professional' | 'dual';
+  planType?: string;
 }
 
 export interface ProfessionalProfile {

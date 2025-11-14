@@ -135,7 +135,7 @@ export class UsersService {
       // Social networks
       social_linkedin: updateData.social_linkedin,
       social_twitter: updateData.social_twitter,
-      social_github: updateData.social_github,
+      social_facebook: updateData.social_facebook,
       social_instagram: updateData.social_instagram,
 
       // Notification preferences

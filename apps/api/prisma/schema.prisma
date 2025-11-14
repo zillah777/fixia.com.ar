@@ -30,7 +30,7 @@ model User {
   bio                              String?
   social_linkedin                  String?
   social_twitter                   String?
-  social_github                    String?
+  social_facebook                  String?
   social_instagram                 String?
   notifications_messages           Boolean                  @default(true)
   notifications_orders             Boolean                  @default(true)

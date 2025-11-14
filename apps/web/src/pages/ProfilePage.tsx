@@ -2,13 +2,11 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
-  User, Mail, Phone, MapPin, Calendar, Settings, Shield,
-  Edit3, Save, X, Plus, Heart, Heart, Briefcase, Eye, Heart,
-  MessageSquare, DollarSign, TrendingUp, Clock, CheckCircle,
-  Upload, FileText, Globe, Linkedin, Twitter, Instagram, Github,
-  Bell, Lock, CreditCard, LogOut, Trash2, ExternalLink,
-  BarChart3, Users, Target, Zap, AlertTriangle, Camera,
-  Download, ArrowLeft
+  Mail, Phone, MapPin, Calendar, Shield,
+  Edit3, Save, X, Plus, Heart, Clock, CheckCircle,
+  Globe, Linkedin, Twitter, Instagram, Facebook,
+  Bell, Lock, Trash2, AlertTriangle, Camera,
+  Download
 } from "lucide-react";
 import { FixiaNavigation } from "../components/FixiaNavigation";
 import { Button } from "../components/ui/button";
@@ -314,7 +312,7 @@ function ProfileHeader({ user, onUserUpdate }: any) {
               
               <div className="flex items-center space-x-2">
                 <Calendar className="h-4 w-4 text-muted-foreground" />
-                <span>Miembro desde {new Date(user?.createdAt || Date.now()).getFullYear()}</span>
+                <span>Miembro desde {user?.createdAt ? new Date(user.createdAt).getFullYear() : 'Fecha no disponible'}</span>
               </div>
             </div>
           </div>
@@ -327,6 +325,7 @@ function ProfileHeader({ user, onUserUpdate }: any) {
 // Settings Section component
 function SettingsSection() {
   const { user, refreshUserData } = useSecureAuth();
+  const navigate = useNavigate();
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [passwordData, setPasswordData] = useState({
     currentPassword: '',
@@ -336,7 +335,7 @@ function SettingsSection() {
   const [socialNetworks, setSocialNetworks] = useState({
     linkedin: user?.social_linkedin || '',
     twitter: user?.social_twitter || '',
-    github: user?.social_github || '',
+    facebook: user?.social_facebook || '',
     instagram: user?.social_instagram || ''
   });
   const [notifications, setNotifications] = useState({
@@ -353,7 +352,7 @@ function SettingsSection() {
       setSocialNetworks({
         linkedin: user.social_linkedin || '',
         twitter: user.social_twitter || '',
-        github: user.social_github || '',
+        facebook: user.social_facebook || '',
         instagram: user.social_instagram || ''
       });
       setNotifications({
@@ -590,15 +589,15 @@ function SettingsSection() {
             </div>
 
             <div className="flex items-center space-x-3">
-              <Github className="h-5 w-5 text-white flex-shrink-0" />
+              <Facebook className="h-5 w-5 text-blue-600 flex-shrink-0" />
               <Input
-                placeholder="https://github.com/tu-usuario"
+                placeholder="https://facebook.com/tu-usuario"
                 maxLength={255}
                 className="glass border-white/20"
-                value={socialNetworks.github}
+                value={socialNetworks.facebook}
                 onChange={(e) => {
-                  setSocialNetworks({...socialNetworks, github: e.target.value});
-                  autoSave('social_github', e.target.value);
+                  setSocialNetworks({...socialNetworks, facebook: e.target.value});
+                  autoSave('social_facebook', e.target.value);
                 }}
               />
             </div>

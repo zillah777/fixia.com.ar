@@ -99,15 +99,15 @@ export class UpdateProfileDto {
   @MaxLength(255)
   social_twitter?: string;
 
-  @ApiProperty({ 
-    example: 'https://github.com/usuario',
-    description: 'Perfil de GitHub',
+  @ApiProperty({
+    example: 'https://facebook.com/usuario',
+    description: 'Perfil de Facebook',
     required: false
   })
   @IsOptional()
   @IsString()
   @MaxLength(255)
-  social_github?: string;
+  social_facebook?: string;
 
   @ApiProperty({ 
     example: 'https://instagram.com/usuario',
