@@ -172,17 +172,9 @@ export class ProjectsService {
         orderBy: { created_at: 'desc' },
       });
 
-      // Serialize Decimal fields to numbers for JSON compatibility
-      return projects.map(project => ({
-        ...project,
-        budget_min: project.budget_min ? Number(project.budget_min) : null,
-        budget_max: project.budget_max ? Number(project.budget_max) : null,
-        proposals: project.proposals.map(proposal => ({
-          ...proposal,
-          quoted_price: Number(proposal.quoted_price),
-          delivery_time_days: Number(proposal.delivery_time_days),
-        })),
-      }));
+      // Serialize Decimal and Date objects to JSON-compatible primitives
+      // JSON.parse(JSON.stringify()) converts Decimal to number and Date to ISO string
+      return JSON.parse(JSON.stringify(projects));
     }
 
     // Default: return empty array for unknown user types
