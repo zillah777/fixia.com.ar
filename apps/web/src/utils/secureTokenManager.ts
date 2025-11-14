@@ -93,9 +93,10 @@ class SecureTokenManager {
 
       if (data?.user) {
         userData = data.user;
-        expiresAt = data.expires_in;
-        accessToken = data.access_token;
-        refreshToken = data.refresh_token;
+        expiresAt = data.expires_in || data.expiresIn;
+        // Backend's SnakeToCamelInterceptor converts to camelCase
+        accessToken = data.access_token || data.accessToken;
+        refreshToken = data.refresh_token || data.refreshToken;
       } else {
         // Log what we actually received for debugging
         console.error('Unexpected login response format:', data);
