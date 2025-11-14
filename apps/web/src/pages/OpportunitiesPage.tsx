@@ -28,6 +28,7 @@ import { useSecureAuth } from "../context/SecureAuthContext";
 import { toast } from "sonner";
 import { opportunitiesService, Opportunity as OpportunityType } from "../lib/services/opportunities.service";
 import { Skeleton } from "../components/ui/skeleton";
+import { ProposalSubmissionCard } from "../components/proposals/ProposalSubmissionCard";
 
 // Mock data as fallback
 const mockOpportunitiesOld = [
@@ -773,21 +774,18 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
           </Button>
         </CardContent>
       </Card>
-      
-      {/* Proposal Modal - Responsive and properly centered */}
-      <Dialog open={showProposal} onOpenChange={setShowProposal}>
-        <DialogContent className="bg-slate-900/95 border-white/20 max-w-[95vw] sm:max-w-[85vw] md:max-w-2xl lg:max-w-3xl fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] backdrop-blur-xl shadow-2xl rounded-xl">
-          <DialogHeader className="border-b border-white/10 pb-6 mb-4 space-y-2">
-            <DialogTitle className="text-xl sm:text-2xl md:text-3xl font-bold text-white">Enviar Tu Propuesta</DialogTitle>
-            <DialogDescription className="text-sm sm:text-base text-slate-300 font-medium line-clamp-2">
-              {opportunity.title}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="max-h-[70vh] sm:max-h-[75vh] overflow-y-auto pr-2 md:pr-0">
-            <ProposalForm opportunity={opportunity} onClose={() => setShowProposal(false)} />
-          </div>
-        </DialogContent>
-      </Dialog>
+
+      {/* Modern Proposal Submission Card */}
+      {showProposal && (
+        <ProposalSubmissionCard
+          opportunity={opportunity}
+          onClose={() => setShowProposal(false)}
+          onSuccess={() => {
+            setShowProposal(false);
+            // Optionally reload opportunities
+          }}
+        />
+      )}
     </motion.div>
   );
 }
