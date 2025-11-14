@@ -21,13 +21,19 @@ import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { LoginDto, RegisterDto, RefreshTokenDto, ForgotPasswordDto, ResetPasswordDto, VerifyEmailDto, ResendVerificationDto, ChangePasswordDto, DevVerifyUserDto } from './dto/auth.dto';
 import { AuthResponse } from '@fixia/types';
+import { SubscriptionService } from '../subscription/subscription.service';
+import { ConfigService } from '@nestjs/config';
 
 @ApiTags('Autenticación')
 @Controller('auth')
 export class AuthController {
   private readonly logger = new Logger(AuthController.name);
-  
-  constructor(private readonly authService: AuthService) {}
+
+  constructor(
+    private readonly authService: AuthService,
+    private readonly subscriptionService: SubscriptionService,
+    private readonly configService: ConfigService,
+  ) {}
 
   @Post('login')
   @Throttle({ default: { limit: 5, ttl: 900000 } }) // 5 intentos por 15 minutos
@@ -156,6 +162,52 @@ export class AuthController {
         this.logger.log(`✅ Verification email sent to: ${user.email}`);
       } catch (emailError) {
         this.logger.error(`⚠️ Verification email failed (non-critical):`, emailError);
+      }
+
+      // Check if professional needs to pay subscription
+      const requirePayment = this.configService.get('REQUIRE_PAYMENT_FOR_PROFESSIONALS') === 'true';
+
+      if (userData.user_type === 'professional' && requirePayment) {
+        this.logger.log(`🔔 Professional subscription payment required for: ${user.email}`);
+
+        try {
+          // Create MercadoPago payment preference
+          const subscriptionPrice = parseFloat(this.configService.get('PROFESSIONAL_SUBSCRIPTION_PRICE') || '3900');
+          const subscriptionType = this.configService.get('PROFESSIONAL_SUBSCRIPTION_TYPE') || 'premium';
+
+          const paymentPreference = await this.subscriptionService.createPaymentPreference(
+            user.id,
+            {
+              subscriptionType,
+              price: subscriptionPrice,
+            }
+          );
+
+          this.logger.log(`✅ Payment preference created for professional: ${paymentPreference.id}`);
+
+          return {
+            success: true,
+            message: 'Cuenta creada exitosamente. Revisa tu correo electrónico para verificar tu cuenta.',
+            requiresVerification: true,
+            requiresPayment: true,
+            userId: user.id,
+            email: user.email,
+            paymentUrl: paymentPreference.init_point,
+            subscriptionPrice,
+            subscriptionType,
+          };
+        } catch (paymentError) {
+          this.logger.error(`❌ Failed to create payment preference:`, paymentError);
+          // If payment preference creation fails, still return success but without payment URL
+          return {
+            success: true,
+            message: 'Cuenta creada exitosamente. Revisa tu correo electrónico para verificar tu cuenta. Por favor contacta a soporte para activar tu suscripción.',
+            requiresVerification: true,
+            requiresPayment: true,
+            userId: user.id,
+            email: user.email,
+          };
+        }
       }
 
       return {

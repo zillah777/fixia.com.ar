@@ -1114,26 +1114,47 @@ export default function RegisterPage() {
       const sanitizedData = FormSanitizers.REGISTRATION(formData);
 
       const result = await register({
-        email: sanitizedData.email,
-        password: sanitizedData.password,
-        fullName: sanitizedData.fullName,
-        phone: sanitizedData.phone,
-        location: sanitizedData.location,
-        birthdate: sanitizedData.birthdate,
-        dni: sanitizedData.dni,
+        email: formData.email,
+        password: formData.password,
+        fullName: formData.fullName,
+        phone: formData.phone,
+        location: formData.location,
+        birthdate: formData.birthdate,
+        dni: formData.dni,
         userType: currentTab as 'client' | 'professional',
-        serviceCategories: sanitizedData.serviceCategories,
-        description: sanitizedData.description,
-        experience: sanitizedData.experience,
-        pricing: sanitizedData.pricing,
-        availability: sanitizedData.availability,
-        portfolio: sanitizedData.portfolio,
-        certifications: sanitizedData.certifications
+        serviceCategories: formData.serviceCategories,
+        description: formData.description,
+        experience: formData.experience,
+        pricing: formData.pricing,
+        availability: formData.availability,
+        portfolio: formData.portfolio,
+        certifications: formData.certifications
       });
 
       // Handle different registration outcomes
-      if (result?.requiresVerification) {
-        // New flow: Email verification required
+      if (result?.requiresPayment && result?.paymentUrl) {
+        // Professional registration with payment required
+        toast.success(
+          "¡Cuenta creada exitosamente! 🎉",
+          {
+            description: `Para activar tu cuenta profesional, completa el pago de $${result.subscriptionPrice} ARS. Serás redirigido a MercadoPago.`,
+            duration: 8000
+          }
+        );
+
+        // Store user info for after payment
+        localStorage.setItem('pendingProfessionalRegistration', JSON.stringify({
+          userId: result.userId,
+          email: result.email,
+          subscriptionType: result.subscriptionType
+        }));
+
+        // Redirect to MercadoPago payment page
+        setTimeout(() => {
+          window.location.href = result.paymentUrl;
+        }, 2000);
+      } else if (result?.requiresVerification) {
+        // Standard flow: Email verification required
         toast.success(
           "¡Cuenta creada exitosamente! 🎉",
           {
@@ -1151,7 +1172,7 @@ export default function RegisterPage() {
             description: "Tu cuenta ha sido creada exitosamente.",
             duration: 6000}
         );
-        
+
         // Redirect to dashboard
         navigate('/dashboard');
       }
