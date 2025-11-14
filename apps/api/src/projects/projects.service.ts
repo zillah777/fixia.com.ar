@@ -85,8 +85,9 @@ export class ProjectsService {
         deadline,
         location: createProjectDto.location,
         skills_required: createProjectDto.skills_required || [],
-        main_image_url: createProjectDto.main_image_url,
-        gallery_urls: createProjectDto.gallery_urls || [],
+        // TODO: Uncomment when Prisma types are fully regenerated in production
+        // main_image_url: createProjectDto.main_image_url,
+        // gallery_urls: createProjectDto.gallery_urls || [],
       },
       include: {
         client: {
