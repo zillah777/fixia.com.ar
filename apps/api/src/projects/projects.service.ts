@@ -126,7 +126,7 @@ export class ProjectsService {
     // Users who can create projects should see their own projects with proposals
     // This includes: clients, professionals (who can now create projects), and dual role users
     if (user.user_type === 'client' || user.user_type === 'professional' || user.user_type === 'dual') {
-      return this.prisma.project.findMany({
+      const projects = await this.prisma.project.findMany({
         where: { client_id: userId },
         include: {
           category: {
@@ -171,6 +171,18 @@ export class ProjectsService {
         },
         orderBy: { created_at: 'desc' },
       });
+
+      // Serialize Decimal fields to numbers for JSON compatibility
+      return projects.map(project => ({
+        ...project,
+        budget_min: project.budget_min ? Number(project.budget_min) : null,
+        budget_max: project.budget_max ? Number(project.budget_max) : null,
+        proposals: project.proposals.map(proposal => ({
+          ...proposal,
+          quoted_price: Number(proposal.quoted_price),
+          delivery_time_days: Number(proposal.delivery_time_days),
+        })),
+      }));
     }
 
     // Default: return empty array for unknown user types
