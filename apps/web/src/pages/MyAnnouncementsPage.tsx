@@ -98,6 +98,22 @@ export default function MyAnnouncementsPage() {
     try {
       setLoading(true);
       const data = await opportunitiesService.getMyProjects();
+
+      // DEBUG: Log first project structure
+      if (data && data.length > 0) {
+        console.log('🔍 First project structure:', {
+          budgetMin: data[0].budgetMin,
+          budgetMinType: typeof data[0].budgetMin,
+          budgetMax: data[0].budgetMax,
+          budgetMaxType: typeof data[0].budgetMax,
+          createdAt: data[0].createdAt,
+          createdAtType: typeof data[0].createdAt,
+          deadline: data[0].deadline,
+          deadlineType: typeof data[0].deadline,
+          allKeys: Object.keys(data[0]),
+        });
+      }
+
       setProjects(Array.isArray(data) ? data : []);
     } catch (error: any) {
       console.error('Error loading projects:', error);
