@@ -27,16 +27,25 @@ class SecureTokenManager {
       return this.tokenInfo.isAuthenticated;
     }
 
+    // Check if we have access token in localStorage (mobile fallback)
+    const hasAccessToken = !!localStorage.getItem('fixia_access_token');
+    if (!hasAccessToken) {
+      console.log('⚠️ No access token found in localStorage');
+      this.tokenInfo = { isAuthenticated: false };
+      return false;
+    }
+
     try {
       // Hacer una llamada liviana al servidor para verificar la autenticación
       const response = await api.get('/auth/verify');
-      
+
       if (response.data) {
         this.tokenInfo = {
           isAuthenticated: true,
           expiresAt: response.data.expiresAt,
           lastRefresh: Date.now(),
         };
+        console.log('✅ Authentication verified successfully');
         return true;
       } else {
         this.tokenInfo = { isAuthenticated: false };

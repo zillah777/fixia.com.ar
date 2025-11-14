@@ -293,21 +293,45 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
+  // Detectar si es navegador móvil
+  const isMobile = () => {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  };
+
   // Inicializar autenticación segura
   useEffect(() => {
     const initializeAuth = async () => {
       setLoading(true);
+
+      const deviceInfo = {
+        isMobile: isMobile(),
+        userAgent: navigator.userAgent,
+        platform: navigator.platform,
+      };
+
+      console.log('🔐 Initializing authentication...', deviceInfo);
+
       try {
         // Initialize token manager first (sets up interceptors)
         secureTokenManager.setupAxiosInterceptor();
-        
+
         // Check if we have basic user data from a recent successful login
         const basicUserData = localStorage.getItem('fixia_user_basic');
         const hasAccessToken = localStorage.getItem('fixia_access_token');
+        const hasRefreshToken = localStorage.getItem('fixia_refresh_token');
+
+        console.log('📦 localStorage state:', {
+          hasBasicUserData: !!basicUserData,
+          hasAccessToken: !!hasAccessToken,
+          hasRefreshToken: !!hasRefreshToken,
+          accessTokenPreview: hasAccessToken ? hasAccessToken.substring(0, 20) + '...' : 'none',
+        });
 
         if (basicUserData && hasAccessToken) {
           try {
             const parsedData = JSON.parse(basicUserData);
+            console.log('✅ Found cached user data, setting temporary user state');
+
             // Set basic user data from localStorage temporarily
             setUser({
               ...parsedData,
@@ -335,39 +359,48 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
 
             // Load complete user data in background WITHOUT explicit verification
             // The loadUserData() call will fail if tokens are expired and THEN we clean up
+            console.log('🔄 Loading complete user data in background...');
             loadUserData().catch((error) => {
-              console.warn('Failed to load complete user data:', error);
+              console.warn('⚠️ Failed to load complete user data:', error);
               // If it's a 401, the interceptor will handle token refresh automatically
               // If refresh fails, the interceptor will clear everything and redirect
               // So we don't need to do anything here - keep basic data for now
             });
             return;
           } catch (error) {
-            console.warn('Invalid user data in localStorage:', error);
+            console.error('❌ Invalid user data in localStorage:', error);
             localStorage.removeItem('fixia_user_basic');
           }
         }
-        
+
+        console.log('🔍 No cached data found, checking authentication status...');
+
         // No basic data, check authentication status
         const isAuth = await secureTokenManager.isAuthenticated(false);
+        console.log('🔐 Authentication status:', isAuth);
+
         if (isAuth) {
           setIsAuthenticated(true);
           // Load user data if authenticated
+          console.log('✅ User authenticated, loading profile...');
           await loadUserData();
         } else {
+          console.log('❌ User not authenticated');
           setIsAuthenticated(false);
           setUser(null);
         }
       } catch (error: any) {
-        console.error('Error inicializando autenticación - Enhanced logging:', {
+        console.error('❌ Error initializing authentication:', {
           message: error?.message || 'Unknown initialization error',
           name: error?.name || 'Unknown error type',
+          isMobile: deviceInfo.isMobile,
           stack: error?.stack ? error.stack.substring(0, 300) + '...' : 'No stack trace available'
         });
         setIsAuthenticated(false);
         setUser(null);
       } finally {
         setLoading(false);
+        console.log('✅ Authentication initialization complete');
       }
     };
 
@@ -415,6 +448,14 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
   // Login seguro
   const login = async (email: string, password: string) => {
     setLoading(true);
+
+    const deviceInfo = {
+      isMobile: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),
+      userAgent: navigator.userAgent,
+    };
+
+    console.log('🔐 Login attempt...', { email, isMobile: deviceInfo.isMobile });
+
     try {
       // Validar credenciales sin sanitización agresiva
       const cleanEmail = email.trim().toLowerCase();
@@ -442,16 +483,24 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
         throw new Error('Email contiene contenido no válido');
       }
 
+      console.log('📤 Sending login request to backend...');
       const result = await secureTokenManager.login({
         email: cleanEmail,
         password: cleanPassword
       });
 
+      console.log('📥 Login response received:', {
+        success: result.success,
+        hasUser: !!result.user,
+        error: result.error,
+      });
+
       if (result.success && result.user) {
+        console.log('✅ Login successful, transforming user data...');
         const transformedUser = transformBackendUserSecurely(result.user);
         setUser(transformedUser);
         setIsAuthenticated(true);
-        
+
         // Almacenamiento local seguro
         const safeUserData = {
           id: transformedUser.id,
@@ -461,7 +510,18 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
           avatar: transformedUser.avatar,
         };
         localStorage.setItem('fixia_user_basic', JSON.stringify(safeUserData));
-        
+
+        // Verificar que los tokens se guardaron correctamente
+        const tokensStored = {
+          hasAccessToken: !!localStorage.getItem('fixia_access_token'),
+          hasRefreshToken: !!localStorage.getItem('fixia_refresh_token'),
+        };
+        console.log('💾 Tokens stored in localStorage:', tokensStored);
+
+        if (!tokensStored.hasAccessToken || !tokensStored.hasRefreshToken) {
+          console.error('⚠️ CRITICAL: Tokens not stored correctly in localStorage!');
+        }
+
         toast.success(`¡Hola ${transformedUser.name || 'Usuario'}! 👋`, {
           description: "Has iniciado sesión correctamente. Redirigiendo al dashboard...",
           duration: 15000, // 15 segundos
@@ -470,7 +530,7 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
         throw new Error(result.error || 'Error en el login');
       }
     } catch (error: any) {
-      console.error('Error en login:', error);
+      console.error('❌ Login error:', error);
       
       // Determinar el mensaje de error específico
       let errorTitle = "Error al iniciar sesión";
