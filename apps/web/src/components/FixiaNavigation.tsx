@@ -182,13 +182,14 @@ export const FixiaNavigation = memo(function FixiaNavigation() {
                         <div>
                           <p className="font-medium">{user?.name || 'Usuario'}</p>
                           <p className="text-sm text-muted-foreground">
-                            {user?.userType === 'professional' 
-                              ? (user?.professionalProfile?.description || 'Profesional') 
-                              : user?.planType === 'premium' 
-                                ? 'Cliente Premium' 
+                            {user?.userType === 'professional'
+                              ? (user?.professionalProfile?.description || 'Profesional')
+                              : user?.planType === 'premium'
+                                ? 'Cliente Premium'
                                 : 'Cliente'
                             }
                           </p>
+                          {/* Show rating stars for both professionals and clients */}
                           {user?.userType === 'professional' && user?.professionalProfile && (
                             <div className="flex items-center space-x-1 mt-1">
                               <div className="flex text-warning">
@@ -196,8 +197,20 @@ export const FixiaNavigation = memo(function FixiaNavigation() {
                                 {'☆'.repeat(5 - Math.floor(user.professionalProfile.averageRating || 0))}
                               </div>
                               <span className="text-xs text-muted-foreground">
-                                {user.professionalProfile.averageRating?.toFixed(1) || '0.0'} 
+                                {user.professionalProfile.averageRating?.toFixed(1) || '0.0'}
                                 ({user.professionalProfile.totalReviews || 0} reseñas)
+                              </span>
+                            </div>
+                          )}
+                          {user?.userType === 'client' && user?.averageRating !== undefined && (
+                            <div className="flex items-center space-x-1 mt-1">
+                              <div className="flex text-warning">
+                                {'★'.repeat(Math.floor(user.averageRating || 0))}
+                                {'☆'.repeat(5 - Math.floor(user.averageRating || 0))}
+                              </div>
+                              <span className="text-xs text-muted-foreground">
+                                {user.averageRating?.toFixed(1) || '0.0'}
+                                ({user.totalReviews || 0} reseñas)
                               </span>
                             </div>
                           )}
