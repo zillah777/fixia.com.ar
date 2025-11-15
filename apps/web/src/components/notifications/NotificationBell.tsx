@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from "framer-motion";
 import { Bell, Check, X, Trash2 } from 'lucide-react';
 import { Button } from '../ui/button';
@@ -27,9 +28,10 @@ interface NotificationBellProps {
   className?: string;
 }
 
-const notificationTypeConfig = {
+const notificationTypeConfig: Record<string, { color: string; icon: string }> = {
   order: { color: 'bg-blue-500', icon: '🔨' },
   payment: { color: 'bg-emerald-500', icon: '💰' },
+  payment_received: { color: 'bg-emerald-500', icon: '💰' },
   review: { color: 'bg-warning', icon: '⭐' },
   message: { color: 'bg-pink-500', icon: '💬' },
   promotion: { color: 'bg-orange-500', icon: '📋' },
@@ -39,13 +41,19 @@ const notificationTypeConfig = {
   job_started: { color: 'bg-blue-500', icon: '🚀' },
   job_completed: { color: 'bg-emerald-500', icon: '🎉' },
   job_milestone: { color: 'bg-yellow-500', icon: '⭐' },
-  review_received: { color: 'bg-orange-500', icon: '⭐' }
+  review_received: { color: 'bg-orange-500', icon: '⭐' },
+  review_requested: { color: 'bg-yellow-500', icon: '✍️' },
+  new_project: { color: 'bg-blue-500', icon: '📁' },
+  match_created: { color: 'bg-purple-500', icon: '🤝' },
+  match_completed: { color: 'bg-green-500', icon: '✅' },
+  phone_revealed: { color: 'bg-cyan-500', icon: '📞' }
 };
 
 export function NotificationBell({ className }: NotificationBellProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { notifications, loading, markAsRead, markAllAsRead, deleteNotification } = useNotifications();
   const { user } = useSecureAuth();
+  const navigate = useNavigate();
 
   // Calculate actual unread count from notifications to prevent phantom badges
   const actualUnreadCount = notifications.filter(n => !n.read).length;
@@ -53,30 +61,36 @@ export function NotificationBell({ className }: NotificationBellProps) {
 
   // Handle notification click
   const handleNotificationClick = (notification: Notification): void => {
-    if (!notification.read) {
-      markAsRead(notification.id);
+    try {
+      if (!notification.read) {
+        markAsRead(notification.id);
+      }
+
+      // Close the notification panel
+      setIsOpen(false);
+
+      // Get the appropriate redirect URL based on notification type and user role
+      let redirectUrl: string;
+
+      if (notification.actionUrl) {
+        // Prefer existing actionUrl if available
+        redirectUrl = notification.actionUrl;
+      } else {
+        // Use smart routing based on notification type and user role
+        const userType = (user?.userType || 'professional') as UserType;
+        redirectUrl = getNotificationUrl(
+          notification.type as NotificationType,
+          userType,
+          notification.metadata
+        );
+      }
+
+      // Use React Router navigate instead of window.location.href
+      navigate(redirectUrl);
+    } catch (error) {
+      console.error('Error handling notification click:', error);
+      toast.error('Error al abrir la notificación');
     }
-
-    // Close the notification panel
-    setIsOpen(false);
-
-    // Get the appropriate redirect URL based on notification type and user role
-    let redirectUrl: string;
-
-    if (notification.actionUrl) {
-      // Prefer existing actionUrl if available
-      redirectUrl = notification.actionUrl;
-    } else {
-      // Use smart routing based on notification type and user role
-      const userType = (user?.userType || 'professional') as UserType;
-      redirectUrl = getNotificationUrl(
-        notification.type as NotificationType,
-        userType,
-        notification.metadata
-      );
-    }
-
-    window.location.href = redirectUrl;
   };
 
   // Handle mark all as read
@@ -189,7 +203,7 @@ export function NotificationBell({ className }: NotificationBellProps) {
                     ) : (
                       <div className="space-y-0">
                         {notifications.map((notification, index) => {
-                          const config = notificationTypeConfig[notification.type];
+                          const config = notificationTypeConfig[notification.type] || { color: 'bg-gray-500', icon: '🔔' };
                           return (
                             <motion.div
                               key={notification.id}
@@ -255,7 +269,7 @@ export function NotificationBell({ className }: NotificationBellProps) {
                       className="w-full justify-center"
                       onClick={() => {
                         setIsOpen(false);
-                        window.location.href = '/notifications';
+                        navigate('/notifications');
                       }}
                     >
                       Ver todas las notificaciones
