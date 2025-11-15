@@ -22,6 +22,7 @@ import { SkipNavigation } from "../components/SkipNavigation";
 import { FixiaNavigation } from "../components/FixiaNavigation";
 import { SEOHelmet } from "../components/SEOHelmet";
 import { getPublicStats, PublicStats } from "../lib/api";
+import { InstallFixiaBanner } from "../components/InstallFixiaButton";
 
 const featuredServices = [
   {
@@ -1000,6 +1001,12 @@ export default function HomePage() {
       <FixiaNavigation />
       <main id="main-content" role="main" aria-label="Contenido principal" className="pb-24 lg:pb-0">
         <HeroSection />
+
+        {/* PWA Install Banner */}
+        <section className="container mx-auto mobile-container py-4 sm:py-6">
+          <InstallFixiaBanner />
+        </section>
+
         <CategoriesSection />
         <PremiumBenefitsSection />
         <FeaturedServicesSection />
