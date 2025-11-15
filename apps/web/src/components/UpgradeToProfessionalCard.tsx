@@ -71,22 +71,14 @@ export function UpgradeToProfessionalCard({ userType, onUpgradeSuccess }: Upgrad
     setIsSubmitting(true);
 
     try {
-      // Paso 1: Actualizar perfil profesional en backend
-      console.log('📝 Actualizando perfil profesional...');
-      await api.post('/users/upgrade-to-professional', {
+      // Paso 1: Guardar datos del perfil profesional localmente para después del pago
+      console.log('📝 Guardando datos del perfil profesional...');
+      localStorage.setItem('pending_professional_profile', JSON.stringify({
         bio: formData.bio,
         specialties: formData.specialties,
         years_experience: formData.years_experience || 0,
-      });
-
-      console.log('✅ Perfil profesional actualizado');
-      toast.success("Perfil actualizado. Redirigiendo a pago...", {
-        description: "Espera mientras procesamos tu suscripción",
-        duration: 3000,
-      });
-
-      // Pequeña pausa para que se procese el backend
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      }));
+      console.log('✅ Datos del perfil guardados localmente');
 
       // Paso 2: Crear preferencia de pago en MercadoPago
       console.log('💳 Creando preferencia de pago...');
@@ -94,14 +86,23 @@ export function UpgradeToProfessionalCard({ userType, onUpgradeSuccess }: Upgrad
 
       console.log('✅ Preferencia creada:', preference.id);
 
-      // Paso 3: Redirigir a MercadoPago checkout
+      // Paso 3: Mostrar mensaje de confirmación
+      toast.success("Redirigiendo a pago seguro...", {
+        description: "Tu perfil será creado después de completar el pago",
+        duration: 2000,
+      });
+
+      // Pequeña pausa para que se muestre el toast
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      // Paso 4: Redirigir a MercadoPago checkout
       console.log('🔗 Redirigiendo a checkout...');
       subscriptionService.redirectToCheckout(preference);
 
       // Si llegamos aquí sin error, el usuario fue redirigido
     } catch (error: unknown) {
-      console.error('❌ Error en el flujo de upgrade:', error);
-      const errorMessage = extractErrorMessage(error, 'Error al procesar el upgrade. Por favor intenta de nuevo.');
+      console.error('❌ Error en el flujo de pago:', error);
+      const errorMessage = extractErrorMessage(error, 'Error al procesar el pago. Por favor intenta de nuevo.');
       toast.error(errorMessage);
       setIsSubmitting(false);
     }
@@ -446,7 +447,7 @@ export function UpgradeToProfessionalCard({ userType, onUpgradeSuccess }: Upgrad
                 <div className="flex-1 space-y-1 min-w-0">
                   <h4 className="font-bold text-xs sm:text-sm text-warning">Premium $3.900/mes</h4>
                   <p className="text-xs sm:text-sm text-muted-foreground leading-tight">
-                    Serás redirigido al pago seguro
+                    Tu perfil se activará después de completar el pago
                   </p>
                 </div>
               </div>
@@ -502,9 +503,9 @@ export function UpgradeToProfessionalCard({ userType, onUpgradeSuccess }: Upgrad
             {/* Confirmation */}
             <div className="p-2.5 sm:p-3 rounded-lg bg-white/5 border border-white/10">
               <p className="text-[10px] sm:text-xs text-muted-foreground leading-relaxed space-y-1">
-                <span className="block">✓ Campos completados</span>
-                <span className="block">✓ Pago seguro</span>
-                <span className="block">✓ Cancela en cualquier momento</span>
+                <span className="block">✓ Completa el pago para activar</span>
+                <span className="block">✓ Pago 100% seguro con MercadoPago</span>
+                <span className="block">✓ Cancela la suscripción cuando quieras</span>
               </p>
             </div>
           </div>
