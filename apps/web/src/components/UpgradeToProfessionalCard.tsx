@@ -409,74 +409,116 @@ export function UpgradeToProfessionalCard({ userType, onUpgradeSuccess }: Upgrad
 
       {/* Confirmation Dialog */}
       <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-        <DialogContent className="sm:max-w-[500px] glass border-warning/30 backdrop-blur-xl">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-xl text-foreground">
-              <CreditCard className="h-5 w-5 text-warning" />
-              Confirmar Actualización a Profesional DUAL
+        <DialogContent className="sm:max-w-[550px] glass border-warning/40 backdrop-blur-xl max-h-[90vh] overflow-y-auto">
+          {/* Header with gradient background */}
+          <div className="sticky top-0 -mx-6 -mt-6 mb-6 px-6 pt-6 pb-4 bg-gradient-to-r from-warning/20 to-warning/5 border-b border-warning/20 rounded-t-lg">
+            <DialogTitle className="flex items-center gap-3 text-2xl font-bold text-foreground">
+              <div className="p-2 rounded-lg bg-warning/20">
+                <CreditCard className="h-6 w-6 text-warning" />
+              </div>
+              Confirmar tu Actualización
             </DialogTitle>
-            <DialogDescription className="text-base text-muted-foreground">
-              Antes de continuar, es importante que conozcas los siguientes detalles
+            <DialogDescription className="mt-2 text-sm text-muted-foreground/90">
+              Revisa los detalles importantes antes de continuar
             </DialogDescription>
-          </DialogHeader>
+          </div>
 
-          <div className="space-y-4 py-4">
-            {/* Subscription info */}
-            <div className="p-4 rounded-lg glass border border-warning/30 bg-warning/5">
+          {/* Main content - scrollable */}
+          <div className="space-y-5">
+            {/* Subscription Alert - Prominent */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              className="p-4 rounded-xl glass border border-warning/40 bg-gradient-to-r from-warning/15 to-warning/5 shadow-lg"
+            >
               <div className="flex items-start gap-3">
-                <AlertCircle className="h-5 w-5 text-warning flex-shrink-0 mt-0.5" />
-                <div className="space-y-2 flex-1">
-                  <h4 className="font-semibold text-sm text-warning">Suscripción Premium Requerida</h4>
+                <div className="p-2 rounded-lg bg-warning/20 flex-shrink-0">
+                  <AlertCircle className="h-5 w-5 text-warning" />
+                </div>
+                <div className="flex-1 space-y-1">
+                  <h4 className="font-bold text-sm text-warning">Suscripción Premium Requerida</h4>
                   <p className="text-sm text-muted-foreground leading-relaxed">
-                    Al confirmar, serás redirigido a la página de pago para activar tu suscripción Premium de <span className="font-bold text-foreground">$3.900/mes</span>.
+                    Al continuar, serás redirigido al pago de tu suscripción Premium de{' '}
+                    <span className="font-bold text-amber-400">$3.900/mes</span>
                   </p>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Benefits Grid */}
+            <div className="space-y-3">
+              <h4 className="font-semibold text-foreground text-sm flex items-center gap-2">
+                <Sparkles className="h-4 w-4 text-primary" />
+                ¿Qué obtendrás?
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {[
+                  'Publicar servicios ilimitados',
+                  'Recibir propuestas de clientes',
+                  'Acceso a herramientas profesionales',
+                  'Mantener cuenta cliente (DUAL)'
+                ].map((benefit, idx) => (
+                  <motion.div
+                    key={idx}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.3, delay: 0.05 * idx }}
+                    className="flex items-start gap-2 p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors border border-primary/10"
+                  >
+                    <Check className="h-4 w-4 text-success flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-muted-foreground">{benefit}</span>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+
+            {/* Profile Summary - Compact & Clean */}
+            <div className="p-3 rounded-lg glass border border-primary/20 bg-primary/5">
+              <div className="space-y-2">
+                <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
+                  <Briefcase className="h-4 w-4 text-primary" />
+                  Tu perfil profesional
+                </h4>
+                <div className="grid grid-cols-3 gap-3 pt-2">
+                  <div className="text-center">
+                    <div className="text-lg font-bold text-primary">{formData.bio.length}</div>
+                    <div className="text-xs text-muted-foreground">caracteres</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-lg font-bold text-success">{formData.specialties.length}</div>
+                    <div className="text-xs text-muted-foreground">especialidades</div>
+                  </div>
+                  {formData.years_experience > 0 && (
+                    <div className="text-center">
+                      <div className="text-lg font-bold text-info">{formData.years_experience}</div>
+                      <div className="text-xs text-muted-foreground">años exp.</div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
 
-            {/* Benefits reminder */}
-            <div className="space-y-2">
-              <h4 className="font-semibold text-sm text-foreground">¿Qué obtendrás?</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li className="flex items-start gap-2">
-                  <Check className="h-4 w-4 text-success flex-shrink-0 mt-0.5" />
-                  <span>Publicar servicios profesionales ilimitados</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <Check className="h-4 w-4 text-success flex-shrink-0 mt-0.5" />
-                  <span>Recibir propuestas de clientes potenciales</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <Check className="h-4 w-4 text-success flex-shrink-0 mt-0.5" />
-                  <span>Acceso a todas las herramientas profesionales</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <Check className="h-4 w-4 text-success flex-shrink-0 mt-0.5" />
-                  <span>Mantener tu cuenta de cliente (modo DUAL)</span>
-                </li>
-              </ul>
-            </div>
-
-            {/* Profile summary */}
-            <div className="p-3 rounded-lg glass border border-white/10">
-              <h4 className="font-semibold text-sm text-foreground mb-2">Tu perfil profesional:</h4>
-              <div className="space-y-1 text-sm text-muted-foreground">
-                <p>📝 Biografía: {formData.bio.length} caracteres</p>
-                <p>🎯 Especialidades: {formData.specialties.length} agregadas</p>
-                {formData.years_experience > 0 && (
-                  <p>⏱ Experiencia: {formData.years_experience} años</p>
-                )}
-              </div>
+            {/* Confirmation Text */}
+            <div className="p-3 rounded-lg bg-white/5 border border-white/10">
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                ✓ Completaste todos los campos requeridos
+                <br />
+                ✓ Serás redirigido a procesador de pagos seguro
+                <br />
+                ✓ Puedes cambiar o cancelar tu suscripción en cualquier momento
+              </p>
             </div>
           </div>
 
-          <DialogFooter className="flex-col sm:flex-row gap-2">
+          {/* Action Buttons - Sticky Footer */}
+          <div className="sticky bottom-0 -mx-6 -mb-6 mt-6 px-6 py-4 bg-gradient-to-r from-background/80 to-background/80 backdrop-blur-sm border-t border-white/10 rounded-b-lg flex flex-col-reverse sm:flex-row gap-3 sm:justify-end">
             <Button
               type="button"
               variant="outline"
               onClick={() => setShowConfirmDialog(false)}
               disabled={isSubmitting}
-              className="w-full sm:w-auto"
+              className="w-full sm:w-auto border-white/20 hover:bg-white/10 text-foreground"
             >
               Cancelar
             </Button>
@@ -484,12 +526,12 @@ export function UpgradeToProfessionalCard({ userType, onUpgradeSuccess }: Upgrad
               type="button"
               onClick={handleSubmit}
               disabled={isSubmitting}
-              className="w-full sm:w-auto liquid-gradient text-white font-bold"
+              className="w-full sm:w-auto liquid-gradient text-white font-bold shadow-lg hover:shadow-primary/50 transition-all h-11"
             >
               {isSubmitting ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Procesando...
+                  Procesando pago...
                 </>
               ) : (
                 <>
@@ -498,7 +540,7 @@ export function UpgradeToProfessionalCard({ userType, onUpgradeSuccess }: Upgrad
                 </>
               )}
             </Button>
-          </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
     </motion.div>
