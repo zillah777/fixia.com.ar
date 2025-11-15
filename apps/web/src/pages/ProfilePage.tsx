@@ -312,7 +312,20 @@ function ProfileHeader({ user, onUserUpdate }: any) {
               
               <div className="flex items-center space-x-2">
                 <Calendar className="h-4 w-4 text-muted-foreground" />
-                <span>Miembro desde {user?.created_at ? new Date(user.created_at).getFullYear() : user?.createdAt ? new Date(user.createdAt).getFullYear() : 'Fecha no disponible'}</span>
+                <span>
+                  Miembro desde {(() => {
+                    try {
+                      const dateString = user?.created_at || user?.createdAt;
+                      if (!dateString) return 'Fecha no disponible';
+                      const date = new Date(dateString);
+                      if (isNaN(date.getTime())) return 'Fecha no disponible';
+                      return date.getFullYear();
+                    } catch (e) {
+                      console.error('Error parsing date:', e);
+                      return 'Fecha no disponible';
+                    }
+                  })()}
+                </span>
               </div>
             </div>
           </div>
@@ -367,15 +380,40 @@ function SettingsSection() {
   // Auto-save function with debounce
   const autoSaveImplementation = async (field: string, value: any) => {
     try {
+      console.log(`[autoSave] Saving ${field}:`, value);
+
       const updatedUser = await api.put('/user/profile', { [field]: value });
+      console.log(`[autoSave] Response:`, updatedUser);
+
       // Refresh user context to ensure UI stays in sync with backend
       await refreshUserData();
+
+      // If it's a social network field, update local state to match backend
+      if (field.startsWith('social_')) {
+        const networkKey = field.replace('social_', '') as keyof typeof socialNetworks;
+        setSocialNetworks(prev => ({
+          ...prev,
+          [networkKey]: value
+        }));
+        console.log(`[autoSave] Updated local social networks state for ${networkKey}`);
+      }
+
       toast.success('✓ Cambio guardado', {
         description: 'Se guardó automáticamente',
         duration: 2000});
     } catch (error: any) {
       console.error('Error auto-saving:', error);
+      console.error('Error response:', error.response?.data);
       toast.error('Error al guardar el cambio');
+
+      // Revert the local state on error
+      if (field.startsWith('social_')) {
+        const networkKey = field.replace('social_', '') as keyof typeof socialNetworks;
+        setSocialNetworks(prev => ({
+          ...prev,
+          [networkKey]: user?.[field as keyof typeof user] || ''
+        }));
+      }
     }
   };
 

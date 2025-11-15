@@ -8,7 +8,7 @@ import {
   Clock, Users, TrendingUp, Shield, Briefcase,
   Star, Loader2
 } from "lucide-react";
-import { Linkedin, Twitter, Github } from "lucide-react";
+import { Linkedin, Twitter, Facebook } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
@@ -165,10 +165,10 @@ function ProfileHeader({ profile }: ProfileHeaderProps) {
                   </Button>
                 </a>
               )}
-              {profile.social_github && (
-                <a href={profile.social_github} target="_blank" rel="noopener noreferrer">
+              {profile.social_facebook && (
+                <a href={profile.social_facebook} target="_blank" rel="noopener noreferrer">
                   <Button variant="ghost" size="icon" className="h-9 w-9">
-                    <Github className="h-4 w-4" />
+                    <Facebook className="h-4 w-4 text-blue-600" />
                   </Button>
                 </a>
               )}

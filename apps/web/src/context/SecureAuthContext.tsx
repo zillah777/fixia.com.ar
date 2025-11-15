@@ -37,7 +37,7 @@ export interface User {
   // Social networks
   social_linkedin?: string;
   social_twitter?: string;
-  social_github?: string;
+  social_facebook?: string;
   social_instagram?: string;
 
   // Notification preferences
@@ -225,7 +225,7 @@ const transformBackendUserSecurely = (backendUser: any): User => {
     whatsapp_number: sanitizedWhatsapp || undefined,
     social_linkedin: backendUser.social_linkedin || undefined,
     social_twitter: backendUser.social_twitter || undefined,
-    social_github: backendUser.social_github || undefined,
+    social_facebook: backendUser.social_facebook || undefined,
     social_instagram: backendUser.social_instagram || undefined,
     notifications_messages: backendUser.notifications_messages ?? true,
     notifications_orders: backendUser.notifications_orders ?? true,
