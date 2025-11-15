@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Briefcase, Sparkles, Check, X, Plus, Loader2, Star, TrendingUp, Users, Zap, ChevronDown, ChevronUp, AlertCircle, CreditCard, ArrowRight } from "lucide-react";
+import { Briefcase, Sparkles, Check, X, Plus, Loader2, Star, TrendingUp, Users, Zap, ChevronDown, ChevronUp, AlertCircle, CreditCard, ArrowRight, CheckCircle2, Circle } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
