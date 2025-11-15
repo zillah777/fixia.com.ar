@@ -104,7 +104,7 @@ export function ProposalSubmissionCard({ opportunity, onClose, onSuccess }: Prop
           </div>
 
           {/* Scrollable content */}
-          <div className="overflow-y-auto max-h-[calc(90vh-180px)] p-6 space-y-6">
+          <div className="overflow-y-auto max-h-[calc(90vh-240px)] lg:max-h-[calc(85vh-240px)] xl:max-h-[calc(80vh-240px)] p-6 space-y-6">
             {/* Project Summary Card */}
             <div className="bg-gradient-to-br from-slate-800/80 to-slate-800/40 rounded-xl p-5 border border-white/5 space-y-4">
               {/* Client Info */}
