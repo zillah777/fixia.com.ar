@@ -387,16 +387,10 @@ function SettingsSection() {
 
       // Refresh user context to ensure UI stays in sync with backend
       await refreshUserData();
+      console.log(`[autoSave] Context refreshed after save`);
 
-      // If it's a social network field, update local state to match backend
-      if (field.startsWith('social_')) {
-        const networkKey = field.replace('social_', '') as keyof typeof socialNetworks;
-        setSocialNetworks(prev => ({
-          ...prev,
-          [networkKey]: value
-        }));
-        console.log(`[autoSave] Updated local social networks state for ${networkKey}`);
-      }
+      // Small delay to ensure state updates propagate
+      await new Promise(resolve => setTimeout(resolve, 100));
 
       toast.success('✓ Cambio guardado', {
         description: 'Se guardó automáticamente',
@@ -406,13 +400,22 @@ function SettingsSection() {
       console.error('Error response:', error.response?.data);
       toast.error('Error al guardar el cambio');
 
-      // Revert the local state on error
-      if (field.startsWith('social_')) {
-        const networkKey = field.replace('social_', '') as keyof typeof socialNetworks;
+      // On error, revert to the last known good state from context
+      const networkMap: Record<string, keyof typeof socialNetworks> = {
+        'social_linkedin': 'linkedin',
+        'social_twitter': 'twitter',
+        'social_facebook': 'facebook',
+        'social_instagram': 'instagram'
+      };
+
+      if (field in networkMap && user) {
+        const contextKey = `${field}` as keyof typeof user;
+        const localKey = networkMap[field];
         setSocialNetworks(prev => ({
           ...prev,
-          [networkKey]: user?.[field as keyof typeof user] || ''
+          [localKey]: (user?.[contextKey] as string) || ''
         }));
+        console.log(`[autoSave] Reverted ${field} to: ${user?.[contextKey]}`);
       }
     }
   };
