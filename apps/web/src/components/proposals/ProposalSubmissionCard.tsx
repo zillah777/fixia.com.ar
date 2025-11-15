@@ -111,7 +111,7 @@ export function ProposalSubmissionCard({ opportunity, onClose, onSuccess }: Prop
               {opportunity.client && (
                 <div className="flex items-center gap-3 pb-4 border-b border-white/10">
                   <Avatar className="h-12 w-12 ring-2 ring-primary/30">
-                    <AvatarImage src={opportunity.client.avatar} alt={opportunity.client.name} />
+                    <AvatarImage src={opportunity.client.avatar || undefined} alt={opportunity.client.name} />
                     <AvatarFallback className="bg-primary/20 text-primary">
                       {opportunity.client.name?.charAt(0)}
                     </AvatarFallback>
@@ -141,7 +141,7 @@ export function ProposalSubmissionCard({ opportunity, onClose, onSuccess }: Prop
                   <p className="text-xs text-white/50 font-medium uppercase tracking-wider">Presupuesto Cliente</p>
                   <div className="flex items-baseline gap-1">
                     <span className="text-2xl font-bold text-primary">
-                      ${opportunity.budget?.toLocaleString('es-AR') || '0'}
+                      ${typeof opportunity.budget === 'number' ? opportunity.budget.toLocaleString('es-AR') : '0'}
                     </span>
                     <span className="text-sm text-white/60">ARS</span>
                   </div>
@@ -225,7 +225,7 @@ export function ProposalSubmissionCard({ opportunity, onClose, onSuccess }: Prop
                   {proposalData.quotedPrice > 0 && (
                     <p className="text-xs text-success flex items-center gap-1">
                       <CheckCircle2 className="h-3.5 w-3.5" />
-                      ${proposalData.quotedPrice.toLocaleString('es-AR')} ARS
+                      ${(proposalData.quotedPrice || 0).toLocaleString('es-AR')} ARS
                     </p>
                   )}
                 </div>

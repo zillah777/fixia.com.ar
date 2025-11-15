@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Download, Check, Smartphone } from 'lucide-react';
 import { usePWA } from '../hooks/usePWA';
@@ -198,6 +198,16 @@ export function InstallFixiaBanner() {
   const { isInstallable, isInstalled, promptInstall } = usePWA();
   const [isInstalling, setIsInstalling] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
+
+  // Debug: Log PWA state for troubleshooting
+  useEffect(() => {
+    console.log('[InstallFixiaBanner] PWA Estado:', {
+      isInstallable,
+      isInstalled,
+      isDismissed,
+      willShow: !(!isInstallable || isInstalled || isDismissed)
+    });
+  }, [isInstallable, isInstalled, isDismissed]);
 
   const handleInstall = async () => {
     setIsInstalling(true);

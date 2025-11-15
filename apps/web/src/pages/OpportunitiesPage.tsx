@@ -445,7 +445,7 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
               {/* Client Avatar */}
               <div className="flex-shrink-0">
                 <Avatar className="h-12 w-12">
-                  <AvatarImage src={opportunity.client.avatar} />
+                  <AvatarImage src={opportunity.client.avatar || undefined} />
                   <AvatarFallback>{opportunity.client.name.charAt(0)}</AvatarFallback>
                 </Avatar>
               </div>
@@ -590,7 +590,7 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
               {/* Avatar */}
               <div className="relative flex-shrink-0">
                 <Avatar className="h-14 w-14 border-2 border-primary/30">
-                  <AvatarImage src={opportunity.client.avatar} />
+                  <AvatarImage src={opportunity.client.avatar || undefined} />
                   <AvatarFallback className="font-bold">{opportunity.client.name.charAt(0)}</AvatarFallback>
                 </Avatar>
                 {opportunity.client.verified && (
@@ -860,7 +860,7 @@ function ProposalForm({ opportunity, onClose, onSuccess }: { opportunity: Opport
               <div className="pt-2 border-t border-white/10">
                 <div className="flex items-center gap-3">
                   <Avatar className="h-8 w-8 border border-primary/30">
-                    <AvatarImage src={opportunity.client.avatar} alt={opportunity.client.name} />
+                    <AvatarImage src={opportunity.client.avatar || undefined} alt={opportunity.client.name} />
                     <AvatarFallback>{opportunity.client.name?.charAt(0)}</AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
