@@ -6,7 +6,7 @@ import {
   Edit3, Save, X, Plus, Heart, Clock, CheckCircle,
   Globe, Linkedin, Twitter, Instagram, Facebook,
   Bell, Lock, Trash2, AlertTriangle, Camera,
-  Download
+  Download, Loader2
 } from "lucide-react";
 import { FixiaNavigation } from "../components/FixiaNavigation";
 import { Button } from "../components/ui/button";
@@ -358,10 +358,13 @@ function SettingsSection() {
     newsletter: user?.notifications_newsletter ?? false
   });
   const [isSaving, setIsSaving] = useState(false);
+  const [editingField, setEditingField] = useState<string | null>(null);
+  const [savingField, setSavingField] = useState<string | null>(null);
 
   // Load user data when component mounts or user changes
+  // Only update if no field is being actively edited to prevent race conditions
   useEffect(() => {
-    if (user) {
+    if (user && !editingField) {
       setSocialNetworks({
         linkedin: user.social_linkedin || '',
         twitter: user.social_twitter || '',
@@ -375,32 +378,26 @@ function SettingsSection() {
         newsletter: user.notifications_newsletter ?? false
       });
     }
-  }, [user]);
+  }, [user, editingField]);
 
   // Auto-save function with debounce
   const autoSaveImplementation = async (field: string, value: any) => {
+    setSavingField(field);
+
     try {
       console.log(`[autoSave] Saving ${field}:`, value);
 
-      const updatedUser = await api.put('/user/profile', { [field]: value });
-      console.log(`[autoSave] Response:`, updatedUser);
+      await api.put('/user/profile', { [field]: value });
+      console.log(`[autoSave] Saved successfully`);
 
-      // Refresh user context to ensure UI stays in sync with backend
-      await refreshUserData();
-      console.log(`[autoSave] Context refreshed after save`);
-
-      // Small delay to ensure state updates propagate
-      await new Promise(resolve => setTimeout(resolve, 100));
-
-      toast.success('✓ Cambio guardado', {
-        description: 'Se guardó automáticamente',
-        duration: 2000});
+      toast.success('✓ Guardado', {
+        duration: 1500
+      });
     } catch (error: any) {
       console.error('Error auto-saving:', error);
-      console.error('Error response:', error.response?.data);
-      toast.error('Error al guardar el cambio');
+      toast.error('Error al guardar');
 
-      // On error, revert to the last known good state from context
+      // On error, revert to the last known good state from user context
       const networkMap: Record<string, keyof typeof socialNetworks> = {
         'social_linkedin': 'linkedin',
         'social_twitter': 'twitter',
@@ -415,13 +412,14 @@ function SettingsSection() {
           ...prev,
           [localKey]: (user?.[contextKey] as string) || ''
         }));
-        console.log(`[autoSave] Reverted ${field} to: ${user?.[contextKey]}`);
       }
+    } finally {
+      setSavingField(null);
     }
   };
 
-  // Debounced version - waits 800ms after user stops typing
-  const autoSave = useDebouncedCallback(autoSaveImplementation, 800);
+  // Debounced version - waits 1500ms after user stops typing
+  const autoSave = useDebouncedCallback(autoSaveImplementation, 1500);
 
   // Handle password change
   const handlePasswordChange = async () => {
@@ -603,58 +601,94 @@ function SettingsSection() {
           <div className="grid md:grid-cols-2 gap-4">
             <div className="flex items-center space-x-3">
               <Linkedin className="h-5 w-5 text-blue-500 flex-shrink-0" />
-              <Input
-                placeholder="https://linkedin.com/in/tu-perfil"
-                maxLength={255}
-                className="glass border-white/20"
-                value={socialNetworks.linkedin}
-                onChange={(e) => {
-                  setSocialNetworks({...socialNetworks, linkedin: e.target.value});
-                  autoSave('social_linkedin', e.target.value);
-                }}
-              />
+              <div className="relative flex-1">
+                <Input
+                  placeholder="https://linkedin.com/in/tu-perfil"
+                  maxLength={255}
+                  className="glass border-white/20"
+                  value={socialNetworks.linkedin}
+                  onFocus={() => setEditingField('social_linkedin')}
+                  onBlur={() => setEditingField(null)}
+                  onChange={(e) => {
+                    setSocialNetworks({...socialNetworks, linkedin: e.target.value});
+                    autoSave('social_linkedin', e.target.value);
+                  }}
+                />
+                {savingField === 'social_linkedin' && (
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                    <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="flex items-center space-x-3">
               <Twitter className="h-5 w-5 text-blue-400 flex-shrink-0" />
-              <Input
-                placeholder="https://twitter.com/tu-usuario"
-                maxLength={255}
-                className="glass border-white/20"
-                value={socialNetworks.twitter}
-                onChange={(e) => {
-                  setSocialNetworks({...socialNetworks, twitter: e.target.value});
-                  autoSave('social_twitter', e.target.value);
-                }}
-              />
+              <div className="relative flex-1">
+                <Input
+                  placeholder="https://twitter.com/tu-usuario"
+                  maxLength={255}
+                  className="glass border-white/20"
+                  value={socialNetworks.twitter}
+                  onFocus={() => setEditingField('social_twitter')}
+                  onBlur={() => setEditingField(null)}
+                  onChange={(e) => {
+                    setSocialNetworks({...socialNetworks, twitter: e.target.value});
+                    autoSave('social_twitter', e.target.value);
+                  }}
+                />
+                {savingField === 'social_twitter' && (
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                    <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="flex items-center space-x-3">
               <Facebook className="h-5 w-5 text-blue-600 flex-shrink-0" />
-              <Input
-                placeholder="https://facebook.com/tu-usuario"
-                maxLength={255}
-                className="glass border-white/20"
-                value={socialNetworks.facebook}
-                onChange={(e) => {
-                  setSocialNetworks({...socialNetworks, facebook: e.target.value});
-                  autoSave('social_facebook', e.target.value);
-                }}
-              />
+              <div className="relative flex-1">
+                <Input
+                  placeholder="https://facebook.com/tu-usuario"
+                  maxLength={255}
+                  className="glass border-white/20"
+                  value={socialNetworks.facebook}
+                  onFocus={() => setEditingField('social_facebook')}
+                  onBlur={() => setEditingField(null)}
+                  onChange={(e) => {
+                    setSocialNetworks({...socialNetworks, facebook: e.target.value});
+                    autoSave('social_facebook', e.target.value);
+                  }}
+                />
+                {savingField === 'social_facebook' && (
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                    <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="flex items-center space-x-3">
               <Instagram className="h-5 w-5 text-pink-500 flex-shrink-0" />
-              <Input
-                placeholder="https://instagram.com/tu-usuario"
-                maxLength={255}
-                className="glass border-white/20"
-                value={socialNetworks.instagram}
-                onChange={(e) => {
-                  setSocialNetworks({...socialNetworks, instagram: e.target.value});
-                  autoSave('social_instagram', e.target.value);
-                }}
-              />
+              <div className="relative flex-1">
+                <Input
+                  placeholder="https://instagram.com/tu-usuario"
+                  maxLength={255}
+                  className="glass border-white/20"
+                  value={socialNetworks.instagram}
+                  onFocus={() => setEditingField('social_instagram')}
+                  onBlur={() => setEditingField(null)}
+                  onChange={(e) => {
+                    setSocialNetworks({...socialNetworks, instagram: e.target.value});
+                    autoSave('social_instagram', e.target.value);
+                  }}
+                />
+                {savingField === 'social_instagram' && (
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                    <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </CardContent>

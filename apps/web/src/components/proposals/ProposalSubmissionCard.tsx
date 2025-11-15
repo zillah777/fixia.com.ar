@@ -71,7 +71,7 @@ export function ProposalSubmissionCard({ opportunity, onClose, onSuccess }: Prop
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 sm:p-6 md:p-8 lg:p-12"
         onClick={onClose}
       >
         <motion.div
@@ -79,7 +79,7 @@ export function ProposalSubmissionCard({ opportunity, onClose, onSuccess }: Prop
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.95, opacity: 0, y: 20 }}
           transition={{ type: "spring", duration: 0.5 }}
-          className="bg-gradient-to-b from-slate-900 via-slate-900 to-slate-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden relative border border-white/10"
+          className="bg-gradient-to-b from-slate-900 via-slate-900 to-slate-800 rounded-2xl shadow-2xl max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl w-full max-h-[90vh] lg:max-h-[85vh] xl:max-h-[80vh] overflow-hidden relative border border-white/10"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header with gradient accent */}
@@ -200,7 +200,7 @@ export function ProposalSubmissionCard({ opportunity, onClose, onSuccess }: Prop
               </div>
 
               {/* Price & Delivery Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 lg:gap-5">
                 {/* Price */}
                 <div className="space-y-2">
                   <Label className="text-white font-semibold text-sm flex items-center gap-2">
