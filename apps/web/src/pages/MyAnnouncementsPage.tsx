@@ -143,10 +143,6 @@ export default function MyAnnouncementsPage() {
     }
   };
 
-  const handleEdit = (projectId: string) => {
-    navigate(`/edit-opportunity/${projectId}`);
-  };
-
   const handleViewProposals = async (project: Project) => {
     try {
       // If proposals are not loaded, we need to ensure they are available
@@ -447,14 +443,6 @@ export default function MyAnnouncementsPage() {
                                 </div>
 
                                 <div className="flex items-center space-x-2">
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => handleEdit(project.id)}
-                                    aria-label="Editar anuncio"
-                                  >
-                                    <Edit className="h-4 w-4" aria-hidden="true" />
-                                  </Button>
                                   <Button
                                     variant="ghost"
                                     size="sm"
