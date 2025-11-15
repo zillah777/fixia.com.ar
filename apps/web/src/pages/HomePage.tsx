@@ -12,7 +12,8 @@ import {
   Palette, PenTool, Briefcase, HeadphonesIcon,
   ChevronRight, MessageSquare, MapPin,
   Crown, Phone, Mail, Gift, CreditCard, Building, User,
-  GraduationCap, Scissors, Leaf, Truck, Flame, Star
+  GraduationCap, Scissors, Leaf, Truck, Flame, Star,
+  Linkedin, Twitter, Facebook, Instagram
 } from "lucide-react";
 import { servicesService, Service } from "../lib/services";
 import { toast } from "sonner";
@@ -920,6 +921,49 @@ function Footer() {
               <Link to="/contact" className="text-primary hover:underline text-sm">
                 Página de Contacto →
               </Link>
+
+              {/* Social Media Links */}
+              <div className="mt-6 pt-6 border-t border-white/10">
+                <h5 className="font-medium text-foreground mb-3">Síguenos</h5>
+                <div className="flex items-center space-x-3">
+                  <a
+                    href="https://linkedin.com/company/fixia"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-muted-foreground hover:text-primary transition-colors"
+                    aria-label="LinkedIn de Fixia"
+                  >
+                    <Linkedin className="h-5 w-5" />
+                  </a>
+                  <a
+                    href="https://instagram.com/fixia.app"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-muted-foreground hover:text-primary transition-colors"
+                    aria-label="Instagram de Fixia"
+                  >
+                    <Instagram className="h-5 w-5" />
+                  </a>
+                  <a
+                    href="https://facebook.com/fixia.app"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-muted-foreground hover:text-primary transition-colors"
+                    aria-label="Facebook de Fixia"
+                  >
+                    <Facebook className="h-5 w-5" />
+                  </a>
+                  <a
+                    href="https://twitter.com/fixia_app"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-muted-foreground hover:text-primary transition-colors"
+                    aria-label="Twitter/X de Fixia"
+                  >
+                    <Twitter className="h-5 w-5" />
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
         </div>
