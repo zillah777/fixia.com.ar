@@ -766,7 +766,7 @@ function NotificationsTab() {
 
 function SubscriptionTab() {
   const navigate = useNavigate();
-  const { user, upgradeToPremium } = useSecureAuth();
+  const { user } = useSecureAuth();
   const [isProcessing, setIsProcessing] = useState(false);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [isCancelling, setIsCancelling] = useState(false);
@@ -775,11 +775,26 @@ function SubscriptionTab() {
   const handleUpgradeClick = async () => {
     setIsProcessing(true);
     try {
-      // Call the context method which handles MercadoPago integration
-      await upgradeToPremium();
+      // Create payment preference and redirect to MercadoPago
+      console.log('💳 Creating payment preference...');
+      const preference = await subscriptionService.createPaymentPreference('basic');
+
+      console.log('✅ Preference created:', preference.id);
+      toast.success('Redirigiendo a pago seguro...', {
+        description: 'Serás redirigido a MercadoPago',
+        duration: 2000,
+      });
+
+      // Small delay to show the toast
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      // Redirect to MercadoPago checkout
+      console.log('🔗 Redirecting to checkout...');
+      subscriptionService.redirectToCheckout(preference);
     } catch (error: any) {
       console.error('Error initiating payment:', error);
-      // Error toast is already shown by the context method
+      const errorMessage = error.response?.data?.message || error.message || 'Error al procesar el pago';
+      toast.error(errorMessage);
     } finally {
       setIsProcessing(false);
     }
