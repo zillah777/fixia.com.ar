@@ -80,16 +80,16 @@ export function ProposalSubmissionCard({ opportunity, onClose, onSuccess }: Prop
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.95, opacity: 0, y: 20 }}
           transition={{ type: "spring", duration: 0.5 }}
-          className="bg-gradient-to-b from-slate-900 via-slate-900 to-slate-800 rounded-2xl shadow-2xl max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl w-full max-h-[90vh] lg:max-h-[85vh] xl:max-h-[80vh] overflow-hidden relative border border-white/10"
+          className="bg-gradient-to-b from-slate-900 via-slate-900 to-slate-800 rounded-2xl shadow-2xl max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl w-full max-h-[90vh] lg:max-h-[85vh] xl:max-h-[80vh] border border-white/10 flex flex-col"
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Header with gradient accent */}
-          <div className="relative bg-gradient-to-r from-primary/20 via-primary/10 to-transparent p-6 border-b border-white/10">
+          {/* Header with gradient accent - FIXED */}
+          <div className="relative bg-gradient-to-r from-primary/20 via-primary/10 to-transparent p-6 border-b border-white/10 flex-shrink-0">
             <Button
               onClick={onClose}
               variant="ghost"
               size="icon"
-              className="absolute right-4 top-4 text-white/70 hover:text-white hover:bg-white/10 rounded-full"
+              className="absolute right-4 top-4 text-white/70 hover:text-white hover:bg-white/10 rounded-full z-10"
             >
               <X className="h-5 w-5" />
             </Button>
@@ -103,8 +103,8 @@ export function ProposalSubmissionCard({ opportunity, onClose, onSuccess }: Prop
             </div>
           </div>
 
-          {/* Scrollable content */}
-          <div className="overflow-y-auto max-h-[calc(90vh-240px)] lg:max-h-[calc(85vh-240px)] xl:max-h-[calc(80vh-240px)] p-6 space-y-6">
+          {/* Scrollable content - FLEX GROW */}
+          <div className="overflow-y-auto flex-1 p-6 space-y-6">
             {/* Project Summary Card */}
             <div className="bg-gradient-to-br from-slate-800/80 to-slate-800/40 rounded-xl p-5 border border-white/5 space-y-4">
               {/* Client Info */}
@@ -276,8 +276,8 @@ export function ProposalSubmissionCard({ opportunity, onClose, onSuccess }: Prop
             </div>
           </div>
 
-          {/* Footer Actions */}
-          <div className="border-t border-white/10 p-6 bg-slate-900/50 space-y-4">
+          {/* Footer Actions - FIXED */}
+          <div className="border-t border-white/10 p-6 bg-slate-900/50 space-y-4 flex-shrink-0">
             <div className="flex items-start gap-2 text-xs text-white/50">
               <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
               <p>
