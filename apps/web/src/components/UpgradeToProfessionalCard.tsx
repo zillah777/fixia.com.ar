@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { toast } from "sonner";
 import { api } from "../lib/api";
 import { extractErrorMessage } from "../utils/errorHandler";
+import { subscriptionService } from "../lib/services/subscription.service";
 
 interface UpgradeToProfessionalCardProps {
   userType: string;
@@ -70,31 +71,41 @@ export function UpgradeToProfessionalCard({ userType, onUpgradeSuccess }: Upgrad
     setIsSubmitting(true);
 
     try {
+      // Paso 1: Actualizar perfil profesional en backend
+      console.log('📝 Actualizando perfil profesional...');
       await api.post('/users/upgrade-to-professional', {
         bio: formData.bio,
         specialties: formData.specialties,
         years_experience: formData.years_experience || 0,
       });
 
-      toast.success("¡Felicitaciones! Tu cuenta ha sido actualizada a Profesional DUAL", {
-        description: "Ahora puedes publicar servicios y recibir propuestas",
-        duration: 5000,
+      console.log('✅ Perfil profesional actualizado');
+      toast.success("Perfil actualizado. Redirigiendo a pago...", {
+        description: "Espera mientras procesamos tu suscripción",
+        duration: 3000,
       });
 
-      setIsExpanded(false);
-      onUpgradeSuccess();
+      // Pequeña pausa para que se procese el backend
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
-      // Recargar página para actualizar contexto
-      setTimeout(() => {
-        window.location.reload();
-      }, 1500);
+      // Paso 2: Crear preferencia de pago en MercadoPago
+      console.log('💳 Creando preferencia de pago...');
+      const preference = await subscriptionService.createPaymentPreference('basic');
+
+      console.log('✅ Preferencia creada:', preference.id);
+
+      // Paso 3: Redirigir a MercadoPago checkout
+      console.log('🔗 Redirigiendo a checkout...');
+      subscriptionService.redirectToCheckout(preference);
+
+      // Si llegamos aquí sin error, el usuario fue redirigido
     } catch (error: unknown) {
-      console.error('Error upgrading to professional:', error);
-      const errorMessage = extractErrorMessage(error, 'Error al actualizar cuenta');
+      console.error('❌ Error en el flujo de upgrade:', error);
+      const errorMessage = extractErrorMessage(error, 'Error al procesar el upgrade. Por favor intenta de nuevo.');
       toast.error(errorMessage);
-    } finally {
       setIsSubmitting(false);
     }
+    // No reseteamos isSubmitting aquí porque se redirige a MercadoPago
   };
 
   return (

@@ -9,7 +9,9 @@ export interface SubscriptionPlan {
 
 export interface PaymentPreference {
   id: string;
-  init_point: string;
+  initPoint?: string;
+  init_point?: string;
+  sandboxInitPoint?: string;
   sandbox_init_point?: string;
 }
 
@@ -85,13 +87,15 @@ class SubscriptionService {
    * Redirect user to MercadoPago checkout
    */
   redirectToCheckout(preference: PaymentPreference): void {
-    // Use sandbox for testing, production for real payments
-    const checkoutUrl = preference.init_point;
+    // Try both camelCase and snake_case versions (backend may return either)
+    const checkoutUrl = preference.initPoint || preference.init_point;
 
     if (checkoutUrl) {
+      console.log('🔗 Redirecting to checkout:', checkoutUrl.substring(0, 80) + '...');
       window.location.href = checkoutUrl;
     } else {
-      throw new Error('URL de pago no disponible');
+      console.error('❌ Payment preference missing URL:', preference);
+      throw new Error('URL de pago no disponible. Por favor intenta de nuevo.');
     }
   }
 
