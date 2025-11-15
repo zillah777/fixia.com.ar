@@ -312,7 +312,7 @@ function ProfileHeader({ user, onUserUpdate }: any) {
               
               <div className="flex items-center space-x-2">
                 <Calendar className="h-4 w-4 text-muted-foreground" />
-                <span>Miembro desde {user?.createdAt ? new Date(user.createdAt).getFullYear() : 'Fecha no disponible'}</span>
+                <span>Miembro desde {user?.created_at ? new Date(user.created_at).getFullYear() : user?.createdAt ? new Date(user.createdAt).getFullYear() : 'Fecha no disponible'}</span>
               </div>
             </div>
           </div>
@@ -955,10 +955,10 @@ export default function ProfilePageFixed() {
                       <p className="text-muted-foreground mb-4">
                         Tu actividad aparecerá aquí cuando comiences a usar la plataforma.
                       </p>
-                      <Link to="/services">
+                      <Link to="/opportunities">
                         <Button className="liquid-gradient hover:opacity-90">
                           <Plus className="h-4 w-4 mr-2" />
-                          Explorar servicios
+                          Explorar oportunidades
                         </Button>
                       </Link>
                     </div>

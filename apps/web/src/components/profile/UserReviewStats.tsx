@@ -85,11 +85,11 @@ export function UserReviewStats({ userId, userName, showReviews = true }: UserRe
 
   const displayedReviews = showAllReviews ? reviews : reviews.slice(0, 3);
   const ratingPercentages = {
-    five: stats.rating_distribution.five_star > 0 ? (stats.rating_distribution.five_star / stats.total_reviews) * 100 : 0,
-    four: stats.rating_distribution.four_star > 0 ? (stats.rating_distribution.four_star / stats.total_reviews) * 100 : 0,
-    three: stats.rating_distribution.three_star > 0 ? (stats.rating_distribution.three_star / stats.total_reviews) * 100 : 0,
-    two: stats.rating_distribution.two_star > 0 ? (stats.rating_distribution.two_star / stats.total_reviews) * 100 : 0,
-    one: stats.rating_distribution.one_star > 0 ? (stats.rating_distribution.one_star / stats.total_reviews) * 100 : 0,
+    five: stats?.rating_distribution?.five_star && stats.total_reviews > 0 ? (stats.rating_distribution.five_star / stats.total_reviews) * 100 : 0,
+    four: stats?.rating_distribution?.four_star && stats.total_reviews > 0 ? (stats.rating_distribution.four_star / stats.total_reviews) * 100 : 0,
+    three: stats?.rating_distribution?.three_star && stats.total_reviews > 0 ? (stats.rating_distribution.three_star / stats.total_reviews) * 100 : 0,
+    two: stats?.rating_distribution?.two_star && stats.total_reviews > 0 ? (stats.rating_distribution.two_star / stats.total_reviews) * 100 : 0,
+    one: stats?.rating_distribution?.one_star && stats.total_reviews > 0 ? (stats.rating_distribution.one_star / stats.total_reviews) * 100 : 0,
   };
 
   return (
@@ -185,11 +185,11 @@ export function UserReviewStats({ userId, userName, showReviews = true }: UserRe
               <div className="space-y-3 pt-4 border-t border-white/10">
                 <p className="text-sm font-semibold text-white">Distribución de Calificaciones</p>
                 {[
-                  { stars: 5, count: stats.rating_distribution.five_star, percentage: ratingPercentages.five },
-                  { stars: 4, count: stats.rating_distribution.four_star, percentage: ratingPercentages.four },
-                  { stars: 3, count: stats.rating_distribution.three_star, percentage: ratingPercentages.three },
-                  { stars: 2, count: stats.rating_distribution.two_star, percentage: ratingPercentages.two },
-                  { stars: 1, count: stats.rating_distribution.one_star, percentage: ratingPercentages.one },
+                  { stars: 5, count: stats?.rating_distribution?.five_star || 0, percentage: ratingPercentages.five },
+                  { stars: 4, count: stats?.rating_distribution?.four_star || 0, percentage: ratingPercentages.four },
+                  { stars: 3, count: stats?.rating_distribution?.three_star || 0, percentage: ratingPercentages.three },
+                  { stars: 2, count: stats?.rating_distribution?.two_star || 0, percentage: ratingPercentages.two },
+                  { stars: 1, count: stats?.rating_distribution?.one_star || 0, percentage: ratingPercentages.one },
                 ].map((dist) => (
                   <div key={dist.stars} className="flex items-center gap-3">
                     <div className="flex gap-1 w-12">
