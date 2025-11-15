@@ -545,6 +545,3 @@ export function UpgradeToProfessionalCard({ userType, onUpgradeSuccess }: Upgrad
     </motion.div>
   );
 }
-
-// Import missing icons
-import { CheckCircle2, Circle } from "lucide-react";
