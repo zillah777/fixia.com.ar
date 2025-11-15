@@ -420,116 +420,103 @@ export function UpgradeToProfessionalCard({ userType, onUpgradeSuccess }: Upgrad
 
       {/* Confirmation Dialog */}
       <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-        <DialogContent className="sm:max-w-[550px] glass border-warning/40 backdrop-blur-xl max-h-[90vh] overflow-y-auto">
-          {/* Header with gradient background */}
-          <div className="sticky top-0 -mx-6 -mt-6 mb-6 px-6 pt-6 pb-4 bg-gradient-to-r from-warning/20 to-warning/5 border-b border-warning/20 rounded-t-lg">
-            <DialogTitle className="flex items-center gap-3 text-2xl font-bold text-foreground">
-              <div className="p-2 rounded-lg bg-warning/20">
-                <CreditCard className="h-6 w-6 text-warning" />
-              </div>
-              Confirmar tu Actualización
+        <DialogContent className="w-[95vw] sm:w-full max-w-[420px] gap-0 p-0 glass border-warning/40 backdrop-blur-xl">
+          {/* Header */}
+          <div className="px-4 sm:px-6 pt-4 sm:pt-6 pb-3 sm:pb-4 border-b border-warning/20">
+            <DialogTitle className="flex items-center gap-2 text-lg sm:text-xl font-bold text-foreground">
+              <CreditCard className="h-5 w-5 text-warning flex-shrink-0" />
+              Confirmar Actualización
             </DialogTitle>
-            <DialogDescription className="mt-2 text-sm text-muted-foreground/90">
-              Revisa los detalles importantes antes de continuar
+            <DialogDescription className="mt-1 text-xs sm:text-sm text-muted-foreground/90">
+              Revisa antes de continuar
             </DialogDescription>
           </div>
 
           {/* Main content - scrollable */}
-          <div className="space-y-5">
-            {/* Subscription Alert - Prominent */}
+          <div className="overflow-y-auto max-h-[calc(90vh-140px)] px-4 sm:px-6 py-4 space-y-4">
+            {/* Subscription Alert */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
-              className="p-4 rounded-xl glass border border-warning/40 bg-gradient-to-r from-warning/15 to-warning/5 shadow-lg"
+              className="p-3 sm:p-4 rounded-lg glass border border-warning/40 bg-warning/10"
             >
-              <div className="flex items-start gap-3">
-                <div className="p-2 rounded-lg bg-warning/20 flex-shrink-0">
-                  <AlertCircle className="h-5 w-5 text-warning" />
-                </div>
-                <div className="flex-1 space-y-1">
-                  <h4 className="font-bold text-sm text-warning">Suscripción Premium Requerida</h4>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    Al continuar, serás redirigido al pago de tu suscripción Premium de{' '}
-                    <span className="font-bold text-amber-400">$3.900/mes</span>
+              <div className="flex items-start gap-2 sm:gap-3">
+                <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 text-warning flex-shrink-0 mt-0.5" />
+                <div className="flex-1 space-y-1 min-w-0">
+                  <h4 className="font-bold text-xs sm:text-sm text-warning">Premium $3.900/mes</h4>
+                  <p className="text-xs sm:text-sm text-muted-foreground leading-tight">
+                    Serás redirigido al pago seguro
                   </p>
                 </div>
               </div>
             </motion.div>
 
-            {/* Benefits Grid */}
-            <div className="space-y-3">
-              <h4 className="font-semibold text-foreground text-sm flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-primary" />
-                ¿Qué obtendrás?
+            {/* Benefits - Compact */}
+            <div className="space-y-2">
+              <h4 className="font-semibold text-xs sm:text-sm text-foreground flex items-center gap-1.5">
+                <Sparkles className="h-3.5 w-3.5 text-primary flex-shrink-0" />
+                Incluye:
               </h4>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="space-y-1.5">
                 {[
                   'Publicar servicios ilimitados',
                   'Recibir propuestas de clientes',
-                  'Acceso a herramientas profesionales',
-                  'Mantener cuenta cliente (DUAL)'
+                  'Herramientas profesionales',
+                  'Mantener cuenta cliente'
                 ].map((benefit, idx) => (
                   <motion.div
                     key={idx}
-                    initial={{ opacity: 0, x: -10 }}
+                    initial={{ opacity: 0, x: -8 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.3, delay: 0.05 * idx }}
-                    className="flex items-start gap-2 p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors border border-primary/10"
+                    transition={{ duration: 0.2, delay: 0.05 * idx }}
+                    className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground"
                   >
-                    <Check className="h-4 w-4 text-success flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-muted-foreground">{benefit}</span>
+                    <Check className="h-3.5 w-3.5 text-success flex-shrink-0" />
+                    <span className="line-clamp-1">{benefit}</span>
                   </motion.div>
                 ))}
               </div>
             </div>
 
-            {/* Profile Summary - Compact & Clean */}
-            <div className="p-3 rounded-lg glass border border-primary/20 bg-primary/5">
-              <div className="space-y-2">
-                <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
-                  <Briefcase className="h-4 w-4 text-primary" />
-                  Tu perfil profesional
-                </h4>
-                <div className="grid grid-cols-3 gap-3 pt-2">
-                  <div className="text-center">
-                    <div className="text-lg font-bold text-primary">{formData.bio.length}</div>
-                    <div className="text-xs text-muted-foreground">caracteres</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-lg font-bold text-success">{formData.specialties.length}</div>
-                    <div className="text-xs text-muted-foreground">especialidades</div>
-                  </div>
-                  {formData.years_experience > 0 && (
-                    <div className="text-center">
-                      <div className="text-lg font-bold text-info">{formData.years_experience}</div>
-                      <div className="text-xs text-muted-foreground">años exp.</div>
-                    </div>
-                  )}
+            {/* Profile Summary */}
+            <div className="p-2.5 sm:p-3 rounded-lg glass border border-primary/20 bg-primary/5">
+              <div className="grid grid-cols-3 gap-2 sm:gap-3 text-center">
+                <div>
+                  <div className="text-sm sm:text-base font-bold text-primary">{formData.bio.length}</div>
+                  <div className="text-[10px] sm:text-xs text-muted-foreground">caracteres</div>
                 </div>
+                <div>
+                  <div className="text-sm sm:text-base font-bold text-success">{formData.specialties.length}</div>
+                  <div className="text-[10px] sm:text-xs text-muted-foreground">especialidades</div>
+                </div>
+                {formData.years_experience > 0 && (
+                  <div>
+                    <div className="text-sm sm:text-base font-bold text-info">{formData.years_experience}</div>
+                    <div className="text-[10px] sm:text-xs text-muted-foreground">años</div>
+                  </div>
+                )}
               </div>
             </div>
 
-            {/* Confirmation Text */}
-            <div className="p-3 rounded-lg bg-white/5 border border-white/10">
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                ✓ Completaste todos los campos requeridos
-                <br />
-                ✓ Serás redirigido a procesador de pagos seguro
-                <br />
-                ✓ Puedes cambiar o cancelar tu suscripción en cualquier momento
+            {/* Confirmation */}
+            <div className="p-2.5 sm:p-3 rounded-lg bg-white/5 border border-white/10">
+              <p className="text-[10px] sm:text-xs text-muted-foreground leading-relaxed space-y-1">
+                <span className="block">✓ Campos completados</span>
+                <span className="block">✓ Pago seguro</span>
+                <span className="block">✓ Cancela en cualquier momento</span>
               </p>
             </div>
           </div>
 
-          {/* Action Buttons - Sticky Footer */}
-          <div className="sticky bottom-0 -mx-6 -mb-6 mt-6 px-6 py-4 bg-gradient-to-r from-background/80 to-background/80 backdrop-blur-sm border-t border-white/10 rounded-b-lg flex flex-col-reverse sm:flex-row gap-3 sm:justify-end">
+          {/* Action Buttons */}
+          <div className="border-t border-white/10 px-4 sm:px-6 py-3 sm:py-4 flex flex-col-reverse sm:flex-row gap-2 sm:gap-3">
             <Button
               type="button"
               variant="outline"
               onClick={() => setShowConfirmDialog(false)}
               disabled={isSubmitting}
-              className="w-full sm:w-auto border-white/20 hover:bg-white/10 text-foreground"
+              className="h-9 sm:h-10 text-sm border-white/20 hover:bg-white/10 text-foreground"
             >
               Cancelar
             </Button>
@@ -537,17 +524,17 @@ export function UpgradeToProfessionalCard({ userType, onUpgradeSuccess }: Upgrad
               type="button"
               onClick={handleSubmit}
               disabled={isSubmitting}
-              className="w-full sm:w-auto liquid-gradient text-white font-bold shadow-lg hover:shadow-primary/50 transition-all h-11"
+              className="h-9 sm:h-10 text-sm liquid-gradient text-white font-bold shadow-lg hover:shadow-primary/50 transition-all flex-1"
             >
               {isSubmitting ? (
                 <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Procesando pago...
+                  <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />
+                  Procesando...
                 </>
               ) : (
                 <>
-                  <CreditCard className="h-4 w-4 mr-2" />
-                  Continuar al Pago
+                  <CreditCard className="h-3.5 w-3.5 mr-1.5" />
+                  Continuar
                 </>
               )}
             </Button>
