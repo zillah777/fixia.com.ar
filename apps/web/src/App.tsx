@@ -59,6 +59,11 @@ import "./utils/colorContrastAudit"; // Auto-runs audit in development
 // Toast notifications
 import { Toaster } from "./components/ui/sonner";
 
+// PWA Components
+import { PWAInstallPrompt } from "./components/PWAInstallPrompt";
+import { PWAStatus } from "./components/PWAStatus";
+import { PWAiOSInstallModal } from "./components/PWAiOSInstallModal";
+
 // Loading component for initial app load
 function LoadingScreen() {
   return (
@@ -535,6 +540,11 @@ export default function App() {
             
             {/* Toast notifications */}
             <Toaster />
+
+            {/* PWA Components */}
+            <PWAStatus />
+            <PWAInstallPrompt />
+            <PWAiOSInstallModal />
           </div>
         </NotificationProvider>
       </SecureAuthProvider>
