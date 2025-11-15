@@ -899,7 +899,7 @@ function SettingsSection() {
 }
 
 // Main Profile Page component
-export default function ProfilePageFixed() {
+export default function ProfilePage() {
   const { user, refreshUserData } = useSecureAuth();
   const navigate = useNavigate();
 
