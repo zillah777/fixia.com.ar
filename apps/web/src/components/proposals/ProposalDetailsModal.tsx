@@ -161,11 +161,11 @@ export function ProposalDetailsModal({
               <div className="flex items-center gap-1">
                 <Star className="h-4 w-4 text-amber-400 fill-amber-400" />
                 <span className="font-semibold text-white">
-                  {professional.professional_profile.average_rating.toFixed(1)}
+                  {(professional.professional_profile?.average_rating ?? 0).toFixed(1)}
                 </span>
               </div>
               <span className="text-white/60">
-                ({professional.professional_profile.total_reviews} reseñas)
+                ({professional.professional_profile?.total_reviews ?? 0} reseñas)
               </span>
             </div>
           )}

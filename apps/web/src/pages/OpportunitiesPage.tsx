@@ -700,7 +700,7 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
               </div>
               <div className="flex items-baseline gap-2">
                 <span className="text-3xl font-black text-primary">
-                  ARS ${opportunity.budget.toLocaleString('es-AR')}
+                  ARS ${(opportunity.budget ?? 0).toLocaleString('es-AR')}
                 </span>
               </div>
               <p className="text-xs text-muted-foreground">Monto que el cliente está dispuesto a pagar</p>

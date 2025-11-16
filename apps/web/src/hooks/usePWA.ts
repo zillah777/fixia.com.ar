@@ -42,9 +42,13 @@ export function usePWA() {
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
 
-    // Register service worker
+    // Register service worker and store cleanup function
+    let swUpdateIntervalCleanup: (() => void) | undefined;
+
     if ('serviceWorker' in navigator) {
-      registerServiceWorker();
+      registerServiceWorker().then(cleanup => {
+        swUpdateIntervalCleanup = cleanup;
+      });
     }
 
     return () => {
@@ -52,10 +56,15 @@ export function usePWA() {
       window.removeEventListener('appinstalled', handleAppInstalled);
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
+
+      // FIX: Clean up service worker update interval to prevent memory leak
+      if (swUpdateIntervalCleanup) {
+        swUpdateIntervalCleanup();
+      }
     };
   }, []);
 
-  const registerServiceWorker = async () => {
+  const registerServiceWorker = async (): Promise<(() => void) | undefined> => {
     try {
       const registration = await navigator.serviceWorker.register('/sw.js', {
         scope: '/',
@@ -80,13 +89,22 @@ export function usePWA() {
       });
 
       // Check for updates periodically (every hour)
-      setInterval(() => {
+      // FIX: Store interval ID and return cleanup function
+      const updateInterval = setInterval(() => {
         registration.update();
       }, 60 * 60 * 1000);
 
-      console.log('[PWA] Service Worker registered successfully');
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[PWA] Service Worker registered successfully');
+      }
+
+      // Return cleanup function to clear interval
+      return () => clearInterval(updateInterval);
     } catch (error) {
-      console.error('[PWA] Service Worker registration failed:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('[PWA] Service Worker registration failed:', error);
+      }
+      return undefined;
     }
   };
 
@@ -107,7 +125,9 @@ export function usePWA() {
 
       return false;
     } catch (error) {
-      console.error('[PWA] Install prompt error:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('[PWA] Install prompt error:', error);
+      }
       return false;
     }
   };
@@ -127,7 +147,9 @@ export function usePWA() {
     if ('caches' in window) {
       const cacheNames = await caches.keys();
       await Promise.all(cacheNames.map(cacheName => caches.delete(cacheName)));
-      console.log('[PWA] All caches cleared');
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[PWA] All caches cleared');
+      }
     }
 
     if (swRegistration) {

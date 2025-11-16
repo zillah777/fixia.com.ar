@@ -55,12 +55,20 @@ export function ProposalSubmissionCard({ opportunity, onClose, onSuccess }: Prop
       });
 
       toast.success("¡Propuesta enviada exitosamente!");
-      onClose();
-      if (onSuccess) onSuccess();
+
+      // FIX: Reset submitting state BEFORE closing to prevent "Can't perform a React state update on an unmounted component" warning
+      setSubmitting(false);
+
+      // FIX: Use setTimeout to ensure toast is shown and prevent race condition
+      setTimeout(() => {
+        onClose();
+        if (onSuccess) onSuccess();
+      }, 100);
     } catch (error: any) {
-      console.error('Error sending proposal:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error sending proposal:', error);
+      }
       toast.error(error?.response?.data?.message || "Error al enviar la propuesta");
-    } finally {
       setSubmitting(false);
     }
   };
@@ -216,7 +224,21 @@ export function ProposalSubmissionCard({ opportunity, onClose, onSuccess }: Prop
                       type="number"
                       placeholder="30000"
                       value={proposalData.quotedPrice === 0 ? '' : proposalData.quotedPrice}
-                      onChange={(e) => setProposalData({ ...proposalData, quotedPrice: parseInt(e.target.value) || 0 })}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        const parsedValue = parseInt(value, 10);
+
+                        // FIX: Allow empty field temporarily
+                        if (value === '') {
+                          setProposalData({ ...proposalData, quotedPrice: 0 });
+                          return;
+                        }
+
+                        // FIX: Validate that it's a valid positive number
+                        if (!isNaN(parsedValue) && parsedValue >= 0) {
+                          setProposalData({ ...proposalData, quotedPrice: parsedValue });
+                        }
+                      }}
                       className="bg-slate-800/80 border-white/10 pl-20 pr-4 h-12 text-white font-bold text-lg placeholder:text-white/30 focus:border-primary/50 rounded-lg"
                       min="0"
                       step="1000"

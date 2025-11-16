@@ -201,12 +201,14 @@ export function InstallFixiaBanner() {
 
   // Debug: Log PWA state for troubleshooting
   useEffect(() => {
-    console.log('[InstallFixiaBanner] PWA Estado:', {
-      isInstallable,
-      isInstalled,
-      isDismissed,
-      willShow: !(!isInstallable || isInstalled || isDismissed)
-    });
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[InstallFixiaBanner] PWA Estado:', {
+        isInstallable,
+        isInstalled,
+        isDismissed,
+        willShow: !(!isInstallable || isInstalled || isDismissed)
+      });
+    }
   }, [isInstallable, isInstalled, isDismissed]);
 
   const handleInstall = async () => {
