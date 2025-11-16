@@ -29,6 +29,12 @@ function AvatarImage({
     <AvatarPrimitive.Image
       data-slot="avatar-image"
       className={cn("aspect-square size-full", className)}
+      onError={(e) => {
+        console.error('[Avatar] Failed to load image:', props.src, e);
+      }}
+      onLoad={() => {
+        console.log('[Avatar] Successfully loaded:', props.src);
+      }}
       {...props}
     />
   );

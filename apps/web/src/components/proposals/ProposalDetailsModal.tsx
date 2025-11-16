@@ -183,7 +183,7 @@ export function ProposalDetailsModal({
             <p className="text-xs text-white/60 mb-1">Precio Ofrecido</p>
             <div className="flex items-baseline gap-2">
               <span className="text-3xl font-bold text-primary">
-                ${proposal.quoted_price.toLocaleString('es-AR')}
+                ${(proposal.quoted_price || 0).toLocaleString('es-AR')}
               </span>
               <span className="text-sm text-white/60">ARS</span>
             </div>

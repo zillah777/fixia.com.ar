@@ -170,6 +170,17 @@ export function getNotificationUrl(
     if (notificationType === 'message' && metadata.conversationId) {
       url = `/messages/${metadata.conversationId}`;
     }
+
+    // For match notifications, append match ID or opportunity ID
+    if (notificationType === 'match_created' && metadata.opportunityId) {
+      url = `/projects/${metadata.opportunityId}`;
+    }
+
+    if (notificationType === 'match_completed' && metadata.matchId) {
+      // If there's a specific match detail page, use it
+      // Otherwise, fallback to default routing
+      url = `/my-jobs/${metadata.matchId}`;
+    }
   }
 
   return url;

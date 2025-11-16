@@ -22,7 +22,7 @@ import { SkipNavigation } from "../components/SkipNavigation";
 import { FixiaNavigation } from "../components/FixiaNavigation";
 import { SEOHelmet } from "../components/SEOHelmet";
 import { getPublicStats, PublicStats } from "../lib/api";
-import { InstallFixiaBanner } from "../components/InstallFixiaButton";
+import { InstallFixiaBanner, InstallFixiaFab } from "../components/InstallFixiaButton";
 
 const featuredServices = [
   {
@@ -1015,6 +1015,7 @@ export default function HomePage() {
       </main>
       <Footer />
       <MobileBottomNavigation />
+      <InstallFixiaFab />
     </div>
   );
 }
