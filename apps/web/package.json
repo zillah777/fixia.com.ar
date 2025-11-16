@@ -20,7 +20,9 @@
     "test:all": "npm run test && npm run test:e2e",
     "api:local": "node scripts/switch-api.js local && echo '🚀 Restart your dev server to use localhost:4000'",
     "api:production": "node scripts/switch-api.js production && echo '🚀 Restart your dev server to use api.fixia.app'",
-    "clean": "rm -rf dist node_modules/.vite"
+    "clean": "rm -rf dist node_modules/.vite",
+    "validate:csp": "node scripts/validate-csp.js",
+    "validate:csp:prod": "node scripts/validate-csp.js https://fixiaweb.vercel.app"
   },
   "dependencies": {
     "@mercadopago/sdk-js": "^0.0.3",

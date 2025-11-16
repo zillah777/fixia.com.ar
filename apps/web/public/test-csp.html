@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSP Test Page - Fixia</title>
+  <style>
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #0a0a0b;
+      color: #fff;
+    }
+    h1 {
+      color: #3b82f6;
+      border-bottom: 2px solid #3b82f6;
+      padding-bottom: 10px;
+    }
+    .test-section {
+      margin: 30px 0;
+      padding: 20px;
+      background: #1a1a1b;
+      border-radius: 8px;
+      border: 1px solid #333;
+    }
+    .test-section h2 {
+      color: #60a5fa;
+      margin-top: 0;
+    }
+    .status {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-weight: bold;
+      margin-left: 10px;
+    }
+    .status.pass {
+      background: #10b981;
+      color: white;
+    }
+    .status.fail {
+      background: #ef4444;
+      color: white;
+    }
+    .status.pending {
+      background: #f59e0b;
+      color: white;
+    }
+    img {
+      max-width: 200px;
+      height: auto;
+      border-radius: 8px;
+      margin: 10px 0;
+      border: 2px solid #333;
+    }
+    code {
+      background: #000;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      color: #10b981;
+    }
+    .error-log {
+      background: #1a0000;
+      border: 1px solid #ef4444;
+      padding: 10px;
+      border-radius: 4px;
+      margin-top: 10px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    .error-log pre {
+      margin: 0;
+      color: #fca5a5;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Content Security Policy (CSP) Test Page</h1>
+  <p>Esta página prueba todas las directivas CSP configuradas en Fixia.</p>
+
+  <div class="test-section">
+    <h2>1. Imagen de Cloudinary (img-src) <span class="status pending" id="status-img">Pending</span></h2>
+    <p>Prueba: <code>img-src https://res.cloudinary.com</code></p>
+    <img
+      id="cloudinary-img"
+      src="https://res.cloudinary.com/dgoc9tfoz/image/upload/v1763257763/fixia/general/nbxz0zwr1gdl9h37aebp.png"
+      alt="Avatar de prueba de Cloudinary"
+      onerror="handleImageError('status-img', 'img-src Cloudinary FAILED')"
+      onload="handleImageSuccess('status-img', 'img-src Cloudinary OK')"
+    >
+    <div id="error-img" class="error-log" style="display: none;"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>2. Fetch a Cloudinary (connect-src) <span class="status pending" id="status-fetch">Pending</span></h2>
+    <p>Prueba: <code>connect-src https://res.cloudinary.com</code></p>
+    <button onclick="testCloudinaryFetch()">Ejecutar Fetch Test</button>
+    <div id="fetch-result"></div>
+    <div id="error-fetch" class="error-log" style="display: none;"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>3. Fetch a API Backend (connect-src) <span class="status pending" id="status-api">Pending</span></h2>
+    <p>Prueba: <code>connect-src https://fixia-api.onrender.com</code></p>
+    <button onclick="testAPIFetch()">Ejecutar API Test</button>
+    <div id="api-result"></div>
+    <div id="error-api" class="error-log" style="display: none;"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>4. Google Fonts (style-src, font-src) <span class="status pending" id="status-fonts">Pending</span></h2>
+    <p>Prueba: <code>style-src https://fonts.googleapis.com</code> + <code>font-src https://fonts.gstatic.com</code></p>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" onload="handleFontSuccess()" onerror="handleFontError()">
+    <p style="font-family: 'Inter', sans-serif; font-size: 24px; font-weight: 700;">
+      Este texto debería usar la fuente Inter de Google Fonts
+    </p>
+    <div id="error-fonts" class="error-log" style="display: none;"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>5. Imagen Data URI (img-src data:) <span class="status pending" id="status-data">Pending</span></h2>
+    <p>Prueba: <code>img-src data:</code></p>
+    <img
+      src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Ccircle cx='50' cy='50' r='40' fill='%233b82f6'/%3E%3C/svg%3E"
+      alt="SVG en base64"
+      onload="handleImageSuccess('status-data', 'img-src data: OK')"
+      onerror="handleImageError('status-data', 'img-src data: FAILED')"
+    >
+    <div id="error-data" class="error-log" style="display: none;"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>6. Blob URL (img-src blob:) <span class="status pending" id="status-blob">Pending</span></h2>
+    <p>Prueba: <code>img-src blob:</code></p>
+    <canvas id="canvas" style="display: none;"></canvas>
+    <img id="blob-img" alt="Imagen generada desde blob">
+    <div id="error-blob" class="error-log" style="display: none;"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>7. Resumen de CSP Headers</h2>
+    <pre id="csp-header" style="background: #000; padding: 10px; border-radius: 4px; overflow-x: auto;"></pre>
+  </div>
+
+  <script>
+    // Funciones de estado
+    function handleImageSuccess(statusId, message) {
+      const statusEl = document.getElementById(statusId);
+      statusEl.textContent = 'PASS';
+      statusEl.className = 'status pass';
+      console.log('✅', message);
+    }
+
+    function handleImageError(statusId, message) {
+      const statusEl = document.getElementById(statusId);
+      statusEl.textContent = 'FAIL';
+      statusEl.className = 'status fail';
+      console.error('❌', message);
+
+      const errorId = statusId.replace('status-', 'error-');
+      const errorEl = document.getElementById(errorId);
+      if (errorEl) {
+        errorEl.style.display = 'block';
+        errorEl.innerHTML = '<pre>CSP bloqueó la carga. Revisa la consola para detalles.</pre>';
+      }
+    }
+
+    function handleFontSuccess() {
+      handleImageSuccess('status-fonts', 'Google Fonts cargado correctamente');
+    }
+
+    function handleFontError() {
+      handleImageError('status-fonts', 'Google Fonts bloqueado por CSP');
+    }
+
+    // Test de Fetch a Cloudinary
+    async function testCloudinaryFetch() {
+      const statusEl = document.getElementById('status-fetch');
+      const resultEl = document.getElementById('fetch-result');
+      const errorEl = document.getElementById('error-fetch');
+
+      try {
+        const response = await fetch('https://res.cloudinary.com/dgoc9tfoz/image/upload/v1763257763/fixia/general/nbxz0zwr1gdl9h37aebp.png', {
+          method: 'HEAD'
+        });
+
+        if (response.ok) {
+          statusEl.textContent = 'PASS';
+          statusEl.className = 'status pass';
+          resultEl.innerHTML = '<p style="color: #10b981;">✅ Fetch exitoso. Status: ' + response.status + '</p>';
+          console.log('✅ connect-src Cloudinary OK');
+        } else {
+          throw new Error('Status: ' + response.status);
+        }
+      } catch (error) {
+        statusEl.textContent = 'FAIL';
+        statusEl.className = 'status fail';
+        resultEl.innerHTML = '<p style="color: #ef4444;">❌ Fetch bloqueado</p>';
+        errorEl.style.display = 'block';
+        errorEl.innerHTML = '<pre>' + error.toString() + '</pre>';
+        console.error('❌ connect-src Cloudinary FAILED:', error);
+      }
+    }
+
+    // Test de Fetch a API
+    async function testAPIFetch() {
+      const statusEl = document.getElementById('status-api');
+      const resultEl = document.getElementById('api-result');
+      const errorEl = document.getElementById('error-api');
+
+      try {
+        const response = await fetch('https://fixia-api.onrender.com/api/health', {
+          method: 'GET'
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          statusEl.textContent = 'PASS';
+          statusEl.className = 'status pass';
+          resultEl.innerHTML = '<p style="color: #10b981;">✅ API respondió: ' + JSON.stringify(data) + '</p>';
+          console.log('✅ connect-src API OK');
+        } else {
+          throw new Error('Status: ' + response.status);
+        }
+      } catch (error) {
+        statusEl.textContent = 'FAIL';
+        statusEl.className = 'status fail';
+        resultEl.innerHTML = '<p style="color: #ef4444;">❌ API fetch bloqueado o no disponible</p>';
+        errorEl.style.display = 'block';
+        errorEl.innerHTML = '<pre>' + error.toString() + '</pre>';
+        console.error('❌ connect-src API FAILED:', error);
+      }
+    }
+
+    // Test de Blob URL
+    function testBlobURL() {
+      try {
+        const canvas = document.getElementById('canvas');
+        canvas.width = 100;
+        canvas.height = 100;
+        const ctx = canvas.getContext('2d');
+
+        // Dibujar un círculo
+        ctx.fillStyle = '#10b981';
+        ctx.beginPath();
+        ctx.arc(50, 50, 40, 0, 2 * Math.PI);
+        ctx.fill();
+
+        canvas.toBlob((blob) => {
+          const url = URL.createObjectURL(blob);
+          const img = document.getElementById('blob-img');
+          img.onload = () => {
+            handleImageSuccess('status-blob', 'img-src blob: OK');
+            URL.revokeObjectURL(url);
+          };
+          img.onerror = () => {
+            handleImageError('status-blob', 'img-src blob: FAILED');
+          };
+          img.src = url;
+        });
+      } catch (error) {
+        handleImageError('status-blob', 'img-src blob: FAILED');
+        console.error('❌ Blob test failed:', error);
+      }
+    }
+
+    // Obtener y mostrar headers CSP
+    async function displayCSPHeaders() {
+      const cspHeaderEl = document.getElementById('csp-header');
+
+      try {
+        // Intentar obtener headers desde el documento actual
+        const metaCSP = document.querySelector('meta[http-equiv="Content-Security-Policy"]');
+        if (metaCSP) {
+          cspHeaderEl.textContent = 'CSP (meta tag):\n' + metaCSP.content;
+        } else {
+          cspHeaderEl.textContent = 'CSP configurado via HTTP headers (no visible desde JavaScript)\n\n';
+          cspHeaderEl.textContent += 'Abre DevTools → Network → Selecciona este HTML → Headers\n';
+          cspHeaderEl.textContent += 'Busca "content-security-policy" en Response Headers';
+        }
+      } catch (error) {
+        cspHeaderEl.textContent = 'No se pudieron obtener los headers CSP';
+      }
+    }
+
+    // Ejecutar tests al cargar
+    window.addEventListener('load', () => {
+      testBlobURL();
+      displayCSPHeaders();
+
+      // Log inicial
+      console.log('%c=== CSP Test Page Loaded ===', 'color: #3b82f6; font-size: 16px; font-weight: bold;');
+      console.log('Revisa los errores en la consola para ver violaciones CSP');
+      console.log('Errores que contengan "Content Security Policy" indican problemas de configuración');
+    });
+
+    // Capturar errores de CSP
+    window.addEventListener('securitypolicyviolation', (e) => {
+      console.error('🚨 CSP Violation:', {
+        blockedURI: e.blockedURI,
+        violatedDirective: e.violatedDirective,
+        originalPolicy: e.originalPolicy,
+        disposition: e.disposition
+      });
+    });
+  </script>
+</body>
+</html>
