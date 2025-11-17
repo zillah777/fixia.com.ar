@@ -22,7 +22,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Textarea } from "../components/ui/textarea";
 import { Label } from "../components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
-import { useAuth } from "../context/SecureAuthContext";
+import { useAuth } from "../context/AuthContext";
 import { toast } from "sonner";
 import { useOpportunities } from "../hooks/useOpportunities";
 
@@ -268,6 +268,7 @@ interface SearchAndFiltersProps {
   setLocationFilter: (filter: string) => void;
 }
 
+// NOTE: The 'refetch' prop was added to allow manual data refreshing.
 function SearchAndFilters({ 
   searchQuery, 
   setSearchQuery, 
@@ -467,7 +468,7 @@ function SearchAndFilters({
           
           <Button 
             variant="outline" size="sm" className="glass border-white/20"
-            onClick={() => refetch()}
+            onClick={refetch}
           >
             <RefreshCw className="h-4 w-4" />
           </Button>
@@ -925,7 +926,8 @@ export default function OpportunitiesPage() {
   const { 
     data: filteredOpportunities, 
     isLoading, 
-    isError 
+    isError,
+    refetch
   } = useOpportunities({
     searchQuery,
     selectedCategory,
@@ -934,7 +936,9 @@ export default function OpportunitiesPage() {
     urgencyFilter,
     locationFilter,
   });
-
+  
+  // Fallback to an empty array to prevent errors on initial render
+  // when filteredOpportunities is undefined.
   const opportunities = filteredOpportunities ?? [];
 
   return (
@@ -996,6 +1000,7 @@ export default function OpportunitiesPage() {
             setUrgencyFilter={setUrgencyFilter}
             locationFilter={locationFilter}
             setLocationFilter={setLocationFilter}
+            refetch={refetch}
           />
         </motion.div>
 
@@ -1018,9 +1023,9 @@ export default function OpportunitiesPage() {
           </div>
           
           <div className="flex items-center space-x-4 text-sm text-muted-foreground min-h-[20px]">
-            <span>{filteredOpportunities.filter(o => o.urgency === 'urgent').length} urgentes</span>
+            <span>{opportunities.filter(o => o.urgency === 'urgent').length} urgentes</span>
             <span>•</span>
-            <span>{filteredOpportunities.filter(o => o.featured).length} destacadas</span>
+            <span>{opportunities.filter(o => o.featured).length} destacadas</span>
           </div>
         </motion.div>
 

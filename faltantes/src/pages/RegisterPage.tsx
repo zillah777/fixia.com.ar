@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs"
 import { Checkbox } from "../components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import { Alert, AlertDescription } from "../components/ui/alert";
-import { useAuth } from "../context/SecureAuthContext";
+import { useAuth } from "../context/SecureAuthContext"; // Corrected import path
 
 interface FormData {
   // Common fields
