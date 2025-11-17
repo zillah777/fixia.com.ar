@@ -23,10 +23,12 @@ import { Textarea } from "../components/ui/textarea";
 import { Label } from "../components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { useAuth } from "../context/AuthContext";
-import { toast } from "sonner@2.0.3";
+import { toast } from "sonner";
+import { useOpportunities } from "../hooks/useOpportunities";
 
+import { useSubmitProposal } from "../hooks/useSubmitProposal";
 // Mock data for opportunities
-const mockOpportunities = [
+export const mockOpportunities = [
   {
     id: "opp_001",
     title: "Desarrollo de App Móvil para Delivery",
@@ -249,6 +251,23 @@ function Navigation() {
   );
 }
 
+interface SearchAndFiltersProps {
+  searchQuery: string;
+  setSearchQuery: (query: string) => void;
+  selectedCategory: string;
+  setSelectedCategory: (category: string) => void;
+  budgetRange: number[];
+  setBudgetRange: (range: number[]) => void;
+  sortBy: string;
+  setSortBy: (sort: string) => void;
+  viewMode: string;
+  setViewMode: (mode: string) => void;
+  urgencyFilter: string[];
+  setUrgencyFilter: (filter: string[]) => void;
+  locationFilter: string;
+  setLocationFilter: (filter: string) => void;
+}
+
 function SearchAndFilters({ 
   searchQuery, 
   setSearchQuery, 
@@ -264,7 +283,7 @@ function SearchAndFilters({
   setUrgencyFilter,
   locationFilter,
   setLocationFilter
-}: any) {
+}: SearchAndFiltersProps) {
   const [showFilters, setShowFilters] = useState(false);
 
   return (
@@ -767,6 +786,7 @@ function ProposalForm({ opportunity, onClose }: { opportunity: any, onClose: () 
   const [proposalData, setProposalData] = useState({
     coverLetter: '',
     proposedBudget: opportunity.budget.min,
+    // Aseguramos que el valor inicial sea un string válido para el Select
     deliveryTime: '',
     questions: ''
   });
@@ -871,11 +891,17 @@ function ProposalForm({ opportunity, onClose }: { opportunity: any, onClose: () 
           </Button>
           <Button 
             onClick={handleSubmit}
-            className="liquid-gradient hover:opacity-90"
-            disabled={!proposalData.coverLetter || !proposalData.deliveryTime}
+            className="liquid-gradient hover:opacity-90 w-48"
+            disabled={isPending || !proposalData.coverLetter || !proposalData.deliveryTime}
           >
-            <Send className="h-4 w-4 mr-2" />
-            Enviar Propuesta
+            {isPending ? (
+              <motion.div className="flex items-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                Enviando...
+              </motion.div>
+            ) : (
+              <><Send className="h-4 w-4 mr-2" /> Enviar Propuesta</>
+            )}
           </Button>
         </div>
       </div>
@@ -891,60 +917,21 @@ export default function OpportunitiesPage() {
   const [viewMode, setViewMode] = useState("grid");
   const [urgencyFilter, setUrgencyFilter] = useState(["all"]);
   const [locationFilter, setLocationFilter] = useState("all");
-  const [filteredOpportunities, setFilteredOpportunities] = useState(mockOpportunities);
 
-  useEffect(() => {
-    // Filter and sort opportunities
-    let filtered = mockOpportunities;
-    
-    if (selectedCategory !== "Todos") {
-      filtered = filtered.filter(opp => opp.category === selectedCategory);
-    }
-    
-    if (searchQuery) {
-      filtered = filtered.filter(opp => 
-        opp.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        opp.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        opp.skills.some(skill => skill.toLowerCase().includes(searchQuery.toLowerCase()))
-      );
-    }
-    
-    filtered = filtered.filter(opp => 
-      opp.budget.min >= budgetRange[0] && opp.budget.max <= budgetRange[1]
-    );
-    
-    if (locationFilter !== "all") {
-      if (locationFilter === "remote") {
-        filtered = filtered.filter(opp => opp.location === "Remoto");
-      }
-    }
-    
-    // Sort opportunities
-    switch (sortBy) {
-      case "budget_desc":
-        filtered.sort((a, b) => b.budget.max - a.budget.max);
-        break;
-      case "proposals_asc":
-        filtered.sort((a, b) => a.proposals - b.proposals);
-        break;
-      case "deadline":
-        // Sort by urgency and deadline
-        filtered.sort((a, b) => {
-          if (a.urgency === 'urgent' && b.urgency !== 'urgent') return -1;
-          if (b.urgency === 'urgent' && a.urgency !== 'urgent') return 1;
-          return 0;
-        });
-        break;
-      case "client_rating":
-        filtered.sort((a, b) => b.client.rating - a.client.rating);
-        break;
-      default:
-        // Keep original order for newest
-        break;
-    }
-    
-    setFilteredOpportunities(filtered);
-  }, [selectedCategory, searchQuery, budgetRange, sortBy, urgencyFilter, locationFilter]);
+  const { 
+    data: filteredOpportunities, 
+    isLoading, 
+    isError 
+  } = useOpportunities({
+    searchQuery,
+    selectedCategory,
+    budgetRange,
+    sortBy,
+    urgencyFilter,
+    locationFilter,
+  });
+
+  const opportunities = filteredOpportunities ?? [];
 
   return (
     <div className="min-h-screen bg-background">
@@ -1017,7 +1004,7 @@ export default function OpportunitiesPage() {
         >
           <div className="flex items-center space-x-4">
             <h2 className="text-lg font-semibold">
-              {filteredOpportunities.length} oportunidades encontradas
+              {isLoading ? "Buscando..." : `${opportunities.length} oportunidades encontradas`}
             </h2>
             {selectedCategory !== "Todos" && (
               <Badge className="bg-primary/20 text-primary border-primary/30">
@@ -1026,7 +1013,7 @@ export default function OpportunitiesPage() {
             )}
           </div>
           
-          <div className="flex items-center space-x-4 text-sm text-muted-foreground">
+          <div className="flex items-center space-x-4 text-sm text-muted-foreground min-h-[20px]">
             <span>{filteredOpportunities.filter(o => o.urgency === 'urgent').length} urgentes</span>
             <span>•</span>
             <span>{filteredOpportunities.filter(o => o.featured).length} destacadas</span>
@@ -1043,7 +1030,7 @@ export default function OpportunitiesPage() {
             : "space-y-6"
           }
         >
-          {filteredOpportunities.map((opportunity, index) => (
+          {opportunities.map((opportunity, index) => (
             <motion.div
               key={opportunity.id}
               initial={{ opacity: 0, y: 20 }}
@@ -1056,7 +1043,7 @@ export default function OpportunitiesPage() {
         </motion.div>
 
         {/* Load More */}
-        {filteredOpportunities.length > 0 && (
+        {opportunities.length > 0 && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -1071,7 +1058,7 @@ export default function OpportunitiesPage() {
         )}
 
         {/* Empty State */}
-        {filteredOpportunities.length === 0 && (
+        {!isLoading && opportunities.length === 0 && (
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}

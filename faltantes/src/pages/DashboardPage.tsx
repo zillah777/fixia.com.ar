@@ -13,6 +13,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Progress } from "../components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { useAuth } from "../context/AuthContext";
+import { useDashboardStats, useCurrentProjects, useRecentActivity } from "../hooks/useDashboardData";
 
 function Navigation() {
   const { user, logout } = useAuth();
@@ -163,46 +164,15 @@ function QuickActions() {
 }
 
 function RecentActivity() {
-  const activities = [
-    {
-      id: 1,
-      type: 'order',
-      title: 'Nuevo pedido recibido',
-      description: 'Desarrollo E-commerce - Cliente: TechStart',
-      time: 'Hace 2 horas',
-      status: 'new',
-      icon: DollarSign,
-      color: 'text-success'
-    },
-    {
-      id: 2,
-      type: 'message',
-      title: 'Mensaje de cliente',
-      description: 'Carlos Mendoza envió una consulta',
-      time: 'Hace 5 horas',
-      status: 'unread',
-      icon: MessageSquare,
-      color: 'text-primary'
-    },
-    {
-      id: 3,
-      type: 'review',
-      title: 'Nueva reseña recibida',
-      description: '5 estrellas - "Excelente trabajo"',
-      time: 'Ayer',
-      status: 'completed',
-      icon: Star,
-      color: 'text-warning'
-    }
-  ];
+  const { data: activities, isLoading } = useRecentActivity();
 
   return (
     <Card className="glass border-white/10">
       <CardHeader>
         <CardTitle>Actividad Reciente</CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
+      <CardContent className="min-h-[200px]">
+        {isLoading ? <p className="text-muted-foreground">Cargando actividad...</p> : <div className="space-y-4">
           {activities.map((activity) => {
             const Icon = activity.icon;
             return (
@@ -221,7 +191,7 @@ function RecentActivity() {
               </div>
             );
           })}
-        </div>
+        </div>}
         <div className="mt-4">
           <Button variant="outline" className="w-full glass border-white/20 hover:glass-medium">
             Ver Todo el Historial
@@ -233,44 +203,14 @@ function RecentActivity() {
 }
 
 function StatCards() {
-  const stats = [
-    {
-      title: "Ingresos del Mes",
-      value: "$3,247",
-      change: "+12.3%",
-      changeType: "positive",
-      icon: TrendingUp,
-      description: "vs. mes anterior"
-    },
-    {
-      title: "Servicios Activos",
-      value: "8",
-      change: "+2",
-      changeType: "positive", 
-      icon: Briefcase,
-      description: "servicios publicados"
-    },
-    {
-      title: "Clientes Satisfechos",
-      value: "156",
-      change: "+8",
-      changeType: "positive",
-      icon: Users,
-      description: "proyectos completados"
-    },
-    {
-      title: "Rating Promedio",
-      value: "4.9",
-      change: "+0.2",
-      changeType: "positive",
-      icon: Award,
-      description: "de 187 reseñas"
-    }
-  ];
+  const { data: stats, isLoading } = useDashboardStats();
 
   return (
     <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-      {stats.map((stat, index) => {
+      {isLoading && Array.from({ length: 4 }).map((_, index) => (
+        <Card key={index} className="glass border-white/10 h-[130px] p-6 flex items-center justify-center"><p className="text-muted-foreground">Cargando...</p></Card>
+      ))}
+      {!isLoading && stats?.map((stat, index) => {
         const Icon = stat.icon;
         return (
           <motion.div
@@ -308,35 +248,7 @@ function StatCards() {
 }
 
 function CurrentProjects() {
-  const projects = [
-    {
-      id: 1,
-      title: "E-commerce para ModaStyle",
-      client: "Ana García",
-      deadline: "En 5 días",
-      progress: 75,
-      status: "in_progress",
-      priority: "high"
-    },
-    {
-      id: 2,
-      title: "App Móvil FitTracker",
-      client: "Roberto Silva",
-      deadline: "En 12 días",
-      progress: 45,
-      status: "in_progress",
-      priority: "normal"
-    },
-    {
-      id: 3,
-      title: "Branding TechVision",
-      client: "María López",
-      deadline: "En 8 días",
-      progress: 90,
-      status: "review",
-      priority: "normal"
-    }
-  ];
+  const { data: projects, isLoading } = useCurrentProjects();
 
   return (
     <Card className="glass border-white/10">
@@ -348,8 +260,11 @@ function CurrentProjects() {
           </Button>
         </div>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
+      <CardContent className="min-h-[200px]">
+        {isLoading && <p className="text-muted-foreground">Cargando proyectos...</p>}
+        {!isLoading && !projects?.length && <p className="text-muted-foreground">No tienes proyectos activos.</p>}
+        {!isLoading && projects?.length && (
+          <div className="space-y-4">
           {projects.map((project) => (
             <div key={project.id} className="p-4 glass-medium rounded-lg">
               <div className="flex items-center justify-between mb-3">
@@ -380,7 +295,8 @@ function CurrentProjects() {
               </div>
             </div>
           ))}
-        </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

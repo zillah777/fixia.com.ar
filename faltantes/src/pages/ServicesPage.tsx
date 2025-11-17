@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { motion } from "motion/react";
 import { 
@@ -16,9 +16,10 @@ import { Checkbox } from "../components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import { Separator } from "../components/ui/separator";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "../components/ui/sheet";
+import { useServices } from "../hooks/useServices";
 
 // Mock data for services
-const mockServices = [
+export const mockServices = [
   {
     id: "srv_001",
     title: "Desarrollo de E-commerce Completo",
@@ -256,6 +257,19 @@ function Navigation() {
   );
 }
 
+interface SearchAndFiltersProps {
+  searchQuery: string;
+  setSearchQuery: (query: string) => void;
+  selectedCategory: string;
+  setSelectedCategory: (category: string) => void;
+  priceRange: number[];
+  setPriceRange: (range: number[]) => void;
+  sortBy: string;
+  setSortBy: (sort: string) => void;
+  viewMode: string;
+  setViewMode: (mode: string) => void;
+}
+
 function SearchAndFilters({ 
   searchQuery, 
   setSearchQuery, 
@@ -267,7 +281,7 @@ function SearchAndFilters({
   setSortBy,
   viewMode,
   setViewMode 
-}: any) {
+}: SearchAndFiltersProps) {
   const [showFilters, setShowFilters] = useState(false);
 
   return (
@@ -670,53 +684,20 @@ export default function ServicesPage() {
   const [priceRange, setPriceRange] = useState([0, 3000]);
   const [sortBy, setSortBy] = useState("relevance");
   const [viewMode, setViewMode] = useState("grid");
-  const [filteredServices, setFilteredServices] = useState(mockServices);
 
-  useEffect(() => {
-    // Filter and sort services
-    let filtered = mockServices;
-    
-    if (selectedCategory !== "Todos") {
-      filtered = filtered.filter(service => service.category === selectedCategory);
-    }
-    
-    if (searchQuery) {
-      filtered = filtered.filter(service => 
-        service.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        service.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        service.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
-      );
-    }
-    
-    filtered = filtered.filter(service => 
-      service.price >= priceRange[0] && service.price <= priceRange[1]
-    );
-    
-    // Sort services
-    switch (sortBy) {
-      case "price_asc":
-        filtered.sort((a, b) => a.price - b.price);
-        break;
-      case "price_desc":
-        filtered.sort((a, b) => b.price - a.price);
-        break;
-      case "rating":
-        filtered.sort((a, b) => b.rating - a.rating);
-        break;
-      case "popular":
-        filtered.sort((a, b) => b.completedProjects - a.completedProjects);
-        break;
-      case "newest":
-        // For demo purposes, shuffle array
-        filtered.sort(() => Math.random() - 0.5);
-        break;
-      default:
-        // Keep original order for relevance
-        break;
-    }
-    
-    setFilteredServices(filtered);
-  }, [selectedCategory, searchQuery, priceRange, sortBy]);
+  const { 
+    data: filteredServices, 
+    isLoading 
+  } = useServices({
+    searchQuery,
+    selectedCategory,
+    priceRange,
+    sortBy,
+  });
+
+  // Proporciona un array vacío como fallback mientras los datos cargan
+  // para evitar errores en los métodos .map y .length
+  const services = filteredServices ?? [];
 
   return (
     <div className="min-h-screen bg-background">
@@ -769,7 +750,7 @@ export default function ServicesPage() {
         >
           <div className="flex items-center space-x-4">
             <h2 className="text-lg font-semibold">
-              {filteredServices.length} servicios encontrados
+              {isLoading ? "Buscando..." : `${services.length} servicios encontrados`}
             </h2>
             {selectedCategory !== "Todos" && (
               <Badge className="bg-primary/20 text-primary border-primary/30">
@@ -779,7 +760,7 @@ export default function ServicesPage() {
           </div>
           
           <div className="text-sm text-muted-foreground">
-            Mostrando {filteredServices.length} de {mockServices.length} servicios
+            Mostrando {services.length} de {mockServices.length} servicios
           </div>
         </motion.div>
 
@@ -793,7 +774,7 @@ export default function ServicesPage() {
             : "space-y-6"
           }
         >
-          {filteredServices.map((service, index) => (
+          {services.map((service, index) => (
             <motion.div
               key={service.id}
               initial={{ opacity: 0, y: 20 }}
@@ -806,7 +787,7 @@ export default function ServicesPage() {
         </motion.div>
 
         {/* Load More */}
-        {filteredServices.length > 0 && (
+        {services.length > 0 && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -821,7 +802,7 @@ export default function ServicesPage() {
         )}
 
         {/* Empty State */}
-        {filteredServices.length === 0 && (
+        {!isLoading && services.length === 0 && (
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}

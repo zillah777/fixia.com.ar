@@ -536,7 +536,14 @@ export class OpportunitiesService {
           status: 'active',
         },
         include: {
-          proposal: true,
+          // OPTIMIZACIÓN: En lugar de traer toda la propuesta, seleccionamos solo lo necesario.
+          proposal: {
+            select: {
+              id: true,
+              status: true,
+              quoted_price: true,
+            }
+          },
           client: {
             select: {
               id: true,

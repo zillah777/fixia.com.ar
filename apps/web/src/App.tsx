@@ -46,6 +46,7 @@ const SubscriptionPending = lazy(() => import("./pages/subscription/Subscription
 // Context
 import { SecureAuthProvider, useSecureAuth } from "./context/SecureAuthContext";
 import { NotificationProvider } from "./context/NotificationContext";
+import { QueryProvider } from "./shared/providers/QueryProvider";
 
 // Error Boundaries
 import ErrorBoundary from "./components/ErrorBoundary";
@@ -526,10 +527,11 @@ export default function App() {
 
   return (
     <ErrorBoundary level="critical" name="App">
-      <SecureAuthProvider>
-        <NotificationProvider>
-          <div className="min-h-screen bg-background">
-            <AppRoutes />
+      <QueryProvider>
+        <SecureAuthProvider>
+          <NotificationProvider>
+            <div className="min-h-screen bg-background">
+              <AppRoutes />
             
             {/* Background decorative elements */}
             <div className="fixed inset-0 pointer-events-none overflow-hidden">
@@ -548,6 +550,7 @@ export default function App() {
           </div>
         </NotificationProvider>
       </SecureAuthProvider>
+    </QueryProvider>
     </ErrorBoundary>
   );
 }

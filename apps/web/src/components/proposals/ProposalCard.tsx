@@ -83,26 +83,10 @@ export function ProposalCard({
       toast.success('Propuesta aceptada exitosamente. Ya puedes contactar al profesional por WhatsApp.');
       onProposalUpdated?.(proposal.id, 'accepted');
       setShowWhatsApp(true);
-      // Crear match SOLO si es pending y tienes todos los datos
-      if (proposal.status === 'pending' && user && professional.id) {
-        try {
-          await matchService.createMatch({
-            proposalId: proposal.id,
-            projectId,
-            clientId: user.id,
-            professionalId: professional.id
-          });
-          toast.success('¡Match creado exitosamente! El profesional puede marcar como completado cuando termine.');
-          onAfterMatchCreated?.(); // DISPARA refresh del Dashboard si está disponible
-        } catch (err: any) {
-          if (err?.response?.status === 409) {
-            toast('El match ya existe para esta propuesta/trabajo.');
-            onAfterMatchCreated?.(); // Igual refresca, puede que haya cambios
-          } else {
-            toast.error('Error al crear el match.');
-          }
-        }
-      }
+      // El match ahora se crea automáticamente en el backend.
+      // Disparamos el refresco del dashboard para reflejar el nuevo estado.
+      toast.info('Match creado automáticamente. Refrescando datos...');
+      onAfterMatchCreated?.();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Error al aceptar la propuesta');
     } finally {
