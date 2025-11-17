@@ -2,19 +2,23 @@
   "name": "fixia-monorepo",
   "version": "1.0.0",
   "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "packageManager": "npm@10.2.4",
   "scripts": {
-    "build:api": "cd apps/api && npm run build",
-    "build:web": "cd apps/web && npm run build",
-    "dev": "cd apps/api && npm run start:dev",
-    "dev:web": "cd apps/web && npm run dev",
-    "install:api": "cd apps/api && npm install",
-    "install:web": "cd apps/web && npm install",
-    "install:all": "npm run install:api && npm run install:web"
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "engines": {
     "node": "20.x"
   },
-  "dependencies": {
-    "@tanstack/react-query": "^5.90.10"
+  "devDependencies": {
+    "prettier": "^3.2.5",
+    "turbo": "^2.0.6"
   }
 }
+
+
