@@ -21,7 +21,7 @@ import { Progress } from "../components/ui/progress";
 import { Alert, AlertDescription } from "../components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { useAuth } from "../context/AuthContext";
-import { toast } from "sonner@2.0.3";
+import { toast } from "sonner";
 
 const categories = [
   { value: "web-development", label: "Desarrollo Web", icon: Globe },
@@ -879,7 +879,7 @@ function FinalStep({ data, setData }: { data: ProjectData; setData: (data: Proje
                 </div>
                 <Switch
                   checked={data.isActive}
-                  onCheckedChange={(checked) => setData({ ...data, isActive: checked })}
+                  onCheckedChange={(checked: boolean) => setData({ ...data, isActive: checked })}
                 />
               </div>
               
@@ -892,7 +892,7 @@ function FinalStep({ data, setData }: { data: ProjectData; setData: (data: Proje
                 </div>
                 <Switch
                   checked={data.allowRevisions}
-                  onCheckedChange={(checked) => setData({ ...data, allowRevisions: checked })}
+                  onCheckedChange={(checked: boolean) => setData({ ...data, allowRevisions: checked })}
                 />
               </div>
               
@@ -905,7 +905,7 @@ function FinalStep({ data, setData }: { data: ProjectData; setData: (data: Proje
                 </div>
                 <Switch
                   checked={data.instantDelivery}
-                  onCheckedChange={(checked) => setData({ ...data, instantDelivery: checked })}
+                  onCheckedChange={(checked: boolean) => setData({ ...data, instantDelivery: checked })}
                 />
               </div>
             </div>
