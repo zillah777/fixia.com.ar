@@ -2,23 +2,25 @@
   "name": "fixia-monorepo",
   "version": "1.0.0",
   "private": true,
-  "workspaces": [
-    "apps/*"
-  ],
+  "workspaces": ["apps/*"],
   "packageManager": "npm@10.2.4",
+  "type": "module",
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "clean": "rimraf node_modules",
+    "prepare": "husky install"
   },
   "engines": {
     "node": "20.x"
   },
   "devDependencies": {
     "prettier": "^3.2.5",
-    "turbo": "^2.0.6"
+    "turbo": "2.0.6",
+    "rimraf": "^5.0.5",
+    "husky": "^9.0.7"
   }
 }
-
 
