@@ -80,7 +80,9 @@
     "msw": "^2.10.5",
     "node-fetch": "^2.7.0",
     "terser": "^5.19.2",
-    "ts-jest": "^29.4.1"
+    "ts-jest": "^29.4.1",
+    "typescript": "^5.9.3",
+    "ts-node": "^10.9.2"
   },
   "scripts": {
     "dev": "vite",
