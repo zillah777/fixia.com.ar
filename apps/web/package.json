@@ -1,3 +1,4 @@
+
 {
   "name": "web",
   "version": "0.1.0",
@@ -57,8 +58,7 @@
     "tailwind-merge": "*",
     "tailwindcss": "^3.4.0",
     "vaul": "*",
-    "vite": "^5.4.19",
-    "typescript": "^5.9.3"
+    "vite": "^5.4.19"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.8.0",
@@ -81,11 +81,11 @@
     "node-fetch": "^2.7.0",
     "terser": "^5.19.2",
     "ts-jest": "^29.4.1",
-    "typescript": "^5.9.3",
-    "ts-node": "^10.9.2"
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
   },
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build"
+    "build": "tsc --noEmit && vite build"
   }
 }
