@@ -1,3 +1,4 @@
+
 {
   "name": "web",
   "version": "0.1.0",
@@ -57,7 +58,8 @@
     "tailwind-merge": "*",
     "tailwindcss": "^3.4.0",
     "vaul": "*",
-    "vite": "^5.4.19"
+    "vite": "^5.4.19",
+    "typescript": "^5.9.3"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.8.0",
@@ -66,8 +68,8 @@
     "@types/jest": "^30.0.0",
     "@types/node": "^20.19.25",
     "@types/node-fetch": "^2.6.13",
-    "@types/react": "^18.3.26",
-    "@types/react-dom": "^18.3.7",
+    "@types/react": "^18.3.1",
+    "@types/react-dom": "^18.3.1",
     "@typescript-eslint/eslint-plugin": "^8.41.0",
     "@typescript-eslint/parser": "^8.41.0",
     "eslint": "^8.57.1",
@@ -79,9 +81,7 @@
     "msw": "^2.10.5",
     "node-fetch": "^2.7.0",
     "terser": "^5.19.2",
-    "ts-jest": "^29.4.1",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.9.3"
+    "ts-jest": "^29.4.1"
   },
   "scripts": {
     "dev": "vite",
