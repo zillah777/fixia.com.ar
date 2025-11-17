@@ -1,64 +1,55 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react-swc';
-import path from 'path';
 
-export default defineConfig({
-  plugins: [react()],
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
-    },
-  },
-  build: {
-    outDir: 'dist',
-    sourcemap: false,
-    chunkSizeWarningLimit: 1000,
-    rollupOptions: {
-      output: {
-        entryFileNames: 'assets/[name].[hash].js',
-        chunkFileNames: 'assets/[name].[hash].js',
-        assetFileNames: 'assets/[name].[hash].[ext]',
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-          router: ['react-router-dom'],
-          ui: ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu'],
-        },
+  import { defineConfig } from 'vite';
+  import react from '@vitejs/plugin-react-swc';
+  import path from 'path';
+
+  export default defineConfig({
+    plugins: [react()],
+    resolve: {
+      extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
+      alias: {
+        'sonner@2.0.3': 'sonner',
+        'recharts@2.15.2': 'recharts',
+        'react-resizable-panels@2.1.7': 'react-resizable-panels',
+        'react-hook-form@7.55.0': 'react-hook-form',
+        'react-day-picker@8.10.1': 'react-day-picker',
+        'next-themes@0.4.6': 'next-themes',
+        'lucide-react@0.487.0': 'lucide-react',
+        'input-otp@1.4.2': 'input-otp',
+        'embla-carousel-react@8.6.0': 'embla-carousel-react',
+        'cmdk@1.1.1': 'cmdk',
+        'class-variance-authority@0.7.1': 'class-variance-authority',
+        '@radix-ui/react-tooltip@1.1.8': '@radix-ui/react-tooltip',
+        '@radix-ui/react-toggle@1.1.2': '@radix-ui/react-toggle',
+        '@radix-ui/react-toggle-group@1.1.2': '@radix-ui/react-toggle-group',
+        '@radix-ui/react-tabs@1.1.3': '@radix-ui/react-tabs',
+        '@radix-ui/react-switch@1.1.3': '@radix-ui/react-switch',
+        '@radix-ui/react-slot@1.1.2': '@radix-ui/react-slot',
+        '@radix-ui/react-slider@1.2.3': '@radix-ui/react-slider',
+        '@radix-ui/react-separator@1.1.2': '@radix-ui/react-separator',
+        '@radix-ui/react-scroll-area@1.2.3': '@radix-ui/react-scroll-area',
+        '@radix-ui/react-radio-group@1.2.3': '@radix-ui/react-radio-group',
+        '@radix-ui/react-progress@1.1.2': '@radix-ui/react-progress',
+        '@radix-ui/react-navigation-menu@1.2.5': '@radix-ui/react-navigation-menu',
+        '@radix-ui/react-menubar@1.1.6': '@radix-ui/react-menubar',
+        '@radix-ui/react-label@2.1.2': '@radix-ui/react-label',
+        '@radix-ui/react-hover-card@1.1.6': '@radix-ui/react-hover-card',
+        '@radix-ui/react-dropdown-menu@2.1.6': '@radix-ui/react-dropdown-menu',
+        '@radix-ui/react-context-menu@2.2.6': '@radix-ui/react-context-menu',
+        '@radix-ui/react-collapsible@1.1.3': '@radix-ui/react-collapsible',
+        '@radix-ui/react-checkbox@1.1.4': '@radix-ui/react-checkbox',
+        '@radix-ui/react-avatar@1.1.3': '@radix-ui/react-avatar',
+        '@radix-ui/react-aspect-ratio@1.1.2': '@radix-ui/react-aspect-ratio',
+        '@radix-ui/react-accordion@1.2.3': '@radix-ui/react-accordion',
+        '@': path.resolve(__dirname, './src'),
       },
-      treeshake: {
-        moduleSideEffects: 'no-external',
-        propertyReadSideEffects: false,
-        tryCatchDeoptimization: false,
-      },
     },
-    assetsDir: 'assets',
-    emptyOutDir: true,
-    minify: 'esbuild',
-    cssCodeSplit: true,
-  },
-  server: {
-    port: 3000,
-    host: true,
-    // Enable SPA fallback for development
-    historyApiFallback: true,
-    headers: {
-      'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://fonts.googleapis.com https://sdk.mercadopago.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://res.cloudinary.com https://fonts.googleapis.com https://fonts.gstatic.com http://localhost:* http://127.0.0.1:*; connect-src 'self' http://localhost:* http://127.0.0.1:* ws://localhost:* ws://127.0.0.1:* https://api.fixia.app https://fixia-api.onrender.com wss://fixia-api.onrender.com https://res.cloudinary.com https://api.cloudinary.com https://fonts.googleapis.com https://fonts.gstatic.com https://api.mercadopago.com; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self' http://localhost:* https://api.fixia.app https://fixia-api.onrender.com https://api.mercadopago.com",
-      'X-Content-Type-Options': 'nosniff',
-      'X-Frame-Options': 'DENY',
-      'X-XSS-Protection': '1; mode=block',
-      'Referrer-Policy': 'strict-origin-when-cross-origin',
+    build: {
+      target: 'esnext',
+      outDir: 'build',
     },
-  },
-  preview: {
-    port: 4173,
-    host: true,
-    // Enable SPA fallback for preview
-    historyApiFallback: true,
-    headers: {
-      'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://fonts.googleapis.com https://sdk.mercadopago.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://res.cloudinary.com https://fonts.googleapis.com https://fonts.gstatic.com; connect-src 'self' https://api.fixia.app https://fixia-api.onrender.com wss://fixia-api.onrender.com https://res.cloudinary.com https://api.cloudinary.com https://fonts.googleapis.com https://fonts.gstatic.com https://api.mercadopago.com; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self' https://api.fixia.app https://fixia-api.onrender.com https://api.mercadopago.com; upgrade-insecure-requests",
-      'X-Content-Type-Options': 'nosniff',
-      'X-Frame-Options': 'DENY',
-      'X-XSS-Protection': '1; mode=block',
-      'Referrer-Policy': 'strict-origin-when-cross-origin',
+    server: {
+      port: 3000,
+      open: true,
     },
-  },
-});
+  });

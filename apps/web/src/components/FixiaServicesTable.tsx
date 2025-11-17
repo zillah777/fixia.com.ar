@@ -1,11 +1,11 @@
-import { MoreHorizontal, ArrowUpDown, Eye, MessageSquare, Calendar, Clock, Heart, DollarSign } from "lucide-react";
+import { MoreHorizontal, ArrowUpDown, Eye, MessageSquare, Calendar, Clock, Star, DollarSign } from "lucide-react";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 
 const mockServices = [
   {
@@ -220,7 +220,7 @@ export function FixiaServicesTable() {
                       <div>
                         <div className="font-medium text-sm">{service.client.name}</div>
                         <div className="flex items-center space-x-1">
-                          <Heart className="h-3 w-3 text-warning fill-current" />
+                          <Star className="h-3 w-3 text-warning fill-current" />
                           <span className="text-xs text-muted-foreground">{service.client.rating}</span>
                         </div>
                       </div>

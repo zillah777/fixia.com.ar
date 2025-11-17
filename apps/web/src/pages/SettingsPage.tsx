@@ -1,17 +1,15 @@
-import { useState, useCallback, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { motion } from "motion/react";
 import { Link, useNavigate } from "react-router-dom";
-import { toast } from "sonner";
-import {
-  User, Lock, Bell, CreditCard, Shield,
-  Check, X, AlertCircle, Crown,
-  Mail, Save, Trash2, LogOut,
-  Settings, Zap, Sparkles
+import { 
+  ArrowLeft, User, Lock, Bell, CreditCard, Shield, 
+  Eye, EyeOff, Check, X, AlertCircle, Crown, 
+  Mail, Phone, MapPin, Save, Trash2, LogOut,
+  Settings, Smartphone, Globe, Calendar
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
-import { PasswordToggleButton } from "../components/inputs/PasswordToggleButton";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
@@ -19,29 +17,48 @@ import { Switch } from "../components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import { Alert, AlertDescription } from "../components/ui/alert";
 import { Separator } from "../components/ui/separator";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter
-} from "../components/ui/dialog";
-import { FixiaNavigation } from "../components/FixiaNavigation";
-import { useSecureAuth } from "../context/SecureAuthContext";
-import { subscriptionService } from "../lib/services/subscription.service";
-import { extractErrorMessage } from "../utils/errorHandler";
+import { useAuth } from "../context/SecureAuthContext";
+
+function Navigation() {
+  return (
+    <motion.header 
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      className="sticky top-0 z-50 w-full glass border-b border-white/10"
+    >
+      <div className="container mx-auto flex h-16 items-center justify-between px-6">
+        <Link to="/dashboard" className="flex items-center space-x-3">
+          <div className="h-8 w-8 liquid-gradient rounded-lg flex items-center justify-center shadow-lg">
+            <span className="text-white font-bold">F</span>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-lg font-semibold">Fixia</span>
+            <span className="text-xs text-muted-foreground -mt-1">Configuración</span>
+          </div>
+        </Link>
+        
+        <Link to="/dashboard">
+          <Button variant="ghost" className="hover:glass-medium">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Volver al Dashboard
+          </Button>
+        </Link>
+      </div>
+    </motion.header>
+  );
+}
 
 function ProfileTab() {
-  const { user, updateProfile } = useSecureAuth();
+  const { user } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState({
-    fullName: user?.name || '',
+    fullName: user?.fullName || '',
     email: user?.email || '',
     phone: user?.phone || '',
     location: user?.location || '',
-    description: user?.professionalProfile?.description || ''
+    businessName: user?.businessName || '',
+    description: user?.description || ''
   });
 
   const locations = [
@@ -53,137 +70,103 @@ function ProfileTab() {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      await updateProfile(formData);
-      toast.success('Perfil actualizado correctamente');
+      // Simular actualización
+      await new Promise(resolve => setTimeout(resolve, 1500));
       setIsEditing(false);
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error updating profile:', error);
-      toast.error(error.message || 'Error al actualizar el perfil');
     } finally {
       setIsSaving(false);
     }
   };
 
-  const handleCancel = () => {
-    setFormData({
-      fullName: user?.name || '',
-      email: user?.email || '',
-      phone: user?.phone || '',
-      location: user?.location || '',
-      description: user?.professionalProfile?.description || ''
-    });
-    setIsEditing(false);
-  };
-
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.3 }}
-      className="space-y-6"
-    >
-      <Card className="glass border-white/10">
-        <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center sm:justify-between gap-4 sm:gap-0">
-          <div className="flex-1">
-            <CardTitle className="flex items-center space-x-2 text-base sm:text-lg">
-              <User className="h-5 w-5 flex-shrink-0" />
-              <span>Información Personal</span>
-            </CardTitle>
-            <CardDescription className="text-xs sm:text-sm">
-              Gestiona tu información de perfil
-            </CardDescription>
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-            {isEditing ? (
-              <>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleCancel}
-                  disabled={isSaving}
-                  className="glass border-white/20 w-full sm:w-auto text-xs sm:text-sm"
-                >
-                  <X className="h-4 w-4 mr-1" />
-                  Cancelar
-                </Button>
-                <Button
-                  size="sm"
-                  onClick={handleSave}
-                  disabled={isSaving}
-                  className="liquid-gradient w-full sm:w-auto text-xs sm:text-sm"
-                >
-                  {isSaving ? (
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-1"></div>
-                  ) : (
-                    <Save className="h-4 w-4 mr-1" />
-                  )}
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-xl font-semibold">Información Personal</h3>
+          <p className="text-muted-foreground">Administra tu información de perfil</p>
+        </div>
+        {!isEditing ? (
+          <Button onClick={() => setIsEditing(true)} variant="outline" className="glass border-white/20">
+            <User className="h-4 w-4 mr-2" />
+            Editar Perfil
+          </Button>
+        ) : (
+          <div className="flex space-x-2">
+            <Button onClick={() => setIsEditing(false)} variant="outline" className="glass border-white/20">
+              <X className="h-4 w-4 mr-2" />
+              Cancelar
+            </Button>
+            <Button onClick={handleSave} disabled={isSaving} className="liquid-gradient">
+              {isSaving ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  Guardando...
+                </>
+              ) : (
+                <>
+                  <Save className="h-4 w-4 mr-2" />
                   Guardar
-                </Button>
-              </>
-            ) : (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setIsEditing(true)}
-                className="glass border-white/20 w-full sm:w-auto text-xs sm:text-sm"
-              >
-                Editar
-              </Button>
-            )}
+                </>
+              )}
+            </Button>
           </div>
-        </CardHeader>
-        <CardContent className="space-y-3 sm:space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+        )}
+      </div>
+
+      <Card className="glass border-white/10">
+        <CardContent className="p-6 space-y-6">
+          <div className="grid md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label htmlFor="fullName" className="font-medium">Nombre Completo</Label>
+              <Label htmlFor="fullName">Nombre Completo</Label>
               <Input
                 id="fullName"
                 value={formData.fullName}
                 onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                 disabled={!isEditing}
-                className="glass border-white/20"
-                autoComplete="name"
-                autoCorrect="off"
-                autoCapitalize="words"
-                spellCheck="false"
+                className={!isEditing ? "opacity-60" : ""}
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email" className="font-medium">Correo Electrónico</Label>
+              <Label htmlFor="email">Correo Electrónico</Label>
               <Input
                 id="email"
                 type="email"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                disabled={!isEditing}
-                className="glass border-white/20"
+                disabled
+                className="opacity-60"
               />
+              <p className="text-xs text-muted-foreground">
+                El email no se puede cambiar. Contacta soporte si necesitas modificarlo.
+              </p>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+          <div className="grid md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label htmlFor="phone" className="font-medium">Teléfono</Label>
+              <Label htmlFor="phone">Teléfono (WhatsApp)</Label>
               <Input
                 id="phone"
+                type="tel"
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 disabled={!isEditing}
-                className="glass border-white/20"
+                className={!isEditing ? "opacity-60" : ""}
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="location" className="font-medium">Ubicación</Label>
-              <Select 
-                value={formData.location} 
+              <Label htmlFor="location">Ubicación</Label>
+              <Select
+                value={formData.location}
                 onValueChange={(value) => setFormData({ ...formData, location: value })}
                 disabled={!isEditing}
               >
-                <SelectTrigger className="glass border-white/20">
-                  <SelectValue placeholder="Selecciona tu ubicación" />
+                <SelectTrigger className={!isEditing ? "opacity-60" : ""}>
+                  <SelectValue placeholder="Selecciona tu ciudad" />
                 </SelectTrigger>
-                <SelectContent className="glass border-white/20">
+                <SelectContent>
                   {locations.map((location) => (
                     <SelectItem key={location} value={location}>
                       {location}
@@ -195,974 +178,805 @@ function ProfileTab() {
           </div>
 
           {user?.userType === 'professional' && (
-            <div className="space-y-2">
-              <Label htmlFor="description" className="font-medium">Descripción Profesional</Label>
-              <textarea
-                id="description"
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                disabled={!isEditing}
-                rows={4}
-                className="w-full px-3 py-2 glass border-white/20 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
-                placeholder="Describe tu experiencia profesional y servicios que ofreces..."
-              />
-            </div>
+            <>
+              <Separator />
+              <div className="space-y-4">
+                <h4 className="font-semibold text-primary">Información Profesional</h4>
+                <div className="space-y-2">
+                  <Label htmlFor="businessName">Nombre del Negocio</Label>
+                  <Input
+                    id="businessName"
+                    value={formData.businessName}
+                    onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
+                    disabled={!isEditing}
+                    className={!isEditing ? "opacity-60" : ""}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="description">Descripción</Label>
+                  <textarea
+                    id="description"
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    disabled={!isEditing}
+                    rows={4}
+                    className={`w-full px-3 py-2 bg-input border border-border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-ring ${!isEditing ? "opacity-60" : ""}`}
+                  />
+                </div>
+              </div>
+            </>
           )}
         </CardContent>
       </Card>
-      
-      <Card className="glass border-white/10">
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Shield className="h-5 w-5" />
-            <span>Estado de Verificación</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center space-x-3">
-            {user?.isVerified ? (
-              <>
-                <div className="h-12 w-12 bg-success/20 rounded-full flex items-center justify-center">
-                  <Check className="h-6 w-6 text-success" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-success">Perfil Verificado</h3>
-                  <p className="text-sm text-muted-foreground">Tu perfil ha sido verificado exitosamente</p>
-                </div>
-                <Badge className="ml-auto bg-success/20 text-success">
-                  Verificado
-                </Badge>
-              </>
-            ) : (
-              <>
-                <div className="h-12 w-12 bg-warning/20 rounded-full flex items-center justify-center">
-                  <AlertCircle className="h-6 w-6 text-warning" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-warning">Verificación Pendiente</h3>
-                  <p className="text-sm text-muted-foreground">Completa tu verificación para obtener más beneficios</p>
-                </div>
-                <Link to="/verification">
-                  <Button size="sm" className="ml-auto liquid-gradient">
-                    Verificar Ahora
-                  </Button>
-                </Link>
-              </>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-    </motion.div>
+    </div>
   );
 }
 
 function SecurityTab() {
-  const navigate = useNavigate();
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isChanging, setIsChanging] = useState(false);
-  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [deletePassword, setDeletePassword] = useState('');
-  const [formData, setFormData] = useState({
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [passwordData, setPasswordData] = useState({
     currentPassword: '',
     newPassword: '',
     confirmPassword: ''
   });
 
-  const { changePassword, deleteAccount } = useSecureAuth();
-
-  const handleChangePassword = async () => {
-    if (!formData.currentPassword.trim()) {
-      toast.error('Por favor ingresa tu contraseña actual');
-      return;
-    }
-
-    if (!formData.newPassword.trim()) {
-      toast.error('Por favor ingresa una nueva contraseña');
-      return;
-    }
-
-    if (!formData.confirmPassword.trim()) {
-      toast.error('Por favor confirma tu nueva contraseña');
-      return;
-    }
-
-    if (formData.newPassword !== formData.confirmPassword) {
-      toast.error('Las contraseñas nuevas no coinciden');
-      return;
-    }
-
-    if (formData.newPassword.length < 8) {
-      toast.error('La contraseña debe tener al menos 8 caracteres');
-      return;
-    }
-
-    setIsChanging(true);
-    try {
-      await changePassword(formData.currentPassword, formData.newPassword, formData.confirmPassword);
-      setFormData({ currentPassword: '', newPassword: '', confirmPassword: '' });
-      toast.success('Contraseña actualizada correctamente');
-    } catch (error: any) {
-      toast.error(error.message || 'Error al cambiar la contraseña');
-      console.error('Error changing password:', error);
-    } finally {
-      setIsChanging(false);
-    }
+  const handle2FAToggle = (enabled: boolean) => {
+    // Implementar activación/desactivación de 2FA
+    console.log('2FA:', enabled);
   };
 
-  const handleDeleteAccount = async () => {
-    if (!deletePassword.trim()) {
-      toast.error('Por favor ingresa tu contraseña para confirmar');
+  const handlePasswordChange = async () => {
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      alert('Las contraseñas no coinciden');
       return;
     }
 
-    setIsDeletingAccount(true);
+    setIsChangingPassword(true);
     try {
-      await deleteAccount(deletePassword);
-      setShowDeleteDialog(false);
-      setDeletePassword('');
-
-      // Redirect to home after successful deletion
-      setTimeout(() => {
-        navigate('/');
-      }, 1000);
-    } catch (error: any) {
-      toast.error(error.message || 'Error al eliminar la cuenta');
-      console.error('Error deleting account:', error);
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+      alert('Contraseña actualizada correctamente');
+    } catch (error) {
+      console.error('Error changing password:', error);
     } finally {
-      setIsDeletingAccount(false);
+      setIsChangingPassword(false);
     }
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.3 }}
-      className="space-y-6"
-    >
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-xl font-semibold">Seguridad</h3>
+        <p className="text-muted-foreground">Gestiona la seguridad de tu cuenta</p>
+      </div>
+
+      {/* Cambiar Contraseña */}
       <Card className="glass border-white/10">
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Lock className="h-5 w-5" />
-            <span>Cambiar Contraseña</span>
+          <CardTitle className="flex items-center">
+            <Lock className="h-5 w-5 mr-2" />
+            Cambiar Contraseña
           </CardTitle>
           <CardDescription>
-            Actualiza tu contraseña para mantener tu cuenta segura
+            Actualiza tu contraseña regularmente para mantener tu cuenta segura
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="currentPassword" className="font-medium">Contraseña Actual</Label>
-            <div className="relative flex items-center">
+            <Label htmlFor="currentPassword">Contraseña Actual</Label>
+            <div className="relative">
               <Input
                 id="currentPassword"
                 type={showCurrentPassword ? "text" : "password"}
-                value={formData.currentPassword}
-                onChange={(e) => setFormData({ ...formData, currentPassword: e.target.value })}
-                className="glass border-white/20 pr-12"
+                value={passwordData.currentPassword}
+                onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
+                placeholder="••••••••"
               />
-              <PasswordToggleButton
-                showPassword={showCurrentPassword}
-                onToggle={() => setShowCurrentPassword(!showCurrentPassword)}
-                ariaLabel={showCurrentPassword ? "Ocultar contraseña actual" : "Mostrar contraseña actual"}
-              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8"
+                onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+              >
+                {showCurrentPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </Button>
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="newPassword" className="font-medium">Nueva Contraseña</Label>
-            <div className="relative flex items-center">
-              <Input
-                id="newPassword"
-                type={showNewPassword ? "text" : "password"}
-                value={formData.newPassword}
-                onChange={(e) => setFormData({ ...formData, newPassword: e.target.value })}
-                className="glass border-white/20 pr-12"
-              />
-              <PasswordToggleButton
-                showPassword={showNewPassword}
-                onToggle={() => setShowNewPassword(!showNewPassword)}
-                ariaLabel={showNewPassword ? "Ocultar nueva contraseña" : "Mostrar nueva contraseña"}
-              />
+          <div className="grid md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="newPassword">Nueva Contraseña</Label>
+              <div className="relative">
+                <Input
+                  id="newPassword"
+                  type={showNewPassword ? "text" : "password"}
+                  value={passwordData.newPassword}
+                  onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
+                  placeholder="••••••••"
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8"
+                  onClick={() => setShowNewPassword(!showNewPassword)}
+                >
+                  {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </Button>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword">Confirmar Contraseña</Label>
+              <div className="relative">
+                <Input
+                  id="confirmPassword"
+                  type={showConfirmPassword ? "text" : "password"}
+                  value={passwordData.confirmPassword}
+                  onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
+                  placeholder="••••••••"
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                >
+                  {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </Button>
+              </div>
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="confirmPassword" className="font-medium">Confirmar Nueva Contraseña</Label>
-            <div className="relative flex items-center">
-              <Input
-                id="confirmPassword"
-                type={showConfirmPassword ? "text" : "password"}
-                value={formData.confirmPassword}
-                onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                className="glass border-white/20 pr-12"
-              />
-              <PasswordToggleButton
-                showPassword={showConfirmPassword}
-                onToggle={() => setShowConfirmPassword(!showConfirmPassword)}
-                ariaLabel={showConfirmPassword ? "Ocultar confirmación de contraseña" : "Mostrar confirmación de contraseña"}
-              />
-            </div>
-          </div>
-          
-          <Button
-            onClick={handleChangePassword}
-            disabled={isChanging || !formData.currentPassword || !formData.newPassword || !formData.confirmPassword}
-            className="liquid-gradient w-full sm:w-auto text-sm sm:text-base"
-            size="lg"
+          <Button 
+            onClick={handlePasswordChange}
+            disabled={isChangingPassword || !passwordData.currentPassword || !passwordData.newPassword}
+            className="liquid-gradient"
           >
-            {isChanging ? (
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+            {isChangingPassword ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                Actualizando...
+              </>
             ) : (
-              <Lock className="h-4 w-4 mr-2" />
+              <>
+                <Save className="h-4 w-4 mr-2" />
+                Actualizar Contraseña
+              </>
             )}
-            Cambiar Contraseña
           </Button>
         </CardContent>
       </Card>
 
-      {/* Dangerous Zone - Account Deletion */}
-      <Card className="glass border-destructive/30 bg-destructive/5">
+      {/* Autenticación de Dos Factores */}
+      <Card className="glass border-white/10">
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2 text-destructive">
-            <AlertCircle className="h-5 w-5" />
-            <span>Zona Peligrosa</span>
+          <CardTitle className="flex items-center">
+            <Shield className="h-5 w-5 mr-2" />
+            Autenticación de Dos Factores
           </CardTitle>
           <CardDescription>
-            Acciones que no se pueden deshacer
+            Añade una capa extra de seguridad a tu cuenta
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <p className="font-medium">Activar 2FA</p>
+              <p className="text-sm text-muted-foreground">
+                Recibe códigos de verificación por SMS o app de autenticación
+              </p>
+            </div>
+            <Switch onCheckedChange={handle2FAToggle} />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Sesiones Activas */}
+      <Card className="glass border-white/10">
+        <CardHeader>
+          <CardTitle className="flex items-center">
+            <Smartphone className="h-5 w-5 mr-2" />
+            Sesiones Activas
+          </CardTitle>
+          <CardDescription>
+            Gestiona dónde has iniciado sesión
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <h4 className="font-medium text-destructive">Eliminar Cuenta</h4>
-            <p className="text-sm text-muted-foreground">
-              Eliminar tu cuenta de forma permanente. Esta acción no se puede deshacer.
-              Se eliminarán todos tus datos, proyectos, mensajes e historial.
-            </p>
+          <div className="flex items-center justify-between p-4 glass rounded-lg">
+            <div className="flex items-center space-x-3">
+              <Globe className="h-5 w-5 text-success" />
+              <div>
+                <p className="font-medium">Navegador Web - Chrome</p>
+                <p className="text-sm text-muted-foreground">Buenos Aires, Argentina • Activa ahora</p>
+              </div>
+            </div>
+            <Badge className="bg-success/20 text-success border-success/30">
+              Actual
+            </Badge>
           </div>
-          <Button
-            variant="destructive"
-            onClick={() => setShowDeleteDialog(true)}
-            className="bg-destructive hover:bg-destructive/90 text-white"
-          >
-            <Trash2 className="h-4 w-4 mr-2" />
-            Eliminar Cuenta Permanentemente
-          </Button>
+
+          <div className="flex items-center justify-between p-4 glass rounded-lg">
+            <div className="flex items-center space-x-3">
+              <Smartphone className="h-5 w-5 text-muted-foreground" />
+              <div>
+                <p className="font-medium">Móvil - Safari</p>
+                <p className="text-sm text-muted-foreground">Hace 2 días • iPhone</p>
+              </div>
+            </div>
+            <Button variant="outline" size="sm" className="glass border-red-500/30 text-red-400 hover:bg-red-500/10">
+              Cerrar Sesión
+            </Button>
+          </div>
         </CardContent>
       </Card>
-
-      {/* Delete Account Confirmation Dialog */}
-      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <DialogContent className="bg-slate-900/95 border-destructive/40 max-w-[95%] sm:max-w-md shadow-2xl backdrop-blur-xl">
-          <DialogHeader className="border-b border-destructive/20 pb-4">
-            <div className="flex items-center space-x-2 mb-2">
-              <div className="p-2 rounded-lg bg-destructive/20">
-                <AlertCircle className="h-5 w-5 text-destructive" />
-              </div>
-              <DialogTitle className="text-destructive text-lg">Confirmar Eliminación de Cuenta</DialogTitle>
-            </div>
-            <DialogDescription className="text-slate-300 ml-10 mt-2">
-              Esta acción es permanente e irreversible. Se eliminarán todos tus datos.
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="space-y-5 py-4">
-            <Alert className="border-destructive/30 bg-gradient-to-r from-destructive/20 to-destructive/10 rounded-xl">
-              <AlertCircle className="h-5 w-5 text-destructive" />
-              <AlertDescription className="text-destructive/90 ml-2 font-medium">
-                ⚠️ Escribe tu contraseña para confirmar que deseas eliminar tu cuenta de forma permanente.
-              </AlertDescription>
-            </Alert>
-
-            <div className="space-y-2">
-              <Label htmlFor="deletePassword" className="font-semibold text-white">Contraseña de Confirmación</Label>
-              <Input
-                id="deletePassword"
-                type="password"
-                placeholder="Ingresa tu contraseña"
-                value={deletePassword}
-                onChange={(e) => setDeletePassword(e.target.value)}
-                disabled={isDeletingAccount}
-                className="glass border-white/20 focus:border-destructive/50"
-              />
-              <p className="text-xs text-white/60">Tu contraseña será verificada de forma segura.</p>
-            </div>
-          </div>
-
-          <DialogFooter className="gap-3 border-t border-white/10 pt-4">
-            <Button
-              variant="outline"
-              onClick={() => {
-                setShowDeleteDialog(false);
-                setDeletePassword('');
-              }}
-              disabled={isDeletingAccount}
-              className="border-white/20 text-white/80 hover:text-white hover:bg-white/10"
-            >
-              Cancelar
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={handleDeleteAccount}
-              disabled={isDeletingAccount || !deletePassword.trim()}
-              className="bg-gradient-to-r from-destructive to-destructive/80 hover:from-destructive/90 hover:to-destructive/70 shadow-lg"
-            >
-              {isDeletingAccount ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
-                  Eliminando...
-                </>
-              ) : (
-                <>
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Eliminar Permanentemente
-                </>
-              )}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </motion.div>
+    </div>
   );
 }
 
 function NotificationsTab() {
-  const { user, updateProfile } = useSecureAuth();
-  const [isSaving, setIsSaving] = useState(false);
-  const [isPushSaving, setIsPushSaving] = useState(false);
-  const debounceTimer = useRef<NodeJS.Timeout | null>(null);
-  const pushDebounceTimer = useRef<NodeJS.Timeout | null>(null);
-
-  // Initialize from user context
   const [emailNotifications, setEmailNotifications] = useState({
-    orders: user?.notifications_orders !== false,
-    newsletter: user?.notifications_newsletter === true
+    newOpportunities: true,
+    messages: true,
+    marketing: false,
+    security: true
   });
 
-  // Initialize push notifications from localStorage
-  const [pushNotifications, setPushNotifications] = useState(() => {
-    const stored = localStorage.getItem('pushNotifications');
-    if (stored) {
-      try {
-        return JSON.parse(stored);
-      } catch {
-        return {
-          newOpportunities: true,
-          reminders: false
-        };
-      }
-    }
-    return {
-      newOpportunities: true,
-      reminders: false
-    };
+  const [pushNotifications, setPushNotifications] = useState({
+    newOpportunities: true,
+    messages: true,
+    reminders: false
   });
-
-  // Debounced save function for email notifications
-  const saveEmailNotifications = useCallback(
-    async (data: typeof emailNotifications) => {
-      setIsSaving(true);
-      try {
-        await updateProfile({
-          notifications_orders: data.orders,
-          notifications_newsletter: data.newsletter
-        });
-        toast.success('Preferencias de notificaciones guardadas');
-      } catch (error) {
-        console.error('Error saving notifications:', error);
-        toast.error('Error al guardar las preferencias');
-      } finally {
-        setIsSaving(false);
-      }
-    },
-    [updateProfile]
-  );
-
-  // Handle email notification changes with debounce
-  const handleEmailNotificationChange = useCallback(
-    (field: keyof typeof emailNotifications, checked: boolean) => {
-      const newNotifications = { ...emailNotifications, [field]: checked };
-      setEmailNotifications(newNotifications);
-
-      // Clear existing timer
-      if (debounceTimer.current) {
-        clearTimeout(debounceTimer.current);
-      }
-
-      // Set new timer for debounced save (500ms)
-      debounceTimer.current = setTimeout(() => {
-        saveEmailNotifications(newNotifications);
-      }, 500);
-    },
-    [emailNotifications, saveEmailNotifications]
-  );
-
-  // Save push notifications to localStorage
-  const savePushNotifications = useCallback(
-    async (data: typeof pushNotifications) => {
-      setIsPushSaving(true);
-      try {
-        localStorage.setItem('pushNotifications', JSON.stringify(data));
-        toast.success('Preferencias de notificaciones push guardadas');
-      } catch (error) {
-        console.error('Error saving push notifications:', error);
-        toast.error('Error al guardar las preferencias');
-      } finally {
-        setIsPushSaving(false);
-      }
-    },
-    []
-  );
-
-  // Handle push notification changes with debounce
-  const handlePushNotificationChange = useCallback(
-    (field: keyof typeof pushNotifications, checked: boolean) => {
-      const newNotifications = { ...pushNotifications, [field]: checked };
-      setPushNotifications(newNotifications);
-
-      // Clear existing timer
-      if (pushDebounceTimer.current) {
-        clearTimeout(pushDebounceTimer.current);
-      }
-
-      // Set new timer for debounced save (500ms)
-      pushDebounceTimer.current = setTimeout(() => {
-        savePushNotifications(newNotifications);
-      }, 500);
-    },
-    [pushNotifications, savePushNotifications]
-  );
-
-  // Cleanup timers on unmount
-  useEffect(() => {
-    return () => {
-      if (debounceTimer.current) {
-        clearTimeout(debounceTimer.current);
-      }
-      if (pushDebounceTimer.current) {
-        clearTimeout(pushDebounceTimer.current);
-      }
-    };
-  }, []);
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.3 }}
-      className="space-y-6"
-    >
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-xl font-semibold">Notificaciones</h3>
+        <p className="text-muted-foreground">Controla cómo y cuándo recibir notificaciones</p>
+      </div>
+
+      {/* Email Notifications */}
       <Card className="glass border-white/10">
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2 text-base sm:text-lg">
-            <Mail className="h-5 w-5 flex-shrink-0" />
-            <span>Notificaciones por Email</span>
+          <CardTitle className="flex items-center">
+            <Mail className="h-5 w-5 mr-2" />
+            Notificaciones por Email
           </CardTitle>
-          <CardDescription className="text-xs sm:text-sm">
+          <CardDescription>
             Recibe actualizaciones importantes en tu email
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4 sm:space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
-            <div className="space-y-1 flex-1 min-w-0">
-              <p className="font-medium text-sm sm:text-base">Nuevas oportunidades</p>
-              <p className="text-xs sm:text-sm text-muted-foreground leading-tight">
+        <CardContent className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <p className="font-medium">Nuevas oportunidades</p>
+              <p className="text-sm text-muted-foreground">
                 Cuando hay trabajos que coinciden con tu perfil
               </p>
             </div>
-            <div className="flex items-center gap-2 flex-shrink-0">
-              {isSaving && <div className="h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin"></div>}
-              <Switch
-                checked={emailNotifications.orders}
-                onCheckedChange={(checked) =>
-                  handleEmailNotificationChange('orders', checked)
-                }
-                disabled={isSaving}
-              />
-            </div>
+            <Switch 
+              checked={emailNotifications.newOpportunities}
+              onCheckedChange={(checked) => 
+                setEmailNotifications({ ...emailNotifications, newOpportunities: checked })
+              }
+            />
           </div>
 
-          <Separator className="bg-white/10" />
+          <Separator />
 
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
-            <div className="space-y-1 flex-1 min-w-0">
-              <p className="font-medium text-sm sm:text-base">Noticias y ofertas</p>
-              <p className="text-xs sm:text-sm text-muted-foreground leading-tight">
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <p className="font-medium">Mensajes y contactos</p>
+              <p className="text-sm text-muted-foreground">
+                Cuando alguien te contacta o te envía un mensaje
+              </p>
+            </div>
+            <Switch 
+              checked={emailNotifications.messages}
+              onCheckedChange={(checked) => 
+                setEmailNotifications({ ...emailNotifications, messages: checked })
+              }
+            />
+          </div>
+
+          <Separator />
+
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <p className="font-medium">Noticias y ofertas</p>
+              <p className="text-sm text-muted-foreground">
                 Promociones, noticias y tips de Fixia
               </p>
             </div>
-            <div className="flex items-center gap-2 flex-shrink-0">
-              {isSaving && <div className="h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin"></div>}
-              <Switch
-                checked={emailNotifications.newsletter}
-                onCheckedChange={(checked) =>
-                  handleEmailNotificationChange('newsletter', checked)
-                }
-                disabled={isSaving}
-              />
+            <Switch 
+              checked={emailNotifications.marketing}
+              onCheckedChange={(checked) => 
+                setEmailNotifications({ ...emailNotifications, marketing: checked })
+              }
+            />
+          </div>
+
+          <Separator />
+
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <p className="font-medium">Alertas de seguridad</p>
+              <p className="text-sm text-muted-foreground">
+                Inicios de sesión y cambios importantes en tu cuenta
+              </p>
             </div>
+            <Switch 
+              checked={emailNotifications.security}
+              onCheckedChange={(checked) => 
+                setEmailNotifications({ ...emailNotifications, security: checked })
+              }
+            />
           </div>
         </CardContent>
       </Card>
 
+      {/* Push Notifications */}
       <Card className="glass border-white/10">
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2 text-base sm:text-lg">
-            <Bell className="h-5 w-5 flex-shrink-0" />
-            <span>Notificaciones Push</span>
+          <CardTitle className="flex items-center">
+            <Bell className="h-5 w-5 mr-2" />
+            Notificaciones Push
           </CardTitle>
-          <CardDescription className="text-xs sm:text-sm">
+          <CardDescription>
             Recibe notificaciones instantáneas en tu dispositivo
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4 sm:space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
-            <div className="space-y-1 flex-1 min-w-0">
-              <p className="font-medium text-sm sm:text-base">Nuevas oportunidades</p>
-              <p className="text-xs sm:text-sm text-muted-foreground leading-tight">
+        <CardContent className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <p className="font-medium">Nuevas oportunidades</p>
+              <p className="text-sm text-muted-foreground">
                 Notificación inmediata de trabajos relevantes
               </p>
             </div>
-            <div className="flex items-center gap-2 flex-shrink-0">
-              {isPushSaving && <div className="h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin"></div>}
-              <Switch
-                checked={pushNotifications.newOpportunities}
-                onCheckedChange={(checked) =>
-                  handlePushNotificationChange('newOpportunities', checked)
-                }
-                disabled={isPushSaving}
-              />
-            </div>
+            <Switch 
+              checked={pushNotifications.newOpportunities}
+              onCheckedChange={(checked) => 
+                setPushNotifications({ ...pushNotifications, newOpportunities: checked })
+              }
+            />
           </div>
 
-          <Separator className="bg-white/10" />
+          <Separator />
 
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
-            <div className="space-y-1 flex-1 min-w-0">
-              <p className="font-medium text-sm sm:text-base">Recordatorios</p>
-              <p className="text-xs sm:text-sm text-muted-foreground leading-tight">
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <p className="font-medium">Mensajes</p>
+              <p className="text-sm text-muted-foreground">
+                Cuando recibes un mensaje directo
+              </p>
+            </div>
+            <Switch 
+              checked={pushNotifications.messages}
+              onCheckedChange={(checked) => 
+                setPushNotifications({ ...pushNotifications, messages: checked })
+              }
+            />
+          </div>
+
+          <Separator />
+
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <p className="font-medium">Recordatorios</p>
+              <p className="text-sm text-muted-foreground">
                 Recordatorios de trabajos pendientes y citas
               </p>
             </div>
-            <div className="flex items-center gap-2 flex-shrink-0">
-              {isPushSaving && <div className="h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin"></div>}
-              <Switch
-                checked={pushNotifications.reminders}
-                onCheckedChange={(checked) =>
-                  handlePushNotificationChange('reminders', checked)
-                }
-                disabled={isPushSaving}
-              />
-            </div>
+            <Switch 
+              checked={pushNotifications.reminders}
+              onCheckedChange={(checked) => 
+                setPushNotifications({ ...pushNotifications, reminders: checked })
+              }
+            />
           </div>
         </CardContent>
       </Card>
-    </motion.div>
+    </div>
   );
 }
 
 function SubscriptionTab() {
+  const { user } = useAuth();
   const navigate = useNavigate();
-  const { user } = useSecureAuth();
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [showCancelDialog, setShowCancelDialog] = useState(false);
-  const [isCancelling, setIsCancelling] = useState(false);
-  const isProfessional = user?.userType === 'professional';
+  const [isCanceling, setIsCanceling] = useState(false);
+  const [isUpgrading, setIsUpgrading] = useState(false);
 
-  const handleUpgradeClick = async () => {
-    setIsProcessing(true);
+  const handleUpgrade = async () => {
+    setIsUpgrading(true);
     try {
-      // Create payment preference and redirect to MercadoPago
-      console.log('💳 Creating payment preference...');
-      const preference = await subscriptionService.createPaymentPreference('basic');
-
-      console.log('✅ Preference created:', preference.id);
-      toast.success('Redirigiendo a pago seguro...', {
-        description: 'Serás redirigido a MercadoPago',
-        duration: 2000,
-      });
-
-      // Small delay to show the toast
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      // Redirect to MercadoPago checkout
-      console.log('🔗 Redirecting to checkout...');
-      subscriptionService.redirectToCheckout(preference);
-    } catch (error: any) {
-      console.error('Error initiating payment:', error);
-      const errorMessage = error.response?.data?.message || error.message || 'Error al procesar el pago';
-      toast.error(errorMessage);
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      navigate('/pricing');
+    } catch (error) {
+      console.error('Error upgrading:', error);
     } finally {
-      setIsProcessing(false);
+      setIsUpgrading(false);
     }
-  };
-
-  const handleViewBilling = () => {
-    // TODO: Implement billing portal integration (Stripe/MercadoPago)
-    toast.info('Redirigiendo a panel de facturación...');
-    // window.location.href = '/billing'; // Uncomment when billing portal is ready
   };
 
   const handleCancelSubscription = async () => {
-    setIsCancelling(true);
+    if (!confirm('¿Estás seguro de que quieres cancelar tu suscripción? Perderás acceso a las funciones profesionales.')) {
+      return;
+    }
+
+    setIsCanceling(true);
     try {
-      await subscriptionService.cancelSubscription();
-      toast.success('Suscripción cancelada correctamente');
-      setShowCancelDialog(false);
-      // Refresh the page to update subscription status
-      setTimeout(() => {
-        window.location.reload();
-      }, 1500);
-    } catch (error: unknown) {
-      const errorMessage = extractErrorMessage(error, 'Error al cancelar la suscripción');
-      console.error('Error cancelling subscription:', error);
-      toast.error(errorMessage);
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Simular cancelación
+      alert('Suscripción cancelada. Seguirás teniendo acceso hasta el final del período actual.');
+    } catch (error) {
+      console.error('Error canceling subscription:', error);
     } finally {
-      setIsCancelling(false);
+      setIsCanceling(false);
     }
   };
 
+  const isProfessional = user?.userType === 'professional';
+
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.3 }}
-      className="space-y-6"
-    >
-      <Card className="glass border-white/10">
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-xl font-semibold">Suscripción</h3>
+        <p className="text-muted-foreground">Gestiona tu plan y facturación</p>
+      </div>
+
+      {/* Current Plan */}
+      <Card className={`glass border-white/10 ${isProfessional ? 'bg-primary/5 border-primary/30' : ''}`}>
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <CreditCard className="h-5 w-5" />
-            <span>Plan Actual</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {isProfessional ? (
-            <div className="space-y-4">
-              <div className="flex items-center space-x-4">
-                <div className="h-16 w-16 bg-primary/20 rounded-2xl flex items-center justify-center">
-                  <Crown className="h-8 w-8 text-primary" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-semibold text-xl">Plan Profesional</h3>
-                  <p className="text-muted-foreground">Acceso completo a todas las funcionalidades</p>
-                  <div className="flex items-center space-x-2 mt-2">
-                    <Badge className="bg-primary/20 text-primary">Activo</Badge>
-                    <Badge variant="secondary">$4,500 ARS/mes</Badge>
-                  </div>
-                </div>
-              </div>
-              
-              <Separator className="bg-white/10" />
-              
-              <div className="space-y-3">
-                <h4 className="font-medium">Beneficios incluidos:</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                  <div className="flex items-center space-x-2">
-                    <Check className="h-4 w-4 text-success" />
-                    <span className="text-sm">Perfil verificado</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Check className="h-4 w-4 text-success" />
-                    <span className="text-sm">Sin comisiones por servicios</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Check className="h-4 w-4 text-success" />
-                    <span className="text-sm">Estadísticas avanzadas</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Check className="h-4 w-4 text-success" />
-                    <span className="text-sm">Soporte prioritario</span>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-                <Button
-                  variant="outline"
-                  className="glass border-white/20 text-sm sm:text-base"
-                  onClick={handleViewBilling}
-                >
-                  Ver Facturación
-                </Button>
-                <Button
-                  variant="outline"
-                  className="glass border-white/20 text-destructive text-sm sm:text-base"
-                  onClick={() => setShowCancelDialog(true)}
-                  disabled={isCancelling}
-                >
-                  Cancelar Suscripción
-                </Button>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              {isProfessional ? (
+                <Crown className="h-8 w-8 text-primary" />
+              ) : (
+                <User className="h-8 w-8 text-success" />
+              )}
+              <div>
+                <CardTitle>
+                  {isProfessional ? 'Plan Profesional' : 'Plan Gratuito'}
+                </CardTitle>
+                <CardDescription>
+                  {isProfessional 
+                    ? '$4500 ARS/mes • Sin comisiones por servicios'
+                    : 'Acceso gratuito para buscar profesionales'
+                  }
+                </CardDescription>
               </div>
             </div>
-          ) : (
-            <motion.div
-              className="space-y-6"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              {/* Free Plan Header */}
-              <div className="bg-gradient-to-br from-primary/20 via-primary/10 to-transparent rounded-2xl p-6 border border-primary/20">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex items-start gap-4 flex-1">
-                    <div className="h-20 w-20 bg-gradient-to-br from-primary to-primary/60 rounded-2xl flex items-center justify-center shadow-lg flex-shrink-0">
-                      <User className="h-10 w-10 text-white" />
-                    </div>
-                    <div className="flex-1 pt-1">
-                      <h3 className="font-bold text-2xl bg-gradient-to-r from-white via-white/90 to-white/80 bg-clip-text text-transparent mb-1">
-                        Plan Gratuito
-                      </h3>
-                      <p className="text-white/80 font-medium mb-3">
-                        Perfecto para encontrar servicios profesionales
-                      </p>
-                      <div className="flex items-center gap-2">
-                        <Badge className="bg-primary/40 text-primary border border-primary/30">Activo</Badge>
-                        <span className="text-xl font-bold text-primary">Gratis</span>
-                      </div>
-                    </div>
-                  </div>
+            {isProfessional ? (
+              <Badge className="bg-primary/20 text-primary border-primary/50">
+                Activo
+              </Badge>
+            ) : (
+              <Badge className="bg-success/20 text-success border-success/50">
+                Gratuito
+              </Badge>
+            )}
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {isProfessional ? (
+            <>
+              <div className="grid md:grid-cols-3 gap-4 text-center">
+                <div className="p-4 glass rounded-lg">
+                  <p className="text-2xl font-bold text-success">∞</p>
+                  <p className="text-sm text-muted-foreground">Contactos por mes</p>
+                </div>
+                <div className="p-4 glass rounded-lg">
+                  <p className="text-2xl font-bold text-success">5</p>
+                  <p className="text-sm text-muted-foreground">Alertas activas</p>
+                </div>
+                <div className="p-4 glass rounded-lg">
+                  <p className="text-2xl font-bold text-success">0%</p>
+                  <p className="text-sm text-muted-foreground">Comisiones</p>
                 </div>
               </div>
+              
+              <Alert className="border-warning/50 bg-warning/10">
+                <Calendar className="h-4 w-4" />
+                <AlertDescription>
+                  <strong>Próxima facturación:</strong> 15 de Febrero, 2024 - $4500 ARS
+                </AlertDescription>
+              </Alert>
 
-              {/* Features as Client */}
-              <div className="space-y-3">
-                <h4 className="font-semibold text-white/90 uppercase tracking-wider text-xs flex items-center gap-2">
-                  <Sparkles className="h-4 w-4 text-primary" />
-                  Que puedes hacer como Cliente
-                </h4>
-                <div className="grid grid-cols-1 gap-2 ml-1">
-                  <div className="flex items-center gap-3">
-                    <div className="h-2 w-2 rounded-full bg-primary flex-shrink-0"></div>
-                    <span className="text-sm text-white/80">Buscar y contratar profesionales</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="h-2 w-2 rounded-full bg-primary flex-shrink-0"></div>
-                    <span className="text-sm text-white/80">Crear anuncios de trabajo</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="h-2 w-2 rounded-full bg-primary flex-shrink-0"></div>
-                    <span className="text-sm text-white/80">Comunicación con profesionales</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="h-2 w-2 rounded-full bg-primary flex-shrink-0"></div>
-                    <span className="text-sm text-white/80">Ver reseñas y calificaciones</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Upgrade CTA */}
-              <div className="bg-gradient-to-br from-primary/30 via-primary/15 to-primary/10 border-2 border-primary/40 rounded-2xl p-6 space-y-4">
-                <div className="flex items-start gap-3">
-                  <Zap className="h-6 w-6 text-primary flex-shrink-0 mt-0.5" />
-                  <div className="flex-1">
-                    <h4 className="font-bold text-white mb-2">¿Eres un Profesional?</h4>
-                    <p className="text-sm text-white/80 mb-4">
-                      Actualiza tu cuenta a <span className="font-semibold text-primary">Plan Profesional</span> y comienza a ofrecer tus servicios <span className="font-semibold">SIN COMISIONES</span>.
-                    </p>
-                    <ul className="space-y-2 text-xs text-white/70">
-                      <li className="flex items-center gap-2">
-                        <Check className="h-4 w-4 text-success flex-shrink-0" />
-                        <span>Perfil verificado con badge profesional</span>
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <Check className="h-4 w-4 text-success flex-shrink-0" />
-                        <span>Cero comisiones por cada servicio vendido</span>
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <Check className="h-4 w-4 text-success flex-shrink-0" />
-                        <span>Estadísticas y análisis avanzados</span>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-
-                <Button
-                  className="w-full h-12 bg-gradient-to-r from-primary via-primary to-primary/80 hover:from-primary/90 hover:via-primary/90 hover:to-primary/70 text-white font-bold shadow-lg hover:shadow-xl transition-all flex items-center justify-center flex-wrap gap-1"
-                  onClick={handleUpgradeClick}
-                  disabled={isProcessing}
-                  size="lg"
+              <div className="flex space-x-2">
+                <Button 
+                  onClick={handleCancelSubscription}
+                  disabled={isCanceling}
+                  variant="outline"
+                  className="glass border-red-500/30 text-red-400 hover:bg-red-500/10"
                 >
-                  {isProcessing ? (
+                  {isCanceling ? (
                     <>
-                      <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent mr-2"></div>
-                      Procesando pago...
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-400 mr-2"></div>
+                      Cancelando...
                     </>
                   ) : (
                     <>
-                      <Crown className="h-5 w-5 flex-shrink-0" />
-                      <span className="text-sm sm:text-base">Upgrade - $3,900 ARS/mes</span>
+                      <X className="h-4 w-4 mr-2" />
+                      Cancelar Suscripción
                     </>
                   )}
                 </Button>
+                <Button variant="outline" className="glass border-white/20">
+                  <CreditCard className="h-4 w-4 mr-2" />
+                  Ver Historial de Pagos
+                </Button>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="grid md:grid-cols-3 gap-4 text-center">
+                <div className="p-4 glass rounded-lg">
+                  <p className="text-2xl font-bold text-primary">3</p>
+                  <p className="text-sm text-muted-foreground">Contactos por mes</p>
+                </div>
+                <div className="p-4 glass rounded-lg">
+                  <p className="text-2xl font-bold text-primary">1</p>
+                  <p className="text-sm text-muted-foreground">Alerta activa</p>
+                </div>
+                <div className="p-4 glass rounded-lg">
+                  <p className="text-2xl font-bold text-muted-foreground">✗</p>
+                  <p className="text-sm text-muted-foreground">Publicar servicios</p>
+                </div>
               </div>
 
-              <p className="text-xs text-white/50 text-center italic">
-                Serás redirigido a MercadoPago para completar el pago de forma segura
-              </p>
-            </motion.div>
+              <Alert className="border-primary/50 bg-primary/10">
+                <Crown className="h-4 w-4" />
+                <AlertDescription>
+                  <strong>¿Quieres ofrecer servicios?</strong> Actualiza a Plan Profesional y obtén acceso completo sin comisiones.
+                </AlertDescription>
+              </Alert>
+
+              <Button 
+                onClick={handleUpgrade}
+                disabled={isUpgrading}
+                className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg w-full"
+              >
+                {isUpgrading ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Procesando...
+                  </>
+                ) : (
+                  <>
+                    <Crown className="h-4 w-4 mr-2" />
+                    Actualizar a Profesional
+                  </>
+                )}
+              </Button>
+            </>
           )}
         </CardContent>
       </Card>
 
-      {/* Cancel Subscription Dialog */}
-      <Dialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
-        <DialogContent className="bg-slate-900/95 border-warning/40 max-w-[95%] sm:max-w-md shadow-2xl backdrop-blur-xl">
-          <DialogHeader className="border-b border-warning/20 pb-4">
-            <div className="flex items-center space-x-2 mb-2">
-              <div className="p-2 rounded-lg bg-warning/20">
-                <AlertCircle className="h-5 w-5 text-warning" />
+      {/* Payment Method */}
+      {isProfessional && (
+        <Card className="glass border-white/10">
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <CreditCard className="h-5 w-5 mr-2" />
+              Método de Pago
+            </CardTitle>
+            <CardDescription>
+              Administra cómo pagas tu suscripción
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between p-4 glass rounded-lg">
+              <div className="flex items-center space-x-3">
+                <CreditCard className="h-6 w-6 text-primary" />
+                <div>
+                  <p className="font-medium">Visa •••• 4242</p>
+                  <p className="text-sm text-muted-foreground">Vence 12/26</p>
+                </div>
               </div>
-              <DialogTitle className="text-warning text-lg">Cancelar Suscripción Premium</DialogTitle>
+              <Button variant="outline" size="sm" className="glass border-white/20">
+                Cambiar
+              </Button>
             </div>
-            <DialogDescription className="text-slate-300 ml-10 mt-2">
-              ¿Estás seguro de que deseas cancelar tu suscripción profesional?
-            </DialogDescription>
-          </DialogHeader>
+            
+            <Button variant="outline" className="glass border-white/20 w-full">
+              <CreditCard className="h-4 w-4 mr-2" />
+              Agregar Método de Pago
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  );
+}
 
-          <div className="space-y-5 py-4">
-            <Alert className="border-warning/30 bg-gradient-to-r from-warning/20 to-warning/10 rounded-xl">
-              <AlertCircle className="h-5 w-5 text-warning" />
-              <AlertDescription className="text-warning/90 ml-2 font-medium">
-                ⚠️ Al cancelar, perderás acceso a funciones premium después del período actual.
-              </AlertDescription>
-            </Alert>
+function AccountTab() {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+  const [isDeleting, setIsDeleting] = useState(false);
 
-            <div className="bg-white/5 border border-white/10 rounded-xl p-4 space-y-2">
-              <p className="text-sm font-semibold text-white">Perderás acceso a:</p>
-              <ul className="space-y-1 text-sm text-white/70 ml-2">
-                <li>✕ Servicios y anuncios ilimitados</li>
-                <li>✕ Badge "Premium" destacado en tu perfil</li>
-                <li>✕ Prioridad en búsquedas y visibilidad</li>
-                <li>✕ Estadísticas y análisis avanzados</li>
-                <li>✕ Soporte y atención prioritaria</li>
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
+  const handleDeleteAccount = async () => {
+    const confirmed = confirm(
+      '¿Estás seguro de que quieres eliminar tu cuenta? Esta acción no se puede deshacer.'
+    );
+    
+    if (!confirmed) return;
+
+    const doubleConfirm = prompt(
+      'Escribe "ELIMINAR" para confirmar que quieres eliminar permanentemente tu cuenta:'
+    );
+
+    if (doubleConfirm !== 'ELIMINAR') {
+      alert('Eliminación cancelada.');
+      return;
+    }
+
+    setIsDeleting(true);
+    try {
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      // Simular eliminación
+      alert('Cuenta eliminada correctamente.');
+      logout();
+      navigate('/');
+    } catch (error) {
+      console.error('Error deleting account:', error);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-xl font-semibold">Cuenta</h3>
+        <p className="text-muted-foreground">Opciones de cuenta y sesión</p>
+      </div>
+
+      {/* Logout */}
+      <Card className="glass border-white/10">
+        <CardHeader>
+          <CardTitle className="flex items-center">
+            <LogOut className="h-5 w-5 mr-2" />
+            Cerrar Sesión
+          </CardTitle>
+          <CardDescription>
+            Cierra sesión de forma segura en este dispositivo
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button onClick={handleLogout} variant="outline" className="glass border-white/20">
+            <LogOut className="h-4 w-4 mr-2" />
+            Cerrar Sesión
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Delete Account */}
+      <Card className="glass border-red-500/30 bg-red-500/5">
+        <CardHeader>
+          <CardTitle className="flex items-center text-red-400">
+            <Trash2 className="h-5 w-5 mr-2" />
+            Zona de Peligro
+          </CardTitle>
+          <CardDescription>
+            Elimina permanentemente tu cuenta y todos tus datos
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Alert className="border-red-500/50 bg-red-500/10 mb-4">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              <strong>Advertencia:</strong> Esta acción no se puede deshacer. Se eliminarán permanentemente:
+              <ul className="list-disc list-inside mt-2 space-y-1">
+                <li>Tu perfil y toda tu información personal</li>
+                <li>Historial de servicios y contactos</li>
+                <li>Reseñas y calificaciones</li>
+                <li>Configuraciones y preferencias</li>
               </ul>
-            </div>
-
-            <div className="bg-primary/10 border border-primary/20 rounded-xl p-3">
-              <p className="text-xs text-primary/90">
-                💡 <strong>Tip:</strong> Puedes reactivar tu suscripción en cualquier momento desde tu panel de control.
-              </p>
-            </div>
-          </div>
-
-          <DialogFooter className="gap-3 border-t border-white/10 pt-4">
-            <Button
-              variant="outline"
-              onClick={() => setShowCancelDialog(false)}
-              disabled={isCancelling}
-              className="border-white/20 text-white/80 hover:text-white hover:bg-white/10"
-            >
-              Mantener Premium
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={handleCancelSubscription}
-              disabled={isCancelling}
-              className="bg-gradient-to-r from-destructive to-destructive/80 hover:from-destructive/90 hover:to-destructive/70 shadow-lg"
-            >
-              {isCancelling ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
-                  Cancelando...
-                </>
-              ) : (
-                <>
-                  <X className="h-4 w-4 mr-2" />
-                  Sí, Cancelar
-                </>
-              )}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </motion.div>
+            </AlertDescription>
+          </Alert>
+          
+          <Button 
+            onClick={handleDeleteAccount}
+            disabled={isDeleting}
+            variant="outline"
+            className="border-red-500/50 text-red-400 hover:bg-red-500/20"
+          >
+            {isDeleting ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-400 mr-2"></div>
+                Eliminando cuenta...
+              </>
+            ) : (
+              <>
+                <Trash2 className="h-4 w-4 mr-2" />
+                Eliminar Cuenta Permanentemente
+              </>
+            )}
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
 
 export default function SettingsPage() {
-  const { user } = useSecureAuth();
-
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-background">
-        <FixiaNavigation />
-        <div className="container mx-auto px-6 py-20">
-          <Card className="glass border-white/10 max-w-md mx-auto">
-            <CardContent className="p-8 text-center">
-              <Settings className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-              <h2 className="text-2xl font-bold mb-2">Inicia Sesión</h2>
-              <p className="text-muted-foreground mb-6">
-                Debes iniciar sesión para acceder a la configuración
-              </p>
-              <Link to="/login">
-                <Button className="liquid-gradient">Iniciar Sesión</Button>
-              </Link>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    );
-  }
+  const { user } = useAuth();
 
   return (
-    <div className="min-h-screen bg-background pb-24 lg:pb-0">
-      <FixiaNavigation />
+    <div className="min-h-screen bg-background">
+      <Navigation />
+      
+      <div className="py-8 px-6">
+        <div className="container mx-auto max-w-6xl">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <div className="mb-8">
+              <h1 className="text-3xl font-bold mb-2">Configuración</h1>
+              <p className="text-muted-foreground">
+                Administra tu cuenta, preferencias y configuración de seguridad
+              </p>
+            </div>
 
-      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.3 }}
-          className="mb-6 sm:mb-8"
-        >
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 text-foreground">Configuración</h1>
-          <p className="text-base sm:text-lg md:text-xl text-muted-foreground">
-            Gestiona tu cuenta y preferencias
-          </p>
-        </motion.div>
+            <Tabs defaultValue="profile" className="space-y-8">
+              <TabsList className="glass border-white/10 p-1 h-auto">
+                <TabsTrigger value="profile" className="flex items-center space-x-2">
+                  <User className="h-4 w-4" />
+                  <span>Perfil</span>
+                </TabsTrigger>
+                <TabsTrigger value="security" className="flex items-center space-x-2">
+                  <Lock className="h-4 w-4" />
+                  <span>Seguridad</span>
+                </TabsTrigger>
+                <TabsTrigger value="notifications" className="flex items-center space-x-2">
+                  <Bell className="h-4 w-4" />
+                  <span>Notificaciones</span>
+                </TabsTrigger>
+                <TabsTrigger value="subscription" className="flex items-center space-x-2">
+                  <CreditCard className="h-4 w-4" />
+                  <span>Suscripción</span>
+                </TabsTrigger>
+                <TabsTrigger value="account" className="flex items-center space-x-2">
+                  <Settings className="h-4 w-4" />
+                  <span>Cuenta</span>
+                </TabsTrigger>
+              </TabsList>
 
-        <div className="max-w-4xl mx-auto">
-          <Tabs defaultValue="profile" className="w-full">
-            <TabsList className="glass border-white/10 mb-6 sm:mb-8 grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 w-full h-auto p-2 sm:p-3 text-foreground">
-              <TabsTrigger value="profile" className="text-xs sm:text-sm px-2 sm:px-4 py-2 sm:py-3 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 text-foreground data-[state=active]:text-foreground data-[state=inactive]:text-foreground/70 hover:text-foreground transition-colors rounded-md">
-                <User className="h-4 w-4 flex-shrink-0" />
-                <span className="font-medium text-center leading-tight">Perfil</span>
-              </TabsTrigger>
-              <TabsTrigger value="security" className="text-xs sm:text-sm px-2 sm:px-4 py-2 sm:py-3 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 text-foreground data-[state=active]:text-foreground data-[state=inactive]:text-foreground/70 hover:text-foreground transition-colors rounded-md">
-                <Lock className="h-4 w-4 flex-shrink-0" />
-                <span className="font-medium text-center leading-tight">Seguridad</span>
-              </TabsTrigger>
-              <TabsTrigger value="notifications" className="text-xs sm:text-sm px-2 sm:px-4 py-2 sm:py-3 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 text-foreground data-[state=active]:text-foreground data-[state=inactive]:text-foreground/70 hover:text-foreground transition-colors rounded-md">
-                <Bell className="h-4 w-4 flex-shrink-0" />
-                <span className="font-medium text-center leading-tight">Notif.</span>
-              </TabsTrigger>
-              <TabsTrigger value="subscription" className="text-xs sm:text-sm px-2 sm:px-4 py-2 sm:py-3 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 text-foreground data-[state=active]:text-foreground data-[state=inactive]:text-foreground/70 hover:text-foreground transition-colors rounded-md">
-                <CreditCard className="h-4 w-4 flex-shrink-0" />
-                <span className="font-medium text-center leading-tight">Su Plan</span>
-              </TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="profile">
-              <ProfileTab />
-            </TabsContent>
-            
-            <TabsContent value="security">
-              <SecurityTab />
-            </TabsContent>
-            
-            <TabsContent value="notifications">
-              <NotificationsTab />
-            </TabsContent>
-            
-            <TabsContent value="subscription">
-              <SubscriptionTab />
-            </TabsContent>
-          </Tabs>
+              <TabsContent value="profile">
+                <ProfileTab />
+              </TabsContent>
+
+              <TabsContent value="security">
+                <SecurityTab />
+              </TabsContent>
+
+              <TabsContent value="notifications">
+                <NotificationsTab />
+              </TabsContent>
+
+              <TabsContent value="subscription">
+                <SubscriptionTab />
+              </TabsContent>
+
+              <TabsContent value="account">
+                <AccountTab />
+              </TabsContent>
+            </Tabs>
+          </motion.div>
         </div>
       </div>
     </div>

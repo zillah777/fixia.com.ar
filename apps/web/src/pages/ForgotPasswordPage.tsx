@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
-import { ArrowLeft, RefreshCw } from "lucide-react";
+import { motion } from "motion/react";
+import { Mail, ArrowLeft, Loader2, Check, RefreshCw } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
-import { toast } from "sonner";
+import { toast } from "sonner@2.0.3";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -110,13 +110,14 @@ export default function ForgotPasswordPage() {
                   <div className="space-y-2">
                     <Label htmlFor="email">Correo Electrónico</Label>
                     <div className="relative">
+                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <Input
                         id="email"
                         type="email"
                         placeholder="tu@email.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="glass border-white/20 focus:border-primary/50 focus:ring-primary/30"
+                        className="pl-10 glass border-white/20 focus:border-primary/50 focus:ring-primary/30"
                         required
                       />
                     </div>
@@ -133,11 +134,14 @@ export default function ForgotPasswordPage() {
                   >
                     {loading ? (
                       <>
-                        <div className="animate-spin rounded-full border-2 border-current border-t-transparent mr-2 h-4 w-4" />
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         Enviando...
                       </>
                     ) : (
-                      "Enviar enlace de recuperación"
+                      <>
+                        <Mail className="mr-2 h-4 w-4" />
+                        Enviar enlace de recuperación
+                      </>
                     )}
                   </Button>
                 </form>
@@ -158,7 +162,7 @@ export default function ForgotPasswordPage() {
                     
                     <div className="glass-medium rounded-lg p-4 space-y-2">
                       <h4 className="font-medium text-sm">Próximos pasos:</h4>
-                      <ol className="text-xs text-muted-foreground space-y-2 list-decimal list-inside">
+                      <ol className="text-xs text-muted-foreground space-y-1 list-decimal list-inside">
                         <li>Revisa tu bandeja de entrada y spam</li>
                         <li>Haz clic en el enlace del correo</li>
                         <li>Crea una nueva contraseña segura</li>
@@ -176,7 +180,7 @@ export default function ForgotPasswordPage() {
                   >
                     {loading ? (
                       <>
-                        <div className="animate-spin rounded-full border-2 border-current border-t-transparent mr-2 h-4 w-4" />
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         Reenviando...
                       </>
                     ) : (

@@ -2,8 +2,9 @@
 
 import * as React from "react";
 import useEmblaCarousel, {
-  type UseEmblaCarouselType} from "embla-carousel-react";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+  type UseEmblaCarouselType,
+} from "embla-carousel-react@8.6.0";
+import { ArrowLeft, ArrowRight } from "lucide-react@0.487.0";
 
 import { cn } from "./utils";
 import { Button } from "./button";
@@ -53,7 +54,8 @@ function Carousel({
   const [carouselRef, api] = useEmblaCarousel(
     {
       ...opts,
-      axis: orientation === "horizontal" ? "x" : "y"},
+      axis: orientation === "horizontal" ? "x" : "y",
+    },
     plugins,
   );
   const [canScrollPrev, setCanScrollPrev] = React.useState(false);
@@ -113,7 +115,8 @@ function Carousel({
         scrollPrev,
         scrollNext,
         canScrollPrev,
-        canScrollNext}}
+        canScrollNext,
+      }}
     >
       <div
         onKeyDownCapture={handleKeyDown}
@@ -234,4 +237,5 @@ export {
   CarouselContent,
   CarouselItem,
   CarouselPrevious,
-  CarouselNext};
+  CarouselNext,
+};

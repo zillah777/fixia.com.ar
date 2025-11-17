@@ -4,48 +4,48 @@
   --font-size: 16px;
   
   /* Fixia Brand Colors - Liquid Glass Theme */
-  --background: 240 10% 3.9%;
-  --foreground: 0 0% 98%;
-  --card: 240 10% 3.9%;
-  --card-foreground: 0 0% 98%;
-  --popover: 240 10% 3.9%;
-  --popover-foreground: 0 0% 98%;
+  --background: #0a0a0b;
+  --foreground: rgba(255, 255, 255, 0.95);
+  --card: rgba(255, 255, 255, 0.05);
+  --card-foreground: rgba(255, 255, 255, 0.9);
+  --popover: rgba(20, 20, 23, 0.95);
+  --popover-foreground: rgba(255, 255, 255, 0.9);
   
   /* Primary - Liquid Blue */
   --primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   --primary-solid: #667eea;
-  --primary-foreground: 0 0% 98%;
+  --primary-foreground: rgba(255, 255, 255, 0.98);
   
   /* Secondary - Glass Effect */
-  --secondary: 240 3.7% 15.9%;
-  --secondary-foreground: 0 0% 98%;
+  --secondary: rgba(255, 255, 255, 0.08);
+  --secondary-foreground: rgba(255, 255, 255, 0.8);
   
   /* Muted - Translucent */
-  --muted: 240 3.7% 15.9%;
-  --muted-foreground: 240 5% 75%;
+  --muted: rgba(255, 255, 255, 0.05);
+  --muted-foreground: rgba(255, 255, 255, 0.6);
   
   /* Accent - Liquid Accent */
-  --accent: 240 3.7% 15.9%;
-  --accent-foreground: 0 0% 98%;
+  --accent: rgba(102, 126, 234, 0.15);
+  --accent-foreground: rgba(255, 255, 255, 0.9);
   
   /* Status Colors */
-  --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 0 0% 98%;
+  --destructive: #ff6b6b;
+  --destructive-foreground: rgba(255, 255, 255, 0.98);
   --success: #51cf66;
-  --success-foreground: 0 0% 98%;
+  --success-foreground: rgba(255, 255, 255, 0.98);
   --warning: #ffd93d;
-  --warning-foreground: 0 0% 9%;
+  --warning-foreground: rgba(0, 0, 0, 0.9);
   
   /* UI Elements */
-  --border: 240 3.7% 15.9%;
-  --input: 240 3.7% 15.9%;
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.05);
   --input-background: rgba(255, 255, 255, 0.08);
-  --ring: 217 91% 60%;
+  --ring: rgba(102, 126, 234, 0.3);
   
   /* Glass Effects */
-  --glass-light: rgba(255, 255, 255, 0.15);
-  --glass-medium: rgba(255, 255, 255, 0.225);
-  --glass-strong: rgba(255, 255, 255, 0.3);
+  --glass-light: rgba(255, 255, 255, 0.1);
+  --glass-medium: rgba(255, 255, 255, 0.15);
+  --glass-strong: rgba(255, 255, 255, 0.2);
   
   /* Typography */
   --font-weight-medium: 500;
@@ -87,7 +87,7 @@
   --border: rgba(10, 10, 11, 0.1);
   --input: rgba(10, 10, 11, 0.03);
   --input-background: rgba(10, 10, 11, 0.05);
-  --ring: 217 91% 60%;
+  --ring: rgba(102, 126, 234, 0.3);
 }
 
 @theme inline {
@@ -124,39 +124,17 @@
 
 @layer base {
   * {
-    box-sizing: border-box;
-  }
-
-  html, body {
-    background-color: #0a0a0b;
-    overscroll-behavior: none;
-    overscroll-behavior-y: none;
-    -webkit-overflow-scrolling: touch;
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
+    @apply border-border outline-ring/50;
   }
 
   body {
-    background-color: var(--background);
-    color: var(--foreground);
+    @apply bg-background text-foreground;
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', system-ui, sans-serif;
     background: var(--background);
-    background-image:
+    background-image: 
       radial-gradient(circle at 20% 50%, rgba(102, 126, 234, 0.1) 0%, transparent 50%),
       radial-gradient(circle at 80% 20%, rgba(118, 75, 162, 0.1) 0%, transparent 50%),
       radial-gradient(circle at 40% 80%, rgba(240, 147, 251, 0.1) 0%, transparent 50%);
-    background-attachment: fixed;
-  }
-
-  #root {
-    background-color: #0a0a0b;
-    height: 100%;
-    overflow-y: auto;
-    overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior: none;
   }
 }
 
@@ -168,185 +146,7 @@
     -webkit-backdrop-filter: blur(20px);
     border: 1px solid var(--border);
   }
-
-  /* Enhanced glass effects */
-  .glass-glow {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
-    backdrop-filter: blur(30px) saturate(180%);
-    -webkit-backdrop-filter: blur(30px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37),
-                inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
-  }
-
-  /* Gradient backgrounds */
-  .gradient-mesh {
-    background:
-      radial-gradient(at 40% 20%, hsla(28, 100%, 74%, 0.15) 0px, transparent 50%),
-      radial-gradient(at 80% 0%, hsla(189, 100%, 56%, 0.15) 0px, transparent 50%),
-      radial-gradient(at 0% 50%, hsla(355, 100%, 93%, 0.1) 0px, transparent 50%),
-      radial-gradient(at 80% 50%, hsla(340, 100%, 76%, 0.15) 0px, transparent 50%),
-      radial-gradient(at 0% 100%, hsla(22, 100%, 77%, 0.1) 0px, transparent 50%),
-      radial-gradient(at 80% 100%, hsla(242, 100%, 70%, 0.15) 0px, transparent 50%),
-      radial-gradient(at 0% 0%, hsla(343, 100%, 76%, 0.1) 0px, transparent 50%);
-  }
-
-  /* Animated gradients */
-  .gradient-animate {
-    background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #4facfe);
-    background-size: 400% 400%;
-    animation: gradient 15s ease infinite;
-  }
-
-  @keyframes gradient {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-  }
-
-  /* Shimmer effect */
-  .shimmer {
-    position: relative;
-    overflow: hidden;
-  }
-
-  .shimmer::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    transform: translateX(-100%);
-    background: linear-gradient(
-      90deg,
-      transparent,
-      rgba(255, 255, 255, 0.2),
-      transparent
-    );
-    animation: shimmer 3s infinite;
-  }
-
-  @keyframes shimmer {
-    100% { transform: translateX(100%); }
-  }
-
-  /* Glow effects */
-  .glow-primary {
-    box-shadow: 0 0 20px rgba(102, 126, 234, 0.5),
-                0 0 40px rgba(102, 126, 234, 0.3),
-                0 0 60px rgba(102, 126, 234, 0.1);
-  }
-
-  .glow-hover {
-    transition: box-shadow 0.3s ease;
-  }
-
-  .glow-hover:hover {
-    box-shadow: 0 0 30px rgba(102, 126, 234, 0.6),
-                0 0 60px rgba(102, 126, 234, 0.4),
-                0 0 90px rgba(102, 126, 234, 0.2);
-  }
-
-  /* Floating animation */
-  .float {
-    animation: float 6s ease-in-out infinite;
-  }
-
-  @keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-20px); }
-  }
-
-  /* Pulse glow */
-  .pulse-glow {
-    animation: pulse-glow 2s ease-in-out infinite;
-  }
-
-  @keyframes pulse-glow {
-    0%, 100% {
-      box-shadow: 0 0 20px rgba(102, 126, 234, 0.4);
-    }
-    50% {
-      box-shadow: 0 0 40px rgba(102, 126, 234, 0.8),
-                  0 0 60px rgba(102, 126, 234, 0.4);
-    }
-  }
-
-  /* Text gradients */
-  .text-gradient {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .text-gradient-rainbow {
-    background: linear-gradient(90deg, #667eea, #764ba2, #f093fb, #4facfe, #667eea);
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: gradient-text 3s linear infinite;
-  }
-
-  @keyframes gradient-text {
-    to { background-position: 200% center; }
-  }
-
-  /* Neon borders */
-  .neon-border {
-    position: relative;
-    border: 2px solid transparent;
-    background: linear-gradient(var(--background), var(--background)) padding-box,
-                linear-gradient(135deg, #667eea, #764ba2) border-box;
-  }
-
-  /* Card hover effects */
-  .card-hover {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
-
-  .card-hover:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 20px 60px rgba(102, 126, 234, 0.3);
-  }
-
-  /* Frosted glass */
-  .frosted {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(40px) saturate(200%);
-    -webkit-backdrop-filter: blur(40px) saturate(200%);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow:
-      0 8px 32px 0 rgba(31, 38, 135, 0.37),
-      inset 0 1px 1px 0 rgba(255, 255, 255, 0.15),
-      inset 0 -1px 1px 0 rgba(0, 0, 0, 0.1);
-  }
-
-  /* Spotlight effect */
-  .spotlight {
-    position: relative;
-    overflow: hidden;
-  }
-
-  .spotlight::before {
-    content: '';
-    position: absolute;
-    width: 200%;
-    height: 200%;
-    top: -50%;
-    left: -50%;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
-    opacity: 0;
-    transition: opacity 0.5s;
-    pointer-events: none;
-  }
-
-  .spotlight:hover::before {
-    opacity: 1;
-  }
-
+  
   .glass-medium {
     background: var(--glass-medium);
     backdrop-filter: blur(24px);
@@ -362,7 +162,7 @@
   }
   
   .liquid-gradient {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--primary);
   }
   
   .animate-float {
@@ -390,28 +190,6 @@
     outline-offset: 2px;
   }
   
-  /* Enhanced text gradients for better visibility */
-  .text-gradient-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-fill-color: transparent;
-  }
-  
-  .text-gradient-fallback {
-    color: #667eea;
-  }
-  
-  /* Enhanced glass cards */
-  .glass-card {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  }
-
   /* Improved animations */
   @keyframes modal-in {
     from {
@@ -448,75 +226,57 @@
  * Base typography following Fixia brand guidelines
  */
 @layer base {
-  h1 {
-    font-size: 2.25rem;
-    font-weight: var(--font-weight-semibold);
-    line-height: 1.2;
-    letter-spacing: -0.025em;
-  }
+  :where(:not(:has([class*=" text-"]), :not(:has([class^="text-"])))) {
+    h1 {
+      font-size: 2.25rem;
+      font-weight: var(--font-weight-semibold);
+      line-height: 1.2;
+      letter-spacing: -0.025em;
+    }
 
-  h2 {
-    font-size: 1.875rem;
-    font-weight: var(--font-weight-semibold);
-    line-height: 1.3;
-    letter-spacing: -0.025em;
-  }
+    h2 {
+      font-size: 1.875rem;
+      font-weight: var(--font-weight-semibold);
+      line-height: 1.3;
+      letter-spacing: -0.025em;
+    }
 
-  h3 {
-    font-size: 1.5rem;
-    font-weight: var(--font-weight-medium);
-    line-height: 1.4;
-    letter-spacing: -0.025em;
-  }
+    h3 {
+      font-size: 1.5rem;
+      font-weight: var(--font-weight-medium);
+      line-height: 1.4;
+      letter-spacing: -0.025em;
+    }
 
-  h4 {
-    font-size: 1.25rem;
-    font-weight: var(--font-weight-medium);
-    line-height: 1.4;
-  }
+    h4 {
+      font-size: 1.25rem;
+      font-weight: var(--font-weight-medium);
+      line-height: 1.4;
+    }
 
-  p {
-    font-size: 1rem;
-    font-weight: var(--font-weight-normal);
-    line-height: 1.6;
-  }
+    p {
+      font-size: 1rem;
+      font-weight: var(--font-weight-normal);
+      line-height: 1.6;
+    }
 
-  label {
-    font-size: 0.875rem;
-    font-weight: var(--font-weight-medium);
-    line-height: 1.5;
-  }
+    label {
+      font-size: 0.875rem;
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
 
-  button {
-    font-size: 0.875rem;
-    font-weight: var(--font-weight-medium);
-    line-height: 1.5;
-  }
+    button {
+      font-size: 0.875rem;
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
 
-  input {
-    font-size: 1rem;
-    font-weight: var(--font-weight-normal);
-    line-height: 1.5;
-  }
-}
-
-/* Article and card titles - ensure white text for accessibility */
-@layer components {
-  .article-title {
-    @apply text-white;
-    color: #ffffff !important;
-  }
-
-  /* Ensure all headings in help pages have white text */
-  [data-page="help"] h1,
-  [data-page="help"] h2,
-  [data-page="help"] h3,
-  [data-page="help"] h4,
-  [data-page="help-detail"] h1,
-  [data-page="help-detail"] h2,
-  [data-page="help-detail"] h3,
-  [data-page="help-detail"] h4 {
-    color: #ffffff !important;
+    input {
+      font-size: 1rem;
+      font-weight: var(--font-weight-normal);
+      line-height: 1.5;
+    }
   }
 }
 
@@ -533,110 +293,8 @@
   .z-tooltip {
     z-index: 10000;
   }
-
-  /* Dropdown menu fixes - Glass effect with transparency */
-  [data-slot="dropdown-menu-content"] {
-    z-index: 10001 !important;
-    background: rgba(10, 10, 11, 0.85) !important;
-    backdrop-filter: blur(40px) saturate(180%) !important;
-    -webkit-backdrop-filter: blur(40px) saturate(180%) !important;
-    border: 1px solid rgba(255, 255, 255, 0.15) !important;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5),
-                0 0 0 1px rgba(255, 255, 255, 0.1) inset !important;
-    color: hsl(var(--popover-foreground)) !important;
-  }
-
-  /* Dropdown menu item hover effect */
-  [data-slot="dropdown-menu-item"]:hover,
-  [data-slot="dropdown-menu-item"]:focus {
-    background: rgba(255, 255, 255, 0.1) !important;
-    backdrop-filter: blur(20px) !important;
-    -webkit-backdrop-filter: blur(20px) !important;
-  }
-
-  /* Dropdown menu separator */
-  [data-slot="dropdown-menu-separator"] {
-    background: rgba(255, 255, 255, 0.15) !important;
-  }
-
-  /* Dropdown menu label (header section) */
-  [data-slot="dropdown-menu-label"] {
-    background: rgba(255, 255, 255, 0.05) !important;
-    border-radius: 0.375rem;
-  }
-
-  /* NOTE: Removed ALL global Radix Dialog rules to prevent CSS conflicts
-     Modal styling is now handled at component level, NOT globally */
-
-  /* Mobile-specific utilities */
-  .safe-area-pb {
-    padding-bottom: env(safe-area-inset-bottom);
-  }
-  
-  .safe-area-pt {
-    padding-top: env(safe-area-inset-top);
-  }
-  
-  .mobile-container {
-    @apply px-4 sm:px-6 lg:px-8;
-  }
-  
-  .mobile-section {
-    @apply py-8 sm:py-12 lg:py-16;
-  }
-  
-  .mobile-card {
-    @apply rounded-lg sm:rounded-xl;
-  }
-  
-  .mobile-text-base {
-    @apply text-sm sm:text-base;
-  }
-  
-  .mobile-text-lg {
-    @apply text-base sm:text-lg;
-  }
-  
-  .mobile-text-xl {
-    @apply text-lg sm:text-xl;
-  }
-  
-  .mobile-text-2xl {
-    @apply text-xl sm:text-2xl;
-  }
-  
-  .mobile-text-3xl {
-    @apply text-2xl sm:text-3xl;
-  }
-  
-  .mobile-space-y {
-    @apply space-y-4 sm:space-y-6;
-  }
-  
-  .mobile-gap {
-    @apply gap-4 sm:gap-6;
-  }
-  
-  /* Touch targets */
-  .touch-target {
-    min-height: 44px;
-    min-width: 44px;
-  }
 }
 
 html {
   font-size: var(--font-size);
-}
-
-/* Mobile viewport optimizations */
-@media screen and (max-width: 640px) {
-  body {
-    font-size: 14px;
-    line-height: 1.5;
-  }
-  
-  .container {
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
 }

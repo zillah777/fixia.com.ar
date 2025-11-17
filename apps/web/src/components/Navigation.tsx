@@ -1,4 +1,4 @@
-import { Plus, Bell, Settings, LogOut, User } from "lucide-react";
+import { Search, Plus, Bell, Settings, LogOut, User } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
@@ -7,7 +7,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 export function Navigation() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto flex h-16 sm:h-20 items-center justify-between px-4 sm:px-6">
+      <div className="container mx-auto flex h-16 items-center justify-between px-4">
         {/* Logo and Navigation Links */}
         <div className="flex items-center space-x-8">
           <div className="flex items-center space-x-2">
@@ -27,9 +27,10 @@ export function Navigation() {
         <div className="flex items-center space-x-4">
           {/* Search */}
           <div className="relative hidden sm:block">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder="Search projects..."
-              className="w-64"
+              className="w-64 pl-9"
             />
           </div>
 

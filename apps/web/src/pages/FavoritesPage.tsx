@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { motion } from "motion/react";
 import { Link } from "react-router-dom";
-import {
-  Heart, Search, Filter, Heart, MapPin,
+import { 
+  ArrowLeft, Heart, Search, Filter, Star, MapPin, 
   Crown, CheckCircle, Trash2, Grid, List, SortAsc,
   Clock, Users, Briefcase, MoreHorizontal, Share2,
-  MessageSquare, Phone, Mail, AlertCircle
+  MessageSquare, Phone, Mail, Calendar
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -15,11 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
-import { Skeleton } from "../components/ui/skeleton";
-import { FixiaNavigation } from "../components/FixiaNavigation";
-import { useSecureAuth } from "../context/SecureAuthContext";
-import { favoritesService, FavoriteService, FavoriteProfessional } from "../lib/services/favorites.service";
-import { toast } from "sonner";
+import { useAuth } from "../context/SecureAuthContext";
 
 interface FavoriteService {
   id: string;
@@ -97,73 +93,132 @@ const favoriteServices: FavoriteService[] = [
     category: "Diseño Gráfico",
     dateAdded: "2024-01-10",
     lastUpdated: "2024-01-18"
+  },
+  {
+    id: "3",
+    title: "Reparación de Electrodomésticos",
+    description: "Servicio técnico especializado con garantía incluida",
+    professional: {
+      name: "Miguel Santos",
+      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&h=120&fit=crop&crop=face",
+      verified: true,
+      level: "Técnico Certificado",
+      location: "Comodoro Rivadavia, Chubut"
+    },
+    image: "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400&h=300&fit=crop",
+    price: 3500,
+    rating: 5.0,
+    reviews: 89,
+    category: "Reparaciones",
+    dateAdded: "2024-01-05",
+    lastUpdated: "2024-01-16"
   }
 ];
 
 const favoriteProfessionals: FavoriteProfessional[] = [
   {
     id: "1",
-    name: "Miguel Torres",
-    avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=120&h=120&fit=crop&crop=face",
-    businessName: "Torres Reparaciones",
-    specialties: ["Plomería", "Electricidad", "Carpintería"],
-    location: "Comodoro Rivadavia, Chubut",
+    name: "Laura Fernández",
+    avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=120&h=120&fit=crop&crop=face",
+    businessName: "LF Marketing Digital",
+    specialties: ["Marketing Digital", "Redes Sociales", "SEO"],
+    location: "Trelew, Chubut",
     verified: true,
-    level: "Técnico Certificado",
-    rating: 4.7,
-    reviewsCount: 89,
-    completedJobs: 156,
+    level: "Top Rated Plus",
+    rating: 4.9,
+    reviewsCount: 156,
+    completedJobs: 89,
     responseTime: "2 horas",
     dateAdded: "2024-01-12",
-    lastActive: "hace 1 hora",
-    availability: "available"
+    lastActive: "En línea ahora",
+    availability: "Disponible"
+  },
+  {
+    id: "2",
+    name: "Roberto Paz",
+    avatar: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=120&h=120&fit=crop&crop=face",
+    businessName: "Construcciones RP",
+    specialties: ["Construcción", "Reformas", "Albañilería"],
+    location: "Esquel, Chubut",
+    verified: true,
+    level: "Profesional Verificado",
+    rating: 4.7,
+    reviewsCount: 203,
+    completedJobs: 145,
+    responseTime: "4 horas",
+    dateAdded: "2024-01-08",
+    lastActive: "Hace 2 horas",
+    availability: "Ocupado hasta Feb 5"
   }
 ];
 
-function ServiceCard({ service }: { service: FavoriteService }) {
+function Navigation() {
+  return (
+    <motion.header 
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      className="sticky top-0 z-50 w-full glass border-b border-white/10"
+    >
+      <div className="container mx-auto flex h-16 items-center justify-between px-6">
+        <Link to="/dashboard" className="flex items-center space-x-3">
+          <div className="h-8 w-8 liquid-gradient rounded-lg flex items-center justify-center shadow-lg">
+            <span className="text-white font-bold">F</span>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-lg font-semibold">Fixia</span>
+            <span className="text-xs text-muted-foreground -mt-1">Favoritos</span>
+          </div>
+        </Link>
+        
+        <Link to="/dashboard">
+          <Button variant="ghost" className="hover:glass-medium">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Dashboard
+          </Button>
+        </Link>
+      </div>
+    </motion.header>
+  );
+}
+
+function FavoriteServiceCard({ service, onRemove }: { 
+  service: FavoriteService; 
+  onRemove: (id: string) => void;
+}) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -4 }}
       transition={{ duration: 0.3 }}
+      whileHover={{ y: -4 }}
     >
-      <Card className="glass border-white/10 overflow-hidden hover:bg-white/5 transition-all duration-300 group">
-        <div className="relative">
+      <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 overflow-hidden group cursor-pointer">
+        <div className="relative aspect-video overflow-hidden">
           <img 
             src={service.image} 
             alt={service.title}
-            className="w-full h-48 object-cover"
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
-          <div className="absolute top-3 right-3">
-            <Button
-              variant="secondary"
-              size="icon" className="h-9 w-9 bg-white/20 hover:bg-white/30 backdrop-blur-sm"
-            >
-              <Heart className="h-4 w-4 fill-destructive text-destructive" />
-            </Button>
+          <div className="absolute top-4 left-4">
+            <Badge className="bg-primary/20 text-primary border-primary/30">
+              {service.category}
+            </Badge>
           </div>
-          <Badge className="absolute top-3 left-3 bg-primary/90 text-white">
-            {service.category}
-          </Badge>
-        </div>
-        
-        <CardContent className="p-6">
-          <div className="flex items-start justify-between mb-4">
-            <div className="flex-1">
-              <Link to={`/services/${service.id}`}>
-                <h3 className="font-semibold text-lg mb-2 hover:text-primary transition-colors group-hover:text-primary">
-                  {service.title}
-                </h3>
-              </Link>
-              <p className="text-muted-foreground text-sm line-clamp-2 mb-3">
-                {service.description}
-              </p>
-            </div>
-            
+          <div className="absolute top-4 right-4 flex space-x-2">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-8 w-8 glass text-red-400 hover:bg-red-500/20"
+              onClick={(e) => {
+                e.preventDefault();
+                onRemove(service.id);
+              }}
+            >
+              <Heart className="h-4 w-4 fill-current" />
+            </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-9 w-9">
+                <Button variant="ghost" size="icon" className="h-8 w-8 glass">
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
@@ -172,66 +227,60 @@ function ServiceCard({ service }: { service: FavoriteService }) {
                   <Share2 className="h-4 w-4 mr-2" />
                   Compartir
                 </DropdownMenuItem>
-                <DropdownMenuItem className="text-destructive">
+                <DropdownMenuItem>
+                  <MessageSquare className="h-4 w-4 mr-2" />
+                  Contactar
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={() => onRemove(service.id)}
+                  className="text-red-400 hover:bg-red-500/10"
+                >
                   <Trash2 className="h-4 w-4 mr-2" />
-                  Eliminar de favoritos
+                  Quitar de favoritos
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-
+        </div>
+        
+        <CardContent className="p-6">
           <div className="flex items-center space-x-3 mb-4">
-            <Avatar className="h-8 w-8">
+            <Avatar className="h-10 w-10">
               <AvatarImage src={service.professional.avatar} />
-              <AvatarFallback>{service.professional.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+              <AvatarFallback>{service.professional.name.charAt(0)}</AvatarFallback>
             </Avatar>
             <div className="flex-1">
               <div className="flex items-center space-x-2">
                 <span className="font-medium text-sm">{service.professional.name}</span>
                 {service.professional.verified && (
-                  <CheckCircle className="h-4 w-4 text-primary" />
+                  <CheckCircle className="h-4 w-4 text-success" />
                 )}
               </div>
               <div className="flex items-center space-x-1 text-xs text-muted-foreground">
                 <MapPin className="h-3 w-3" />
                 <span>{service.professional.location}</span>
               </div>
+              <Badge className="bg-warning/20 text-warning border-warning/30 text-xs mt-1">
+                {service.professional.level}
+              </Badge>
             </div>
           </div>
-
+          
+          <h3 className="font-semibold mb-2 line-clamp-2">{service.title}</h3>
+          <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{service.description}</p>
+          
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-1">
-              <Heart className="h-4 w-4 fill-warning text-warning" />
-              <span className="text-sm font-medium">{service.rating}</span>
-              <span className="text-sm text-muted-foreground">({service.reviews})</span>
+              <Star className="h-4 w-4 text-warning fill-current" />
+              <span className="font-medium">{service.rating}</span>
+              <span className="text-muted-foreground text-sm">({service.reviews})</span>
             </div>
-            <Badge variant="secondary" className="bg-primary/20 text-primary">
-              {service.professional.level}
-            </Badge>
+            <span className="text-xl font-bold text-primary">${service.price.toLocaleString()}</span>
           </div>
 
-          <div className="flex items-center justify-between">
-            <div>
-              <span className="text-2xl font-bold text-primary">
-                ${service.price.toLocaleString()}
-              </span>
-              <span className="text-sm text-muted-foreground ml-1">ARS</span>
-            </div>
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm" className="glass border-white/20">
-                <MessageSquare className="h-4 w-4 mr-1" />
-                Contactar
-              </Button>
-              <Link to={`/services/${service.id}`}>
-                <Button size="sm" className="liquid-gradient">
-                  Ver Detalles
-                </Button>
-              </Link>
-            </div>
-          </div>
-
-          <div className="text-xs text-muted-foreground mt-4 pt-4 border-t border-white/10">
-            Agregado el {new Date(service.dateAdded).toLocaleDateString()}
+          <div className="flex items-center justify-between text-xs text-muted-foreground">
+            <span>Agregado: {new Date(service.dateAdded).toLocaleDateString()}</span>
+            <span>Actualizado: {new Date(service.lastUpdated).toLocaleDateString()}</span>
           </div>
         </CardContent>
       </Card>
@@ -239,127 +288,108 @@ function ServiceCard({ service }: { service: FavoriteService }) {
   );
 }
 
-function ProfessionalCard({ professional }: { professional: FavoriteProfessional }) {
-  const statusColors = {
-    available: "text-success",
-    busy: "text-warning",
-    offline: "text-muted-foreground"
-  };
-
+function FavoriteProfessionalCard({ professional, onRemove }: { 
+  professional: FavoriteProfessional; 
+  onRemove: (id: string) => void;
+}) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -4 }}
       transition={{ duration: 0.3 }}
+      whileHover={{ y: -4 }}
     >
-      <Card className="glass border-white/10 hover:bg-white/5 transition-all duration-300 group">
+      <Card className="glass hover:glass-medium transition-all duration-300 border-white/10">
         <CardContent className="p-6">
           <div className="flex items-start justify-between mb-4">
             <div className="flex items-center space-x-4">
               <Avatar className="h-16 w-16">
                 <AvatarImage src={professional.avatar} />
-                <AvatarFallback className="text-lg">
-                  {professional.name.split(' ').map(n => n[0]).join('')}
-                </AvatarFallback>
+                <AvatarFallback>{professional.name.charAt(0)}</AvatarFallback>
               </Avatar>
               <div className="flex-1">
                 <div className="flex items-center space-x-2 mb-1">
-                  <Link to={`/professionals/${professional.id}`}>
-                    <h3 className="font-semibold text-lg hover:text-primary transition-colors group-hover:text-primary">
-                      {professional.name}
-                    </h3>
-                  </Link>
+                  <h3 className="font-semibold">{professional.name}</h3>
                   {professional.verified && (
-                    <CheckCircle className="h-4 w-4 text-primary" />
+                    <CheckCircle className="h-4 w-4 text-success" />
                   )}
                 </div>
-                <p className="text-sm text-muted-foreground mb-1">{professional.businessName}</p>
-                <div className="flex items-center space-x-1 text-xs text-muted-foreground">
+                <p className="text-sm text-muted-foreground mb-2">{professional.businessName}</p>
+                <div className="flex items-center space-x-1 text-xs text-muted-foreground mb-2">
                   <MapPin className="h-3 w-3" />
                   <span>{professional.location}</span>
                 </div>
+                <Badge className="bg-warning/20 text-warning border-warning/30 text-xs">
+                  {professional.level}
+                </Badge>
               </div>
             </div>
-            
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-9 w-9">
+                <Button variant="ghost" size="icon" className="h-8 w-8 hover:glass-medium">
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="glass border-white/20">
                 <DropdownMenuItem>
-                  <Share2 className="h-4 w-4 mr-2" />
-                  Compartir perfil
+                  <Users className="h-4 w-4 mr-2" />
+                  Ver Perfil
                 </DropdownMenuItem>
-                <DropdownMenuItem className="text-destructive">
+                <DropdownMenuItem>
+                  <MessageSquare className="h-4 w-4 mr-2" />
+                  Contactar
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Share2 className="h-4 w-4 mr-2" />
+                  Compartir
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={() => onRemove(professional.id)}
+                  className="text-red-400 hover:bg-red-500/10"
+                >
                   <Trash2 className="h-4 w-4 mr-2" />
-                  Eliminar de favoritos
+                  Quitar de favoritos
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
 
-          <div className="mb-4">
-            <div className="flex flex-wrap gap-2">
-              {professional.specialties.map((specialty) => (
-                <Badge key={specialty} variant="secondary" className="text-xs">
-                  {specialty}
-                </Badge>
-              ))}
+          <div className="space-y-3">
+            <div>
+              <h4 className="text-sm font-medium mb-1">Especialidades</h4>
+              <div className="flex flex-wrap gap-1">
+                {professional.specialties.map((specialty, index) => (
+                  <Badge key={index} variant="secondary" className="text-xs">
+                    {specialty}
+                  </Badge>
+                ))}
+              </div>
             </div>
-          </div>
 
-          <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
-            <div className="flex items-center space-x-2">
-              <Heart className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-              <span>{professional.rating} ({professional.reviewsCount} reseñas)</span>
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div className="flex items-center space-x-2">
+                <Star className="h-4 w-4 text-warning" />
+                <span>{professional.rating} ({professional.reviewsCount} reseñas)</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Briefcase className="h-4 w-4 text-primary" />
+                <span>{professional.completedJobs} trabajos</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Clock className="h-4 w-4 text-success" />
+                <span>Responde en {professional.responseTime}</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Calendar className="h-4 w-4 text-muted-foreground" />
+                <span>{professional.availability}</span>
+              </div>
             </div>
-            <div className="flex items-center space-x-2">
-              <Briefcase className="h-4 w-4 text-muted-foreground" />
-              <span>{professional.completedJobs} trabajos</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Clock className="h-4 w-4 text-muted-foreground" />
-              <span>Responde en {professional.responseTime}</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className={`h-2 w-2 rounded-full ${
-                professional.availability === 'available' ? 'bg-success' :
-                professional.availability === 'busy' ? 'bg-warning' : 'bg-muted-foreground'
-              }`} />
-              <span className={statusColors[professional.availability as keyof typeof statusColors]}>
-                {professional.availability === 'available' ? 'Disponible' :
-                 professional.availability === 'busy' ? 'Ocupado' : 'No disponible'}
-              </span>
-            </div>
-          </div>
 
-          <div className="flex items-center justify-between mb-4">
-            <Badge variant="secondary" className="bg-primary/20 text-primary">
-              {professional.level}
-            </Badge>
-            <span className="text-xs text-muted-foreground">
-              Activo {professional.lastActive}
-            </span>
-          </div>
-
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" className="glass border-white/20 flex-1">
-              <MessageSquare className="h-4 w-4 mr-1" />
-              Mensaje
-            </Button>
-            <Button variant="outline" size="sm" className="glass border-white/20">
-              <Phone className="h-4 w-4" />
-            </Button>
-            <Button variant="outline" size="sm" className="glass border-white/20">
-              <Mail className="h-4 w-4" />
-            </Button>
-          </div>
-
-          <div className="text-xs text-muted-foreground mt-4 pt-4 border-t border-white/10">
-            Agregado el {new Date(professional.dateAdded).toLocaleDateString()}
+            <div className="flex items-center justify-between text-xs text-muted-foreground pt-3 border-t border-white/10">
+              <span>Agregado: {new Date(professional.dateAdded).toLocaleDateString()}</span>
+              <span>Última vez activo: {professional.lastActive}</span>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -367,207 +397,182 @@ function ProfessionalCard({ professional }: { professional: FavoriteProfessional
   );
 }
 
+function EmptyFavorites({ type }: { type: 'services' | 'professionals' }) {
+  return (
+    <Card className="glass border-white/10 text-center py-16">
+      <CardContent>
+        <Heart className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+        <h3 className="text-xl font-semibold mb-2">
+          No tienes {type === 'services' ? 'servicios' : 'profesionales'} favoritos
+        </h3>
+        <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+          Cuando encuentres {type === 'services' ? 'servicios' : 'profesionales'} que te interesen, 
+          haz clic en el corazón para guardarlos aquí.
+        </p>
+        <Link to="/services">
+          <Button className="liquid-gradient">
+            <Search className="h-4 w-4 mr-2" />
+            Explorar {type === 'services' ? 'Servicios' : 'Profesionales'}
+          </Button>
+        </Link>
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function FavoritesPage() {
-  const { user } = useSecureAuth();
+  const { user } = useAuth();
+  const [services, setServices] = useState<FavoriteService[]>(favoriteServices);
+  const [professionals, setProfessionals] = useState<FavoriteProfessional[]>(favoriteProfessionals);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("dateAdded");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [favoriteServices, setFavoriteServices] = useState<FavoriteService[]>([]);
-  const [favoriteProfessionals, setFavoriteProfessionals] = useState<FavoriteProfessional[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [removingId, setRemovingId] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (user) {
-      loadFavorites();
-    }
-  }, [user]);
-
-  const loadFavorites = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const data = await favoritesService.getAllFavorites();
-
-      // Validar que data tenga la estructura correcta
-      setFavoriteServices(data?.services || []);
-      setFavoriteProfessionals(data?.professionals || []);
-    } catch (err: any) {
-      console.error('Error loading favorites:', err);
-      setError('Error al cargar favoritos');
-      setFavoriteServices([]);
-      setFavoriteProfessionals([]);
-    } finally {
-      setLoading(false);
-    }
+  const handleRemoveService = (id: string) => {
+    setServices(services.filter(service => service.id !== id));
   };
 
-  const handleRemoveService = async (serviceId: string) => {
-    try {
-      setRemovingId(serviceId);
-      await favoritesService.removeServiceFromFavorites(serviceId);
-
-      setFavoriteServices(prev => prev.filter(fav => fav.id !== serviceId));
-      toast.success('Servicio eliminado de favoritos');
-    } catch (err: any) {
-      console.error('Error removing service:', err);
-      toast.error('Error al eliminar servicio de favoritos');
-    } finally {
-      setRemovingId(null);
-    }
+  const handleRemoveProfessional = (id: string) => {
+    setProfessionals(professionals.filter(professional => professional.id !== id));
   };
 
-  const handleRemoveProfessional = async (professionalId: string) => {
-    try {
-      setRemovingId(professionalId);
-      await favoritesService.removeProfessionalFromFavorites(professionalId);
+  const filteredServices = services.filter(service =>
+    service.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    service.professional.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    service.category.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
-      setFavoriteProfessionals(prev => prev.filter(fav => fav.id !== professionalId));
-      toast.success('Profesional eliminado de favoritos');
-    } catch (err: any) {
-      console.error('Error removing professional:', err);
-      toast.error('Error al eliminar profesional de favoritos');
-    } finally {
-      setRemovingId(null);
-    }
-  };
-
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-background">
-        <FixiaNavigation />
-        <div className="container mx-auto px-4 sm:px-6 py-20">
-          <Card className="glass border-white/10 max-w-md mx-auto">
-            <CardContent className="p-8 text-center">
-              <Heart className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-              <h2 className="text-2xl font-bold mb-2">Inicia Sesión</h2>
-              <p className="text-muted-foreground mb-6">
-                Debes iniciar sesión para ver tus favoritos
-              </p>
-              <Link to="/login">
-                <Button className="liquid-gradient">Iniciar Sesión</Button>
-              </Link>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    );
-  }
+  const filteredProfessionals = professionals.filter(professional =>
+    professional.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    professional.businessName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    professional.specialties.some(specialty => 
+      specialty.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+  );
 
   return (
     <div className="min-h-screen bg-background">
-      <FixiaNavigation />
+      <Navigation />
       
-      <div className="container mx-auto px-4 sm:px-6 py-8">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
-        >
-          <h1 className="text-4xl font-bold mb-2 text-foreground">Mis Favoritos</h1>
-          <p className="text-xl text-muted-foreground">
-            Servicios y profesionales que has guardado
-          </p>
-        </motion.div>
-
-        {/* Filters */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="flex flex-col lg:flex-row gap-4 mb-8"
-        >
-          <div className="relative flex-1">
-            <Input
-              placeholder="Buscar en favoritos..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="glass border-white/20"
-            />
-          </div>
-          
-          <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="w-48 glass border-white/20">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="glass border-white/20">
-              <SelectItem value="dateAdded">Fecha agregado</SelectItem>
-              <SelectItem value="rating">Mejor valorado</SelectItem>
-              <SelectItem value="price">Precio</SelectItem>
-              <SelectItem value="name">Nombre</SelectItem>
-            </SelectContent>
-          </Select>
-
-          <div className="flex gap-2">
-            <Button
-              variant={viewMode === 'grid' ? 'default' : 'outline'}
-              size="icon"
-              onClick={() => setViewMode('grid')}
-              className={viewMode === 'grid' ? 'liquid-gradient' : 'glass border-white/20'}
-            >
-              <Grid className="h-4 w-4" />
-            </Button>
-            <Button
-              variant={viewMode === 'list' ? 'default' : 'outline'}
-              size="icon"
-              onClick={() => setViewMode('list')}
-              className={viewMode === 'list' ? 'liquid-gradient' : 'glass border-white/20'}
-            >
-              <List className="h-4 w-4" />
-            </Button>
-          </div>
-        </motion.div>
-
-        {/* Content */}
-        <Tabs defaultValue="services" className="w-full">
-          <TabsList className="glass border-white/10 mb-8">
-            <TabsTrigger value="services">
-              Servicios ({favoriteServices.length})
-            </TabsTrigger>
-            <TabsTrigger value="professionals">
-              Profesionales ({favoriteProfessionals.length})
-            </TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="services">
-            <div className={`grid gap-6 ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'}`}>
-              {favoriteServices.map((service) => (
-                <ServiceCard key={service.id} service={service} />
-              ))}
-            </div>
-          </TabsContent>
-          
-          <TabsContent value="professionals">
-            <div className={`grid gap-6 ${viewMode === 'grid' ? 'md:grid-cols-2' : 'grid-cols-1'}`}>
-              {favoriteProfessionals.map((professional) => (
-                <ProfessionalCard key={professional.id} professional={professional} />
-              ))}
-            </div>
-          </TabsContent>
-        </Tabs>
-
-        {favoriteServices.length === 0 && favoriteProfessionals.length === 0 && (
+      <div className="py-8 px-6">
+        <div className="container mx-auto max-w-7xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center py-20"
+            transition={{ duration: 0.8 }}
           >
-            <Heart className="h-24 w-24 text-muted-foreground mx-auto mb-6" />
-            <h2 className="text-3xl font-bold mb-4 text-foreground">No tienes favoritos aún</h2>
-            <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Cuando encuentres servicios o profesionales que te interesen, 
-              guárdalos aquí haciendo clic en el ícono de corazón.
-            </p>
-            <Link to="/services">
-              <Button className="liquid-gradient">
-                Explorar Servicios
-              </Button>
-            </Link>
+            <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 mb-8">
+              <div>
+                <h1 className="text-3xl font-bold mb-2">Mis Favoritos</h1>
+                <p className="text-muted-foreground">
+                  Servicios y profesionales que has guardado para consultar más tarde
+                </p>
+              </div>
+
+              <div className="flex items-center space-x-4">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Buscar en favoritos..."
+                    className="pl-10 w-80 glass border-white/20"
+                  />
+                </div>
+
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger className="w-48 glass border-white/20">
+                    <SelectValue placeholder="Ordenar por" />
+                  </SelectTrigger>
+                  <SelectContent className="glass border-white/20">
+                    <SelectItem value="dateAdded">Fecha agregado</SelectItem>
+                    <SelectItem value="name">Nombre</SelectItem>
+                    <SelectItem value="rating">Calificación</SelectItem>
+                    <SelectItem value="price">Precio</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <div className="flex border glass rounded-lg border-white/20">
+                  <Button
+                    variant={viewMode === "grid" ? "default" : "ghost"}
+                    size="sm"
+                    onClick={() => setViewMode("grid")}
+                    className={viewMode === "grid" ? "liquid-gradient" : ""}
+                  >
+                    <Grid className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant={viewMode === "list" ? "default" : "ghost"}
+                    size="sm"
+                    onClick={() => setViewMode("list")}
+                    className={viewMode === "list" ? "liquid-gradient" : ""}
+                  >
+                    <List className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            <Tabs defaultValue="services" className="space-y-8">
+              <TabsList className="glass border-white/10 p-1">
+                <TabsTrigger value="services" className="flex items-center space-x-2">
+                  <Briefcase className="h-4 w-4" />
+                  <span>Servicios</span>
+                  <Badge className="bg-primary/20 text-primary border-primary/30 text-xs">
+                    {filteredServices.length}
+                  </Badge>
+                </TabsTrigger>
+                <TabsTrigger value="professionals" className="flex items-center space-x-2">
+                  <Users className="h-4 w-4" />
+                  <span>Profesionales</span>
+                  <Badge className="bg-primary/20 text-primary border-primary/30 text-xs">
+                    {filteredProfessionals.length}
+                  </Badge>
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="services">
+                {filteredServices.length > 0 ? (
+                  <div className={`grid gap-6 ${
+                    viewMode === "grid" 
+                      ? "md:grid-cols-2 lg:grid-cols-3" 
+                      : "grid-cols-1 max-w-4xl"
+                  }`}>
+                    {filteredServices.map((service) => (
+                      <FavoriteServiceCard
+                        key={service.id}
+                        service={service}
+                        onRemove={handleRemoveService}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <EmptyFavorites type="services" />
+                )}
+              </TabsContent>
+
+              <TabsContent value="professionals">
+                {filteredProfessionals.length > 0 ? (
+                  <div className={`grid gap-6 ${
+                    viewMode === "grid" 
+                      ? "md:grid-cols-2 lg:grid-cols-3" 
+                      : "grid-cols-1 max-w-4xl"
+                  }`}>
+                    {filteredProfessionals.map((professional) => (
+                      <FavoriteProfessionalCard
+                        key={professional.id}
+                        professional={professional}
+                        onRemove={handleRemoveProfessional}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <EmptyFavorites type="professionals" />
+                )}
+              </TabsContent>
+            </Tabs>
           </motion.div>
-        )}
+        </div>
       </div>
     </div>
   );

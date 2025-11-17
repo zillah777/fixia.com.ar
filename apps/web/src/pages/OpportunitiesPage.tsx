@@ -1,13 +1,11 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
-import { formatDeadlineDate } from "../lib/utils/date";
-import { FixiaNavigation } from "../components/FixiaNavigation";
-import {
-  Search, Filter, MapPin, Clock, DollarSign, Users, Heart, Zap,
+import { motion } from "motion/react";
+import { 
+  Search, Filter, MapPin, Clock, DollarSign, Users, Award, Zap,
   ChevronDown, SlidersHorizontal, Grid3X3, List, Eye, ArrowRight,
-  Calendar, CheckCircle, AlertCircle, Briefcase, Globe,
-  FileText, MessageSquare, Share2, TrendingUp, Target, Star,
+  Calendar, CheckCircle, AlertCircle, Star, Briefcase, Globe,
+  FileText, MessageSquare, Heart, Share2, TrendingUp, Target,
   Send, Bookmark, RefreshCw, Settings
 } from "lucide-react";
 import { Button } from "../components/ui/button";
@@ -24,14 +22,13 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Textarea } from "../components/ui/textarea";
 import { Label } from "../components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
-import { useSecureAuth } from "../context/SecureAuthContext";
+import { useAuth } from "../context/AuthContext";
 import { toast } from "sonner";
-import { opportunitiesService, Opportunity as OpportunityType } from "../lib/services/opportunities.service";
-import { Skeleton } from "../components/ui/skeleton";
-import { ProposalSubmissionCard } from "../components/proposals/ProposalSubmissionCard";
+import { useOpportunities } from "../hooks/useOpportunities";
 
-// Mock data as fallback
-const mockOpportunitiesOld = [
+import { useSubmitProposal } from "../hooks/useSubmitProposal";
+// Mock data for opportunities
+export const mockOpportunities = [
   {
     id: "opp_001",
     title: "Desarrollo de App Móvil para Delivery",
@@ -186,15 +183,15 @@ const mockOpportunitiesOld = [
 
 const categories = [
   "Todos",
-  "Plomería",
-  "Electricidad",
-  "Carpintería",
-  "Pintura",
-  "Jardinería",
-  "Limpieza",
-  "Reparación General",
-  "Construcción",
-  "Maestro de Obra"
+  "Desarrollo Web",
+  "Desarrollo Móvil",
+  "Diseño Gráfico",
+  "Marketing Digital",
+  "Video y Animación",
+  "Ciberseguridad",
+  "Redacción",
+  "Traducción",
+  "Consultoría"
 ];
 
 const sortOptions = [
@@ -205,6 +202,73 @@ const sortOptions = [
   { label: "Clientes mejor valorados", value: "client_rating" }
 ];
 
+function Navigation() {
+  const { user, logout } = useAuth();
+
+  return (
+    <motion.header 
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      className="sticky top-0 z-50 w-full glass border-b border-white/10"
+    >
+      <div className="container mx-auto flex h-16 items-center justify-between px-6">
+        <Link to="/dashboard" className="flex items-center space-x-3">
+          <div className="h-8 w-8 liquid-gradient rounded-lg flex items-center justify-center">
+            <span className="text-white font-bold">F</span>
+          </div>
+          <span className="font-semibold">Fixia</span>
+        </Link>
+        
+        <nav className="hidden md:flex items-center space-x-6">
+          <Link to="/dashboard" className="text-muted-foreground hover:text-primary transition-colors">
+            Dashboard
+          </Link>
+          <Link to="/opportunities" className="text-primary font-medium">
+            Oportunidades
+          </Link>
+          <Link to="/services" className="text-muted-foreground hover:text-primary transition-colors">
+            Explorar
+          </Link>
+          <Link to="/profile" className="text-muted-foreground hover:text-primary transition-colors">
+            Mi Perfil
+          </Link>
+        </nav>
+        
+        <div className="flex items-center space-x-3">
+          <Button variant="ghost" className="relative">
+            <Bookmark className="h-4 w-4" />
+            <span className="absolute -top-1 -right-1 h-5 w-5 bg-primary rounded-full flex items-center justify-center text-xs text-white">
+              3
+            </span>
+          </Button>
+          <Button variant="outline" className="glass border-white/20">
+            <Settings className="h-4 w-4 mr-2" />
+            Alertas
+          </Button>
+        </div>
+      </div>
+    </motion.header>
+  );
+}
+
+interface SearchAndFiltersProps {
+  searchQuery: string;
+  setSearchQuery: (query: string) => void;
+  selectedCategory: string;
+  setSelectedCategory: (category: string) => void;
+  budgetRange: number[];
+  setBudgetRange: (range: number[]) => void;
+  sortBy: string;
+  setSortBy: (sort: string) => void;
+  viewMode: string;
+  setViewMode: (mode: string) => void;
+  urgencyFilter: string[];
+  setUrgencyFilter: (filter: string[]) => void;
+  locationFilter: string;
+  setLocationFilter: (filter: string) => void;
+}
+
+// NOTE: The 'refetch' prop was added to allow manual data refreshing.
 function SearchAndFilters({ 
   searchQuery, 
   setSearchQuery, 
@@ -220,31 +284,31 @@ function SearchAndFilters({
   setUrgencyFilter,
   locationFilter,
   setLocationFilter
-}: any) {
+}: SearchAndFiltersProps) {
   const [showFilters, setShowFilters] = useState(false);
 
   return (
-    <div className="space-y-4 sm:space-y-6">
+    <div className="space-y-6">
       {/* Main Search */}
-      <div className="relative w-full">
-        <div className="flex flex-col sm:flex-row glass rounded-2xl p-2 border-white/20 gap-2">
+      <div className="relative">
+        <div className="flex glass rounded-2xl p-2 border-white/20">
           <div className="flex-1 flex items-center">
-            <Search className="h-5 w-5 text-muted-foreground ml-3 mr-2 sm:ml-4 sm:mr-3 flex-shrink-0" />
+            <Search className="h-5 w-5 text-muted-foreground ml-4 mr-3" />
             <Input
-              placeholder="Buscar oportunidades..."
+              placeholder="Buscar proyectos: desarrollo web, diseño, marketing..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="border-0 bg-transparent text-base sm:text-lg placeholder:text-muted-foreground focus-visible:ring-0"
+              className="border-0 bg-transparent text-lg placeholder:text-muted-foreground focus-visible:ring-0"
             />
           </div>
-          <Button className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg px-4 sm:px-6 text-sm sm:text-base flex-shrink-0">
-            Buscar
+          <Button className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg px-8">
+            Buscar Oportunidades
           </Button>
         </div>
       </div>
 
       {/* Quick Filters and Controls */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         {/* Categories */}
         <div className="flex flex-wrap gap-2">
           {categories.slice(0, 6).map((category) => (
@@ -304,7 +368,7 @@ function SearchAndFilters({
                   <label className="font-medium">Urgencia del Proyecto</label>
                   <div className="space-y-2">
                     {[
-                      { value: "all", label: "Todas las oportunidades" },
+                      { value: "all", label: "Todos los proyectos" },
                       { value: "urgent", label: "Urgente (1-5 días)" },
                       { value: "high", label: "Alta prioridad" },
                       { value: "normal", label: "Prioridad normal" }
@@ -369,9 +433,9 @@ function SearchAndFilters({
         </div>
 
         {/* Sort and View Controls */}
-        <div className="flex flex-col xs:flex-row items-stretch xs:items-center gap-2 xs:gap-3 w-full sm:w-auto">
+        <div className="flex items-center space-x-3">
           <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="w-full xs:w-auto xs:min-w-40 glass border-white/20 text-sm">
+            <SelectTrigger className="w-48 glass border-white/20">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -382,13 +446,13 @@ function SearchAndFilters({
               ))}
             </SelectContent>
           </Select>
-
-          <div className="flex glass rounded-lg p-1 border-white/20 w-full xs:w-auto">
+          
+          <div className="flex glass rounded-lg p-1 border-white/20">
             <Button
               variant={viewMode === "grid" ? "default" : "ghost"}
               size="sm"
               onClick={() => setViewMode("grid")}
-              className={viewMode === "grid" ? "liquid-gradient" : "hover:glass-medium flex-1 xs:flex-none"}
+              className={viewMode === "grid" ? "liquid-gradient" : "hover:glass-medium"}
             >
               <Grid3X3 className="h-4 w-4" />
             </Button>
@@ -396,13 +460,16 @@ function SearchAndFilters({
               variant={viewMode === "list" ? "default" : "ghost"}
               size="sm"
               onClick={() => setViewMode("list")}
-              className={viewMode === "list" ? "liquid-gradient" : "hover:glass-medium flex-1 xs:flex-none"}
+              className={viewMode === "list" ? "liquid-gradient" : "hover:glass-medium"}
             >
               <List className="h-4 w-4" />
             </Button>
           </div>
           
-          <Button variant="outline" size="sm" className="glass border-white/20">
+          <Button 
+            variant="outline" size="sm" className="glass border-white/20"
+            onClick={refetch}
+          >
             <RefreshCw className="h-4 w-4" />
           </Button>
         </div>
@@ -445,7 +512,7 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
               {/* Client Avatar */}
               <div className="flex-shrink-0">
                 <Avatar className="h-12 w-12">
-                  <AvatarImage src={opportunity.client.avatar || undefined} />
+                  <AvatarImage src={opportunity.client.avatar} />
                   <AvatarFallback>{opportunity.client.name.charAt(0)}</AvatarFallback>
                 </Avatar>
               </div>
@@ -459,8 +526,14 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
                       <h3 className="text-lg font-semibold hover:text-primary transition-colors cursor-pointer">
                         {opportunity.title}
                       </h3>
-                      <Badge className={getUrgencyColor(opportunity.priority)}>
-                        {getUrgencyText(opportunity.priority)}
+                      {opportunity.featured && (
+                        <Badge className="bg-warning/20 text-warning border-warning/30">
+                          <Award className="h-3 w-3 mr-1" />
+                          Destacado
+                        </Badge>
+                      )}
+                      <Badge className={getUrgencyColor(opportunity.urgency)}>
+                        {getUrgencyText(opportunity.urgency)}
                       </Badge>
                     </div>
                     
@@ -473,8 +546,8 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
                         <CheckCircle className="h-4 w-4 text-success" />
                       )}
                       <span className="flex items-center">
-                        <Heart className="h-4 w-4 mr-1 text-warning" />
-                        {opportunity.client.averageRating?.toFixed(1) || '0.0'}
+                        <Star className="h-4 w-4 mr-1 text-warning" />
+                        {opportunity.client.rating}
                       </span>
                       <span className="flex items-center">
                         <MapPin className="h-4 w-4 mr-1" />
@@ -484,15 +557,10 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
                   </div>
                   
                   <div className="text-right space-y-2">
-                    <div className="space-y-1">
-                      <div className="text-xs font-semibold text-muted-foreground uppercase">Presupuesto</div>
-                      <div className="text-2xl font-bold text-success">
-                        {opportunity.budget
-                          ? `ARS $${opportunity.budget.toLocaleString('es-AR')}`
-                          : 'A convenir'
-                        }
-                      </div>
+                    <div className="text-2xl font-bold text-success">
+                      ${opportunity.budget.min} - ${opportunity.budget.max}
                     </div>
+                    <div className="text-sm text-muted-foreground">{opportunity.duration}</div>
                   </div>
                 </div>
                 
@@ -559,16 +627,14 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
         
         {/* Proposal Modal */}
         <Dialog open={showProposal} onOpenChange={setShowProposal}>
-          <DialogContent className="bg-slate-900/95 border-white/20 max-w-[90vw] sm:max-w-2xl fixed backdrop-blur-xl shadow-2xl">
-            <DialogHeader className="border-b border-gradient-to-r from-primary/20 via-transparent to-transparent pb-6 mb-2">
-              <DialogTitle className="text-2xl sm:text-3xl font-bold text-white">Enviar Tu Propuesta</DialogTitle>
-              <DialogDescription className="text-base text-slate-300 font-medium mt-3">
+          <DialogContent className="glass border-white/10 max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Enviar Propuesta</DialogTitle>
+              <DialogDescription>
                 {opportunity.title}
               </DialogDescription>
             </DialogHeader>
-            <div className="max-h-[70vh] overflow-y-auto">
-              <ProposalForm opportunity={opportunity} onClose={() => setShowProposal(false)} />
-            </div>
+            <ProposalForm opportunity={opportunity} onClose={() => setShowProposal(false)} />
           </DialogContent>
         </Dialog>
       </motion.div>
@@ -584,63 +650,36 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
     >
       <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 overflow-hidden group h-full">
         <CardHeader className="space-y-4">
-          {/* Client Info - Enhanced */}
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex items-start gap-3 flex-1 min-w-0">
-              {/* Avatar */}
-              <div className="relative flex-shrink-0">
-                <Avatar className="h-14 w-14 border-2 border-primary/30">
-                  <AvatarImage src={opportunity.client.avatar || undefined} />
-                  <AvatarFallback className="font-bold">{opportunity.client.name.charAt(0)}</AvatarFallback>
-                </Avatar>
-                {opportunity.client.verified && (
-                  <div className="absolute -bottom-1 -right-1 bg-success rounded-full p-1 border-2 border-background">
-                    <CheckCircle className="h-3 w-3 text-white" />
-                  </div>
-                )}
-              </div>
-
-              {/* Client Details */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 flex-wrap mb-1">
-                  <h4 className="font-bold text-foreground text-sm">{opportunity.client.name}</h4>
+          {/* Client Info */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <Avatar className="h-10 w-10">
+                <AvatarImage src={opportunity.client.avatar} />
+                <AvatarFallback>{opportunity.client.name.charAt(0)}</AvatarFallback>
+              </Avatar>
+              <div>
+                <div className="flex items-center space-x-2">
+                  <span className="font-medium text-sm">{opportunity.client.name}</span>
                   {opportunity.client.verified && (
-                    <Badge variant="outline" className="border-success/50 bg-success/10 text-success gap-1 text-xs h-5">
-                      <CheckCircle className="h-3 w-3" />
-                      Verificado
-                    </Badge>
+                    <CheckCircle className="h-4 w-4 text-success" />
                   )}
                 </div>
-
-                {/* Rating and Reviews */}
-                <div className="flex items-center gap-2 mb-1">
-                  <div className="flex items-center">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`h-3 w-3 ${
-                          i < Math.floor(opportunity.client.averageRating || 0)
-                            ? 'fill-warning text-warning'
-                            : 'text-muted-foreground'
-                        }`}
-                      />
-                    ))}
-                  </div>
-                  <span className="text-xs font-semibold text-foreground">{opportunity.client.averageRating?.toFixed(1) || '0.0'}</span>
-                  <span className="text-xs text-muted-foreground">({opportunity.proposals || 0} {(opportunity.proposals || 0) === 1 ? 'propuesta' : 'propuestas'})</span>
-                </div>
-
-                {/* Client Trust Indicators */}
-                <div className="flex flex-wrap gap-1">
-                  <Badge variant="secondary" className="bg-primary/10 text-primary text-xs h-5">
-                    📢 {opportunity.client.totalProjects || 1} {(opportunity.client.totalProjects || 1) === 1 ? 'anuncio' : 'anuncios'} publicado{(opportunity.client.totalProjects || 1) === 1 ? '' : 's'}
-                  </Badge>
+                <div className="flex items-center space-x-2 text-xs text-muted-foreground">
+                  <Star className="h-3 w-3 text-warning" />
+                  <span>{opportunity.client.rating}</span>
+                  <span>•</span>
+                  <span>{opportunity.client.projectsPosted} proyectos</span>
                 </div>
               </div>
             </div>
-
-            {/* Badges Section */}
-            <div className="flex flex-col gap-2 items-end flex-shrink-0">
+            
+            <div className="flex items-center space-x-2">
+              {opportunity.featured && (
+                <Badge className="bg-warning/20 text-warning border-warning/30 text-xs">
+                  <Award className="h-3 w-3 mr-1" />
+                  Destacado
+                </Badge>
+              )}
               <Button
                 variant="ghost"
                 size="icon"
@@ -658,8 +697,8 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
               <Badge variant="outline" className="glass border-white/20 text-xs">
                 {opportunity.category}
               </Badge>
-              <Badge className={getUrgencyColor(opportunity.priority) + " text-xs"}>
-                {getUrgencyText(opportunity.priority)}
+              <Badge className={getUrgencyColor(opportunity.urgency) + " text-xs"}>
+                {getUrgencyText(opportunity.urgency)}
               </Badge>
             </div>
             <h3 className="font-semibold line-clamp-2 group-hover:text-primary transition-colors">
@@ -675,7 +714,7 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
           </p>
           
           {/* Skills */}
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1">
             {opportunity.skills.slice(0, 4).map((skill: string) => (
               <Badge key={skill} variant="outline" className="glass border-white/20 text-xs">
                 {skill}
@@ -688,61 +727,17 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
             )}
           </div>
           
-          {/* Budget and Timeline - Enhanced with Transparency */}
-          <div className="space-y-3">
-            {/* Budget Section - Highlighted */}
-            <div className="p-4 bg-gradient-to-br from-primary/20 via-primary/10 to-transparent rounded-lg border border-primary/30 space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">💰 Presupuesto Ofrecido</span>
-                <Badge variant="secondary" className="bg-success/20 text-success text-xs">
-                  {opportunity.budgetType === 'fixed' ? 'Fijo' : opportunity.budgetType === 'hourly' ? 'Por Hora' : 'Negociable'}
-                </Badge>
-              </div>
-              <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-black text-primary">
-                  ARS ${(opportunity.budget ?? 0).toLocaleString('es-AR')}
-                </span>
-              </div>
-              <p className="text-xs text-muted-foreground">Monto que el cliente está dispuesto a pagar</p>
+          {/* Budget and Duration */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">Presupuesto</span>
+              <span className="font-semibold text-success">
+                ${opportunity.budget.min} - ${opportunity.budget.max}
+              </span>
             </div>
-
-            {/* Details Grid */}
-            <div className="grid grid-cols-2 gap-3">
-              {/* Deadline */}
-              <div className="p-3 bg-white/5 rounded-lg border border-white/10 space-y-1">
-                <span className="text-xs font-semibold text-muted-foreground uppercase">📅 Vencimiento</span>
-                <p className="text-sm font-semibold text-foreground">{formatDeadlineDate(opportunity.deadline)}</p>
-              </div>
-
-              {/* Priority */}
-              <div className="p-3 bg-white/5 rounded-lg border border-white/10 space-y-1">
-                <span className="text-xs font-semibold text-muted-foreground uppercase">⚡ Prioridad</span>
-                <Badge
-                  className={`text-xs font-semibold w-fit ${
-                    opportunity.priority === 'urgent' ? 'bg-destructive/20 text-destructive' :
-                    opportunity.priority === 'high' ? 'bg-warning/20 text-warning' :
-                    'bg-primary/20 text-primary'
-                  }`}
-                >
-                  {opportunity.priority === 'urgent' ? '🔥 Urgente' :
-                   opportunity.priority === 'high' ? '⚠️ Alta' :
-                   opportunity.priority === 'medium' ? '📊 Media' : '✓ Baja'}
-                </Badge>
-              </div>
-            </div>
-
-            {/* Match Score */}
-            <div className="p-3 bg-gradient-to-r from-success/10 to-transparent rounded-lg border border-success/20 space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-muted-foreground">Compatibilidad con tu perfil</span>
-                <span className="text-sm font-bold text-success">{opportunity.matchScore}%</span>
-              </div>
-              <div className="w-full bg-white/10 rounded-full h-2 overflow-hidden">
-                <div
-                  className="bg-gradient-to-r from-success to-primary h-full rounded-full transition-all"
-                  style={{ width: `${opportunity.matchScore}%` }}
-                />
-              </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">Duración</span>
+              <span className="text-sm">{opportunity.duration}</span>
             </div>
           </div>
           
@@ -774,277 +769,143 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
           </Button>
         </CardContent>
       </Card>
-
-      {/* Modern Proposal Submission Card */}
-      {showProposal && (
-        <ProposalSubmissionCard
-          opportunity={opportunity}
-          onClose={() => setShowProposal(false)}
-          onSuccess={() => {
-            setShowProposal(false);
-            // Optionally reload opportunities
-          }}
-        />
-      )}
+      
+      {/* Proposal Modal */}
+      <Dialog open={showProposal} onOpenChange={setShowProposal}>
+        <DialogContent className="glass border-white/10 max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Enviar Propuesta</DialogTitle>
+            <DialogDescription>
+              {opportunity.title}
+            </DialogDescription>
+          </DialogHeader>
+          <ProposalForm opportunity={opportunity} onClose={() => setShowProposal(false)} />
+        </DialogContent>
+      </Dialog>
     </motion.div>
   );
 }
 
-function ProposalForm({ opportunity, onClose, onSuccess }: { opportunity: OpportunityType, onClose: () => void, onSuccess?: () => void }) {
+function ProposalForm({ opportunity, onClose }: { opportunity: any, onClose: () => void }) {
   const [proposalData, setProposalData] = useState({
-    message: '',
-    proposedBudget: opportunity.budget || 0,
-    estimatedDuration: '',
-    portfolio: [] as string[],
-    availableToStart: false,
-    flexibleSchedule: false
+    coverLetter: '',
+    proposedBudget: opportunity.budget.min,
+    // Aseguramos que el valor inicial sea un string válido para el Select
+    deliveryTime: '',
+    questions: ''
   });
-  const [submitting, setSubmitting] = useState(false);
+  const { mutate: submitProposal, isPending } = useSubmitProposal();
 
   const handleSubmit = async () => {
-    if (!proposalData.message || !proposalData.estimatedDuration) {
-      toast.error("Por favor completa todos los campos requeridos");
-      return;
-    }
-
-    try {
-      setSubmitting(true);
-
-      await opportunitiesService.applyToOpportunity(opportunity.id, proposalData);
-
-      toast.success("¡Propuesta enviada correctamente!");
-      onClose();
-      if (onSuccess) onSuccess();
-    } catch (error: any) {
-      console.error('Error sending proposal:', error);
-      toast.error(error?.response?.data?.message || "Error al enviar la propuesta");
-    } finally {
-      setSubmitting(false);
-    }
+    submitProposal(
+      { ...proposalData, opportunityId: opportunity.id },
+      {
+        onSuccess: () => {
+          // Cierra el modal solo si la mutación es exitosa
+          onClose();
+        }
+      }
+    );
   };
 
   return (
     <div className="space-y-6">
-      {/* Opportunity Summary - Enhanced with full details */}
-      <Card className="bg-slate-800/60 border-white/15 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-transparent to-transparent pointer-events-none"></div>
-        <CardContent className="p-5 sm:p-6 relative">
-          <div className="space-y-4">
-            {/* Title and Proposals */}
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex-1 min-w-0">
-                <h4 className="font-bold text-lg text-white truncate">{opportunity.title}</h4>
-              </div>
-              <Badge className="bg-gradient-to-r from-primary to-primary/80 text-white border-0 flex-shrink-0 text-xs sm:text-sm whitespace-nowrap shadow-lg">
-                <Target className="h-4 w-4 mr-1.5" />
-                {opportunity.proposals}
-              </Badge>
+      {/* Opportunity Summary */}
+      <Card className="glass-medium border-white/10">
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h4 className="font-medium">{opportunity.title}</h4>
+              <p className="text-sm text-muted-foreground">
+                Presupuesto: ${opportunity.budget.min} - ${opportunity.budget.max}
+              </p>
             </div>
-
-            {/* Budget and Timeline */}
-            <div className="grid grid-cols-2 gap-4 pt-2">
-              <div>
-                <p className="text-xs text-foreground/60 font-semibold uppercase">Presupuesto</p>
-                <p className="text-base text-white font-bold mt-1">
-                  💰 ARS ${opportunity.budget?.toLocaleString('es-AR') || '0'}
-                </p>
-              </div>
-              <div>
-                <p className="text-xs text-foreground/60 font-semibold uppercase">Deadline</p>
-                <p className="text-base text-white font-bold mt-1">📅 {formatDeadlineDate(opportunity.deadline)}</p>
-              </div>
-            </div>
-
-            {/* Client Info */}
-            {opportunity.client && (
-              <div className="pt-2 border-t border-white/10">
-                <div className="flex items-center gap-3">
-                  <Avatar className="h-8 w-8 border border-primary/30">
-                    <AvatarImage src={opportunity.client.avatar || undefined} alt={opportunity.client.name} />
-                    <AvatarFallback>{opportunity.client.name?.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm text-white font-semibold truncate">{opportunity.client.name}</p>
-                    <div className="flex items-center gap-2 mt-0.5">
-                      {opportunity.client.verified && <CheckCircle className="h-3 w-3 text-primary" />}
-                      <span className="text-xs text-foreground/70">
-                        ⭐ {opportunity.client.averageRating?.toFixed(1) || '0.0'} · {opportunity.client.verified ? 'Verificado' : 'No verificado'}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
+            <Badge variant="outline" className="glass border-white/20">
+              {opportunity.proposals} propuestas
+            </Badge>
           </div>
         </CardContent>
       </Card>
-
-      {/* User's Proposal Status */}
-      {opportunity.myProposals !== undefined && opportunity.myProposals > 0 && (
-        <Card className="bg-blue-500/10 border-blue-500/30 overflow-hidden">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="h-8 w-8 bg-blue-500/20 rounded-full flex items-center justify-center">
-                <span className="text-sm font-bold text-blue-400">✓</span>
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-white">
-                  {opportunity.myProposals === 1
-                    ? 'Ya enviaste 1 propuesta'
-                    : 'Ya enviaste 2 propuestas'}
-                </p>
-                <p className="text-xs text-blue-300">
-                  {opportunity.myProposals === 1
-                    ? 'Puedes enviar 1 propuesta más'
-                    : 'Has alcanzado el máximo de propuestas para esta oportunidad'}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
+      
       {/* Proposal Form */}
-      <div className="space-y-6">
-        {/* Cover Letter */}
-        <div className="space-y-3">
-          <div className="flex items-center gap-2">
-            <div className="h-1 w-1.5 rounded-full bg-gradient-to-r from-primary to-primary/60"></div>
-            <Label className="text-white font-bold text-base">Carta de Presentación *</Label>
-          </div>
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <Label>Carta de Presentación *</Label>
           <Textarea
-            placeholder="Cuéntale al cliente por qué eres el candidato perfecto. Destaca tus habilidades, experiencia relevante y por qué te apasiona este proyecto..."
-            value={proposalData.message}
-            onChange={(e) => setProposalData({ ...proposalData, message: e.target.value })}
-            className="bg-slate-800/80 border-white/20 min-h-32 text-white placeholder:text-slate-400 focus:border-primary/50 rounded-lg focus:ring-1 focus:ring-primary/50"
+            placeholder="Explica por qué eres el candidato ideal para este proyecto..."
+            value={proposalData.coverLetter}
+            onChange={(e) => setProposalData({ ...proposalData, coverLetter: e.target.value })}
+            className="glass border-white/20 min-h-32"
             rows={6}
-            maxLength={1000}
           />
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-foreground/60 font-medium">
-              {proposalData.message.length}/1000 caracteres
-            </span>
-            <span className={`text-xs font-semibold ${proposalData.message.length >= 100 ? 'text-success' : 'text-warning/70'}`}>
-              {proposalData.message.length >= 100 ? '✓ Bien' : 'Amplía tu mensaje'}
-            </span>
+          <div className="text-sm text-muted-foreground">
+            {proposalData.coverLetter.length}/1000 caracteres
           </div>
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <div className="h-1 w-1.5 rounded-full bg-gradient-to-r from-primary to-primary/60"></div>
-              <Label htmlFor="budget" className="text-white font-bold text-base">Presupuesto (ARS) *</Label>
-            </div>
-            <div className="relative">
-              <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-primary font-bold text-lg">$</span>
-              <Input
-                id="budget"
-                type="number"
-                placeholder="5000"
-                value={proposalData.proposedBudget === 0 ? '' : proposalData.proposedBudget}
-                onChange={(e) => setProposalData({ ...proposalData, proposedBudget: parseInt(e.target.value) || 0 })}
-                className="bg-slate-800/80 border-white/20 pl-10 text-white font-semibold text-lg placeholder:text-slate-400 focus:border-primary/50 rounded-lg"
-                min="0"
-                step="100"
-              />
-            </div>
-            {proposalData.proposedBudget > 0 && (
-              <div className="flex items-center gap-2 p-3 bg-primary/10 rounded-lg border border-primary/20">
-                <span className="text-sm text-primary font-semibold">
-                  💵 Tu propuesta: ARS ${(proposalData.proposedBudget ?? 0).toLocaleString('es-AR')}
-                </span>
-              </div>
-            )}
-          </div>
-
-          <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <div className="h-1 w-1.5 rounded-full bg-gradient-to-r from-primary to-primary/60"></div>
-              <Label htmlFor="delivery" className="text-white font-bold text-base">Tiempo de Entrega *</Label>
-            </div>
+        
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label>Presupuesto Propuesto (USD) *</Label>
             <Input
-              id="delivery"
-              type="text"
-              placeholder="Ej: 7 días"
-              value={proposalData.estimatedDuration}
-              onChange={(e) => setProposalData({ ...proposalData, estimatedDuration: e.target.value })}
-              className="bg-slate-800/80 border-white/20 text-white font-semibold text-lg placeholder:text-slate-400 focus:border-primary/50 rounded-lg"
+              type="number"
+              value={proposalData.proposedBudget}
+              onChange={(e) => setProposalData({ ...proposalData, proposedBudget: parseInt(e.target.value) })}
+              className="glass border-white/20"
             />
-            <p className="text-xs text-foreground/60 font-medium">
-              📅 Personaliza según tu disponibilidad
-            </p>
           </div>
+          
+          <div className="space-y-2">
+            <Label>Tiempo de Entrega *</Label>
+            <Select
+              value={proposalData.deliveryTime}
+              onValueChange={(value) => setProposalData({ ...proposalData, deliveryTime: value })}
+            >
+              <SelectTrigger className="glass border-white/20">
+                <SelectValue placeholder="Seleccionar tiempo" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="1-week">1 semana</SelectItem>
+                <SelectItem value="2-weeks">2 semanas</SelectItem>
+                <SelectItem value="1-month">1 mes</SelectItem>
+                <SelectItem value="2-months">2 meses</SelectItem>
+                <SelectItem value="3-months">3+ meses</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+        
+        <div className="space-y-2">
+          <Label>Preguntas para el Cliente (Opcional)</Label>
+          <Textarea
+            placeholder="¿Tienes alguna pregunta específica sobre el proyecto?"
+            value={proposalData.questions}
+            onChange={(e) => setProposalData({ ...proposalData, questions: e.target.value })}
+            className="glass border-white/20"
+            rows={3}
+          />
         </div>
       </div>
-
-      {/* Availability & Flexibility Options */}
-      <div className="space-y-4 p-4 bg-slate-800/40 border border-white/10 rounded-lg">
-        <p className="text-sm font-semibold text-white">Disponibilidad y Flexibilidad</p>
-
-        <div className="flex items-center space-x-3 p-3 bg-slate-800/60 rounded-lg border border-white/10 hover:border-primary/30 transition-colors cursor-pointer"
-          onClick={() => setProposalData({ ...proposalData, availableToStart: !proposalData.availableToStart })}
-        >
-          <Checkbox
-            checked={proposalData.availableToStart}
-            onChange={(checked: any) => setProposalData({ ...proposalData, availableToStart: typeof checked === 'boolean' ? checked : !proposalData.availableToStart })}
-            className="h-5 w-5 border-white/30"
-          />
-          <div className="flex-1">
-            <Label className="text-white font-semibold cursor-pointer">Estoy disponible para empezar ahora</Label>
-            <p className="text-xs text-foreground/60 mt-1">El cliente sabrá que puedes comenzar inmediatamente</p>
-          </div>
+      
+      <div className="flex items-center justify-between">
+        <div className="text-sm text-muted-foregoing">
+          Al enviar esta propuesta, aceptas los términos de servicio de Fixia
         </div>
-
-        <div className="flex items-center space-x-3 p-3 bg-slate-800/60 rounded-lg border border-white/10 hover:border-primary/30 transition-colors cursor-pointer"
-          onClick={() => setProposalData({ ...proposalData, flexibleSchedule: !proposalData.flexibleSchedule })}
-        >
-          <Checkbox
-            checked={proposalData.flexibleSchedule}
-            onChange={(checked: any) => setProposalData({ ...proposalData, flexibleSchedule: typeof checked === 'boolean' ? checked : !proposalData.flexibleSchedule })}
-            className="h-5 w-5 border-white/30"
-          />
-          <div className="flex-1">
-            <Label className="text-white font-semibold cursor-pointer">Horario y fecha de entrega flexible</Label>
-            <p className="text-xs text-foreground/60 mt-1">Puedes ajustar los tiempos según las necesidades del cliente</p>
-          </div>
-        </div>
-      </div>
-
-      <div className="border-t border-white/15 pt-6 mt-2">
-        <div className="text-xs text-slate-300 mb-5 p-4 bg-slate-800/60 rounded-lg border border-white/15">
-          ✓ Al enviar esta propuesta, aceptas los <a href="/terms" className="text-primary font-semibold hover:underline">términos de servicio</a> de Fixia
-        </div>
-        <div className="flex items-center justify-end gap-3 flex-wrap">
-          <Button
-            variant="outline"
-            onClick={onClose}
-            className="bg-slate-800/60 border-white/20 text-white hover:bg-slate-800/80 text-sm font-semibold"
-            disabled={submitting}
-          >
+        <div className="flex items-center space-x-3">
+          <Button variant="outline" onClick={onClose} className="glass border-white/20">
             Cancelar
           </Button>
-          <Button
+          <Button 
             onClick={handleSubmit}
-            className="liquid-gradient hover:opacity-95 text-sm font-bold shadow-lg hover:shadow-xl transition-all duration-200"
-            disabled={!proposalData.message || !proposalData.estimatedDuration || submitting || (opportunity.myProposals === 2)}
-            title={opportunity.myProposals === 2 ? 'Ya alcanzaste el máximo de propuestas para esta oportunidad' : ''}
+            className="liquid-gradient hover:opacity-90 w-48"
+            disabled={isPending || !proposalData.coverLetter || !proposalData.deliveryTime}
           >
-            {submitting ? (
-              <>
-                <div className="animate-spin rounded-full border-2 border-white border-t-transparent h-4 w-4 mr-2" />
+            {isPending ? (
+              <motion.div className="flex items-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
                 Enviando...
-              </>
-            ) : opportunity.myProposals === 2 ? (
-              <>
-                <AlertCircle className="h-5 w-5 mr-2" />
-                Máximo alcanzado
-              </>
+              </motion.div>
             ) : (
-              <>
-                <Send className="h-5 w-5 mr-2" />
-                Enviar Propuesta
-              </>
+              <><Send className="h-4 w-4 mr-2" /> Enviar Propuesta</>
             )}
           </Button>
         </div>
@@ -1061,78 +922,60 @@ export default function OpportunitiesPage() {
   const [viewMode, setViewMode] = useState("grid");
   const [urgencyFilter, setUrgencyFilter] = useState(["all"]);
   const [locationFilter, setLocationFilter] = useState("all");
-  const [opportunities, setOpportunities] = useState<OpportunityType[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
 
-  // Fetch opportunities from API
-  useEffect(() => {
-    const fetchOpportunities = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        const filters: any = {
-          page: currentPage,
-          limit: 12,
-          sortBy: sortBy};
-
-        if (selectedCategory !== "Todos") {
-          filters.category = selectedCategory;
-        }
-
-        if (searchQuery) {
-          filters.search = searchQuery;
-        }
-
-        if (budgetRange[0] > 100) {
-          filters.budgetMin = budgetRange[0];
-        }
-
-        if (budgetRange[1] < 10000) {
-          filters.budgetMax = budgetRange[1];
-        }
-
-        if (locationFilter === "remote") {
-          filters.remote = true;
-        }
-
-        const response = await opportunitiesService.getOpportunities(filters);
-
-        setOpportunities(response.data || []);
-        setTotalPages(response.totalPages || 1);
-      } catch (err: any) {
-        console.error('Error fetching opportunities:', err);
-        setError('Error al cargar oportunidades. Intenta nuevamente.');
-        setOpportunities([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchOpportunities();
-  }, [selectedCategory, searchQuery, budgetRange, sortBy, urgencyFilter, locationFilter, currentPage]);
+  const { 
+    data: filteredOpportunities, 
+    isLoading, 
+    isError,
+    refetch
+  } = useOpportunities({
+    searchQuery,
+    selectedCategory,
+    budgetRange,
+    sortBy,
+    urgencyFilter,
+    locationFilter,
+  });
+  
+  // Fallback to an empty array to prevent errors on initial render
+  // when filteredOpportunities is undefined.
+  const opportunities = filteredOpportunities ?? [];
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <FixiaNavigation />
-
-      <main className="w-full flex-1 px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10">
+    <div className="min-h-screen bg-background">
+      <Navigation />
+      
+      <main className="container mx-auto px-6 py-8">
         {/* Hero Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-8 sm:mb-10 lg:mb-12 px-2"
+          className="text-center mb-12"
         >
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4 bg-gradient-to-r from-white via-white to-white/70 bg-clip-text text-transparent">
-            Descubre Oportunidades
+          <h1 className="text-4xl lg:text-5xl font-bold mb-4 bg-gradient-to-r from-white via-white to-white/70 bg-clip-text text-transparent">
+            Descubre Oportunidades Extraordinarias
           </h1>
-          <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto">
-            Conecta con clientes y oportunidades que impulsen tu carrera
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+            Conecta con clientes que necesitan exactamente tus habilidades. 
+            Encuentra proyectos que impulsen tu carrera al siguiente nivel.
           </p>
+          
+          {/* Quick Stats */}
+          <div className="flex items-center justify-center space-x-8 mt-8">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-primary">250+</div>
+              <div className="text-sm text-muted-foreground">Proyectos Activos</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-success">$2.5M+</div>
+              <div className="text-sm text-muted-foreground">Pagados Este Mes</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-warning">4.9★</div>
+              <div className="text-sm text-muted-foreground">Rating Promedio</div>
+            </div>
+          </div>
         </motion.div>
 
         {/* Search and Filters */}
@@ -1157,6 +1000,7 @@ export default function OpportunitiesPage() {
             setUrgencyFilter={setUrgencyFilter}
             locationFilter={locationFilter}
             setLocationFilter={setLocationFilter}
+            refetch={refetch}
           />
         </motion.div>
 
@@ -1165,124 +1009,75 @@ export default function OpportunitiesPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.3 }}
-          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-6 sm:mb-8"
+          className="flex items-center justify-between mb-8"
         >
-          <div className="flex flex-col xs:flex-row xs:items-center gap-2 xs:gap-3">
-            <h2 className="text-base sm:text-lg font-semibold">
-              {opportunities.length} encontradas
+          <div className="flex items-center space-x-4">
+            <h2 className="text-lg font-semibold">
+              {isLoading ? "Buscando..." : `${opportunities.length} oportunidades encontradas`}
             </h2>
             {selectedCategory !== "Todos" && (
-              <Badge className="bg-primary/20 text-primary border-primary/30 w-fit text-xs sm:text-sm">
+              <Badge className="bg-primary/20 text-primary border-primary/30">
                 {selectedCategory}
               </Badge>
             )}
           </div>
-
-          <div className="flex flex-wrap items-center gap-2 xs:gap-3 text-xs sm:text-sm text-muted-foreground">
-            <span>{opportunities.filter(o => o.priority === 'urgent').length} urgentes</span>
+          
+          <div className="flex items-center space-x-4 text-sm text-muted-foreground min-h-[20px]">
+            <span>{opportunities.filter(o => o.urgency === 'urgent').length} urgentes</span>
             <span>•</span>
-            <span>{opportunities.filter(o => o.priority === 'high').length} de alta prioridad</span>
+            <span>{opportunities.filter(o => o.featured).length} destacadas</span>
           </div>
         </motion.div>
 
         {/* Opportunities Grid/List */}
-        {/* Loading State */}
-        {loading && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-            {Array.from({ length: 6 }).map((_, index) => (
-              <Card key={index} className="glass border-white/10">
-                <CardHeader>
-                  <Skeleton className="h-6 w-3/4 mb-2" />
-                  <Skeleton className="h-4 w-1/2" />
-                </CardHeader>
-                <CardContent>
-                  <Skeleton className="h-20 w-full mb-4" />
-                  <div className="flex gap-2">
-                    <Skeleton className="h-6 w-16" />
-                    <Skeleton className="h-6 w-16" />
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          className={viewMode === "grid" 
+            ? "grid md:grid-cols-2 lg:grid-cols-3 gap-6" 
+            : "space-y-6"
+          }
+        >
+          {opportunities.map((opportunity, index) => (
+            <motion.div
+              key={opportunity.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 * index }}
+            >
+              <OpportunityCard opportunity={opportunity} viewMode={viewMode} />
+            </motion.div>
+          ))}
+        </motion.div>
 
-        {/* Error State */}
-        {error && (
-          <Card className="glass border-white/10 p-6 sm:p-8 text-center mx-4">
-            <AlertCircle className="h-10 sm:h-12 w-10 sm:w-12 mx-auto mb-4 text-destructive" />
-            <h3 className="text-base sm:text-lg font-medium mb-2">Error al cargar oportunidades</h3>
-            <p className="text-sm sm:text-base text-muted-foreground mb-4">{error}</p>
-            <Button onClick={() => window.location.reload()} variant="outline" className="w-full sm:w-auto">
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Reintentar
-            </Button>
-          </Card>
-        )}
-
-        {/* Opportunities Grid */}
-        {!loading && !error && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className={viewMode === "grid"
-              ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
-              : "space-y-4 sm:space-y-6"
-            }
-          >
-            {opportunities.map((opportunity, index) => (
-              <motion.div
-                key={opportunity.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.1 * index }}
-              >
-                <OpportunityCard opportunity={opportunity} viewMode={viewMode} />
-              </motion.div>
-            ))}
-          </motion.div>
-        )}
-
-        {/* Pagination */}
-        {!loading && !error && opportunities.length > 0 && totalPages > 1 && (
+        {/* Load More */}
+        {opportunities.length > 0 && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.6 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mt-8 sm:mt-12"
+            className="text-center mt-12"
           >
-            <Button
-              variant="outline"
-              className="glass border-white/20 w-full sm:w-auto text-sm"
-              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-              disabled={currentPage === 1}
+            <Button 
+              variant="outline" className="glass border-white/20 hover:glass-medium"
+              onClick={() => toast.info('Funcionalidad de paginación en desarrollo.')}
             >
-              Anterior
-            </Button>
-            <span className="text-xs sm:text-sm text-muted-foreground">
-              Página {currentPage} de {totalPages}
-            </span>
-            <Button
-              variant="outline"
-              className="glass border-white/20 w-full sm:w-auto text-sm"
-              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-              disabled={currentPage === totalPages}
-            >
-              Siguiente
+              Cargar Más Oportunidades
+              <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </motion.div>
         )}
 
         {/* Empty State */}
-        {!loading && !error && opportunities.length === 0 && (
+        {!isLoading && opportunities.length === 0 && (
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6 }}
-            className="text-center py-12 sm:py-16 px-4"
+            className="text-center py-16"
           >
-            <div className="glass rounded-2xl p-8 sm:p-12 max-w-lg mx-auto">
+            <div className="glass rounded-2xl p-12 max-w-lg mx-auto">
               <div className="h-16 w-16 liquid-gradient rounded-2xl flex items-center justify-center mx-auto mb-6">
                 <Search className="h-8 w-8 text-white" />
               </div>

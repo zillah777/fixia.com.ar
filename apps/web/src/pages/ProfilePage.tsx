@@ -1,18 +1,18 @@
-import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import {
-  Mail, Phone, MapPin, Calendar, Shield,
-  Edit3, Save, X, Plus, Heart, Clock, CheckCircle,
-  Globe, Linkedin, Twitter, Instagram, Facebook,
-  Bell, Lock, Trash2, AlertTriangle, Camera,
-  Download, Loader2
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { motion } from "motion/react";
+import { 
+  User, Mail, Phone, MapPin, Calendar, Camera, Settings, Shield, 
+  Edit3, Save, X, Plus, Star, Award, Briefcase, Eye, Heart, 
+  MessageSquare, DollarSign, TrendingUp, Clock, CheckCircle, 
+  Upload, FileText, Globe, Linkedin, Twitter, Instagram, Github,
+  Bell, Lock, CreditCard, LogOut, Trash2, ExternalLink,
+  BarChart3, Users, Target, Zap
 } from "lucide-react";
-import { FixiaNavigation } from "../components/FixiaNavigation";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
-import { Textarea } from "../components/ui/textarea";
 import { Label } from "../components/ui/label";
+import { Textarea } from "../components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
@@ -21,128 +21,132 @@ import { Separator } from "../components/ui/separator";
 import { Switch } from "../components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import { Progress } from "../components/ui/progress";
-import { Alert, AlertDescription } from "../components/ui/alert";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "../components/ui/dialog";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../components/ui/dropdown-menu";
-import { useSecureAuth } from "../context/SecureAuthContext";
-import { useDebouncedCallback } from "../hooks/useDebounce";
-import { uploadService } from "../lib/services/upload.service";
-import { toast } from "sonner";
-import { api } from "../lib/api";
-import { UpgradeToProfessionalCard } from "../components/UpgradeToProfessionalCard";
-import { UserReviewStats } from "../components/profile/UserReviewStats";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "../components/ui/dialog";
+import { useAuth } from "../context/SecureAuthContext";
+import { toast } from "sonner@2.0.3";
 
-// Profile Header component
-function ProfileHeader({ user, onUserUpdate }: any) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
+// Mock data for portfolio items
+const portfolioItems = [
+  {
+    id: 1,
+    title: "E-commerce ModaStyle",
+    description: "Tienda online completa con más de 1000 productos y sistema de pagos integrado",
+    image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=300&fit=crop",
+    category: "Desarrollo Web",
+    date: "Nov 2024",
+    client: "ModaStyle Boutique",
+    technologies: ["React", "Node.js", "MongoDB", "Stripe"],
+    url: "https://modastyle.com",
+    featured: true
+  },
+  {
+    id: 2,
+    title: "App Móvil FitTracker",
+    description: "Aplicación de seguimiento fitness con integración de wearables",
+    image: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=400&h=300&fit=crop",
+    category: "Desarrollo Móvil",
+    date: "Oct 2024",
+    client: "HealthTech Solutions",
+    technologies: ["Flutter", "Firebase", "HealthKit"],
+    featured: false
+  },
+  {
+    id: 3,
+    title: "Identidad Visual TechStart",
+    description: "Branding completo para startup tecnológica incluyendo logo y guía de marca",
+    image: "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=400&h=300&fit=crop",
+    category: "Diseño Gráfico",
+    date: "Sep 2024",
+    client: "TechStart Inc.",
+    technologies: ["Illustrator", "Photoshop", "Figma"],
+    featured: true
+  }
+];
+
+// Mock data for reviews
+const userReviews = [
+  {
+    id: 1,
+    serviceTitle: "Desarrollo E-commerce Completo",
+    client: {
+      name: "Carlos Mendoza",
+      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop&crop=face"
+    },
+    rating: 5,
+    comment: "Excelente trabajo. Ana entregó exactamente lo que necesitábamos y más. La comunicación fue perfecta.",
+    date: "Hace 2 semanas",
+    response: "¡Gracias Carlos! Fue un placer trabajar contigo. Espero que el e-commerce siga creciendo."
+  },
+  {
+    id: 2,
+    serviceTitle: "App Móvil iOS/Android",
+    client: {
+      name: "María García",
+      avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80&h=80&fit=crop&crop=face"
+    },
+    rating: 5,
+    comment: "Ana desarrolló nuestra app móvil y los resultados han sido increíbles. Muy profesional.",
+    date: "Hace 1 mes"
+  }
+];
+
+function Navigation() {
+  const { logout } = useAuth();
+
+  return (
+    <motion.header 
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      className="sticky top-0 z-50 w-full glass border-b border-white/10"
+    >
+      <div className="container mx-auto flex h-16 items-center justify-between px-6">
+        <Link to="/dashboard" className="flex items-center space-x-3">
+          <div className="h-8 w-8 liquid-gradient rounded-lg flex items-center justify-center">
+            <span className="text-white font-bold">F</span>
+          </div>
+          <span className="font-semibold">Fixia</span>
+        </Link>
+        
+        <nav className="hidden md:flex items-center space-x-6">
+          <Link to="/dashboard" className="text-muted-foreground hover:text-primary transition-colors">
+            Dashboard
+          </Link>
+          <Link to="/services" className="text-muted-foreground hover:text-primary transition-colors">
+            Explorar
+          </Link>
+          <Link to="/profile" className="text-primary font-medium">
+            Mi Perfil
+          </Link>
+        </nav>
+        
+        <Button 
+          variant="ghost"
+          onClick={logout}
+          className="text-muted-foreground hover:text-destructive"
+        >
+          <LogOut className="h-4 w-4 mr-2" />
+          Salir
+        </Button>
+      </div>
+    </motion.header>
+  );
+}
+
+function ProfileHeader({ user, isEditing, setIsEditing }: any) {
   const [profileData, setProfileData] = useState({
-    name: user?.name || '',
-    bio: user?.professionalProfile?.description || user?.bio || '',
-    location: user?.location || '',
-    phone: user?.phone || '',
-    whatsapp_number: user?.whatsapp_number || user?.phone || ''
+    name: user.name,
+    bio: user.role === 'professional' 
+      ? "Desarrolladora Full Stack especializada en e-commerce con +5 años de experiencia."
+      : "Emprendedor apasionado por la tecnología y la innovación digital.",
+    location: "Ciudad de México, MX",
+    website: "https://anamartinez.dev",
+    phone: "+52 55 1234 5678"
   });
 
-  // Update local state when user prop changes
-  useEffect(() => {
-    if (user) {
-      setProfileData({
-        name: user.name || '',
-        bio: user.professionalProfile?.description || user.bio || '',
-        location: user.location || '',
-        phone: user.phone || '',
-        whatsapp_number: user.whatsapp_number || user.phone || ''
-      });
-    }
-  }, [user]);
-
-  // Handle form submission
-  const handleSave = async () => {
-    setIsSaving(true);
-    try {
-      const updateData: any = {
-        name: profileData.name,
-        location: profileData.location,
-        bio: profileData.bio
-      };
-
-      // Include both phone and whatsapp_number if provided and valid
-      if (profileData.phone && profileData.phone.trim()) {
-        updateData.phone = profileData.phone;
-        updateData.whatsapp_number = profileData.phone;
-      }
-
-      console.log('Saving profile data:', updateData);
-
-      const updatedUser = await api.put('/user/profile', updateData);
-
-      // Update the user context
-      onUserUpdate(updatedUser);
-
-      toast.success("Perfil actualizado", {
-        description: "Tus cambios se guardaron correctamente"
-      });
-
-      setIsEditing(false);
-    } catch (error: any) {
-      console.error('Error updating profile:', error);
-      toast.error("Error al actualizar", {
-        description: error.response?.data?.message || error.message || 'Error al actualizar el perfil'
-      });
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  // Handle avatar upload
-  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    // Validate file type and size
-    if (!file.type.startsWith('image/')) {
-      toast.error('Solo se permiten archivos de imagen');
-      return;
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error('El archivo debe ser menor a 5MB');
-      return;
-    }
-
-    setIsUploading(true);
-
-    try {
-      // Upload and optimize image
-      const uploadResult = await uploadService.uploadImage(file);
-
-      // Extract URL from nested data structure (API returns {success: true, data: {url, size, ...}})
-      const avatarUrl = uploadResult.data?.url || uploadResult.url;
-
-      if (!avatarUrl) {
-        throw new Error('No se recibió la URL de la imagen');
-      }
-
-      // Update user profile with new avatar
-      const updatedUser = await api.put('/user/profile', {
-        avatar: avatarUrl
-      });
-
-      await onUserUpdate(updatedUser);
-
-      toast.success('📸 Foto actualizada', {
-        description: `Imagen optimizada (${Math.round((uploadResult.data?.size || uploadResult.size || 0) / 1024)}KB)`
-      });
-    } catch (error: any) {
-      console.error('Avatar upload error:', error);
-      toast.error('Error al actualizar foto', {
-        description: error.message || 'No se pudo guardar tu nueva foto'
-      });
-    } finally {
-      setIsUploading(false);
-    }
+  const handleSave = () => {
+    // Here you would update the user profile
+    toast.success("Perfil actualizado correctamente");
+    setIsEditing(false);
   };
 
   return (
@@ -151,38 +155,48 @@ function ProfileHeader({ user, onUserUpdate }: any) {
         <div className="flex flex-col lg:flex-row items-start lg:items-center space-y-6 lg:space-y-0 lg:space-x-8">
           {/* Avatar */}
           <div className="relative">
-            <Avatar key={user?.avatar} className="h-32 w-32 ring-4 ring-primary/20 ring-offset-4 ring-offset-background">
-              <AvatarImage
-                src={user?.avatar ? `${user.avatar}?t=${new Date().getTime()}` : undefined}
-                alt={user?.name}
-              />
-              <AvatarFallback className="text-2xl">{user?.name?.charAt(0) || 'U'}</AvatarFallback>
+            <Avatar className="h-32 w-32 ring-4 ring-primary/20 ring-offset-4 ring-offset-background">
+              <AvatarImage src={user.avatar} alt={user.name} />
+              <AvatarFallback className="text-2xl">{user.name.charAt(0)}</AvatarFallback>
             </Avatar>
             
-            {/* Avatar upload button */}
-            <div className="absolute -bottom-2 -right-2">
-              <input
-                type="file"
-                id="avatar-upload"
-                accept="image/*"
-                onChange={handleAvatarUpload}
-                className="hidden"
-              />
-              <label
-                htmlFor="avatar-upload"
-                className="inline-block cursor-pointer"
-              >
-                <div className="liquid-gradient rounded-full h-10 w-10 p-0 flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow">
-                  {isUploading ? (
-                    <div className="animate-spin rounded-full border-2 border-white border-t-transparent h-4 w-4" />
-                  ) : (
-                    <Camera className="h-4 w-4 text-white" />
-                  )}
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button 
+                  size="icon" 
+                  className="absolute -bottom-2 -right-2 h-10 w-10 rounded-full liquid-gradient shadow-lg"
+                >
+                  <Camera className="h-5 w-5" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="glass border-white/10">
+                <DialogHeader>
+                  <DialogTitle>Cambiar Foto de Perfil</DialogTitle>
+                  <DialogDescription>
+                    Selecciona una nueva imagen para tu perfil
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-center w-full">
+                    <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-white/20 rounded-lg cursor-pointer glass hover:glass-medium">
+                      <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                        <Upload className="w-8 h-8 mb-4 text-muted-foreground" />
+                        <p className="mb-2 text-sm text-muted-foreground">
+                          <span className="font-semibold">Haz clic para subir</span> o arrastra una imagen
+                        </p>
+                        <p className="text-xs text-muted-foreground">PNG, JPG (MAX. 5MB)</p>
+                      </div>
+                      <input type="file" className="hidden" accept="image/*" />
+                    </label>
+                  </div>
+                  <Button className="w-full liquid-gradient">
+                    Guardar Imagen
+                  </Button>
                 </div>
-              </label>
-            </div>
+              </DialogContent>
+            </Dialog>
             
-            {user?.verified && (
+            {user.verified && (
               <div className="absolute -top-2 -right-2">
                 <Badge className="bg-success/20 text-success border-success/30 text-xs px-2">
                   <CheckCircle className="h-3 w-3 mr-1" />
@@ -201,26 +215,22 @@ function ProfileHeader({ user, onUserUpdate }: any) {
                     <Input
                       value={profileData.name}
                       onChange={(e) => setProfileData({...profileData, name: e.target.value})}
-                      maxLength={100}
-                      className="text-2xl font-bold glass border-white/20 bg-background/50"
-                      placeholder="Tu nombre completo"
+                      className="text-2xl font-bold glass border-white/20"
                     />
                   </div>
                 ) : (
-                  <h1 className="text-3xl font-bold">{user?.name || 'Nombre no disponible'}</h1>
+                  <h1 className="text-3xl font-bold">{profileData.name}</h1>
                 )}
                 
                 <div className="flex items-center space-x-3 mt-2">
                   <Badge className="bg-primary/20 text-primary border-primary/30">
-                    {user?.userType === 'professional' ? 'Profesional' : 'Cliente'}
-                    {user?.planType === 'premium' && ' Premium'}
+                    {user.role === 'professional' ? 'Top Rated Plus' : 'Cliente Premium'}
                   </Badge>
-                  
-                  {user?.userType === 'professional' && user?.professionalProfile && (
+                  {user.role === 'professional' && (
                     <div className="flex items-center space-x-1">
-                      <Heart className="h-4 w-4 text-warning fill-current" />
-                      <span className="font-medium">{user.professionalProfile.averageRating?.toFixed(1) || '0.0'}</span>
-                      <span className="text-muted-foreground">({user.professionalProfile.totalReviews || 0} reseñas)</span>
+                      <Star className="h-4 w-4 text-warning fill-current" />
+                      <span className="font-medium">{user.rating}</span>
+                      <span className="text-muted-foreground">({user.totalServices} servicios)</span>
                     </div>
                   )}
                 </div>
@@ -229,18 +239,9 @@ function ProfileHeader({ user, onUserUpdate }: any) {
               <div className="flex items-center space-x-2">
                 {isEditing ? (
                   <>
-                    <Button onClick={handleSave} disabled={isSaving} className="liquid-gradient">
-                      {isSaving ? (
-                        <>
-                          <div className="animate-spin rounded-full border-2 border-current border-t-transparent h-4 w-4 mr-2" />
-                          Guardando...
-                        </>
-                      ) : (
-                        <>
-                          <Save className="h-4 w-4 mr-2" />
-                          Guardar
-                        </>
-                      )}
+                    <Button onClick={handleSave} className="liquid-gradient">
+                      <Save className="h-4 w-4 mr-2" />
+                      Guardar
                     </Button>
                     <Button variant="outline" onClick={() => setIsEditing(false)} className="glass border-white/20">
                       <X className="h-4 w-4" />
@@ -261,73 +262,69 @@ function ProfileHeader({ user, onUserUpdate }: any) {
                 <Textarea
                   value={profileData.bio}
                   onChange={(e) => setProfileData({...profileData, bio: e.target.value})}
-                  className="glass border-white/20 bg-background/50"
+                  className="glass border-white/20"
                   rows={3}
-                  maxLength={500}
-                  placeholder="Describe tu experiencia, especialidades y lo que te diferencia..."
                 />
               ) : (
-                <p className="text-muted-foreground leading-relaxed">
-                  {profileData.bio || 'No hay descripción disponible. Haz clic en "Editar Perfil" para agregar información sobre ti.'}
-                </p>
+                <p className="text-muted-foreground leading-relaxed">{profileData.bio}</p>
               )}
             </div>
             
             {/* Contact Info */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-              <div className="flex items-center space-x-2">
-                <Mail className="h-4 w-4 text-muted-foreground" />
-                <span>{user?.email || 'Email no disponible'}</span>
-              </div>
-              
-              <div className="flex items-center space-x-2">
-                <Phone className="h-4 w-4 text-muted-foreground" />
-                {isEditing ? (
-                  <Input
-                    value={profileData.phone}
-                    onChange={(e) => setProfileData({...profileData, phone: e.target.value})}
-                    maxLength={20}
-                    className="h-6 text-sm glass border-white/20 bg-background/50"
-                    placeholder="+54 11 1234-5678"
-                  />
-                ) : (
-                  <span>{user?.phone || user?.whatsapp_number || 'Teléfono no disponible'}</span>
-                )}
-              </div>
-              
-              <div className="flex items-center space-x-2">
-                <MapPin className="h-4 w-4 text-muted-foreground" />
+            <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+              <div className="flex items-center space-x-1">
+                <MapPin className="h-4 w-4" />
                 {isEditing ? (
                   <Input
                     value={profileData.location}
                     onChange={(e) => setProfileData({...profileData, location: e.target.value})}
-                    maxLength={100}
-                    className="h-6 text-sm glass border-white/20 bg-background/50"
-                    placeholder="Ciudad, País"
+                    className="w-32 h-6 text-sm glass border-white/20"
                   />
                 ) : (
-                  <span>{user?.location || 'Ubicación no especificada'}</span>
+                  <span>{profileData.location}</span>
                 )}
               </div>
-              
-              <div className="flex items-center space-x-2">
-                <Calendar className="h-4 w-4 text-muted-foreground" />
-                <span>
-                  Miembro desde {(() => {
-                    try {
-                      const dateString = user?.created_at || user?.createdAt;
-                      if (!dateString) return 'Fecha no disponible';
-                      const date = new Date(dateString);
-                      if (isNaN(date.getTime())) return 'Fecha no disponible';
-                      return date.getFullYear();
-                    } catch (e) {
-                      console.error('Error parsing date:', e);
-                      return 'Fecha no disponible';
-                    }
-                  })()}
-                </span>
+              <div className="flex items-center space-x-1">
+                <Calendar className="h-4 w-4" />
+                <span>Miembro desde 2019</span>
+              </div>
+              <div className="flex items-center space-x-1">
+                <Globe className="h-4 w-4" />
+                {isEditing ? (
+                  <Input
+                    value={profileData.website}
+                    onChange={(e) => setProfileData({...profileData, website: e.target.value})}
+                    className="w-32 h-6 text-sm glass border-white/20"
+                  />
+                ) : (
+                  <a href={profileData.website} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+                    {profileData.website}
+                  </a>
+                )}
               </div>
             </div>
+            
+            {/* Stats for professionals */}
+            {user.role === 'professional' && (
+              <div className="flex space-x-8 pt-4 border-t border-white/10">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-primary">156</div>
+                  <div className="text-sm text-muted-foreground">Proyectos</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-success">98%</div>
+                  <div className="text-sm text-muted-foreground">Satisfacción</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-warning">4.9</div>
+                  <div className="text-sm text-muted-foreground">Rating</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold">1h</div>
+                  <div className="text-sm text-muted-foreground">Respuesta</div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </CardContent>
@@ -335,375 +332,330 @@ function ProfileHeader({ user, onUserUpdate }: any) {
   );
 }
 
-// Settings Section component
-function SettingsSection() {
-  const { user, refreshUserData } = useSecureAuth();
-  const navigate = useNavigate();
-  const [isChangingPassword, setIsChangingPassword] = useState(false);
-  const [passwordData, setPasswordData] = useState({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: ''
-  });
-  const [socialNetworks, setSocialNetworks] = useState({
-    linkedin: user?.social_linkedin || '',
-    twitter: user?.social_twitter || '',
-    facebook: user?.social_facebook || '',
-    instagram: user?.social_instagram || ''
-  });
-  const [notifications, setNotifications] = useState({
-    newMessages: user?.notifications_messages ?? true,
-    newOrders: user?.notifications_orders ?? true,
-    projectUpdates: user?.notifications_projects ?? true,
-    newsletter: user?.notifications_newsletter ?? false
-  });
-  const [isSaving, setIsSaving] = useState(false);
-  const [editingField, setEditingField] = useState<string | null>(null);
-  const [savingField, setSavingField] = useState<string | null>(null);
-
-  // Load user data when component mounts or user changes
-  // Only update if no field is being actively edited to prevent race conditions
-  useEffect(() => {
-    if (user && !editingField) {
-      setSocialNetworks({
-        linkedin: user.social_linkedin || '',
-        twitter: user.social_twitter || '',
-        facebook: user.social_facebook || '',
-        instagram: user.social_instagram || ''
-      });
-      setNotifications({
-        newMessages: user.notifications_messages ?? true,
-        newOrders: user.notifications_orders ?? true,
-        projectUpdates: user.notifications_projects ?? true,
-        newsletter: user.notifications_newsletter ?? false
-      });
-    }
-  }, [user, editingField]);
-
-  // Auto-save function with debounce
-  const autoSaveImplementation = async (field: string, value: any) => {
-    setSavingField(field);
-
-    try {
-      console.log(`[autoSave] Saving ${field}:`, value);
-
-      await api.put('/user/profile', { [field]: value });
-      console.log(`[autoSave] Saved successfully`);
-
-      toast.success('✓ Guardado', {
-        duration: 1500
-      });
-    } catch (error: any) {
-      console.error('Error auto-saving:', error);
-      toast.error('Error al guardar');
-
-      // On error, revert to the last known good state from user context
-      const networkMap: Record<string, keyof typeof socialNetworks> = {
-        'social_linkedin': 'linkedin',
-        'social_twitter': 'twitter',
-        'social_facebook': 'facebook',
-        'social_instagram': 'instagram'
-      };
-
-      if (field in networkMap && user) {
-        const contextKey = `${field}` as keyof typeof user;
-        const localKey = networkMap[field];
-        setSocialNetworks(prev => ({
-          ...prev,
-          [localKey]: (user?.[contextKey] as string) || ''
-        }));
-      }
-    } finally {
-      setSavingField(null);
-    }
-  };
-
-  // Debounced version - waits 1500ms after user stops typing
-  const autoSave = useDebouncedCallback(autoSaveImplementation, 1500);
-
-  // Handle password change
-  const handlePasswordChange = async () => {
-    if (passwordData.newPassword !== passwordData.confirmPassword) {
-      toast.error('Las contraseñas no coinciden');
-      return;
-    }
-
-    if (passwordData.newPassword.length < 8) {
-      toast.error('La contraseña debe tener al menos 8 caracteres');
-      return;
-    }
-
-    setIsChangingPassword(true);
-    try {
-      await api.post('/auth/change-password', {
-        currentPassword: passwordData.currentPassword,
-        newPassword: passwordData.newPassword
-      });
-
-      toast.success('Contraseña actualizada', {
-        description: 'Tu contraseña se ha cambiado correctamente'
-      });
-
-      setPasswordData({
-        currentPassword: '',
-        newPassword: '',
-        confirmPassword: ''
-      });
-    } catch (error: any) {
-      toast.error('Error al cambiar contraseña', {
-        description: error.response?.data?.message || 'Verifica tu contraseña actual'
-      });
-    } finally {
-      setIsChangingPassword(false);
-    }
-  };
-
-  // Handle data download
-  const handleDataDownload = async () => {
-    try {
-      // Prepare user data export in JSON format
-      const dataExport = {
-        exportDate: new Date().toISOString(),
-        user: {
-          id: user?.id,
-          email: user?.email,
-          name: user?.name,
-          userType: user?.userType,
-          phone: user?.phone,
-          whatsapp_number: user?.whatsapp_number,
-          location: user?.location,
-          bio: user?.bio,
-          avatar: user?.avatar,
-          isVerified: user?.isVerified,
-          planType: user?.planType,
-          createdAt: user?.createdAt,
-          updatedAt: user?.updatedAt,
-        },
-        professionalProfile: user?.professionalProfile || null,
-        metadata: {
-          platform: 'fixia.com.ar',
-          gdprCompliant: true,
-          dataPortabilityRight: true,
-        }
-      };
-
-      // Convert to JSON string
-      const jsonString = JSON.stringify(dataExport, null, 2);
-
-      // Create blob from JSON
-      const blob = new Blob([jsonString], { type: 'application/json' });
-
-      // Create download link
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `fixia-data-export-${user?.id}-${new Date().toISOString().split('T')[0]}.json`;
-
-      // Trigger download
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-
-      toast.success('📥 Datos descargados exitosamente', {
-        description: 'Se ha descargado tu archivo de datos personales en formato JSON',
-        duration: 5000
-      });
-    } catch (error: any) {
-      console.error('Error downloading data:', error);
-      toast.error('Error al descargar datos', {
-        description: error.message || 'No se pudo procesar tu solicitud de descarga'
-      });
-    }
-  };
-
-  // Handle account deletion with 30-day grace period
-  const handleAccountDeletion = async () => {
-    try {
-      // Call backend API to request account deletion
-      const response = await api.post('/user/account/delete-request', {
-        reason: 'User requested account deletion',
-        timestamp: new Date().toISOString()
-      });
-
-      // Show success message
-      toast.success('🗑️ Solicitud de eliminación enviada', {
-        description: 'Tu cuenta será eliminada en 30 días. Puedes cancelar esta solicitud en cualquier momento dentro del panel de configuración.',
-        duration: 7000
-      });
-
-      // Redirect to home page after delay
-      setTimeout(() => {
-        navigate('/');
-      }, 2000);
-    } catch (error: any) {
-      console.error('Error deleting account:', error);
-      toast.error('Error al procesar la solicitud', {
-        description: error.response?.data?.message || 'No se pudo procesar tu solicitud de eliminación'
-      });
-    }
-  };
+function ProfessionalPortfolio() {
+  const [selectedCategory, setSelectedCategory] = useState("Todos");
 
   return (
-    <div className="space-y-6">
-      {/* Upgrade to Professional Card - Only shown to clients */}
-      <UpgradeToProfessionalCard
-        userType={user?.userType || 'client'}
-        onUpgradeSuccess={refreshUserData}
-      />
+    <Card className="glass border-white/10">
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle>Portafolio</CardTitle>
+            <CardDescription>Mis trabajos más destacados</CardDescription>
+          </div>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button className="liquid-gradient">
+                <Plus className="h-4 w-4 mr-2" />
+                Agregar Proyecto
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="glass border-white/10 max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>Agregar Nuevo Proyecto</DialogTitle>
+                <DialogDescription>
+                  Agrega un nuevo proyecto a tu portafolio
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Título del Proyecto</Label>
+                    <Input className="glass border-white/20" placeholder="Ej: App Móvil Innovadora" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Categoría</Label>
+                    <Select>
+                      <SelectTrigger className="glass border-white/20">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="web">Desarrollo Web</SelectItem>
+                        <SelectItem value="mobile">Desarrollo Móvil</SelectItem>
+                        <SelectItem value="design">Diseño Gráfico</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label>Descripción</Label>
+                  <Textarea className="glass border-white/20" rows={3} />
+                </div>
+                <div className="space-y-2">
+                  <Label>URL del Proyecto (opcional)</Label>
+                  <Input className="glass border-white/20" placeholder="https://..." />
+                </div>
+                <div className="flex justify-end space-x-2">
+                  <Button variant="outline" className="glass border-white/20">Cancelar</Button>
+                  <Button className="liquid-gradient">Guardar Proyecto</Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
+      </CardHeader>
+      
+      <CardContent className="space-y-6">
+        {/* Filter */}
+        <div className="flex flex-wrap gap-2">
+          {["Todos", "Desarrollo Web", "Desarrollo Móvil", "Diseño Gráfico"].map((category) => (
+            <Button
+              key={category}
+              variant={selectedCategory === category ? "default" : "outline"}
+              size="sm"
+              onClick={() => setSelectedCategory(category)}
+              className={selectedCategory === category 
+                ? "liquid-gradient hover:opacity-90" 
+                : "glass border-white/20 hover:glass-medium"
+              }
+            >
+              {category}
+            </Button>
+          ))}
+        </div>
+        
+        {/* Portfolio Grid */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {portfolioItems.map((item) => (
+            <motion.div
+              key={item.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              whileHover={{ y: -4 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 overflow-hidden group">
+                <div className="relative aspect-video overflow-hidden">
+                  <img 
+                    src={item.image}
+                    alt={item.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  {item.featured && (
+                    <Badge className="absolute top-3 left-3 bg-warning/20 text-warning border-warning/30">
+                      <Award className="h-3 w-3 mr-1" />
+                      Destacado
+                    </Badge>
+                  )}
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <div className="flex space-x-2">
+                      <Button size="sm" className="liquid-gradient">
+                        <Eye className="h-4 w-4 mr-1" />
+                        Ver
+                      </Button>
+                      {item.url && (
+                        <Button size="sm" variant="outline" className="glass border-white/20">
+                          <ExternalLink className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                
+                <CardContent className="p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <Badge variant="outline" className="glass border-white/20 text-xs">
+                      {item.category}
+                    </Badge>
+                    <span className="text-xs text-muted-foreground">{item.date}</span>
+                  </div>
+                  
+                  <h3 className="font-semibold line-clamp-1">{item.title}</h3>
+                  <p className="text-sm text-muted-foreground line-clamp-2">{item.description}</p>
+                  
+                  <div className="flex flex-wrap gap-1">
+                    {item.technologies.slice(0, 3).map((tech) => (
+                      <Badge key={tech} variant="outline" className="glass border-white/20 text-xs">
+                        {tech}
+                      </Badge>
+                    ))}
+                  </div>
+                  
+                  <div className="flex items-center justify-between pt-2 border-t border-white/10">
+                    <span className="text-sm text-muted-foreground">Cliente: {item.client}</span>
+                    <div className="flex space-x-1">
+                      <Button variant="ghost" size="icon" className="h-6 w-6">
+                        <Heart className="h-3 w-3" />
+                      </Button>
+                      <Button variant="ghost" size="icon" className="h-6 w-6">
+                        <Edit3 className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
 
-      {/* Timezone Preferences */}
+function ReviewsSection() {
+  return (
+    <Card className="glass border-white/10">
+      <CardHeader>
+        <CardTitle className="flex items-center space-x-2">
+          <Star className="h-5 w-5 text-warning" />
+          <span>Reseñas y Valoraciones</span>
+        </CardTitle>
+        <CardDescription>Lo que dicen mis clientes</CardDescription>
+      </CardHeader>
+      
+      <CardContent className="space-y-6">
+        {/* Rating Overview */}
+        <div className="flex items-center space-x-8 p-4 glass-medium rounded-lg">
+          <div className="text-center">
+            <div className="text-3xl font-bold">4.9</div>
+            <div className="flex items-center justify-center mt-1">
+              {[1,2,3,4,5].map((star) => (
+                <Star key={star} className="h-4 w-4 text-warning fill-current" />
+              ))}
+            </div>
+            <div className="text-sm text-muted-foreground mt-1">187 reseñas</div>
+          </div>
+          
+          <div className="flex-1 space-y-2">
+            {[5,4,3,2,1].map((stars) => (
+              <div key={stars} className="flex items-center space-x-3">
+                <span className="text-sm w-8">{stars}★</span>
+                <Progress value={stars === 5 ? 85 : stars === 4 ? 15 : 0} className="flex-1" />
+                <span className="text-sm text-muted-foreground w-8">
+                  {stars === 5 ? '85%' : stars === 4 ? '15%' : '0%'}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        {/* Reviews List */}
+        <div className="space-y-4">
+          {userReviews.map((review) => (
+            <div key={review.id} className="glass-medium rounded-lg p-4">
+              <div className="flex items-start space-x-4">
+                <Avatar>
+                  <AvatarImage src={review.client.avatar} />
+                  <AvatarFallback>{review.client.name.charAt(0)}</AvatarFallback>
+                </Avatar>
+                
+                <div className="flex-1">
+                  <div className="flex items-center justify-between mb-2">
+                    <div>
+                      <div className="font-medium">{review.client.name}</div>
+                      <div className="text-sm text-muted-foreground">{review.serviceTitle}</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="flex items-center space-x-1">
+                        {[1,2,3,4,5].map((star) => (
+                          <Star 
+                            key={star} 
+                            className={`h-4 w-4 ${
+                              star <= review.rating 
+                                ? 'text-warning fill-current' 
+                                : 'text-muted-foreground'
+                            }`} 
+                          />
+                        ))}
+                      </div>
+                      <div className="text-sm text-muted-foreground mt-1">{review.date}</div>
+                    </div>
+                  </div>
+                  
+                  <p className="text-muted-foreground mb-3">{review.comment}</p>
+                  
+                  {review.response && (
+                    <div className="bg-primary/10 border-l-4 border-primary pl-4 py-2 mt-3">
+                      <div className="font-medium text-sm text-primary mb-1">Tu respuesta:</div>
+                      <p className="text-sm">{review.response}</p>
+                    </div>
+                  )}
+                  
+                  {!review.response && (
+                    <Button size="sm" variant="outline" className="glass border-white/20">
+                      <MessageSquare className="h-4 w-4 mr-2" />
+                      Responder
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function SettingsSection() {
+  return (
+    <div className="space-y-6">
+      {/* Account Settings */}
       <Card className="glass border-white/10">
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <Globe className="h-5 w-5" />
-            <span>Zona Horaria</span>
+            <Settings className="h-5 w-5" />
+            <span>Configuración de Cuenta</span>
           </CardTitle>
-          <CardDescription>
-            Configura tu zona horaria para sincronizar mejor con tus clientes
-          </CardDescription>
         </CardHeader>
-
+        
         <CardContent className="space-y-6">
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label>Email</Label>
+              <Input defaultValue="ana@ejemplo.com" className="glass border-white/20" />
+            </div>
+            <div className="space-y-2">
+              <Label>Teléfono</Label>
+              <Input defaultValue="+52 55 1234 5678" className="glass border-white/20" />
+            </div>
+          </div>
+          
           <div className="space-y-2">
-            <Label>Mi Zona Horaria</Label>
-            <Select
-              defaultValue="buenos-aires"
-              onValueChange={(value) => autoSave('timezone', value)}
-            >
+            <Label>Zona Horaria</Label>
+            <Select defaultValue="mexico">
               <SelectTrigger className="glass border-white/20">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="buenos-aires">Buenos Aires (GMT-3)</SelectItem>
-                <SelectItem value="madrid">Madrid (GMT+1)</SelectItem>
                 <SelectItem value="mexico">Ciudad de México (GMT-6)</SelectItem>
-                <SelectItem value="bogota">Bogotá (GMT-5)</SelectItem>
+                <SelectItem value="madrid">Madrid (GMT+1)</SelectItem>
+                <SelectItem value="buenos-aires">Buenos Aires (GMT-3)</SelectItem>
               </SelectContent>
             </Select>
           </div>
-        </CardContent>
-      </Card>
-
-      {/* Social Networks */}
-      <Card className="glass border-white/10">
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Globe className="h-5 w-5" />
-            <span>Redes Sociales</span>
-          </CardTitle>
-          <CardDescription>
-            Añade tus perfiles para que los clientes puedan conocerte mejor
-          </CardDescription>
-        </CardHeader>
-        
-        <CardContent className="space-y-4">
-          <div className="grid md:grid-cols-2 gap-4">
-            <div className="flex items-center space-x-3">
-              <Linkedin className="h-5 w-5 text-blue-500 flex-shrink-0" />
-              <div className="relative flex-1">
-                <Input
-                  placeholder="https://linkedin.com/in/tu-perfil"
-                  maxLength={255}
-                  className="glass border-white/20"
-                  value={socialNetworks.linkedin}
-                  onFocus={() => setEditingField('social_linkedin')}
-                  onBlur={() => setEditingField(null)}
-                  onChange={(e) => {
-                    setSocialNetworks({...socialNetworks, linkedin: e.target.value});
-                    autoSave('social_linkedin', e.target.value);
-                  }}
-                />
-                {savingField === 'social_linkedin' && (
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                    <Loader2 className="h-4 w-4 animate-spin text-primary" />
-                  </div>
-                )}
+          
+          <div className="space-y-4">
+            <h4 className="font-medium">Redes Sociales</h4>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="flex items-center space-x-3">
+                <Linkedin className="h-5 w-5 text-blue-500" />
+                <Input placeholder="LinkedIn URL" className="glass border-white/20" />
               </div>
-            </div>
-
-            <div className="flex items-center space-x-3">
-              <Twitter className="h-5 w-5 text-blue-400 flex-shrink-0" />
-              <div className="relative flex-1">
-                <Input
-                  placeholder="https://twitter.com/tu-usuario"
-                  maxLength={255}
-                  className="glass border-white/20"
-                  value={socialNetworks.twitter}
-                  onFocus={() => setEditingField('social_twitter')}
-                  onBlur={() => setEditingField(null)}
-                  onChange={(e) => {
-                    setSocialNetworks({...socialNetworks, twitter: e.target.value});
-                    autoSave('social_twitter', e.target.value);
-                  }}
-                />
-                {savingField === 'social_twitter' && (
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                    <Loader2 className="h-4 w-4 animate-spin text-primary" />
-                  </div>
-                )}
+              <div className="flex items-center space-x-3">
+                <Twitter className="h-5 w-5 text-blue-400" />
+                <Input placeholder="Twitter URL" className="glass border-white/20" />
               </div>
-            </div>
-
-            <div className="flex items-center space-x-3">
-              <Facebook className="h-5 w-5 text-blue-600 flex-shrink-0" />
-              <div className="relative flex-1">
-                <Input
-                  placeholder="https://facebook.com/tu-usuario"
-                  maxLength={255}
-                  className="glass border-white/20"
-                  value={socialNetworks.facebook}
-                  onFocus={() => setEditingField('social_facebook')}
-                  onBlur={() => setEditingField(null)}
-                  onChange={(e) => {
-                    setSocialNetworks({...socialNetworks, facebook: e.target.value});
-                    autoSave('social_facebook', e.target.value);
-                  }}
-                />
-                {savingField === 'social_facebook' && (
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                    <Loader2 className="h-4 w-4 animate-spin text-primary" />
-                  </div>
-                )}
+              <div className="flex items-center space-x-3">
+                <Github className="h-5 w-5" />
+                <Input placeholder="GitHub URL" className="glass border-white/20" />
               </div>
-            </div>
-
-            <div className="flex items-center space-x-3">
-              <Instagram className="h-5 w-5 text-pink-500 flex-shrink-0" />
-              <div className="relative flex-1">
-                <Input
-                  placeholder="https://instagram.com/tu-usuario"
-                  maxLength={255}
-                  className="glass border-white/20"
-                  value={socialNetworks.instagram}
-                  onFocus={() => setEditingField('social_instagram')}
-                  onBlur={() => setEditingField(null)}
-                  onChange={(e) => {
-                    setSocialNetworks({...socialNetworks, instagram: e.target.value});
-                    autoSave('social_instagram', e.target.value);
-                  }}
-                />
-                {savingField === 'social_instagram' && (
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                    <Loader2 className="h-4 w-4 animate-spin text-primary" />
-                  </div>
-                )}
+              <div className="flex items-center space-x-3">
+                <Instagram className="h-5 w-5 text-pink-500" />
+                <Input placeholder="Instagram URL" className="glass border-white/20" />
               </div>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Notification Preferences */}
+      {/* Notification Settings */}
       <Card className="glass border-white/10">
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <Bell className="h-5 w-5" />
             <span>Preferencias de Notificación</span>
           </CardTitle>
-          <CardDescription>
-            Configura qué notificaciones quieres recibir
-          </CardDescription>
         </CardHeader>
         
         <CardContent className="space-y-4">
@@ -712,13 +664,7 @@ function SettingsSection() {
               <div className="font-medium">Nuevos mensajes</div>
               <div className="text-sm text-muted-foreground">Recibir notificaciones de nuevos mensajes</div>
             </div>
-            <Switch 
-              checked={notifications.newMessages}
-              onCheckedChange={(checked) => {
-                setNotifications({...notifications, newMessages: checked});
-                autoSave('notifications_messages', checked);
-              }}
-            />
+            <Switch defaultChecked />
           </div>
           
           <div className="flex items-center justify-between">
@@ -726,27 +672,15 @@ function SettingsSection() {
               <div className="font-medium">Nuevos pedidos</div>
               <div className="text-sm text-muted-foreground">Notificaciones de nuevos pedidos de servicio</div>
             </div>
-            <Switch 
-              checked={notifications.newOrders}
-              onCheckedChange={(checked) => {
-                setNotifications({...notifications, newOrders: checked});
-                autoSave('notifications_orders', checked);
-              }}
-            />
+            <Switch defaultChecked />
           </div>
           
           <div className="flex items-center justify-between">
             <div>
-              <div className="font-medium">Actualizaciones de oportunidades</div>
-              <div className="text-sm text-muted-foreground">Updates sobre el progreso de oportunidades</div>
+              <div className="font-medium">Actualizaciones de proyectos</div>
+              <div className="text-sm text-muted-foreground">Updates sobre el progreso de proyectos</div>
             </div>
-            <Switch 
-              checked={notifications.projectUpdates}
-              onCheckedChange={(checked) => {
-                setNotifications({...notifications, projectUpdates: checked});
-                autoSave('notifications_projects', checked);
-              }}
-            />
+            <Switch defaultChecked />
           </div>
           
           <div className="flex items-center justify-between">
@@ -754,13 +688,7 @@ function SettingsSection() {
               <div className="font-medium">Newsletter semanal</div>
               <div className="text-sm text-muted-foreground">Recibir tips y novedades semanales</div>
             </div>
-            <Switch 
-              checked={notifications.newsletter}
-              onCheckedChange={(checked) => {
-                setNotifications({...notifications, newsletter: checked});
-                autoSave('notifications_newsletter', checked);
-              }}
-            />
+            <Switch />
           </div>
         </CardContent>
       </Card>
@@ -772,202 +700,56 @@ function SettingsSection() {
             <Shield className="h-5 w-5" />
             <span>Seguridad</span>
           </CardTitle>
-          <CardDescription>
-            Gestiona la seguridad de tu cuenta
-          </CardDescription>
         </CardHeader>
         
-        <CardContent className="space-y-6">
-          {/* Change Password */}
-          <div className="space-y-4">
-            <h4 className="font-medium">Cambiar Contraseña</h4>
-            
-            <div className="grid gap-4">
-              <div className="space-y-2">
-                <Label>Contraseña actual</Label>
-                <Input 
-                  type="password"
-                  value={passwordData.currentPassword}
-                  onChange={(e) => setPasswordData({...passwordData, currentPassword: e.target.value})}
-                  className="glass border-white/20"
-                  placeholder="Tu contraseña actual"
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label>Nueva contraseña</Label>
-                <Input 
-                  type="password"
-                  value={passwordData.newPassword}
-                  onChange={(e) => setPasswordData({...passwordData, newPassword: e.target.value})}
-                  className="glass border-white/20"
-                  placeholder="Nueva contraseña (mínimo 8 caracteres)"
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label>Confirmar nueva contraseña</Label>
-                <Input 
-                  type="password"
-                  value={passwordData.confirmPassword}
-                  onChange={(e) => setPasswordData({...passwordData, confirmPassword: e.target.value})}
-                  className="glass border-white/20"
-                  placeholder="Repite la nueva contraseña"
-                />
-              </div>
+        <CardContent className="space-y-4">
+          <Button variant="outline" className="w-full glass border-white/20 hover:glass-medium">
+            <Lock className="h-4 w-4 mr-2" />
+            Cambiar Contraseña
+          </Button>
+          
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="font-medium">Autenticación de dos factores</div>
+              <div className="text-sm text-muted-foreground">Añade una capa extra de seguridad</div>
             </div>
-            
-            <Button 
-              onClick={handlePasswordChange} 
-              disabled={isChangingPassword || !passwordData.currentPassword || !passwordData.newPassword}
-              className="liquid-gradient"
-            >
-              {isChangingPassword ? (
-                <>
-                  <div className="animate-spin rounded-full border-2 border-current border-t-transparent h-4 w-4 mr-2" />
-                  Cambiando...
-                </>
-              ) : (
-                <>
-                  <Lock className="h-4 w-4 mr-2" />
-                  Cambiar Contraseña
-                </>
-              )}
-            </Button>
+            <Switch />
           </div>
           
-          <Separator />
-          
-          {/* Download Data */}
-          <div className="space-y-2">
-            <h4 className="font-medium">Datos Personales</h4>
-            <p className="text-sm text-muted-foreground">
-              Descarga una copia de todos tus datos personales
-            </p>
-            <Button 
-              variant="outline" 
-              onClick={handleDataDownload}
-              className="glass border-white/20 hover:glass-medium"
-            >
-              <Download className="h-4 w-4 mr-2" />
-              Descargar Datos Personales
-            </Button>
-          </div>
+          <Button variant="outline" className="w-full glass border-white/20 hover:glass-medium">
+            <FileText className="h-4 w-4 mr-2" />
+            Descargar Datos Personales
+          </Button>
         </CardContent>
       </Card>
 
       {/* Danger Zone */}
       <Card className="glass border-destructive/20">
         <CardHeader>
-          <CardTitle className="text-destructive flex items-center space-x-2">
-            <AlertTriangle className="h-5 w-5" />
-            <span>Zona Peligrosa</span>
-          </CardTitle>
-          <CardDescription>
-            Acciones irreversibles que afectarán permanentemente tu cuenta
-          </CardDescription>
+          <CardTitle className="text-destructive">Zona Peligrosa</CardTitle>
         </CardHeader>
         
         <CardContent className="space-y-4">
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button 
-                variant="outline" 
-                className="w-full border-destructive/20 text-destructive hover:bg-destructive/10"
-              >
-                <Trash2 className="h-4 w-4 mr-2" />
-                Eliminar Cuenta
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="bg-slate-900/95 border-destructive/40 shadow-2xl backdrop-blur-xl">
-              <DialogHeader className="border-b border-destructive/20 pb-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="p-2 rounded-lg bg-destructive/20">
-                    <AlertTriangle className="h-5 w-5 text-destructive" />
-                  </div>
-                  <DialogTitle className="text-destructive text-xl">¿Eliminar cuenta permanentemente?</DialogTitle>
-                </div>
-                <DialogDescription className="text-slate-300 ml-10 mt-2">
-                  Esta acción no se puede deshacer. Se eliminarán todos tus datos, servicios,
-                  mensajes y cualquier información asociada a tu cuenta.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="space-y-5">
-                <Alert className="border-destructive/30 bg-gradient-to-r from-destructive/20 to-destructive/10 rounded-xl">
-                  <AlertTriangle className="h-5 w-5 text-destructive" />
-                  <AlertDescription className="text-destructive/90 ml-2">
-                    <strong>⚠️ Advertencia:</strong> Una vez eliminada, tu cuenta NO se podrá recuperar. Todos tus datos serán eliminados permanentemente del servidor.
-                  </AlertDescription>
-                </Alert>
-
-                <div className="bg-white/5 border border-white/10 rounded-xl p-4 space-y-2">
-                  <p className="text-sm font-semibold text-white">Se eliminarán:</p>
-                  <ul className="text-sm text-white/70 space-y-1 ml-2">
-                    <li>✕ Tu perfil y foto de usuario</li>
-                    <li>✕ Todos tus servicios y anuncios</li>
-                    <li>✕ Historial de trabajos y propuestas</li>
-                    <li>✕ Mensajes y conversaciones</li>
-                    <li>✕ Calificaciones y reviews</li>
-                  </ul>
-                </div>
-
-                <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-4 border-t border-white/10">
-                  <DialogTrigger asChild>
-                    <Button variant="outline" className="border-white/20 text-white/80 hover:text-white hover:bg-white/10">
-                      Cancelar
-                    </Button>
-                  </DialogTrigger>
-                  <Button
-                    variant="destructive"
-                    onClick={handleAccountDeletion}
-                    className="bg-gradient-to-r from-destructive to-destructive/80 hover:from-destructive/90 hover:to-destructive/70 shadow-lg"
-                  >
-                    <Trash2 className="h-4 w-4 mr-2" />
-                    Sí, eliminar permanentemente
-                  </Button>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
+          <Button variant="outline" className="w-full border-destructive/20 text-destructive hover:bg-destructive/10">
+            <Trash2 className="h-4 w-4 mr-2" />
+            Eliminar Cuenta
+          </Button>
         </CardContent>
       </Card>
     </div>
   );
 }
 
-// Main Profile Page component
 export default function ProfilePage() {
-  const { user, refreshUserData } = useSecureAuth();
-  const navigate = useNavigate();
+  const { user } = useAuth();
+  const [isEditing, setIsEditing] = useState(false);
 
-  // Redirect if not authenticated
-  useEffect(() => {
-    if (!user) {
-      navigate('/login');
-    }
-  }, [user, navigate]);
-
-  // Handle user updates
-  const handleUserUpdate = async (updatedUser: any) => {
-    // Trigger a refresh of user data from context and wait for it to complete
-    await refreshUserData();
-  };
-
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Cargando perfil...</p>
-        </div>
-      </div>
-    );
-  }
+  if (!user) return null;
 
   return (
     <div className="min-h-screen bg-background">
-      <FixiaNavigation />
-
+      <Navigation />
+      
       <main className="container mx-auto px-6 py-8">
         <div className="space-y-8">
           {/* Profile Header */}
@@ -976,69 +758,177 @@ export default function ProfilePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <ProfileHeader user={user} onUserUpdate={handleUserUpdate} />
+            <ProfileHeader user={user} isEditing={isEditing} setIsEditing={setIsEditing} />
           </motion.div>
 
-          {/* Profile Content Tabs */}
+          {/* Profile Content */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
           >
-            <Tabs defaultValue="settings" className="w-full">
+            <Tabs defaultValue={user.role === 'professional' ? 'portfolio' : 'activity'} className="w-full">
               <TabsList className="glass w-full md:w-auto">
-                <TabsTrigger value="settings">Configuración</TabsTrigger>
-                <TabsTrigger value="reviews">Calificaciones</TabsTrigger>
-                {user.userType === 'client' && (
+                {user.role === 'professional' ? (
+                  <>
+                    <TabsTrigger value="portfolio">Portafolio</TabsTrigger>
+                    <TabsTrigger value="reviews">Reseñas</TabsTrigger>
+                    <TabsTrigger value="analytics">Analytics</TabsTrigger>
+                    <TabsTrigger value="settings">Configuración</TabsTrigger>
+                  </>
+                ) : (
                   <>
                     <TabsTrigger value="activity">Actividad</TabsTrigger>
                     <TabsTrigger value="favorites">Favoritos</TabsTrigger>
-                  </>
-                )}
-                {user.userType === 'professional' && (
-                  <>
-                    <TabsTrigger value="portfolio">Portafolio</TabsTrigger>
-                    <TabsTrigger value="analytics">Analytics</TabsTrigger>
+                    <TabsTrigger value="orders">Mis Pedidos</TabsTrigger>
+                    <TabsTrigger value="settings">Configuración</TabsTrigger>
                   </>
                 )}
               </TabsList>
 
-              {/* Settings Tab */}
+              {/* Professional Tabs */}
+              {user.role === 'professional' && (
+                <>
+                  <TabsContent value="portfolio" className="mt-6">
+                    <ProfessionalPortfolio />
+                  </TabsContent>
+                  
+                  <TabsContent value="reviews" className="mt-6">
+                    <ReviewsSection />
+                  </TabsContent>
+                  
+                  <TabsContent value="analytics" className="mt-6">
+                    <Card className="glass border-white/10">
+                      <CardHeader>
+                        <CardTitle className="flex items-center space-x-2">
+                          <BarChart3 className="h-5 w-5" />
+                          <span>Analytics y Estadísticas</span>
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                          <div className="glass-medium rounded-lg p-4 text-center">
+                            <TrendingUp className="h-8 w-8 text-success mx-auto mb-2" />
+                            <div className="text-2xl font-bold">$12,450</div>
+                            <div className="text-sm text-muted-foreground">Ingresos este mes</div>
+                          </div>
+                          <div className="glass-medium rounded-lg p-4 text-center">
+                            <Users className="h-8 w-8 text-primary mx-auto mb-2" />
+                            <div className="text-2xl font-bold">23</div>
+                            <div className="text-sm text-muted-foreground">Clientes activos</div>
+                          </div>
+                          <div className="glass-medium rounded-lg p-4 text-center">
+                            <Target className="h-8 w-8 text-warning mx-auto mb-2" />
+                            <div className="text-2xl font-bold">89%</div>
+                            <div className="text-sm text-muted-foreground">Tasa de conversión</div>
+                          </div>
+                          <div className="glass-medium rounded-lg p-4 text-center">
+                            <Clock className="h-8 w-8 text-blue-400 mx-auto mb-2" />
+                            <div className="text-2xl font-bold">45min</div>
+                            <div className="text-sm text-muted-foreground">Tiempo promedio respuesta</div>
+                          </div>
+                        </div>
+                        <p className="text-muted-foreground text-center">
+                          Analytics detallado próximamente...
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </TabsContent>
+                </>
+              )}
+
+              {/* Client Tabs */}
+              {user.role === 'client' && (
+                <>
+                  <TabsContent value="activity" className="mt-6">
+                    <Card className="glass border-white/10">
+                      <CardHeader>
+                        <CardTitle>Actividad Reciente</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-4">
+                          <div className="flex items-center space-x-4 p-4 glass-medium rounded-lg">
+                            <div className="h-10 w-10 bg-success/20 rounded-full flex items-center justify-center">
+                              <CheckCircle className="h-5 w-5 text-success" />
+                            </div>
+                            <div className="flex-1">
+                              <div className="font-medium">Servicio completado</div>
+                              <div className="text-sm text-muted-foreground">Desarrollo E-commerce - Ana Martínez</div>
+                            </div>
+                            <div className="text-sm text-muted-foreground">Hace 2 días</div>
+                          </div>
+                          
+                          <div className="flex items-center space-x-4 p-4 glass-medium rounded-lg">
+                            <div className="h-10 w-10 bg-primary/20 rounded-full flex items-center justify-center">
+                              <MessageSquare className="h-5 w-5 text-primary" />
+                            </div>
+                            <div className="flex-1">
+                              <div className="font-medium">Nuevo mensaje</div>
+                              <div className="text-sm text-muted-foreground">Carlos Ruiz te ha enviado un mensaje</div>
+                            </div>
+                            <div className="text-sm text-muted-foreground">Hace 1 semana</div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </TabsContent>
+                  
+                  <TabsContent value="favorites" className="mt-6">
+                    <Card className="glass border-white/10">
+                      <CardHeader>
+                        <CardTitle className="flex items-center space-x-2">
+                          <Heart className="h-5 w-5" />
+                          <span>Servicios Favoritos</span>
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-muted-foreground text-center py-8">
+                          Aún no tienes servicios guardados como favoritos.
+                          <br />
+                          <Link to="/services" className="text-primary hover:underline">
+                            Explorar servicios
+                          </Link>
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </TabsContent>
+                  
+                  <TabsContent value="orders" className="mt-6">
+                    <Card className="glass border-white/10">
+                      <CardHeader>
+                        <CardTitle>Historial de Pedidos</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-4">
+                          <div className="flex items-center justify-between p-4 glass-medium rounded-lg">
+                            <div className="flex items-center space-x-4">
+                              <img 
+                                src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=60&h=60&fit=crop"
+                                alt="Servicio"
+                                className="w-12 h-12 rounded object-cover"
+                              />
+                              <div>
+                                <div className="font-medium">Desarrollo E-commerce Completo</div>
+                                <div className="text-sm text-muted-foreground">Ana Martínez</div>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <Badge className="bg-success/20 text-success border-success/30 mb-1">
+                                Completado
+                              </Badge>
+                              <div className="text-sm text-muted-foreground">$1,250</div>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </TabsContent>
+                </>
+              )}
+
+              {/* Settings Tab (for both) */}
               <TabsContent value="settings" className="mt-6">
                 <SettingsSection />
-              </TabsContent>
-
-              {/* Reviews Tab */}
-              <TabsContent value="reviews" className="mt-6">
-                <UserReviewStats
-                  userId={user.id}
-                  userName={user.name}
-                  showReviews={true}
-                />
-              </TabsContent>
-
-              {/* Other tabs can be implemented as needed */}
-              <TabsContent value="activity" className="mt-6">
-                <Card className="glass border-white/10">
-                  <CardHeader>
-                    <CardTitle>Actividad Reciente</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-center py-12">
-                      <Clock className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-50" />
-                      <h3 className="text-lg font-medium mb-2">Sin actividad reciente</h3>
-                      <p className="text-muted-foreground mb-4">
-                        Tu actividad aparecerá aquí cuando comiences a usar la plataforma.
-                      </p>
-                      <Link to="/opportunities">
-                        <Button className="liquid-gradient hover:opacity-90">
-                          <Plus className="h-4 w-4 mr-2" />
-                          Explorar oportunidades
-                        </Button>
-                      </Link>
-                    </div>
-                  </CardContent>
-                </Card>
               </TabsContent>
             </Tabs>
           </motion.div>

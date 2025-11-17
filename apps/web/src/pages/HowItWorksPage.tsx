@@ -1,40 +1,65 @@
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { Link } from "react-router-dom";
-import {
-  Search, Users, MessageSquare, Heart,
-  Crown, UserPlus, FileText, Shield, Clock,
-  CheckCircle, Zap, HeadphonesIcon, Phone, Mail, Bell
+import { 
+  ArrowLeft, Search, Users, MessageSquare, Star,
+  Crown, UserPlus, FileText, Award, Shield, Clock,
+  CheckCircle, Zap, HeadphonesIcon, Heart, Phone, Mail, Bell
 } from "lucide-react";
 import { Button } from "../components/ui/button";
-import { Card, CardContent } from "../components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
-import { FixiaNavigation } from "../components/FixiaNavigation";
 
+function Navigation() {
+  return (
+    <motion.header 
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      className="sticky top-0 z-50 w-full glass border-b border-white/10"
+    >
+      <div className="container mx-auto flex h-16 items-center justify-between px-6">
+        <Link to="/" className="flex items-center space-x-3">
+          <div className="h-8 w-8 liquid-gradient rounded-lg flex items-center justify-center shadow-lg">
+            <span className="text-white font-bold">F</span>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-lg font-semibold">Fixia</span>
+            <span className="text-xs text-muted-foreground -mt-1">Conecta. Confía. Resuelve.</span>
+          </div>
+        </Link>
+        
+        <Link to="/">
+          <Button variant="ghost" className="hover:glass-medium">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Volver al Inicio
+          </Button>
+        </Link>
+      </div>
+    </motion.header>
+  );
+}
 
 function HeroSection() {
   return (
-    <section className="py-12 sm:py-16 lg:py-20">
-      <div className="container mx-auto px-4 sm:px-6">
+    <section className="py-20 lg:py-28">
+      <div className="container mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1 }}
           className="max-w-4xl mx-auto text-center"
         >
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold mb-8 tracking-tight leading-tight">
-            <span className="bg-gradient-to-r from-white via-white to-white/80 bg-clip-text text-transparent drop-shadow-sm">
+          <h1 className="text-5xl lg:text-6xl font-bold mb-6 tracking-tight">
+            <span className="bg-gradient-to-r from-white via-white to-white/70 bg-clip-text text-transparent">
               Cómo Funciona
             </span>{" "}
-            <span className="text-gradient-rainbow inline-block">
+            <span className="bg-gradient-to-r from-primary-solid to-purple-400 bg-clip-text text-transparent">
               Fixia
             </span>
           </h1>
-
-          <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground/90 mb-10 max-w-3xl mx-auto leading-relaxed font-medium">
-            Simple, seguro y transparente.
-            <span className="block mt-2 text-base sm:text-lg text-muted-foreground/70">
-              Conectamos clientes con profesionales verificados en 4 pasos sencillos.
-            </span>
+          
+          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
+            Conectamos clientes con profesionales verificados en un proceso simple, seguro y transparente. 
+            Descubre cómo obtener el servicio perfecto.
           </p>
         </motion.div>
       </div>
@@ -54,7 +79,7 @@ function ClientProcessSection() {
     {
       step: "Paso 2", 
       title: "Elige tu Profesional",
-      description: "Compara perfiles, lee reseñas y selecciona al Profesional perfecto  que se adecue a tu necesidad.",
+      description: "Compara perfiles, lee reseñas y selecciona al Profesional perfecto para tu proyecto.",
       icon: Users,
       color: "text-success"
     },
@@ -69,33 +94,31 @@ function ClientProcessSection() {
       step: "Paso 4",
       title: "Evalúa la Experiencia",
       description: "Recibe tu servicio completado, califica al profesional y contribuye a la comunidad de confianza.",
-      icon: Heart,
+      icon: Star,
       color: "text-purple-400"
     }
   ];
 
   return (
-    <section className="py-10 sm:py-12 lg:py-16">
-      <div className="container mx-auto px-4 sm:px-6">
+    <section className="py-20">
+      <div className="container mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-10 sm:mb-12"
+          className="text-center mb-16"
         >
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-4 sm:mb-6">
-            <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-2xl bg-success/20 flex items-center justify-center">
-              <UserPlus className="h-6 w-6 sm:h-7 sm:w-7 text-success" />
-            </div>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-foreground tracking-tight">Para Clientes</h2>
+          <div className="flex items-center justify-center space-x-3 mb-6">
+            <UserPlus className="h-8 w-8 text-success" />
+            <h2 className="text-4xl font-bold">Para Clientes</h2>
           </div>
-          <p className="text-lg sm:text-xl text-muted-foreground/80 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Encuentra y contrata profesionales verificados en 4 pasos simples
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2">
+        <div className="grid lg:grid-cols-2 gap-8">
           {steps.map((step, index) => {
             const Icon = step.icon;
             return (
@@ -107,18 +130,18 @@ function ClientProcessSection() {
                 transition={{ duration: 0.6, delay: 0.1 * index }}
                 whileHover={{ y: -4 }}
               >
-                <Card className="glass-glow hover:glass-medium transition-all duration-300 border-white/10 h-full card-hover group">
-                  <CardContent className="p-4 sm:p-6 lg:p-8">
-                    <div className="flex items-start space-x-3 sm:space-x-4 lg:space-x-6">
-                      <div className={`h-12 w-12 sm:h-14 sm:w-14 lg:h-16 lg:w-16 bg-current/10 rounded-xl sm:rounded-2xl flex items-center justify-center flex-shrink-0 ${step.color} group-hover:scale-110 transition-transform float`}>
-                        <Icon className={`h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 ${step.color}`} />
+                <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 h-full">
+                  <CardContent className="p-8">
+                    <div className="flex items-start space-x-6">
+                      <div className={`h-16 w-16 bg-current/10 rounded-2xl flex items-center justify-center flex-shrink-0 ${step.color}`}>
+                        <Icon className={`h-8 w-8 ${step.color}`} />
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <Badge className="mb-2 sm:mb-3 bg-primary/20 text-primary border-primary/30 text-xs sm:text-sm font-semibold">
+                      <div className="flex-1">
+                        <Badge className="mb-3 bg-primary/20 text-primary border-primary/30">
                           {step.step}
                         </Badge>
-                        <h3 className="text-lg sm:text-xl lg:text-2xl font-bold mb-2 sm:mb-3 text-foreground">{step.title}</h3>
-                        <p className="text-muted-foreground/80 leading-relaxed text-sm sm:text-base">{step.description}</p>
+                        <h3 className="text-xl font-semibold mb-3">{step.title}</h3>
+                        <p className="text-muted-foreground leading-relaxed">{step.description}</p>
                       </div>
                     </div>
                   </CardContent>
@@ -133,12 +156,12 @@ function ClientProcessSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.6 }}
-          className="text-center mt-12 w-full"
+          className="text-center mt-12"
         >
-          <Link to="/register" className="w-full sm:w-auto inline-block">
-            <Button size="lg" className="liquid-gradient hover:opacity-90 hover:scale-105 transition-all duration-300 shadow-2xl hover:shadow-primary/50 px-10 py-6 text-lg font-semibold rounded-2xl group w-full sm:w-auto">
-              <UserPlus className="mr-3 h-6 w-6 group-hover:scale-110 transition-transform" />
-              Comenzar Ahora
+          <Link to="/register">
+            <Button size="lg" className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg px-8">
+              <UserPlus className="mr-2 h-5 w-5" />
+              Registrarme como Cliente
             </Button>
           </Link>
         </motion.div>
@@ -166,7 +189,7 @@ function ProfessionalProcessSection() {
     {
       step: "Paso 3",
       title: "Recibe Solicitudes",
-      description: "Los clientes te encontrarán y contactarán para trabajos y tareas que coincidan con tu expertise.",
+      description: "Los clientes te encontrarán y contactarán para proyectos que coincidan con tu expertise.",
       icon: Bell,
       color: "text-warning"
     },
@@ -174,31 +197,31 @@ function ProfessionalProcessSection() {
       step: "Paso 4", 
       title: "Construye Reputación",
       description: "Completa el trabajo, recibe reseñas positivas y construye tu reputación profesional verificada.",
-      icon: Heart,
+      icon: Award,
       color: "text-purple-400"
     }
   ];
 
   return (
-    <section className="py-10 sm:py-12 lg:py-16 bg-gradient-to-b from-transparent to-primary/5">
-      <div className="container mx-auto px-4 sm:px-6">
+    <section className="py-20 bg-gradient-to-b from-transparent to-primary/5">
+      <div className="container mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-10 sm:mb-12"
+          className="text-center mb-16"
         >
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-4 sm:mb-6">
-            <Crown className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground">Para Profesionales</h2>
+          <div className="flex items-center justify-center space-x-3 mb-6">
+            <Crown className="h-8 w-8 text-primary" />
+            <h2 className="text-4xl font-bold">Para Profesionales</h2>
           </div>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Únete como Profesional y haz crecer tu negocio
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2">
+        <div className="grid lg:grid-cols-2 gap-8">
           {steps.map((step, index) => {
             const Icon = step.icon;
             return (
@@ -210,18 +233,18 @@ function ProfessionalProcessSection() {
                 transition={{ duration: 0.6, delay: 0.1 * index }}
                 whileHover={{ y: -4 }}
               >
-                <Card className="glass-glow hover:glass-medium transition-all duration-300 border-white/10 h-full card-hover group">
-                  <CardContent className="p-4 sm:p-6 lg:p-8">
-                    <div className="flex items-start space-x-3 sm:space-x-4 lg:space-x-6">
-                      <div className={`h-12 w-12 sm:h-14 sm:w-14 lg:h-16 lg:w-16 bg-current/10 rounded-xl sm:rounded-2xl flex items-center justify-center flex-shrink-0 ${step.color} group-hover:scale-110 transition-transform float`}>
-                        <Icon className={`h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 ${step.color}`} />
+                <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 h-full">
+                  <CardContent className="p-8">
+                    <div className="flex items-start space-x-6">
+                      <div className={`h-16 w-16 bg-current/10 rounded-2xl flex items-center justify-center flex-shrink-0 ${step.color}`}>
+                        <Icon className={`h-8 w-8 ${step.color}`} />
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <Badge className="mb-2 sm:mb-3 bg-primary/20 text-primary border-primary/30 text-xs sm:text-sm font-semibold">
+                      <div className="flex-1">
+                        <Badge className="mb-3 bg-primary/20 text-primary border-primary/30">
                           {step.step}
                         </Badge>
-                        <h3 className="text-lg sm:text-xl lg:text-2xl font-bold mb-2 sm:mb-3 text-foreground">{step.title}</h3>
-                        <p className="text-muted-foreground/80 leading-relaxed text-sm sm:text-base">{step.description}</p>
+                        <h3 className="text-xl font-semibold mb-3">{step.title}</h3>
+                        <p className="text-muted-foreground leading-relaxed">{step.description}</p>
                       </div>
                     </div>
                   </CardContent>
@@ -236,12 +259,12 @@ function ProfessionalProcessSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.6 }}
-          className="text-center mt-12 w-full"
+          className="text-center mt-12"
         >
-          <Link to="/register?type=professional" className="w-full sm:w-auto inline-block">
-            <Button size="lg" className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg px-6 w-full sm:w-auto">
+          <Link to="/register?type=professional">
+            <Button size="lg" className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg px-8">
               <Crown className="mr-2 h-5 w-5" />
-              Ser Profesional - $3,900/mes
+              Ser Profesional - $4500/mes
             </Button>
           </Link>
         </motion.div>
@@ -260,7 +283,7 @@ function WhyChooseFixiaSection() {
     },
     {
       icon: HeadphonesIcon,
-      title: "Soporte 24/7",
+      title: "Soporte 24/7", 
       description: "Nuestro equipo está disponible para ayudarte en cualquier momento durante el proceso.",
       color: "text-primary"
     },
@@ -273,8 +296,8 @@ function WhyChooseFixiaSection() {
   ];
 
   return (
-    <section className="py-10 sm:py-12 lg:py-16">
-      <div className="container mx-auto px-4 sm:px-6">
+    <section className="py-20">
+      <div className="container mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -282,13 +305,13 @@ function WhyChooseFixiaSection() {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl font-bold mb-4 text-foreground">¿Por qué elegir Fixia?</h2>
+          <h2 className="text-4xl font-bold mb-4">¿Por qué elegir Fixia?</h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             La plataforma más confiable para servicios profesionales en Chubut
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+        <div className="grid lg:grid-cols-3 gap-8">
           {benefits.map((benefit, index) => {
             const Icon = benefit.icon;
             return (
@@ -320,8 +343,8 @@ function WhyChooseFixiaSection() {
 
 function CTASection() {
   return (
-    <section className="py-10 sm:py-12 lg:py-16">
-      <div className="container mx-auto px-4 sm:px-6">
+    <section className="py-20">
+      <div className="container mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -329,10 +352,10 @@ function CTASection() {
           transition={{ duration: 0.8 }}
         >
           <Card className="glass border-white/10 overflow-hidden">
-            <CardContent className="p-6 sm:p-8 lg:p-12 text-center">
+            <CardContent className="p-12 text-center">
               <div className="max-w-3xl mx-auto">
                 <Zap className="h-16 w-16 text-primary mx-auto mb-6" />
-                <h2 className="text-4xl font-bold mb-6 text-foreground">
+                <h2 className="text-4xl font-bold mb-6">
                   ¿Listo para comenzar?
                 </h2>
                 <p className="text-xl text-muted-foreground mb-8">
@@ -340,33 +363,33 @@ function CTASection() {
                   o hacer crecer tu negocio de servicios.
                 </p>
                 
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 w-full sm:w-auto">
-                  <Link to="/register" className="w-full sm:w-auto">
-                    <Button size="lg" className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-xl px-6 w-full sm:w-auto">
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                  <Link to="/register">
+                    <Button size="lg" className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-xl px-8">
                       <UserPlus className="mr-2 h-5 w-5" />
                       Buscar Profesionales
                     </Button>
                   </Link>
-                  <Link to="/register?type=professional" className="w-full sm:w-auto">
-                    <Button size="lg" variant="outline" className="glass border-white/20 hover:glass-medium px-6 w-full sm:w-auto">
+                  <Link to="/register?type=professional">
+                    <Button size="lg" variant="outline" className="glass border-white/20 hover:glass-medium px-8">
                       <Crown className="mr-2 h-5 w-5" />
                       Ser Profesional
                     </Button>
                   </Link>
                 </div>
                 
-                <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 lg:gap-8 mt-6 sm:mt-8 text-xs sm:text-sm text-muted-foreground">
+                <div className="flex items-center justify-center space-x-8 mt-8 text-sm text-muted-foreground">
                   <div className="flex items-center">
-                    <Shield className="h-4 w-4 mr-2 text-success flex-shrink-0" />
-                    <span>Sin comisiones</span>
+                    <Shield className="h-4 w-4 mr-2 text-success" />
+                    Sin comisiones
                   </div>
                   <div className="flex items-center">
-                    <CheckCircle className="h-4 w-4 mr-2 text-success flex-shrink-0" />
-                    <span className="whitespace-nowrap">Profesionales verificados</span>
+                    <CheckCircle className="h-4 w-4 mr-2 text-success" />
+                    Profesionales verificados
                   </div>
                   <div className="flex items-center">
-                    <Clock className="h-4 w-4 mr-2 text-success flex-shrink-0" />
-                    <span>Soporte 24/7</span>
+                    <Clock className="h-4 w-4 mr-2 text-success" />
+                    Soporte 24/7
                   </div>
                 </div>
               </div>
@@ -380,8 +403,8 @@ function CTASection() {
 
 function ContactSection() {
   return (
-    <section className="py-8 sm:py-10 lg:py-12">
-      <div className="container mx-auto px-4 sm:px-6">
+    <section className="py-16">
+      <div className="container mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -389,21 +412,21 @@ function ContactSection() {
           transition={{ duration: 0.8 }}
           className="max-w-2xl mx-auto text-center"
         >
-          <h3 className="text-2xl font-bold mb-6 text-foreground">¿Tienes preguntas?</h3>
+          <h3 className="text-2xl font-bold mb-6">¿Tienes preguntas?</h3>
           <p className="text-muted-foreground mb-8">
             Nuestro equipo está aquí para ayudarte en cada paso del proceso
           </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 w-full sm:w-auto">
-            <a href="mailto:soporte@fixia.app" className="w-full sm:w-auto">
-              <Button variant="outline" className="glass border-white/20 hover:glass-medium w-full sm:w-auto">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <a href="mailto:soporte@fixia.com.ar">
+              <Button variant="outline" className="glass border-white/20 hover:glass-medium">
                 <Mail className="mr-2 h-4 w-4" />
-                soporte@fixia.app
+                soporte@fixia.com.ar
               </Button>
             </a>
-            <a href="tel:+5492804874166" className="w-full sm:w-auto">
-              <Button variant="outline" className="glass border-white/20 hover:glass-medium w-full sm:w-auto">
+            <a href="tel:+542804567890">
+              <Button variant="outline" className="glass border-white/20 hover:glass-medium">
                 <Phone className="mr-2 h-4 w-4" />
-                +54 9 2804874166
+                +54 280 4567890
               </Button>
             </a>
           </div>
@@ -416,7 +439,7 @@ function ContactSection() {
 export default function HowItWorksPage() {
   return (
     <div className="min-h-screen bg-background">
-      <FixiaNavigation />
+      <Navigation />
       <HeroSection />
       <ClientProcessSection />
       <ProfessionalProcessSection />

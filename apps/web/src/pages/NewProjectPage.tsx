@@ -1,13 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
-import { FixiaNavigation } from "../components/FixiaNavigation";
-import {
-  ArrowLeft, ArrowRight, Check, Upload, X, Plus,
-  Image, FileText, DollarSign, Tag, Settings,
-  Eye, Save, AlertCircle, Info, Heart, Briefcase, Globe,
-  Camera, Trash2, Zap, Shield, Loader2, Search, CheckCircle,
-  HelpCircle, Lightbulb, Package, Calendar, Clock
+import { motion, AnimatePresence } from "motion/react";
+import { 
+  ArrowLeft, ArrowRight, Check, Upload, X, Plus, Minus, 
+  Image, FileText, DollarSign, Clock, Tag, Settings, 
+  Eye, Save, AlertCircle, Info, Star, Briefcase, Globe,
+  Camera, Trash2, Edit3, Zap, Shield, Award
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -15,56 +13,36 @@ import { Label } from "../components/ui/label";
 import { Textarea } from "../components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
+import { Checkbox } from "../components/ui/checkbox";
 import { Switch } from "../components/ui/switch";
 import { Separator } from "../components/ui/separator";
 import { Progress } from "../components/ui/progress";
 import { Alert, AlertDescription } from "../components/ui/alert";
-import { useSecureAuth } from "../context/SecureAuthContext";
-import { toast } from "sonner";
-import { servicesService, ServiceCategory } from "../lib/services/services.service";
-import { uploadService } from "../lib/services/upload.service";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
+import { useAuth } from "../context/AuthContext";
+import { toast } from "sonner@2.0.3";
 
-// Icon mapping for categories
-const getIconComponent = (iconName: string) => {
-  if (!iconName || typeof iconName !== 'string') {
-    return Heart; // Safe fallback
-  }
-  
-  const iconMap: Record<string, any> = {
-    Globe,
-    Camera, 
-    Image,
-    Heart,
-    FileText,
-    Eye,
-    Briefcase,
-    Shield,
-    Palette: Image, // fallback for design
-    Users: Briefcase, // fallback for team services
-    HeadphonesIcon: Heart, // fallback for support
-    PenTool: FileText, // fallback for writing
-    TrendingUp: Heart, // fallback for marketing
-  };
-  
-  const IconComponent = iconMap[iconName];
-  
-  // Ensure we always return a valid React component
-  if (!IconComponent || typeof IconComponent !== 'function') {
-    return Heart;
-  }
-  
-  return IconComponent;
-};
+const categories = [
+  { value: "web-development", label: "Desarrollo Web", icon: Globe },
+  { value: "mobile-development", label: "Desarrollo Móvil", icon: Camera },
+  { value: "graphic-design", label: "Diseño Gráfico", icon: Image },
+  { value: "digital-marketing", label: "Marketing Digital", icon: Star },
+  { value: "writing", label: "Redacción y Contenido", icon: FileText },
+  { value: "video-animation", label: "Video y Animación", icon: Eye },
+  { value: "consulting", label: "Consultoría", icon: Briefcase },
+  { value: "cybersecurity", label: "Ciberseguridad", icon: Shield }
+];
 
 const skillSuggestions = {
-  "peluqueria": ["Corte de Cabello", "Maquillaje", "Peinado", "Coloración", "Tratamientos", "A Domicilio", "Alisado", "Permanente"],
-  "belleza": ["Manicura", "Pedicura", "Depilación", "Masajes", "Tratamientos Faciales", "Cejas y Pestañas", "A Domicilio"],
-  "mascotas": ["Peluquería Canina", "Paseo de Perros", "Adiestramiento", "Cuidado a Domicilio", "Veterinaria", "Grooming"],
-  "construccion": ["Albañilería", "Pintura", "Electricidad", "Plomería", "Reparaciones", "Refacciones", "Presupuesto Gratis"],
-  "limpieza": ["Limpieza de Hogar", "Limpieza Profunda", "A Domicilio", "Post Obra", "Oficinas", "Alfombras"],
-  "cocina": ["Comida a Domicilio", "Catering", "Eventos", "Repostería", "Viandas", "Menú Semanal"],
-  "jardineria": ["Corte de Césped", "Poda", "Mantenimiento", "Diseño de Jardines", "Riego", "Fumigación"],
-  "mecanica": ["Mecánica General", "Electricidad Automotriz", "Diagnóstico", "A Domicilio", "Cambio de Aceite", "Frenos"]
+  "web-development": ["React", "Vue.js", "Angular", "Node.js", "Python", "PHP", "WordPress", "Shopify"],
+  "mobile-development": ["Flutter", "React Native", "Swift", "Kotlin", "iOS", "Android"],
+  "graphic-design": ["Photoshop", "Illustrator", "Figma", "InDesign", "After Effects"],
+  "digital-marketing": ["SEO", "Google Ads", "Facebook Ads", "Analytics", "Social Media"],
+  "writing": ["Blog Posts", "Copywriting", "Technical Writing", "SEO Content"],
+  "video-animation": ["After Effects", "Premiere Pro", "Motion Graphics", "3D Animation"],
+  "consulting": ["Strategy", "Business Plan", "Market Research", "Process Optimization"],
+  "cybersecurity": ["Pentesting", "Security Audit", "ISO 27001", "GDPR Compliance"]
 };
 
 interface ProjectData {
@@ -77,25 +55,65 @@ interface ProjectData {
   
   // Pricing
   packages: {
-    basic: { name: string; price: number; description: string; deliveryTime: number; features: string[]; immediateAvailability: boolean; scheduledAvailability: boolean };
-    standard: { name: string; price: number; description: string; deliveryTime: number; features: string[]; immediateAvailability: boolean; scheduledAvailability: boolean };
-    premium: { name: string; price: number; description: string; deliveryTime: number; features: string[]; immediateAvailability: boolean; scheduledAvailability: boolean };
+    basic: { name: string; price: number; description: string; deliveryTime: number; revisions: number; features: string[] };
+    standard: { name: string; price: number; description: string; deliveryTime: number; revisions: number; features: string[] };
+    premium: { name: string; price: number; description: string; deliveryTime: number; revisions: number; features: string[] };
   };
-
+  
   // Media
   images: string[];
   gallery: string[];
-  videoUrl: string;
-
+  
   // Requirements
   requirements: string[];
-
+  
   // FAQ
   faqs: { question: string; answer: string }[];
-
+  
   // Settings
   isActive: boolean;
+  allowRevisions: boolean;
   instantDelivery: boolean;
+}
+
+function Navigation() {
+  const navigate = useNavigate();
+
+  return (
+    <motion.header 
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      className="sticky top-0 z-50 w-full glass border-b border-white/10"
+    >
+      <div className="container mx-auto flex h-16 items-center justify-between px-6">
+        <button 
+          onClick={() => navigate(-1)}
+          className="flex items-center space-x-2 text-muted-foreground hover:text-primary transition-colors"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Volver
+        </button>
+        
+        <Link to="/dashboard" className="flex items-center space-x-3">
+          <div className="h-8 w-8 liquid-gradient rounded-lg flex items-center justify-center">
+            <span className="text-white font-bold">F</span>
+          </div>
+          <span className="font-semibold">Fixia</span>
+        </Link>
+        
+        <div className="flex items-center space-x-2">
+          <Button variant="ghost" size="sm">
+            <Eye className="h-4 w-4 mr-2" />
+            Previsualizar
+          </Button>
+          <Button variant="ghost" size="sm">
+            <Save className="h-4 w-4 mr-2" />
+            Guardar Borrador
+          </Button>
+        </div>
+      </div>
+    </motion.header>
+  );
 }
 
 function StepProgress({ currentStep, totalSteps }: { currentStep: number; totalSteps: number }) {
@@ -119,7 +137,7 @@ function StepProgress({ currentStep, totalSteps }: { currentStep: number; totalS
           <Progress value={(currentStep / totalSteps) * 100} className="h-2" />
         </div>
         
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3 lg:gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-6 gap-4">
           {steps.map((step) => (
             <div 
               key={step.id}
@@ -207,7 +225,7 @@ function BasicInfoStep({ data, setData }: { data: ProjectData; setData: (data: P
             <Info className="h-4 w-4" />
             <AlertDescription>
               <strong>Tips para una buena descripción:</strong>
-              <ul className="mt-2 space-y-2 text-sm">
+              <ul className="mt-2 space-y-1 text-sm">
                 <li>• Explica claramente qué incluye tu servicio</li>
                 <li>• Menciona tu experiencia y habilidades</li>
                 <li>• Describe tu proceso de trabajo</li>
@@ -221,21 +239,9 @@ function BasicInfoStep({ data, setData }: { data: ProjectData; setData: (data: P
   );
 }
 
-function CategoryStep({
-  data,
-  setData,
-  categories,
-  loadingCategories
-}: {
-  data: ProjectData;
-  setData: (data: ProjectData) => void;
-  categories: ServiceCategory[];
-  loadingCategories: boolean;
-}) {
+function CategoryStep({ data, setData }: { data: ProjectData; setData: (data: ProjectData) => void }) {
   const [selectedSkills, setSelectedSkills] = useState<string[]>(data.tags);
-  const [categorySearch, setCategorySearch] = useState('');
-  const [customSkill, setCustomSkill] = useState('');
-
+  
   const handleSkillToggle = (skill: string) => {
     const updated = selectedSkills.includes(skill)
       ? selectedSkills.filter(s => s !== skill)
@@ -243,20 +249,6 @@ function CategoryStep({
     setSelectedSkills(updated);
     setData({ ...data, tags: updated });
   };
-
-  const handleAddCustomSkill = () => {
-    const skill = customSkill.trim();
-    if (skill && !selectedSkills.includes(skill) && selectedSkills.length < 8) {
-      handleSkillToggle(skill);
-      setCustomSkill('');
-    }
-  };
-
-  // Filter categories based on search
-  const filteredCategories = categories.filter(cat =>
-    cat?.name?.toLowerCase().includes(categorySearch.toLowerCase()) ||
-    cat?.description?.toLowerCase().includes(categorySearch.toLowerCase())
-  );
 
   return (
     <motion.div
@@ -266,299 +258,117 @@ function CategoryStep({
       transition={{ duration: 0.3 }}
       className="space-y-6"
     >
-      {/* CARD PRINCIPAL CON MEJOR DISEÑO */}
-      <Card className="glass-glow border-white/20 shadow-xl overflow-hidden">
-        <CardHeader className="space-y-4 bg-gradient-to-r from-primary/5 to-transparent pb-6">
-          <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center space-x-3 text-2xl">
-              <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center shadow-lg">
-                <Tag className="h-6 w-6 text-white" />
-              </div>
-              <span>Categoría y Especialización</span>
-            </CardTitle>
-            <Badge className="bg-secondary/20 text-secondary border-secondary/30 px-3 py-1">
-              2 de 6
-            </Badge>
-          </div>
-          <CardDescription className="text-base text-muted-foreground/90 leading-relaxed">
-            💡 <strong>Cómo funciona:</strong> Primero selecciona la <strong className="text-primary">categoría general</strong> de tu servicio (ej: Desarrollo Web).
-            Luego agrega <strong className="text-success">habilidades específicas</strong> que te hacen único (ej: React, Node.js).
+      <Card className="glass border-white/10">
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <Tag className="h-5 w-5" />
+            <span>Categoría y Especialización</span>
+          </CardTitle>
+          <CardDescription>
+            Ayuda a los clientes a encontrar tu servicio más fácilmente
           </CardDescription>
         </CardHeader>
-
-        <CardContent className="space-y-8 p-6">
-          {/* ========== CATEGORÍA PRINCIPAL ========== */}
-          <div className="space-y-5">
-            <div className="flex items-center justify-between flex-wrap gap-3">
-              <Label className="text-lg font-semibold flex items-center gap-2">
-                <Briefcase className="h-5 w-5 text-primary" />
-                Categoría Principal *
-              </Label>
-              <Badge variant="outline" className="glass border-primary/30 text-primary">
-                Paso 1 de 2
-              </Badge>
-            </div>
-
-            {/* BARRA DE BÚSQUEDA */}
-            <div className="relative group">
-              <Input
-                placeholder="🔍 Busca tu categoría... (ej: Desarrollo, Diseño, Plomería, Electricista)"
-                value={categorySearch}
-                onChange={(e) => setCategorySearch(e.target.value)}
-                className="glass-glow border-white/30 px-4 py-6 text-base focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all"
-              />
-              {categorySearch && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2"
-                  onClick={() => setCategorySearch('')}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              )}
-            </div>
-
-            {/* ALERT INFORMATIVO */}
-            <Alert className="glass-medium border-secondary/30 bg-gradient-to-r from-secondary/10 to-transparent">
-              <Info className="h-5 w-5 text-secondary" />
-              <AlertDescription className="text-sm text-secondary/90 leading-relaxed">
-                <strong>¿Qué es la categoría?</strong> Es la clasificación general de tu servicio que ayuda a los clientes a encontrarte.
-                <br />
-                <strong className="text-secondary/80">Ejemplo:</strong> "Desarrollo Web" es una categoría. "React" y "Node.js" son habilidades que agregarás después.
-              </AlertDescription>
-            </Alert>
-
-            {/* GRID DE CATEGORÍAS CON LOADING */}
-            {loadingCategories ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-                {[...Array(8)].map((_, index) => (
-                  <Card key={index} className="glass border-white/10 animate-pulse">
-                    <CardContent className="p-5 text-center space-y-2">
-                      <div className="h-12 w-12 bg-muted/50 rounded-xl mx-auto"></div>
-                      <div className="h-5 bg-muted/50 rounded"></div>
-                      <div className="h-3 bg-muted/30 rounded"></div>
+        
+        <CardContent className="space-y-6">
+          {/* Category Selection */}
+          <div className="space-y-4">
+            <Label>Categoría Principal *</Label>
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {categories.map((category) => {
+                const Icon = category.icon;
+                return (
+                  <Card
+                    key={category.value}
+                    className={`cursor-pointer transition-all ${
+                      data.category === category.value
+                        ? 'ring-2 ring-primary glass-medium'
+                        : 'glass hover:glass-medium border-white/10'
+                    }`}
+                    onClick={() => setData({ ...data, category: category.value })}
+                  >
+                    <CardContent className="p-4 text-center">
+                      <Icon className="h-8 w-8 mx-auto mb-2 text-primary" />
+                      <div className="font-medium text-sm">{category.label}</div>
                     </CardContent>
                   </Card>
-                ))}
-              </div>
-            ) : filteredCategories.length === 0 ? (
-              <Card className="glass-medium border-white/20 p-8 text-center">
-                <AlertCircle className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
-                <p className="text-muted-foreground mb-4">
-                  No se encontraron categorías con "<strong>{categorySearch}</strong>"
-                </p>
-                <Button
-                  variant="outline"
-                  className="glass border-white/20"
-                  onClick={() => setCategorySearch('')}
-                >
-                  <X className="h-4 w-4 mr-2" />
-                  Limpiar búsqueda
-                </Button>
-              </Card>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
-                {filteredCategories.map((category) => {
-                  if (!category || !category.id || !category.name) return null;
-
-                  const Icon = getIconComponent(category.icon);
-                  const isSelected = data.category === category.id;
-
-                  return (
-                    <Card
-                      key={category.id}
-                      className={`cursor-pointer transition-all duration-300 transform hover:scale-105 ${
-                        isSelected
-                          ? 'ring-2 ring-primary glass-glow shadow-lg shadow-primary/20 scale-[1.02]'
-                          : 'glass hover:glass-medium border-white/20 hover:border-primary/40 hover:shadow-md'
-                      }`}
-                      onClick={() => setData({ ...data, category: category.id })}
-                    >
-                      <CardContent className="p-5 text-center relative">
-                        {/* ICON CON GRADIENTE */}
-                        <div className={`h-14 w-14 rounded-xl mx-auto mb-3 flex items-center justify-center transition-all ${
-                          isSelected
-                            ? 'bg-gradient-to-br from-primary via-primary to-primary/70 shadow-lg shadow-primary/30'
-                            : 'bg-gradient-to-br from-primary/10 to-primary/5 group-hover:from-primary/20'
-                        }`}>
-                          <Icon className={`h-7 w-7 ${isSelected ? 'text-white' : 'text-primary'}`} />
-                        </div>
-
-                        {/* NOMBRE */}
-                        <div className={`font-semibold text-sm mb-1 ${isSelected ? 'text-primary' : 'text-foreground'}`}>
-                          {category.name}
-                        </div>
-
-                        {/* DESCRIPCIÓN */}
-                        {category.description && (
-                          <div className="text-xs text-muted-foreground/80 line-clamp-2 leading-relaxed">
-                            {category.description}
-                          </div>
-                        )}
-
-                        {/* CHECKMARK */}
-                        {isSelected && (
-                          <motion.div
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-                            className="absolute -top-2 -right-2 h-7 w-7 rounded-full bg-primary flex items-center justify-center shadow-lg"
-                          >
-                            <Check className="h-4 w-4 text-white" />
-                          </motion.div>
-                        )}
-                      </CardContent>
-                    </Card>
-                  );
-                })}
-              </div>
-            )}
+                );
+              })}
+            </div>
           </div>
-
-          {/* ========== HABILIDADES Y TAGS (Solo si hay categoría seleccionada) ========== */}
+          
+          {/* Skills/Tags */}
           {data.category && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4 }}
-              className="space-y-5 pt-6 border-t border-white/10"
-            >
-              <div className="flex items-center justify-between flex-wrap gap-3">
-                <Label className="text-lg font-semibold flex items-center gap-2">
-                  <Zap className="h-5 w-5 text-success" />
-                  Habilidades y Tecnologías *
-                </Label>
-                <div className="flex items-center gap-3">
-                  <Badge variant="outline" className="glass border-success/30 text-success">
-                    Paso 2 de 2
-                  </Badge>
-                  <Badge className={`${
-                    selectedSkills.length === 8
-                      ? 'bg-success/20 text-success border-success/30'
-                      : 'bg-primary/20 text-primary border-primary/30'
-                  }`}>
-                    {selectedSkills.length}/8 tags
-                  </Badge>
-                </div>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <Label>Habilidades y Tecnologías *</Label>
+                <span className="text-sm text-muted-foreground">
+                  Selecciona máximo 8 tags
+                </span>
               </div>
-
-              {/* ALERT EXPLICATIVO DE TAGS */}
-              <Alert className="glass-medium border-primary/30 bg-gradient-to-r from-primary/10 to-transparent">
-                <Lightbulb className="h-5 w-5 text-primary" />
-                <AlertDescription className="text-sm text-primary/90 space-y-2">
-                  <p className="font-semibold">¿Cómo agregar tags?</p>
-                  <ul className="list-disc list-inside space-y-1 text-xs leading-relaxed">
-                    <li>Haz clic en los tags sugeridos abajo</li>
-                    <li>O escribe uno personalizado y presiona <kbd className="px-1.5 py-0.5 bg-primary/20 rounded text-xs">ENTER</kbd></li>
-                    <li>Los tags ayudan a que los clientes te encuentren en búsquedas específicas</li>
-                    <li>Ejemplo: Si sabes "React", agrégalo para que aparezcas cuando busquen "desarrollador React"</li>
-                  </ul>
-                </AlertDescription>
-              </Alert>
-
-              {/* TAGS SUGERIDOS */}
-              {skillSuggestions[data.category as keyof typeof skillSuggestions]?.length > 0 && (
-                <div className="space-y-3">
-                  <Label className="text-sm text-muted-foreground flex items-center gap-2">
-                    <Lightbulb className="h-4 w-4" />
-                    Tags sugeridos (haz clic para agregar)
-                  </Label>
-                  <div className="flex flex-wrap gap-2">
-                    {skillSuggestions[data.category as keyof typeof skillSuggestions]?.map((skill) => (
-                      <Button
-                        key={skill}
-                        variant={selectedSkills.includes(skill) ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => handleSkillToggle(skill)}
-                        className={`transition-all ${
-                          selectedSkills.includes(skill)
-                            ? "bg-gradient-to-r from-primary to-primary/80 hover:opacity-90 shadow-md shadow-primary/20"
-                            : "glass border-white/20 hover:glass-medium hover:border-primary/40"
-                        }`}
-                        disabled={selectedSkills.length >= 8 && !selectedSkills.includes(skill)}
-                      >
-                        {selectedSkills.includes(skill) && <Check className="h-3.5 w-3.5 mr-1.5" />}
-                        {skill}
-                      </Button>
-                    ))}
-                  </div>
+              
+              <div className="space-y-4">
+                <div className="flex flex-wrap gap-2">
+                  {skillSuggestions[data.category as keyof typeof skillSuggestions]?.map((skill) => (
+                    <Button
+                      key={skill}
+                      variant={selectedSkills.includes(skill) ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => handleSkillToggle(skill)}
+                      className={selectedSkills.includes(skill)
+                        ? "liquid-gradient hover:opacity-90"
+                        : "glass border-white/20 hover:glass-medium"
+                      }
+                      disabled={selectedSkills.length >= 8 && !selectedSkills.includes(skill)}
+                    >
+                      {selectedSkills.includes(skill) && <Check className="h-3 w-3 mr-1" />}
+                      {skill}
+                    </Button>
+                  ))}
                 </div>
-              )}
-
-              {/* INPUT PARA TAG PERSONALIZADO */}
-              <div className="space-y-3">
-                <Label className="text-sm text-muted-foreground flex items-center gap-2">
-                  <Plus className="h-4 w-4" />
-                  O agrega un tag personalizado
-                </Label>
-                <div className="flex items-center gap-2">
-                  <div className="relative flex-1">
-                    <Input
-                      placeholder="Escribe y presiona ENTER (ej: WordPress, Figma, Python)"
-                      value={customSkill}
-                      onChange={(e) => setCustomSkill(e.target.value)}
-                      onKeyPress={(e) => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault();
-                          handleAddCustomSkill();
+                
+                <div className="flex items-center space-x-2">
+                  <Input
+                    placeholder="Agregar habilidad personalizada"
+                    className="glass border-white/20"
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        const value = e.currentTarget.value.trim();
+                        if (value && !selectedSkills.includes(value) && selectedSkills.length < 8) {
+                          handleSkillToggle(value);
+                          e.currentTarget.value = '';
                         }
-                      }}
-                      className="glass border-white/20 pr-24"
-                      disabled={selectedSkills.length >= 8}
-                      maxLength={30}
-                    />
-                    <kbd className="absolute right-3 top-1/2 transform -translate-y-1/2 px-2 py-1 bg-primary/10 text-primary text-xs rounded border border-primary/30">
-                      ENTER
-                    </kbd>
-                  </div>
-                  <Button
-                    onClick={handleAddCustomSkill}
-                    className="liquid-gradient"
-                    disabled={!customSkill.trim() || selectedSkills.length >= 8}
-                  >
-                    <Plus className="h-4 w-4 mr-1" />
-                    Agregar
+                      }
+                    }}
+                  />
+                  <Button variant="outline" className="glass border-white/20">
+                    <Plus className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
-
-              {/* TAGS SELECCIONADOS */}
+              
+              {/* Selected Tags */}
               {selectedSkills.length > 0 && (
-                <div className="space-y-3 pt-4 border-t border-white/10">
-                  <Label className="text-sm font-semibold flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-success" />
-                    Tags Seleccionados ({selectedSkills.length}/8)
-                  </Label>
-
-                  {/* PROGRESS BAR */}
-                  <div className="space-y-1.5">
-                    <Progress value={(selectedSkills.length / 8) * 100} className="h-2" />
-                    <p className="text-xs text-muted-foreground">
-                      {8 - selectedSkills.length === 0
-                        ? '¡Máximo alcanzado!'
-                        : `Puedes agregar ${8 - selectedSkills.length} tag${8 - selectedSkills.length !== 1 ? 's' : ''} más`}
-                    </p>
-                  </div>
-
+                <div className="space-y-2">
+                  <Label>Tags Seleccionados ({selectedSkills.length}/8)</Label>
                   <div className="flex flex-wrap gap-2">
                     {selectedSkills.map((skill) => (
-                      <Badge
+                      <Badge 
                         key={skill}
-                        className="bg-gradient-to-r from-primary/20 to-primary/10 text-primary border-primary/30 px-3 py-1.5 pr-1.5 text-sm"
+                        className="bg-primary/20 text-primary border-primary/30 pr-1"
                       >
                         {skill}
                         <button
                           onClick={() => handleSkillToggle(skill)}
-                          className="ml-2 hover:bg-primary/30 rounded-full p-1 transition-colors"
+                          className="ml-1 hover:bg-primary/30 rounded-full p-0.5"
                         >
-                          <X className="h-3.5 w-3.5" />
+                          <X className="h-3 w-3" />
                         </button>
                       </Badge>
                     ))}
                   </div>
                 </div>
               )}
-            </motion.div>
+            </div>
           )}
         </CardContent>
       </Card>
@@ -677,7 +487,7 @@ function PricingStep({ data, setData }: { data: ProjectData; setData: (data: Pro
                   </div>
                   
                   {/* Delivery Time */}
-                  <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label>Días de Entrega</Label>
                       <Input
@@ -688,33 +498,16 @@ function PricingStep({ data, setData }: { data: ProjectData; setData: (data: Pro
                         className="glass border-white/20"
                       />
                     </div>
-
-                    <div className="space-y-3">
-                      <Label>Disponibilidad</Label>
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          id={`immediate-${packageType}`}
-                          checked={data.packages[packageType].immediateAvailability}
-                          onChange={(e) => updatePackage(packageType, 'immediateAvailability', e.target.checked)}
-                          className="h-4 w-4 rounded border-white/20 bg-background text-primary focus:ring-2 focus:ring-primary"
-                        />
-                        <Label htmlFor={`immediate-${packageType}`} className="text-sm font-normal cursor-pointer">
-                          Disponibilidad Inmediata
-                        </Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          id={`scheduled-${packageType}`}
-                          checked={data.packages[packageType].scheduledAvailability}
-                          onChange={(e) => updatePackage(packageType, 'scheduledAvailability', e.target.checked)}
-                          className="h-4 w-4 rounded border-white/20 bg-background text-primary focus:ring-2 focus:ring-primary"
-                        />
-                        <Label htmlFor={`scheduled-${packageType}`} className="text-sm font-normal cursor-pointer">
-                          Disponibilidad de Acuerdo a Agenda
-                        </Label>
-                      </div>
+                    
+                    <div className="space-y-2">
+                      <Label>Revisiones</Label>
+                      <Input
+                        type="number"
+                        placeholder="2"
+                        value={data.packages[packageType].revisions}
+                        onChange={(e) => updatePackage(packageType, 'revisions', parseInt(e.target.value) || 0)}
+                        className="glass border-white/20"
+                      />
                     </div>
                   </div>
                   
@@ -774,61 +567,6 @@ function PricingStep({ data, setData }: { data: ProjectData; setData: (data: Pro
 
 function MediaStep({ data, setData }: { data: ProjectData; setData: (data: ProjectData) => void }) {
   const [draggedOver, setDraggedOver] = useState(false);
-  const [uploading, setUploading] = useState(false);
-  const [uploadingGallery, setUploadingGallery] = useState(false);
-
-  const handleMainImageUpload = async (file: File) => {
-    if (!file) return;
-
-    setUploading(true);
-    try {
-      const result = await uploadService.uploadImage(file);
-
-      // Use functional update to avoid stale state issues
-      setData(prevData => ({
-        ...prevData,
-        images: [result.url]
-      }));
-
-      toast.success('Imagen principal cargada exitosamente');
-    } catch (error: any) {
-      console.error('Error uploading main image:', error);
-      toast.error(error.message || 'Error al cargar la imagen');
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  const handleGalleryImageUpload = async (file: File) => {
-    if (!file) return;
-    if (data.gallery.length >= 5) {
-      toast.error('Máximo 5 imágenes en la galería');
-      return;
-    }
-
-    setUploadingGallery(true);
-    try {
-      const result = await uploadService.uploadImage(file);
-
-      // Use functional update to avoid stale state issues
-      setData(prevData => ({
-        ...prevData,
-        gallery: [...prevData.gallery, result.url]
-      }));
-
-      toast.success('Imagen agregada a la galería');
-    } catch (error: any) {
-      console.error('Error uploading gallery image:', error);
-      toast.error(error.message || 'Error al cargar la imagen');
-    } finally {
-      setUploadingGallery(false);
-    }
-  };
-
-  const removeGalleryImage = (index: number) => {
-    const newGallery = data.gallery.filter((_, i) => i !== index);
-    setData({ ...data, gallery: newGallery });
-  };
 
   return (
     <motion.div
@@ -848,133 +586,62 @@ function MediaStep({ data, setData }: { data: ProjectData; setData: (data: Proje
             Las imágenes de calidad aumentan las conversiones hasta un 40%
           </CardDescription>
         </CardHeader>
-
+        
         <CardContent className="space-y-6">
           {/* Main Image Upload */}
           <div className="space-y-4">
             <Label>Imagen Principal del Servicio *</Label>
-
-            {data.images[0] ? (
-              <div className="relative">
-                <img
-                  src={data.images[0]}
-                  alt="Main service"
-                  className="w-full h-64 object-cover rounded-lg"
-                />
-                <Button
-                  size="icon"
-                  variant="destructive"
-                  className="absolute top-2 right-2"
-                  onClick={() => setData({ ...data, images: [] })}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            ) : (
-              <div
-                className={`border-2 border-dashed rounded-lg p-8 text-center transition-all cursor-pointer ${
-                  draggedOver
-                    ? 'border-primary/50 bg-primary/10'
-                    : 'border-white/20 glass hover:glass-medium'
-                }`}
-                onDragOver={(e) => {
-                  e.preventDefault();
-                  setDraggedOver(true);
-                }}
-                onDragLeave={() => setDraggedOver(false)}
-                onDrop={(e) => {
-                  e.preventDefault();
-                  setDraggedOver(false);
-                  const file = e.dataTransfer.files[0];
-                  if (file) handleMainImageUpload(file);
-                }}
-                onClick={() => document.getElementById('main-image-input')?.click()}
-              >
-                {uploading ? (
-                  <Loader2 className="h-12 w-12 mx-auto mb-4 text-primary animate-spin" />
-                ) : (
-                  <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                )}
-                <div className="space-y-2">
-                  <div className="font-medium">
-                    {uploading ? 'Subiendo imagen...' : 'Arrastra una imagen aquí o haz clic para seleccionar'}
-                  </div>
-                  <div className="text-sm text-muted-foreground">
-                    PNG, JPG hasta 5MB. Tamaño recomendado: 1280x720px
-                  </div>
+            <div 
+              className={`border-2 border-dashed rounded-lg p-8 text-center transition-all ${
+                draggedOver 
+                  ? 'border-primary/50 bg-primary/10' 
+                  : 'border-white/20 glass hover:glass-medium'
+              }`}
+              onDragOver={(e) => {
+                e.preventDefault();
+                setDraggedOver(true);
+              }}
+              onDragLeave={() => setDraggedOver(false)}
+              onDrop={(e) => {
+                e.preventDefault();
+                setDraggedOver(false);
+                // Handle file drop
+              }}
+            >
+              <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+              <div className="space-y-2">
+                <div className="font-medium">Arrastra una imagen aquí o haz clic para seleccionar</div>
+                <div className="text-sm text-muted-foreground">
+                  PNG, JPG hasta 10MB. Tamaño recomendado: 1280x720px
                 </div>
-                <input
-                  id="main-image-input"
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) handleMainImageUpload(file);
-                  }}
-                  disabled={uploading}
-                />
               </div>
-            )}
+              <Button className="mt-4 liquid-gradient">
+                <Upload className="h-4 w-4 mr-2" />
+                Seleccionar Imagen
+              </Button>
+            </div>
           </div>
           
           {/* Gallery */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <Label>Galería de Imágenes (Opcional)</Label>
-              <span className="text-sm text-muted-foreground">
-                {data.gallery.length}/5 imágenes
-              </span>
+              <span className="text-sm text-muted-foreground">Hasta 5 imágenes adicionales</span>
             </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 sm:gap-4">
-              {/* Existing images */}
-              {data.gallery.map((imageUrl, index) => (
-                <div key={index} className="relative aspect-square">
-                  <img
-                    src={imageUrl}
-                    alt={`Gallery ${index + 1}`}
-                    className="w-full h-full object-cover rounded-lg"
-                  />
-                  <Button
-                    size="icon"
-                    variant="destructive"
-                    className="absolute top-1 right-1 h-6 w-6"
-                    onClick={() => removeGalleryImage(index)}
-                  >
-                    <X className="h-3 w-3" />
-                  </Button>
+            
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+              {/* Upload slots */}
+              {[...Array(5)].map((_, index) => (
+                <div 
+                  key={index}
+                  className="aspect-square border-2 border-dashed border-white/20 rounded-lg flex items-center justify-center glass hover:glass-medium cursor-pointer transition-all"
+                >
+                  <div className="text-center">
+                    <Plus className="h-6 w-6 mx-auto mb-2 text-muted-foreground" />
+                    <div className="text-xs text-muted-foreground">Imagen {index + 1}</div>
+                  </div>
                 </div>
               ))}
-
-              {/* Upload slots */}
-              {data.gallery.length < 5 && (
-                <div
-                  className="aspect-square border-2 border-dashed border-white/20 rounded-lg flex items-center justify-center glass hover:glass-medium cursor-pointer transition-all"
-                  onClick={() => document.getElementById('gallery-image-input')?.click()}
-                >
-                  {uploadingGallery ? (
-                    <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                  ) : (
-                    <div className="text-center">
-                      <Plus className="h-6 w-6 mx-auto mb-2 text-muted-foreground" />
-                      <div className="text-xs text-muted-foreground">Agregar</div>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              <input
-                id="gallery-image-input"
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) handleGalleryImageUpload(file);
-                }}
-                disabled={uploadingGallery || data.gallery.length >= 5}
-              />
             </div>
           </div>
           
@@ -995,7 +662,7 @@ function MediaStep({ data, setData }: { data: ProjectData; setData: (data: Proje
             <Camera className="h-4 w-4" />
             <AlertDescription>
               <strong>Tips para mejores imágenes:</strong>
-              <ul className="mt-2 space-y-2 text-sm">
+              <ul className="mt-2 space-y-1 text-sm">
                 <li>• Usa imágenes de alta calidad y buena iluminación</li>
                 <li>• Muestra ejemplos reales de tu trabajo</li>
                 <li>• Incluye antes/después si es aplicable</li>
@@ -1215,12 +882,25 @@ function FinalStep({ data, setData }: { data: ProjectData; setData: (data: Proje
                   onCheckedChange={(checked) => setData({ ...data, isActive: checked })}
                 />
               </div>
-
+              
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="font-medium">Permitir revisiones</div>
+                  <div className="text-sm text-muted-foreground">
+                    Los clientes pueden solicitar cambios según el paquete
+                  </div>
+                </div>
+                <Switch
+                  checked={data.allowRevisions}
+                  onCheckedChange={(checked) => setData({ ...data, allowRevisions: checked })}
+                />
+              </div>
+              
               <div className="flex items-center justify-between">
                 <div>
                   <div className="font-medium">Entrega instantánea</div>
                   <div className="text-sm text-muted-foreground">
-                    Para servicios que se entregan inmediatamente
+                    Para servicios digitales que se entregan inmediatamente
                   </div>
                 </div>
                 <Switch
@@ -1240,17 +920,6 @@ function FinalStep({ data, setData }: { data: ProjectData; setData: (data: Proje
             <Card className="glass border-white/10">
               <CardContent className="p-6">
                 <div className="space-y-4">
-                  {/* Imagen Principal */}
-                  {data.images.length > 0 && (
-                    <div className="relative w-full h-48 rounded-lg overflow-hidden bg-muted">
-                      <img
-                        src={data.images[0]}
-                        alt={data.title}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  )}
-
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <h3 className="text-lg font-semibold mb-2">{data.title || 'Título del servicio'}</h3>
@@ -1258,7 +927,7 @@ function FinalStep({ data, setData }: { data: ProjectData; setData: (data: Proje
                         {data.description || 'Descripción del servicio aparecerá aquí...'}
                       </p>
                     </div>
-                    <div className="text-right ml-4">
+                    <div className="text-right">
                       <div className="text-2xl font-bold text-primary">
                         ${data.packages.standard.price || 0}
                       </div>
@@ -1267,7 +936,7 @@ function FinalStep({ data, setData }: { data: ProjectData; setData: (data: Proje
                       </div>
                     </div>
                   </div>
-
+                  
                   <div className="flex flex-wrap gap-2">
                     {data.tags.map((tag) => (
                       <Badge key={tag} variant="outline" className="glass border-white/20 text-xs">
@@ -1275,26 +944,13 @@ function FinalStep({ data, setData }: { data: ProjectData; setData: (data: Proje
                       </Badge>
                     ))}
                   </div>
-
-                  <div className="flex items-center justify-between text-sm">
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <Clock className="h-4 w-4" />
-                      <span>Entrega: {data.packages.standard.deliveryTime || 0} días</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {data.packages.standard.immediateAvailability && (
-                        <Badge variant="outline" className="bg-success/10 text-success border-success/20 text-xs">
-                          <Zap className="h-3 w-3 mr-1" />
-                          Disponibilidad Inmediata
-                        </Badge>
-                      )}
-                      {data.packages.standard.scheduledAvailability && (
-                        <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20 text-xs">
-                          <Calendar className="h-3 w-3 mr-1" />
-                          Según Agenda
-                        </Badge>
-                      )}
-                    </div>
+                  
+                  <div className="flex items-center justify-between text-sm text-muted-foreground">
+                    <span>Entrega: {data.packages.standard.deliveryTime || 0} días</span>
+                    <span>Revisiones: {data.packages.standard.revisions || 0}</span>
+                    <Badge className={data.isActive ? "bg-success/20 text-success" : "bg-muted"}>
+                      {data.isActive ? 'Activo' : 'Borrador'}
+                    </Badge>
                   </div>
                 </div>
               </CardContent>
@@ -1315,12 +971,10 @@ function FinalStep({ data, setData }: { data: ProjectData; setData: (data: Proje
 }
 
 export default function NewProjectPage() {
-  const { user } = useSecureAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const totalSteps = 6;
-  const [categories, setCategories] = useState<ServiceCategory[]>([]);
-  const [loadingCategories, setLoadingCategories] = useState(true);
   
   const [projectData, setProjectData] = useState<ProjectData>({
     title: '',
@@ -1329,47 +983,18 @@ export default function NewProjectPage() {
     subcategory: '',
     tags: [],
     packages: {
-      basic: { name: 'Básico', price: 0, description: '', deliveryTime: 7, features: [], immediateAvailability: false, scheduledAvailability: true },
-      standard: { name: 'Estándar', price: 0, description: '', deliveryTime: 14, features: [], immediateAvailability: false, scheduledAvailability: true },
-      premium: { name: 'Premium', price: 0, description: '', deliveryTime: 21, features: [], immediateAvailability: false, scheduledAvailability: true }
+      basic: { name: 'Básico', price: 0, description: '', deliveryTime: 7, revisions: 1, features: [] },
+      standard: { name: 'Estándar', price: 0, description: '', deliveryTime: 14, revisions: 2, features: [] },
+      premium: { name: 'Premium', price: 0, description: '', deliveryTime: 21, revisions: 3, features: [] }
     },
     images: [],
     gallery: [],
-    videoUrl: '',
     requirements: [],
     faqs: [],
     isActive: false,
+    allowRevisions: true,
     instantDelivery: false
   });
-
-  // Load categories from backend
-  useEffect(() => {
-    const loadCategories = async () => {
-      try {
-        const backendCategories = await servicesService.getCategories();
-        
-        // Validate categories data
-        if (Array.isArray(backendCategories)) {
-          const validCategories = backendCategories.filter(cat => 
-            cat && typeof cat === 'object' && cat.id && cat.name
-          );
-          setCategories(validCategories);
-        } else {
-          console.error('Invalid categories data received:', backendCategories);
-          setCategories([]);
-          toast.error('Error al cargar las categorías - formato inválido');
-        }
-      } catch (error) {
-        console.error('Error loading categories:', error);
-        setCategories([]);
-        toast.error('Error al cargar las categorías');
-      } finally {
-        setLoadingCategories(false);
-      }
-    };
-
-    loadCategories();
-  }, []);
 
   const canProceed = () => {
     switch (currentStep) {
@@ -1378,10 +1003,7 @@ export default function NewProjectPage() {
       case 2:
         return projectData.category && projectData.tags.length > 0;
       case 3:
-        // Al menos UN paquete debe tener precio configurado
-        return projectData.packages.basic.price > 0 ||
-               projectData.packages.standard.price > 0 ||
-               projectData.packages.premium.price > 0;
+        return projectData.packages.basic.price > 0 && projectData.packages.standard.price > 0;
       case 4:
         return true; // Media is optional
       case 5:
@@ -1407,119 +1029,24 @@ export default function NewProjectPage() {
 
   const handlePublish = async () => {
     try {
-      // Determinar qué paquete usar (prioridad: standard > basic > premium)
-      let selectedPackage = projectData.packages.standard;
-      if (selectedPackage.price === 0) {
-        selectedPackage = projectData.packages.basic.price > 0
-          ? projectData.packages.basic
-          : projectData.packages.premium;
-      }
-
-      // Transform frontend data to backend format
-      // IMPORTANT: Only send fields that are EXACTLY in CreateServiceDto
-      // Do NOT send any extra fields - the backend forbidNonWhitelisted will reject them
-      const serviceData = {
-        title: projectData.title,
-        description: projectData.description,
-        price: selectedPackage.price,
-        category_id: projectData.category,
-      } as const;
-
-      // Only add optional fields if they have values (conditionally add each one)
-      const finalServiceData: any = { ...serviceData };
-
-      if (projectData.images && projectData.images[0] &&
-          (projectData.images[0].startsWith('http://') || projectData.images[0].startsWith('https://'))) {
-        finalServiceData.main_image = projectData.images[0];
-      }
-
-      if (projectData.gallery && projectData.gallery.length > 0) {
-        // Filter out any invalid URLs (only include strings that start with http/https)
-        const validGalleryUrls = projectData.gallery.filter((url: any) =>
-          typeof url === 'string' && (url.startsWith('http://') || url.startsWith('https://'))
-        );
-        if (validGalleryUrls.length > 0) {
-          finalServiceData.gallery = validGalleryUrls;
-        }
-      }
-
-      if (projectData.tags && Array.isArray(projectData.tags) && projectData.tags.length > 0) {
-        finalServiceData.tags = projectData.tags;
-      }
-
-      if (selectedPackage.deliveryTime && selectedPackage.deliveryTime > 0) {
-        finalServiceData.delivery_time_days = selectedPackage.deliveryTime;
-      }
-
-      // DEBUG: Log exactly what we're sending
-      console.log('[DEBUG] Exact serviceData being sent:', JSON.stringify(finalServiceData, null, 2));
-      console.log('[DEBUG] serviceData keys:', Object.keys(finalServiceData));
-      console.log('[DEBUG] Checking for forbidden fields:');
-      console.log('[DEBUG]   - has "active"?', 'active' in finalServiceData);
-      console.log('[DEBUG]   - has "immediate_availability"?', 'immediate_availability' in finalServiceData);
-      console.log('[DEBUG]   - has "scheduled_availability"?', 'scheduled_availability' in finalServiceData);
-      console.log('[DEBUG]   - has "isActive"?', 'isActive' in finalServiceData);
-      console.log('[DEBUG]   - has "instantDelivery"?', 'instantDelivery' in finalServiceData);
-
-      const createdService = await servicesService.createService(finalServiceData);
-
+      // Here you would typically send the data to your backend
+      console.log('Publishing project:', projectData);
+      
       toast.success("¡Servicio publicado correctamente!");
-
+      
       // Redirect to dashboard or service page
       navigate('/dashboard');
-    } catch (error: any) {
-      console.error('Error publishing service:', error);
-
-      // Better error handling
-      let errorMessage = "Error al publicar el servicio";
-
-      if (error?.response?.data?.message) {
-        if (Array.isArray(error.response.data.message)) {
-          errorMessage = error.response.data.message.join(', ');
-        } else {
-          errorMessage = error.response.data.message;
-        }
-      } else if (error?.message) {
-        errorMessage = error.message;
-      }
-
-      console.error('Detailed error:', {
-        status: error?.response?.status,
-        data: error?.response?.data,
-        message: errorMessage
-      });
-
-      toast.error(errorMessage);
+    } catch (error) {
+      toast.error("Error al publicar el servicio");
     }
   };
-
-  // Redirect if not authenticated
-  useEffect(() => {
-    if (!user) {
-      toast.error('Debes iniciar sesión para crear un servicio');
-      navigate('/login');
-    }
-  }, [user, navigate]);
-
-  // Redirect if not professional
-  useEffect(() => {
-    if (user && user.userType !== 'professional') {
-      toast.error('Solo los profesionales pueden crear servicios');
-      navigate('/dashboard');
-    }
-  }, [user, navigate]);
 
   const renderStep = () => {
     switch (currentStep) {
       case 1:
         return <BasicInfoStep data={projectData} setData={setProjectData} />;
       case 2:
-        return <CategoryStep 
-          data={projectData} 
-          setData={setProjectData} 
-          categories={categories}
-          loadingCategories={loadingCategories}
-        />;
+        return <CategoryStep data={projectData} setData={setProjectData} />;
       case 3:
         return <PricingStep data={projectData} setData={setProjectData} />;
       case 4:
@@ -1533,23 +1060,11 @@ export default function NewProjectPage() {
     }
   };
 
-  // Show loading while checking authentication
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Verificando autenticación...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-background">
-      <FixiaNavigation />
-
-      <main className="container mx-auto px-4 sm:px-6 py-8 max-w-6xl">
+      <Navigation />
+      
+      <main className="container mx-auto px-6 py-8 max-w-6xl">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -1557,7 +1072,7 @@ export default function NewProjectPage() {
           transition={{ duration: 0.6 }}
           className="text-center mb-8"
         >
-          <h1 className="text-3xl lg:text-4xl font-bold mb-4 text-white">
+          <h1 className="text-3xl lg:text-4xl font-bold mb-4">
             Crear Nuevo Servicio
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
@@ -1605,7 +1120,7 @@ export default function NewProjectPage() {
             {currentStep === totalSteps ? (
               <Button
                 onClick={handlePublish}
-                className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg px-6"
+                className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg px-8"
                 disabled={!canProceed()}
               >
                 <Zap className="h-4 w-4 mr-2" />
@@ -1636,7 +1151,7 @@ export default function NewProjectPage() {
               <AlertDescription>
                 {currentStep === 1 && "Completa el título (min. 10 caracteres) y descripción (min. 50 caracteres)"}
                 {currentStep === 2 && "Selecciona una categoría y al menos un tag"}
-                {currentStep === 3 && "Define precio para al menos UN paquete (Básico, Estándar o Premium)"}
+                {currentStep === 3 && "Define precios para los paquetes Básico y Estándar"}
               </AlertDescription>
             </Alert>
           </motion.div>

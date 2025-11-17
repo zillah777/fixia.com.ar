@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { Link } from "react-router-dom";
 import { 
   ArrowLeft, AlertTriangle, Shield, Users, Zap, 
@@ -10,13 +10,40 @@ import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
 import { Badge } from "../components/ui/badge";
 import { Alert, AlertDescription } from "../components/ui/alert";
 import { Separator } from "../components/ui/separator";
-import { FixiaNavigation } from "../components/FixiaNavigation";
 
+function Navigation() {
+  return (
+    <motion.header 
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      className="sticky top-0 z-50 w-full glass border-b border-white/10"
+    >
+      <div className="container mx-auto flex h-16 items-center justify-between px-6">
+        <Link to="/" className="flex items-center space-x-3">
+          <div className="h-8 w-8 liquid-gradient rounded-lg flex items-center justify-center shadow-lg">
+            <span className="text-white font-bold">F</span>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-lg font-semibold">Fixia</span>
+            <span className="text-xs text-muted-foreground -mt-1">Conecta. Confía. Resuelve.</span>
+          </div>
+        </Link>
+        
+        <Link to="/">
+          <Button variant="ghost" className="hover:glass-medium">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Volver al Inicio
+          </Button>
+        </Link>
+      </div>
+    </motion.header>
+  );
+}
 
 export default function TermsPage() {
   return (
     <div className="min-h-screen bg-background">
-      <FixiaNavigation />
+      <Navigation />
       
       <main className="container mx-auto px-6 py-12">
         <motion.div
@@ -27,7 +54,7 @@ export default function TermsPage() {
         >
           {/* Header */}
           <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold mb-4 text-foreground">
+            <h1 className="text-4xl font-bold mb-4">
               Términos y Condiciones de Uso
             </h1>
             <p className="text-muted-foreground mb-4">
@@ -35,7 +62,7 @@ export default function TermsPage() {
             </p>
             <Badge className="bg-primary/20 text-primary border-primary/30">
               <MapPin className="h-4 w-4 mr-2" />
-              Fixia • Chubut, Argentina
+              Fixia.com.ar • Chubut, Argentina
             </Badge>
           </div>
 
@@ -49,13 +76,13 @@ export default function TermsPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-muted-foreground leading-relaxed">
-                <strong>Fixia</strong> es un marketplace de microservicios profesionales con features modernos que funciona como:
+                <strong>FIXIA.COM.AR</strong> es un <strong>ANUNCIANTE AUTOMATIZADO</strong> con features modernos que funciona como:
               </p>
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="space-y-3">
                   <div className="flex items-start space-x-3">
                     <Search className="h-5 w-5 text-primary mt-0.5" />
-                    <span className="text-sm">Matchmaking inteligente entre Profesionales (oferentes) y Clientes (demandantes)</span>
+                    <span className="text-sm">Matchmaking inteligente entre AS (oferentes) y Exploradores (demandantes)</span>
                   </div>
                   <div className="flex items-start space-x-3">
                     <Bell className="h-5 w-5 text-warning mt-0.5" />
@@ -63,7 +90,7 @@ export default function TermsPage() {
                   </div>
                   <div className="flex items-start space-x-3">
                     <Zap className="h-5 w-5 text-success mt-0.5" />
-                    <span className="text-sm">Notificaciones automáticas urgentes para Profesionales disponibles</span>
+                    <span className="text-sm">Notificaciones automáticas urgentes para AS disponibles</span>
                   </div>
                 </div>
                 <div className="space-y-3">
@@ -121,7 +148,7 @@ export default function TermsPage() {
                     <CardContent className="p-4 text-center">
                       <Crown className="h-8 w-8 text-primary mx-auto mb-2" />
                       <h5 className="font-medium mb-1">Plan Mensual</h5>
-                      <p className="text-xs text-muted-foreground">Acceso completo - $3,900 ARS/mes</p>
+                      <p className="text-xs text-muted-foreground">Acceso completo - $5000/mes</p>
                     </CardContent>
                   </Card>
                   <Card className="glass-medium border-success/30">
@@ -151,7 +178,7 @@ export default function TermsPage() {
               <Alert className="border-destructive/50 bg-destructive/10">
                 <AlertTriangle className="h-4 w-4" />
                 <AlertDescription>
-                  <strong>DISCLAIMER FUNDAMENTAL</strong><br />
+                  <strong>⚠️ DISCLAIMER FUNDAMENTAL</strong><br />
                   <strong>FIXIA.COM.AR NO SE HACE RESPONSABLE POR:</strong>
                 </AlertDescription>
               </Alert>
@@ -453,7 +480,7 @@ export default function TermsPage() {
                   <Mail className="h-5 w-5 text-primary" />
                   <div>
                     <p className="text-sm font-medium">Email</p>
-                    <p className="text-sm text-muted-foreground">soporte@fixia.app</p>
+                    <p className="text-sm text-muted-foreground">soporte@fixia.com.ar</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-3 p-3 glass-medium rounded-lg">
@@ -467,7 +494,7 @@ export default function TermsPage() {
                   <MapPin className="h-5 w-5 text-primary" />
                   <div>
                     <p className="text-sm font-medium">Web</p>
-                    <p className="text-sm text-muted-foreground">www.fixia.app</p>
+                    <p className="text-sm text-muted-foreground">www.fixia.com.ar</p>
                   </div>
                 </div>
               </div>

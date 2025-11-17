@@ -1,4 +1,4 @@
-import { TrendingUp, Users, Target, Heart } from "lucide-react";
+import { TrendingUp, Users, Target, Award } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "./ui/chart";
@@ -16,10 +16,13 @@ const chartData = [
 const chartConfig = {
   revenue: {
     label: "Revenue",
-    color: "hsl(var(--chart-1))"},
+    color: "hsl(var(--chart-1))",
+  },
   projects: {
     label: "Projects",
-    color: "hsl(var(--chart-2))"}};
+    color: "hsl(var(--chart-2))",
+  },
+};
 
 export function HeroPanel() {
   return (
@@ -76,7 +79,7 @@ export function HeroPanel() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle>Completion Rate</CardTitle>
-            <Heart className="h-4 w-4 text-muted-foreground" />
+            <Award className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">94.2%</div>

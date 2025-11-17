@@ -1,11 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { motion } from "framer-motion";
-import { ArrowLeft, CheckCircle, AlertCircle, Crown, UserPlus, FileText, CreditCard, X, Hash, Plus } from "lucide-react";
-import { PasswordToggleButton } from "../components/inputs/PasswordToggleButton";
+import { motion } from "motion/react";
+import { ArrowLeft, Eye, EyeOff, CheckCircle, AlertCircle, Crown, UserPlus, FileText, CreditCard, X, Hash, Plus } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
-import { SecureInput } from "../components/SecureInput";
 import { Label } from "../components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
@@ -13,12 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs"
 import { Checkbox } from "../components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import { Alert, AlertDescription } from "../components/ui/alert";
-import { PasswordStrength } from "../components/ui/password-strength";
-import { useSecureAuth } from "../context/SecureAuthContext";
-import { FixiaNavigation } from "../components/FixiaNavigation";
-import { toast } from "sonner";
-import { usePasswordValidation, validatePassword } from "../utils/passwordValidation";
-import { validateEmailFormat, FormSanitizers } from "../utils/sanitization";
+import { useAuth } from "../context/SecureAuthContext"; // Corrected import path
 
 interface FormData {
   // Common fields
@@ -28,10 +21,9 @@ interface FormData {
   confirmPassword: string;
   phone: string;
   location: string;
-  birthdate: string;
-  dni: string;
-
+  
   // Professional fields
+  businessName: string;
   serviceCategories: string[];
   description: string;
   experience: string;
@@ -39,7 +31,7 @@ interface FormData {
   availability: string;
   portfolio: string;
   certifications: string;
-
+  
   // Agreements
   agreeTerms: boolean;
   agreePrivacy: boolean;
@@ -53,8 +45,7 @@ const initialFormData: FormData = {
   confirmPassword: '',
   phone: '',
   location: '',
-  birthdate: '',
-  dni: '',
+  businessName: '',
   serviceCategories: [],
   description: '',
   experience: '',
@@ -77,6 +68,34 @@ const popularCategories = [
   "Cuidado de Adultos Mayores", "Psicología", "Nutrición"
 ];
 
+function Navigation() {
+  return (
+    <motion.header 
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      className="sticky top-0 z-50 w-full glass border-b border-white/10"
+    >
+      <div className="container mx-auto flex h-16 items-center justify-between px-6">
+        <Link to="/" className="flex items-center space-x-3">
+          <div className="h-8 w-8 liquid-gradient rounded-lg flex items-center justify-center shadow-lg">
+            <span className="text-white font-bold">F</span>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-lg font-semibold">Fixia</span>
+            <span className="text-xs text-muted-foreground -mt-1">Conecta. Confía. Resuelve.</span>
+          </div>
+        </Link>
+        
+        <Link to="/">
+          <Button variant="ghost" className="hover:glass-medium">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Volver al Inicio
+          </Button>
+        </Link>
+      </div>
+    </motion.header>
+  );
+}
 
 function ClientRegistrationForm({
   formData,
@@ -91,17 +110,6 @@ function ClientRegistrationForm({
 }) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [passwordsMatch, setPasswordsMatch] = useState(true);
-  
-  // Enhanced password validation with security standards
-  const passwordValidation = usePasswordValidation(formData.password);
-
-  // Real-time password match validation
-  useEffect(() => {
-    if (formData.confirmPassword.length > 0) {
-      setPasswordsMatch(formData.password === formData.confirmPassword);
-    }
-  }, [formData.password, formData.confirmPassword]);
 
   const locations = [
     "Rawson", "Puerto Madryn", "Comodoro Rivadavia", "Trelew", 
@@ -110,13 +118,13 @@ function ClientRegistrationForm({
   ];
 
   return (
-    <Card className="glass border-white/10 max-w-2xl mx-auto mobile-card">
-      <CardHeader className="text-center space-y-2 sm:space-y-3">
-        <div className="flex items-center justify-center space-x-2 mb-3 sm:mb-4">
-          <UserPlus className="h-6 w-6 sm:h-8 sm:w-8 text-success" />
-          <CardTitle className="mobile-text-2xl text-foreground">Registro como Cliente</CardTitle>
+    <Card className="glass border-white/10 max-w-2xl mx-auto">
+      <CardHeader className="text-center">
+        <div className="flex items-center justify-center space-x-2 mb-4">
+          <UserPlus className="h-8 w-8 text-success" />
+          <CardTitle className="text-2xl">Registro como Cliente</CardTitle>
         </div>
-        <CardDescription className="mobile-text-base">
+        <CardDescription>
           Acceso gratuito para buscar y contactar profesionales verificados
         </CardDescription>
       </CardHeader>
@@ -124,32 +132,24 @@ function ClientRegistrationForm({
         <form onSubmit={onSubmit} className="space-y-6">
           <div className="grid md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="fullName" className="text-white">Nombre Completo *</Label>
+              <Label htmlFor="fullName">Nombre Completo *</Label>
               <Input
                 id="fullName"
                 type="text"
                 value={formData.fullName}
                 onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                 placeholder="Juan Pérez"
-                className="placeholder:text-muted-foreground/60 bg-white/5 hover:bg-white/10 transition-colors h-12"
-                maxLength={100}
-                autoComplete="name"
-                autoCorrect="off"
-                autoCapitalize="words"
-                spellCheck="false"
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-white">Correo Electrónico *</Label>
+              <Label htmlFor="email">Correo Electrónico *</Label>
               <Input
                 id="email"
                 type="email"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 placeholder="juan@email.com"
-                className="placeholder:text-muted-foreground/60 bg-white/5 hover:bg-white/10 transition-colors h-12"
-                maxLength={200}
                 required
               />
             </div>
@@ -157,122 +157,70 @@ function ClientRegistrationForm({
 
           <div className="grid md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-white">Contraseña *</Label>
+              <Label htmlFor="password">Contraseña *</Label>
               <div className="relative">
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  placeholder="Ingresa tu contraseña"
-                  className="pr-12 placeholder:text-muted-foreground/60 bg-white/5 hover:bg-white/10 transition-colors h-12"
-                  aria-describedby={formData.password.length > 0 ? "password-feedback" : undefined}
+                  placeholder="••••••••"
                   required
                 />
-                <PasswordToggleButton
-                  showPassword={showPassword}
-                  onToggle={() => setShowPassword(!showPassword)}
-                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </Button>
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword" className="text-white">Confirmar Contraseña *</Label>
+              <Label htmlFor="confirmPassword">Confirmar Contraseña *</Label>
               <div className="relative">
                 <Input
                   id="confirmPassword"
                   type={showConfirmPassword ? "text" : "password"}
                   value={formData.confirmPassword}
                   onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                  placeholder="Confirma tu contraseña"
-                  className="pr-12 placeholder:text-muted-foreground/60 bg-white/5 hover:bg-white/10 transition-colors h-12"
-                  aria-describedby={formData.confirmPassword ? "confirm-password-feedback" : undefined}
+                  placeholder="••••••••"
                   required
                 />
-                <PasswordToggleButton
-                  showPassword={showConfirmPassword}
-                  onToggle={() => setShowConfirmPassword(!showConfirmPassword)}
-                  ariaLabel={showConfirmPassword ? "Ocultar confirmación de contraseña" : "Mostrar confirmación de contraseña"}
-                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                >
+                  {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </Button>
               </div>
             </div>
           </div>
 
-          {/* Password strength indicator */}
-          <PasswordStrength password={formData.password} />
-
-          {/* Password validation feedback */}
-          {(formData.password.length > 0 || (formData.confirmPassword && !passwordsMatch)) && (
-            <div className="space-y-4">
-
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  {/* Password errors */}
-                  {passwordValidation.errors.length > 0 && (
-                    <div id="password-feedback" className="text-sm space-y-2">
-                      <p className="text-destructive font-medium">Errores:</p>
-                      {passwordValidation.errors.map((error, index) => (
-                        <div key={index} className="flex items-center space-x-2 text-destructive">
-                          <AlertCircle className="h-3 w-3" />
-                          <span>{error}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Password warnings */}
-                  {passwordValidation.warnings.length > 0 && (
-                    <div className="text-sm space-y-2">
-                      <p className="text-warning font-medium">Recomendaciones:</p>
-                      {passwordValidation.warnings.map((warning, index) => (
-                        <div key={index} className="flex items-center space-x-2 text-warning">
-                          <AlertCircle className="h-3 w-3" />
-                          <span>{warning}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-                
-                <div className="space-y-2" id="confirm-password-feedback">
-                  {/* Password match validation */}
-                  {formData.confirmPassword && !passwordsMatch && (
-                    <div className="flex items-center space-x-2 text-destructive text-sm">
-                      <AlertCircle className="h-3 w-3" />
-                      <span>Las contraseñas no coinciden</span>
-                    </div>
-                  )}
-                  {formData.confirmPassword && passwordsMatch && formData.password && (
-                    <div className="flex items-center space-x-2 text-success text-sm">
-                      <CheckCircle className="h-3 w-3" />
-                      <span>Las contraseñas coinciden</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
-
           <div className="grid md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="phone" className="text-white">Teléfono</Label>
+              <Label htmlFor="phone">Teléfono</Label>
               <Input
                 id="phone"
                 type="tel"
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 placeholder="+54 280 1234567"
-                className="placeholder:text-muted-foreground/60 bg-white/5 hover:bg-white/10 transition-colors h-12"
-                maxLength={20}
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="location" className="text-white">Ubicación *</Label>
+              <Label htmlFor="location">Ubicación *</Label>
               <Select
                 value={formData.location}
                 onValueChange={(value) => setFormData({ ...formData, location: value })}
                 required
               >
-                <SelectTrigger className="h-12 bg-white/5 hover:bg-white/10 border-white/40">
+                <SelectTrigger>
                   <SelectValue placeholder="Selecciona tu ciudad" />
                 </SelectTrigger>
                 <SelectContent>
@@ -284,40 +232,6 @@ function ClientRegistrationForm({
                 </SelectContent>
               </Select>
             </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="birthdate" className="text-white">Fecha de Nacimiento *</Label>
-            <Input
-              id="birthdate"
-              type="date"
-              value={formData.birthdate}
-              onChange={(e) => setFormData({ ...formData, birthdate: e.target.value })}
-              className="bg-white/5 hover:bg-white/10 transition-colors h-12"
-              max={new Date(new Date().getFullYear() - 18, new Date().getMonth(), new Date().getDate()).toISOString().split('T')[0]}
-              required
-            />
-            <p className="text-xs text-muted-foreground">
-              Debes ser mayor de 18 años para registrarte
-            </p>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="dni" className="text-white">Número de DNI *</Label>
-            <Input
-              id="dni"
-              type="text"
-              value={formData.dni}
-              onChange={(e) => setFormData({ ...formData, dni: e.target.value.replace(/\D/g, '').slice(0, 8) })}
-              placeholder="12345678"
-              className="placeholder:text-muted-foreground/60 bg-white/5 hover:bg-white/10 transition-colors h-12"
-              maxLength={8}
-              minLength={7}
-              required
-            />
-            <p className="text-xs text-muted-foreground">
-              Ingresa tu DNI sin puntos ni espacios
-            </p>
           </div>
 
           {/* Terms and Privacy */}
@@ -374,13 +288,13 @@ function ClientRegistrationForm({
 
           <Button
             type="submit"
-            className="w-full liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg disabled:opacity-70"
+            className="w-full liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg"
             disabled={isSubmitting}
           >
             {isSubmitting ? (
               <>
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                Creando tu cuenta...
+                Creando cuenta...
               </>
             ) : (
               <>
@@ -480,7 +394,7 @@ function TagsInput({
     <div className="space-y-3">
       <div className="relative">
         <div className="relative">
-          <Hash className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+          <Hash className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             value={inputValue}
             onChange={handleInputChange}
@@ -551,7 +465,7 @@ function TagsInput({
       )}
 
       {/* Helper text */}
-      <div className="text-xs text-muted-foreground space-y-2">
+      <div className="text-xs text-muted-foreground space-y-1">
         <p>💡 Ejemplos: "Peluquería, Manicura" o "#Desarrollo #Web #WordPress"</p>
         <p>📝 Máximo 10 categorías, entre 2-30 caracteres cada una</p>
       </div>
@@ -582,17 +496,6 @@ function ProfessionalRegistrationForm({
 }) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [passwordsMatch, setPasswordsMatch] = useState(true);
-  
-  // Enhanced password validation with security standards
-  const passwordValidation = usePasswordValidation(formData.password);
-
-  // Real-time password match validation
-  useEffect(() => {
-    if (formData.confirmPassword.length > 0) {
-      setPasswordsMatch(formData.password === formData.confirmPassword);
-    }
-  }, [formData.password, formData.confirmPassword]);
 
   const locations = [
     "Rawson", "Puerto Madryn", "Comodoro Rivadavia", "Trelew", 
@@ -609,10 +512,10 @@ function ProfessionalRegistrationForm({
       <CardHeader className="text-center">
         <div className="flex items-center justify-center space-x-2 mb-4">
           <Crown className="h-8 w-8 text-primary" />
-          <CardTitle className="text-2xl text-foreground">Registro Profesional</CardTitle>
+          <CardTitle className="text-2xl">Registro Profesional</CardTitle>
         </div>
         <CardDescription>
-          Suscripción mensual $3,900 ARS • Sin comisiones por servicios
+          Suscripción mensual $4500 ARS • Sin comisiones por servicios
         </CardDescription>
         <Badge className="bg-warning/20 text-warning border-warning/30 mx-auto">
           🎉 Primeros 200 profesionales: 2 meses gratis
@@ -632,10 +535,6 @@ function ProfessionalRegistrationForm({
                   value={formData.fullName}
                   onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                   placeholder="Juan Pérez"
-                  autoComplete="name"
-                  autoCorrect="off"
-                  autoCapitalize="words"
-                  spellCheck="false"
                   required
                 />
               </div>
@@ -662,13 +561,17 @@ function ProfessionalRegistrationForm({
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                     placeholder="••••••••"
-                    aria-describedby={formData.password.length > 0 ? "pro-password-feedback" : undefined}
                     required
                   />
-                  <PasswordToggleButton
-                    showPassword={showPassword}
-                    onToggle={() => setShowPassword(!showPassword)}
-                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </Button>
                 </div>
               </div>
               <div className="space-y-2">
@@ -680,72 +583,20 @@ function ProfessionalRegistrationForm({
                     value={formData.confirmPassword}
                     onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                     placeholder="••••••••"
-                    aria-describedby={formData.confirmPassword ? "pro-confirm-password-feedback" : undefined}
                     required
                   />
-                  <PasswordToggleButton
-                    showPassword={showConfirmPassword}
-                    onToggle={() => setShowConfirmPassword(!showConfirmPassword)}
-                    ariaLabel={showConfirmPassword ? "Ocultar confirmación de contraseña" : "Mostrar confirmación de contraseña"}
-                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  >
+                    {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </Button>
                 </div>
               </div>
             </div>
-
-            {/* Password strength indicator */}
-            <PasswordStrength password={formData.password} />
-
-            {/* Enhanced Password validation feedback */}
-            {(formData.password.length > 0 || (formData.confirmPassword && !passwordsMatch)) && (
-              <div className="space-y-4">
-
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    {/* Password errors */}
-                    {passwordValidation.errors.length > 0 && (
-                      <div id="pro-password-feedback" className="text-sm space-y-2">
-                        <p className="text-destructive font-medium">Errores:</p>
-                        {passwordValidation.errors.map((error, index) => (
-                          <div key={index} className="flex items-center space-x-2 text-destructive">
-                            <AlertCircle className="h-3 w-3" />
-                            <span>{error}</span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                    
-                    {/* Password warnings */}
-                    {passwordValidation.warnings.length > 0 && (
-                      <div className="text-sm space-y-2">
-                        <p className="text-warning font-medium">Recomendaciones:</p>
-                        {passwordValidation.warnings.map((warning, index) => (
-                          <div key={index} className="flex items-center space-x-2 text-warning">
-                            <AlertCircle className="h-3 w-3" />
-                            <span>{warning}</span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                  
-                  <div id="pro-confirm-password-feedback" className="space-y-2">
-                    {/* Password match validation */}
-                    {formData.confirmPassword && !passwordsMatch && (
-                      <div className="flex items-center space-x-2 text-destructive text-sm">
-                        <AlertCircle className="h-3 w-3" />
-                        <span>Las contraseñas no coinciden</span>
-                      </div>
-                    )}
-                    {formData.confirmPassword && passwordsMatch && formData.password && (
-                      <div className="flex items-center space-x-2 text-success text-sm">
-                        <CheckCircle className="h-3 w-3" />
-                        <span>Las contraseñas coinciden</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
 
             <div className="grid md:grid-cols-2 gap-4">
               <div className="space-y-2">
@@ -756,7 +607,6 @@ function ProfessionalRegistrationForm({
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   placeholder="+54 280 1234567"
-                  maxLength={20}
                   required
                 />
               </div>
@@ -780,43 +630,22 @@ function ProfessionalRegistrationForm({
                 </Select>
               </div>
             </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="birthdate">Fecha de Nacimiento *</Label>
-              <Input
-                id="birthdate"
-                type="date"
-                value={formData.birthdate}
-                onChange={(e) => setFormData({ ...formData, birthdate: e.target.value })}
-                max={new Date(new Date().getFullYear() - 18, new Date().getMonth(), new Date().getDate()).toISOString().split('T')[0]}
-                required
-              />
-              <p className="text-xs text-muted-foreground">
-                Debes ser mayor de 18 años para registrarte como profesional
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="dni">Número de DNI *</Label>
-              <Input
-                id="dni"
-                type="text"
-                value={formData.dni}
-                onChange={(e) => setFormData({ ...formData, dni: e.target.value.replace(/\D/g, '').slice(0, 8) })}
-                placeholder="12345678"
-                maxLength={8}
-                minLength={7}
-                required
-              />
-              <p className="text-xs text-muted-foreground">
-                Ingresa tu DNI sin puntos ni espacios
-              </p>
-            </div>
           </div>
 
           {/* Business Information */}
           <div className="space-y-6">
             <h3 className="text-lg font-semibold text-primary">Información del Negocio</h3>
+            <div className="space-y-2">
+              <Label htmlFor="businessName">Nombre del Negocio/Empresa</Label>
+              <Input
+                id="businessName"
+                type="text"
+                value={formData.businessName}
+                onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
+                placeholder="Mi Empresa de Servicios SRL"
+              />
+            </div>
+
             <div className="space-y-2">
               <Label htmlFor="serviceCategories">Categorías de Servicios *</Label>
               <TagsInput
@@ -940,7 +769,7 @@ function ProfessionalRegistrationForm({
                 <Link to="/terms" className="text-primary hover:underline">
                   Términos y Condiciones
                 </Link>{" "}
-                de Fixia, incluyendo la suscripción mensual de $3,900 ARS
+                de Fixia, incluyendo la suscripción mensual de $4500 ARS
               </Label>
             </div>
 
@@ -979,20 +808,20 @@ function ProfessionalRegistrationForm({
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
                 <strong>Promoción de Lanzamiento:</strong> Los primeros 200 profesionales obtienen 
-                2 meses completamente gratis. Después se aplicará la tarifa mensual de $3,900 ARS.
+                2 meses completamente gratis. Después se aplicará la tarifa mensual de $4500 ARS.
               </AlertDescription>
             </Alert>
           </div>
 
           <Button
             type="submit"
-            className="w-full liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg disabled:opacity-70"
+            className="w-full liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg"
             disabled={isSubmitting || formData.serviceCategories.length === 0}
           >
             {isSubmitting ? (
               <>
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                Creando tu perfil profesional...
+                Creando perfil profesional...
               </>
             ) : (
               <>
@@ -1010,7 +839,7 @@ function ProfessionalRegistrationForm({
 export default function RegisterPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { register } = useSecureAuth();
+  const { register } = useAuth();
   
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -1021,107 +850,32 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validate email format
-    if (!validateEmailFormat(formData.email)) {
-      toast.error("📧 Email inválido", {
-        description: "Por favor ingresa una dirección de email válida"
-      });
-      return;
-    }
-    
-    // Enhanced password validation
-    const passwordValidation = validatePassword(formData.password);
-    if (!passwordValidation.isValid) {
-      toast.error("🔒 Contraseña no válida", {
-        description: passwordValidation.errors[0]
-      });
-      return;
-    }
-
     if (formData.password !== formData.confirmPassword) {
-      toast.error('🔐 Las contraseñas no coinciden', {
-        description: "Asegúrate de que ambas contraseñas sean idénticas"
-      });
-      return;
-    }
-
-    // Validate birthdate
-    if (!formData.birthdate) {
-      toast.error('📅 Fecha de nacimiento requerida', {
-        description: "Por favor selecciona tu fecha de nacimiento"
-      });
-      return;
-    }
-
-    // Validate age (must be 18 or older)
-    const birthDate = new Date(formData.birthdate);
-    const today = new Date();
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const monthDiff = today.getMonth() - birthDate.getMonth();
-    
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-      age--;
-    }
-    
-    if (age < 18) {
-      toast.error('🔞 Edad mínima requerida', {
-        description: "Debes ser mayor de 18 años para registrarte en Fixia"
-      });
-      return;
-    }
-
-    // Validate DNI
-    if (!formData.dni) {
-      toast.error('Número de DNI requerido', {
-        description: "Por favor ingresa tu número de DNI"
-      });
-      return;
-    }
-
-    if (formData.dni.length < 7 || formData.dni.length > 8) {
-      toast.error('DNI inválido', {
-        description: "El DNI debe tener entre 7 y 8 dígitos"
-      });
+      toast.error('Las contraseñas no coinciden');
       return;
     }
 
     if (currentTab === 'professional' && formData.serviceCategories.length === 0) {
-      toast.error('🛠️ Categorías requeridas', {
-        description: "Los profesionales deben seleccionar al menos una categoría de servicio"
-      });
+      toast.error('Debes seleccionar al menos una categoría de servicio');
       return;
     }
 
     if (currentTab === 'professional' && formData.serviceCategories.length > 10) {
-      toast.error('Demasiadas categorías', {
-        description: "Máximo 10 categorías de servicio permitidas"
-      });
-      return;
-    }
-
-    // Check required agreements
-    if (!formData.agreeTerms || !formData.agreePrivacy) {
-      toast.error('📋 Términos requeridos', {
-        description: "Debes aceptar los términos y condiciones y la política de privacidad"
-      });
+      toast.error('No puedes tener más de 10 categorías de servicio');
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      // Sanitize form data before submission
-      const sanitizedData = FormSanitizers.REGISTRATION(formData);
-
       const result = await register({
         email: formData.email,
         password: formData.password,
         fullName: formData.fullName,
         phone: formData.phone,
         location: formData.location,
-        birthdate: formData.birthdate,
-        dni: formData.dni,
         userType: currentTab as 'client' | 'professional',
+        businessName: formData.businessName,
         serviceCategories: formData.serviceCategories,
         description: formData.description,
         experience: formData.experience,
@@ -1130,106 +884,14 @@ export default function RegisterPage() {
         portfolio: formData.portfolio,
         certifications: formData.certifications
       });
-
-      // Handle different registration outcomes
-      if (result?.requiresPayment && result?.paymentUrl) {
-        // Professional registration with payment required
-        toast.success(
-          "¡Cuenta creada exitosamente! 🎉",
-          {
-            description: `Para activar tu cuenta profesional, completa el pago de $${result.subscriptionPrice} ARS. Serás redirigido a MercadoPago.`,
-            duration: 8000
-          }
-        );
-
-        // Store user info for after payment
-        localStorage.setItem('pendingProfessionalRegistration', JSON.stringify({
-          userId: result.userId,
-          email: result.email,
-          subscriptionType: result.subscriptionType
-        }));
-
-        // Redirect to MercadoPago payment page
-        setTimeout(() => {
-          window.location.href = result.paymentUrl;
-        }, 2000);
-      } else if (result?.requiresVerification) {
-        // Standard flow: Email verification required
-        toast.success(
-          "¡Cuenta creada exitosamente! 🎉",
-          {
-            description: result.message || `Revisa tu bandeja de entrada en ${formData.email} para verificar tu cuenta.`,
-            duration: 8000}
-        );
-
-        // Redirect to email verification page
-        navigate(`/verify-email?email=${encodeURIComponent(formData.email)}`);
-      } else {
-        // Legacy flow: User was logged in automatically (shouldn't happen with new flow)
-        toast.success(
-          "¡Bienvenido a Fixia! 🎉",
-          {
-            description: "Tu cuenta ha sido creada exitosamente.",
-            duration: 6000}
-        );
-
-        // Redirect to dashboard
-        navigate('/dashboard');
+      
+      if (result.success) {
+        // The context now handles the success toast.
+        // Redirect to login page to verify email.
+        navigate('/login?status=registered');
       }
-    } catch (error: any) {
-      // Extract error details from API response
-      const errorMessage = error.response?.data?.message || error.message || '';
-      const statusCode = error.response?.status;
-
-      // Handle specific error cases with user-friendly messages
-      if (statusCode === 409 || errorMessage?.toLowerCase().includes('already exists') || errorMessage?.toLowerCase().includes('ya existe') || errorMessage?.toLowerCase().includes('duplicate')) {
-        toast.error(
-          '📧 Este email ya está registrado',
-          {
-            description: '¿Ya tienes cuenta? Intenta iniciar sesión o usar otro email.',
-            action: {
-              label: 'Iniciar Sesión',
-              onClick: () => navigate('/login')
-            },
-            duration: 6000}
-        );
-      } else if (statusCode === 400 && (errorMessage?.toLowerCase().includes('email') || errorMessage?.toLowerCase().includes('invalid'))) {
-        toast.error(
-          '✉️ Email inválido',
-          {
-            description: 'La dirección de email no es válida. Por favor verifica que esté correcta.',
-            duration: 5000}
-        );
-      } else if (statusCode === 400 && errorMessage?.toLowerCase().includes('password')) {
-        toast.error(
-          '🔒 Contraseña inválida',
-          {
-            description: 'La contraseña debe tener al menos 6 caracteres.',
-            duration: 5000}
-        );
-      } else if (statusCode === 429) {
-        toast.error(
-          '⏰ Demasiados intentos',
-          {
-            description: 'Has intentado registrarte muchas veces. Espera unos minutos e intenta de nuevo.',
-            duration: 8000}
-        );
-      } else if (statusCode >= 500) {
-        toast.error(
-          '🔧 Error del servidor',
-          {
-            description: 'Hay un problema temporal con nuestros servidores. Intenta de nuevo en unos minutos.',
-            duration: 6000}
-        );
-      } else {
-        // Generic error fallback
-        toast.error(
-          'Error al crear la cuenta',
-          {
-            description: errorMessage || 'Por favor, verifica los datos ingresados e intenta de nuevo.',
-            duration: 5000}
-        );
-      }
+    } catch (error) {
+      console.error('Error en registro:', error);
     } finally {
       setIsSubmitting(false);
     }
@@ -1237,18 +899,18 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <FixiaNavigation />
+      <Navigation />
       
-      <div className="mobile-container mobile-section">
+      <div className="py-12 px-6">
         <div className="container mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="text-center mb-8 sm:mb-12"
+            className="text-center mb-12"
           >
-            <h1 className="mobile-text-3xl font-bold mb-3 sm:mb-4 text-foreground">Únete a Fixia</h1>
-            <p className="mobile-text-lg text-muted-foreground max-w-2xl mx-auto">
+            <h1 className="text-4xl font-bold mb-4">Únete a Fixia</h1>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Elige tu tipo de cuenta y comienza a conectar con la mejor red 
               de profesionales de Chubut
             </p>
@@ -1264,16 +926,14 @@ export default function RegisterPage() {
               onValueChange={setCurrentTab}
               className="max-w-6xl mx-auto"
             >
-              <TabsList className="grid w-full grid-cols-2 glass border-white/10 p-1 max-w-sm sm:max-w-md mx-auto mb-6 sm:mb-8">
-                <TabsTrigger value="client" className="mobile-text-base ">
-                  <UserPlus className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                  <span className="hidden sm:inline">Cliente</span>
-                  <span className="sm:hidden">Cliente</span>
+              <TabsList className="grid w-full grid-cols-2 glass border-white/10 p-1 max-w-md mx-auto mb-8">
+                <TabsTrigger value="client" className="text-sm">
+                  <UserPlus className="h-4 w-4 mr-2" />
+                  Cliente
                 </TabsTrigger>
-                <TabsTrigger value="professional" className="mobile-text-base ">
-                  <Crown className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                  <span className="hidden sm:inline">Profesional</span>
-                  <span className="sm:hidden">Pro</span>
+                <TabsTrigger value="professional" className="text-sm">
+                  <Crown className="h-4 w-4 mr-2" />
+                  Profesional
                 </TabsTrigger>
               </TabsList>
 

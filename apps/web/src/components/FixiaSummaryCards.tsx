@@ -1,12 +1,11 @@
-import React, { memo } from "react";
-import { Calendar, Clock, Heart, TrendingUp, Users, MessageSquare, Shield, Zap } from "lucide-react";
+import { Calendar, Clock, Star, TrendingUp, Users, MessageSquare, Shield, Zap } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Progress } from "./ui/progress";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 
-export const FixiaSummaryCards = memo(function FixiaSummaryCards() {
+export function FixiaSummaryCards() {
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
@@ -69,7 +68,7 @@ export const FixiaSummaryCards = memo(function FixiaSummaryCards() {
           <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 group">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
               <CardTitle className="flex items-center space-x-2">
-                <Heart className="h-4 w-4 text-warning group-hover:text-warning/80 transition-colors duration-300" />
+                <Star className="h-4 w-4 text-warning group-hover:text-yellow-300 transition-colors duration-300" />
                 <span>Reputación</span>
               </CardTitle>
             </CardHeader>
@@ -231,4 +230,4 @@ export const FixiaSummaryCards = memo(function FixiaSummaryCards() {
       </div>
     </motion.div>
   );
-});
+}

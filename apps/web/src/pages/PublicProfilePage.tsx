@@ -1,48 +1,192 @@
-import { useState, useEffect } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import { FixiaNavigation } from "../components/FixiaNavigation";
-import {
-  Heart, MapPin, Calendar, MessageSquare,
-  Share2, CheckCircle, ArrowLeft, Flag,
-  Clock, Users, TrendingUp, Shield, Briefcase,
-  Star, Loader2
+import { useState } from "react";
+import { Link, useParams } from "react-router-dom";
+import { motion } from "motion/react";
+import { 
+  Star, Award, MapPin, Calendar, Globe, MessageSquare, Heart, 
+  Share2, CheckCircle, Eye, ExternalLink, ArrowLeft, Flag,
+  Clock, Users, TrendingUp, Shield, Briefcase, Mail, Phone,
+  Linkedin, Twitter, Github, Instagram, ThumbsUp
 } from "lucide-react";
-import { Linkedin, Twitter, Facebook } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
+import { Separator } from "../components/ui/separator";
 import { Progress } from "../components/ui/progress";
-import { FavoriteButton } from "../components/ui/FavoriteButton";
-import { VerificationBadge } from "../components/verification/VerificationBadge";
-import { userService } from "../lib/services";
-import { servicesService, Service } from "../lib/services/services.service";
-import { User } from "../context/SecureAuthContext";
 
-interface ProfileHeaderProps {
-  profile: User;
+// Mock data for public profile
+const publicProfile = {
+  id: "prof_001",
+  name: "Ana Martínez",
+  avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b77c?w=200&h=200&fit=crop&crop=face",
+  role: "professional",
+  verified: true,
+  level: "Top Rated Plus",
+  bio: "Desarrolladora Full Stack especializada en e-commerce con +5 años de experiencia. Apasionada por crear soluciones digitales que impulsen el crecimiento de las empresas.",
+  location: "Ciudad de México, MX",
+  memberSince: "2019",
+  website: "https://anamartinez.dev",
+  responseTime: "1 hora",
+  languages: ["Español", "Inglés"],
+  completedProjects: 156,
+  totalEarnings: "$125,000+",
+  rating: 4.9,
+  reviews: 187,
+  skills: ["React", "Node.js", "MongoDB", "TypeScript", "AWS", "Figma"],
+  socialLinks: {
+    linkedin: "https://linkedin.com/in/anamartinez",
+    github: "https://github.com/anamartinez",
+    twitter: "https://twitter.com/anamartinez"
+  },
+  stats: {
+    completionRate: 98,
+    onTimeDelivery: 96,
+    repeatClients: 75,
+    avgProjectValue: 1250
+  }
+};
+
+const publicPortfolio = [
+  {
+    id: 1,
+    title: "E-commerce ModaStyle",
+    description: "Tienda online completa con más de 1000 productos y sistema de pagos integrado",
+    image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=300&fit=crop",
+    category: "Desarrollo Web",
+    date: "Nov 2024",
+    technologies: ["React", "Node.js", "MongoDB", "Stripe"],
+    url: "https://modastyle.com",
+    featured: true,
+    likes: 23,
+    views: 1200
+  },
+  {
+    id: 2,
+    title: "App Móvil FitTracker",
+    description: "Aplicación de seguimiento fitness con integración de wearables",
+    image: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=400&h=300&fit=crop",
+    category: "Desarrollo Móvil",
+    date: "Oct 2024",
+    technologies: ["Flutter", "Firebase", "HealthKit"],
+    featured: false,
+    likes: 18,
+    views: 890
+  },
+  {
+    id: 3,
+    title: "Dashboard Analytics Pro",
+    description: "Panel de control avanzado para análisis de datos empresariales",
+    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&fit=crop",
+    category: "Desarrollo Web",
+    date: "Sep 2024",
+    technologies: ["Vue.js", "D3.js", "Python"],
+    featured: true,
+    likes: 31,
+    views: 1450
+  }
+];
+
+const publicReviews = [
+  {
+    id: 1,
+    serviceTitle: "Desarrollo E-commerce Completo",
+    client: {
+      name: "Carlos Mendoza",
+      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop&crop=face",
+      company: "TechStart Solutions"
+    },
+    rating: 5,
+    comment: "Excelente trabajo. Ana entregó exactamente lo que necesitábamos y más. La comunicación fue perfecta y el resultado superó nuestras expectativas. Definitivamente la recomiendo y volveremos a trabajar con ella.",
+    date: "Hace 2 semanas",
+    helpful: 12,
+    response: "¡Gracias Carlos! Fue un placer trabajar contigo. Espero que el e-commerce siga creciendo."
+  },
+  {
+    id: 2,
+    serviceTitle: "App Móvil iOS/Android",
+    client: {
+      name: "María García",
+      avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80&h=80&fit=crop&crop=face",
+      company: "Boutique Elena"
+    },
+    rating: 5,
+    comment: "Ana desarrolló nuestra app móvil y los resultados han sido increíbles. En el primer mes aumentamos las ventas un 45%. Muy profesional y siempre disponible para resolver dudas.",
+    date: "Hace 1 mes",
+    helpful: 8
+  },
+  {
+    id: 3,
+    serviceTitle: "Sistema de Gestión Web",
+    client: {
+      name: "Roberto Silva",
+      avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80&h=80&fit=crop&crop=face",
+      company: "Deportes Silva"
+    },
+    rating: 4,
+    comment: "Muy buen trabajo en general. La entrega fue puntual y el producto final cumplió con lo prometido. Solo tuve algunas dudas menores que se resolvieron rápidamente.",
+    date: "Hace 2 meses",
+    helpful: 5
+  }
+];
+
+const activeServices = [
+  {
+    id: "srv_001",
+    title: "Desarrollo de E-commerce Completo",
+    price: 1250,
+    image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=300&h=200&fit=crop",
+    rating: 4.9,
+    orders: 127,
+    featured: true
+  },
+  {
+    id: "srv_002",
+    title: "App Móvil iOS y Android",
+    price: 2100,
+    image: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=300&h=200&fit=crop",
+    rating: 5.0,
+    orders: 89,
+    featured: false
+  }
+];
+
+function Navigation() {
+  return (
+    <motion.header 
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      className="sticky top-0 z-50 w-full glass border-b border-white/10"
+    >
+      <div className="container mx-auto flex h-16 items-center justify-between px-6">
+        <Link to="/services" className="flex items-center space-x-2 text-muted-foreground hover:text-primary transition-colors">
+          <ArrowLeft className="h-4 w-4" />
+          Volver a servicios
+        </Link>
+        
+        <Link to="/" className="flex items-center space-x-3">
+          <div className="h-8 w-8 liquid-gradient rounded-lg flex items-center justify-center">
+            <span className="text-white font-bold">F</span>
+          </div>
+          <span className="font-semibold">Fixia</span>
+        </Link>
+        
+        <div className="flex items-center space-x-2">
+          <Button variant="ghost" size="sm">
+            <Share2 className="h-4 w-4 mr-2" />
+            Compartir
+          </Button>
+          <Button variant="ghost" size="sm">
+            <Flag className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+    </motion.header>
+  );
 }
 
-function ProfileHeader({ profile }: ProfileHeaderProps) {
+function ProfileHeader() {
   const [isFollowing, setIsFollowing] = useState(false);
-
-  // Extract professional profile data
-  const professionalProfile = profile.professionalProfile;
-  const rating = professionalProfile?.averageRating || profile.averageRating || 0;
-  const reviews = professionalProfile?.totalReviews || profile.totalReviews || 0;
-  const completedProjects = professionalProfile?.completedServices || profile.completedServices || 0;
-  const bio = profile.bio || professionalProfile?.description || "Profesional en Fixia";
-  const skills = professionalProfile?.serviceCategories || [];
-  const verified = profile.isVerified || professionalProfile?.verified || false;
-  const level = professionalProfile?.availability || "Disponible";
-
-  // Calculate member since year
-  const memberSince = new Date(profile.createdAt || profile.joinDate).getFullYear();
-
-  // Calculate response time (default to 24 hours)
-  const responseTime = "24 horas";
 
   return (
     <Card className="glass border-white/10">
@@ -51,150 +195,131 @@ function ProfileHeader({ profile }: ProfileHeaderProps) {
           {/* Avatar */}
           <div className="relative">
             <Avatar className="h-32 w-32 ring-4 ring-primary/20 ring-offset-4 ring-offset-background">
-              <AvatarImage src={profile.avatar} alt={profile.name} />
-              <AvatarFallback className="text-2xl">{profile.name.charAt(0)}</AvatarFallback>
+              <AvatarImage src={publicProfile.avatar} alt={publicProfile.name} />
+              <AvatarFallback className="text-2xl">{publicProfile.name.charAt(0)}</AvatarFallback>
             </Avatar>
-
-            {verified && (
-              <div className="absolute -bottom-1 -right-1">
-                <div className="relative">
-                  <div className="absolute inset-0 bg-success/20 rounded-full blur-lg animate-pulse" />
-                  <VerificationBadge
-                    isVerified={verified}
-                    verificationLevel={level}
-                    userType={profile.userType || 'client'}
-                    size="md"
-                    showLabel={false}
-                    className="relative"
-                  />
-                </div>
+            
+            {publicProfile.verified && (
+              <div className="absolute -top-2 -right-2">
+                <Badge className="bg-success/20 text-success border-success/30 text-xs px-2">
+                  <CheckCircle className="h-3 w-3 mr-1" />
+                  Verificado
+                </Badge>
               </div>
             )}
           </div>
-
+          
           {/* Profile Info */}
           <div className="flex-1 space-y-4">
             <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <div className="flex items-center gap-3">
-                  <h1 className="text-3xl font-bold">
-                    {profile.name} {profile.lastName || ''}
-                  </h1>
-                  {verified && (
-                    <VerificationBadge
-                      isVerified={verified}
-                      verificationLevel={level}
-                      userType={profile.userType || 'client'}
-                      size="md"
-                      showLabel={true}
-                      className="ml-2"
-                    />
-                  )}
-                </div>
-
+              <div>
+                <h1 className="text-3xl font-bold">{publicProfile.name}</h1>
+                
                 <div className="flex items-center space-x-3 mt-2">
                   <Badge className="bg-primary/20 text-primary border-primary/30">
-                    {level}
+                    {publicProfile.level}
                   </Badge>
-                  {rating > 0 && (
-                    <div className="flex items-center space-x-1">
-                      <Star className="h-4 w-4 text-warning fill-current" />
-                      <span className="font-medium">{rating.toFixed(1)}</span>
-                      <span className="text-muted-foreground">({reviews} reseñas)</span>
-                    </div>
-                  )}
+                  <div className="flex items-center space-x-1">
+                    <Star className="h-4 w-4 text-warning fill-current" />
+                    <span className="font-medium">{publicProfile.rating}</span>
+                    <span className="text-muted-foreground">({publicProfile.reviews} reseñas)</span>
+                  </div>
                 </div>
               </div>
-
+              
               <div className="flex items-center space-x-2">
-                <FavoriteButton
-                  userId={profile.id}
-                  userName={profile.name}
-                  size="md"
-                  variant="ghost"
-                  className="h-10 w-10 p-0"
-                  title="Agregar a favoritos"
-                />
+                <Button 
+                  onClick={() => setIsFollowing(!isFollowing)}
+                  variant={isFollowing ? "outline" : "default"}
+                  className={isFollowing ? "glass border-white/20" : "liquid-gradient"}
+                >
+                  <Heart className={`h-4 w-4 mr-2 ${isFollowing ? 'fill-current' : ''}`} />
+                  {isFollowing ? 'Siguiendo' : 'Seguir'}
+                </Button>
                 <Button className="liquid-gradient">
                   <MessageSquare className="h-4 w-4 mr-2" />
                   Contactar
                 </Button>
               </div>
             </div>
-
+            
             {/* Bio */}
             <p className="text-muted-foreground leading-relaxed max-w-3xl">
-              {bio}
+              {publicProfile.bio}
             </p>
-
+            
             {/* Contact Info */}
             <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-              {profile.location && (
-                <div className="flex items-center space-x-1">
-                  <MapPin className="h-4 w-4" />
-                  <span>{profile.location}</span>
-                </div>
-              )}
+              <div className="flex items-center space-x-1">
+                <MapPin className="h-4 w-4" />
+                <span>{publicProfile.location}</span>
+              </div>
               <div className="flex items-center space-x-1">
                 <Calendar className="h-4 w-4" />
-                <span>Miembro desde {memberSince}</span>
+                <span>Miembro desde {publicProfile.memberSince}</span>
               </div>
               <div className="flex items-center space-x-1">
                 <Clock className="h-4 w-4" />
-                <span>Responde en {responseTime}</span>
+                <span>Responde en {publicProfile.responseTime}</span>
+              </div>
+              <div className="flex items-center space-x-1">
+                <Globe className="h-4 w-4" />
+                <a href={publicProfile.website} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+                  {publicProfile.website}
+                </a>
               </div>
             </div>
-
+            
             {/* Skills */}
-            {skills.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                {skills.map((skill) => (
-                  <Badge key={skill} variant="outline" className="glass border-white/20 text-xs">
-                    {skill}
-                  </Badge>
-                ))}
-              </div>
-            )}
-
+            <div className="flex flex-wrap gap-2">
+              {publicProfile.skills.map((skill) => (
+                <Badge key={skill} variant="outline" className="glass border-white/20 text-xs">
+                  {skill}
+                </Badge>
+              ))}
+            </div>
+            
             {/* Social Links */}
             <div className="flex space-x-3">
-              {profile.social_linkedin && (
-                <a href={profile.social_linkedin} target="_blank" rel="noopener noreferrer">
-                  <Button variant="ghost" size="icon" className="h-9 w-9">
+              {publicProfile.socialLinks.linkedin && (
+                <a href={publicProfile.socialLinks.linkedin} target="_blank" rel="noopener noreferrer">
+                  <Button variant="ghost" size="icon" className="h-8 w-8">
                     <Linkedin className="h-4 w-4 text-blue-500" />
                   </Button>
                 </a>
               )}
-              {profile.social_facebook && (
-                <a href={profile.social_facebook} target="_blank" rel="noopener noreferrer">
-                  <Button variant="ghost" size="icon" className="h-9 w-9">
-                    <Facebook className="h-4 w-4 text-blue-600" />
+              {publicProfile.socialLinks.github && (
+                <a href={publicProfile.socialLinks.github} target="_blank" rel="noopener noreferrer">
+                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                    <Github className="h-4 w-4" />
                   </Button>
                 </a>
               )}
-              {profile.social_twitter && (
-                <a href={profile.social_twitter} target="_blank" rel="noopener noreferrer">
-                  <Button variant="ghost" size="icon" className="h-9 w-9">
+              {publicProfile.socialLinks.twitter && (
+                <a href={publicProfile.socialLinks.twitter} target="_blank" rel="noopener noreferrer">
+                  <Button variant="ghost" size="icon" className="h-8 w-8">
                     <Twitter className="h-4 w-4 text-blue-400" />
                   </Button>
                 </a>
               )}
             </div>
-
+            
             {/* Stats */}
             <div className="flex space-x-8 pt-4 border-t border-white/10">
               <div className="text-center">
-                <div className="text-2xl font-bold text-primary">{completedProjects}</div>
-                <div className="text-sm text-muted-foreground">Oportunidades Completadas</div>
+                <div className="text-2xl font-bold text-primary">{publicProfile.completedProjects}</div>
+                <div className="text-sm text-muted-foreground">Proyectos</div>
               </div>
-              {rating > 0 && (
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-warning">{rating.toFixed(1)}</div>
-                  <div className="text-sm text-muted-foreground">Rating</div>
-                </div>
-              )}
               <div className="text-center">
-                <div className="text-2xl font-bold">{responseTime}</div>
+                <div className="text-2xl font-bold text-success">{publicProfile.stats.completionRate}%</div>
+                <div className="text-sm text-muted-foreground">Completados</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-warning">{publicProfile.rating}</div>
+                <div className="text-sm text-muted-foreground">Rating</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold">{publicProfile.responseTime}</div>
                 <div className="text-sm text-muted-foreground">Respuesta</div>
               </div>
             </div>
@@ -205,109 +330,60 @@ function ProfileHeader({ profile }: ProfileHeaderProps) {
   );
 }
 
-interface ServicesSectionProps {
-  services: Service[];
-  loading: boolean;
-}
-
-function ServicesSection({ services, loading }: ServicesSectionProps) {
-  if (loading) {
-    return (
-      <Card className="glass border-white/10">
-        <CardHeader>
-          <CardTitle>Servicios Activos</CardTitle>
-          <CardDescription>Servicios disponibles de este profesional</CardDescription>
-        </CardHeader>
-
-        <CardContent>
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  if (services.length === 0) {
-    return (
-      <Card className="glass border-white/10">
-        <CardHeader>
-          <CardTitle>Servicios Activos</CardTitle>
-          <CardDescription>Servicios disponibles de este profesional</CardDescription>
-        </CardHeader>
-
-        <CardContent>
-          <div className="text-center py-12 text-muted-foreground">
-            Este profesional no tiene servicios activos en este momento.
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
+function ServicesSection() {
   return (
     <Card className="glass border-white/10">
       <CardHeader>
         <CardTitle>Servicios Activos</CardTitle>
         <CardDescription>Servicios disponibles de este profesional</CardDescription>
       </CardHeader>
-
+      
       <CardContent>
         <div className="grid md:grid-cols-2 gap-6">
-          {services.map((service) => {
-            const serviceImage = service.main_image || service.images?.[0] || "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=300&h=200&fit=crop";
-            const serviceRating = service.averageRating || 0;
-            const serviceReviews = service.totalReviews || service._count?.reviews || 0;
-
-            return (
-              <motion.div
-                key={service.id}
-                whileHover={{ y: -4 }}
-                transition={{ duration: 0.3 }}
-              >
-                <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 overflow-hidden group">
-                  <div className="relative aspect-video overflow-hidden">
-                    <img
-                      src={serviceImage}
-                      alt={service.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                    {service.featured && (
-                      <Badge className="absolute top-3 left-3 bg-warning/20 text-warning border-warning/30">
-                        <Star className="h-3 w-3 mr-1" />
-                        Destacado
-                      </Badge>
-                    )}
-                  </div>
-
-                  <CardContent className="p-4 space-y-3">
-                    <h3 className="font-semibold line-clamp-2">{service.title}</h3>
-
-                    <div className="flex items-center justify-between text-sm">
-                      {serviceRating > 0 ? (
-                        <div className="flex items-center space-x-1">
-                          <Star className="h-4 w-4 text-warning fill-current" />
-                          <span className="font-medium">{serviceRating.toFixed(1)}</span>
-                          <span className="text-muted-foreground">({serviceReviews})</span>
-                        </div>
-                      ) : (
-                        <span className="text-muted-foreground text-xs">Sin reseñas</span>
-                      )}
-                      <span className="text-xl font-bold text-primary">${service.price}</span>
+          {activeServices.map((service) => (
+            <motion.div
+              key={service.id}
+              whileHover={{ y: -4 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 overflow-hidden group">
+                <div className="relative aspect-video overflow-hidden">
+                  <img 
+                    src={service.image}
+                    alt={service.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  {service.featured && (
+                    <Badge className="absolute top-3 left-3 bg-warning/20 text-warning border-warning/30">
+                      <Award className="h-3 w-3 mr-1" />
+                      Destacado
+                    </Badge>
+                  )}
+                </div>
+                
+                <CardContent className="p-4 space-y-3">
+                  <h3 className="font-semibold line-clamp-2">{service.title}</h3>
+                  
+                  <div className="flex items-center justify-between text-sm">
+                    <div className="flex items-center space-x-1">
+                      <Star className="h-4 w-4 text-warning fill-current" />
+                      <span className="font-medium">{service.rating}</span>
+                      <span className="text-muted-foreground">({service.orders})</span>
                     </div>
-
-                    <Link to={`/services/${service.id}`}>
-                      <Button className="w-full liquid-gradient hover:opacity-90 transition-all duration-300">
-                        Ver Servicio
-                      </Button>
-                    </Link>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            );
-          })}
+                    <span className="text-xl font-bold text-primary">${service.price}</span>
+                  </div>
+                  
+                  <Link to={`/services/${service.id}`}>
+                    <Button className="w-full liquid-gradient hover:opacity-90 transition-all duration-300">
+                      Ver Servicio
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
         </div>
-
+        
         <div className="mt-6 text-center">
           <Link to="/services">
             <Button variant="outline" className="glass border-white/20 hover:glass-medium">
@@ -327,20 +403,85 @@ function PortfolioSection() {
         <CardTitle>Portafolio</CardTitle>
         <CardDescription>Trabajos destacados y proyectos realizados</CardDescription>
       </CardHeader>
-
+      
       <CardContent>
-        <div className="text-center py-12 text-muted-foreground">
-          No hay proyectos de portafolio disponibles en este momento.
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {publicPortfolio.map((item) => (
+            <motion.div
+              key={item.id}
+              whileHover={{ y: -4 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 overflow-hidden group">
+                <div className="relative aspect-video overflow-hidden">
+                  <img 
+                    src={item.image}
+                    alt={item.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  {item.featured && (
+                    <Badge className="absolute top-3 left-3 bg-warning/20 text-warning border-warning/30">
+                      <Award className="h-3 w-3 mr-1" />
+                      Destacado
+                    </Badge>
+                  )}
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <div className="flex space-x-2">
+                      <Button size="sm" className="liquid-gradient">
+                        <Eye className="h-4 w-4 mr-1" />
+                        Ver
+                      </Button>
+                      {item.url && (
+                        <Button size="sm" variant="outline" className="glass border-white/20">
+                          <ExternalLink className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                
+                <CardContent className="p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <Badge variant="outline" className="glass border-white/20 text-xs">
+                      {item.category}
+                    </Badge>
+                    <span className="text-xs text-muted-foreground">{item.date}</span>
+                  </div>
+                  
+                  <h3 className="font-semibold line-clamp-1">{item.title}</h3>
+                  <p className="text-sm text-muted-foreground line-clamp-2">{item.description}</p>
+                  
+                  <div className="flex flex-wrap gap-1">
+                    {item.technologies.slice(0, 3).map((tech) => (
+                      <Badge key={tech} variant="outline" className="glass border-white/20 text-xs">
+                        {tech}
+                      </Badge>
+                    ))}
+                  </div>
+                  
+                  <div className="flex items-center justify-between pt-2 border-t border-white/10 text-xs text-muted-foreground">
+                    <div className="flex items-center space-x-3">
+                      <span className="flex items-center">
+                        <Heart className="h-3 w-3 mr-1" />
+                        {item.likes}
+                      </span>
+                      <span className="flex items-center">
+                        <Eye className="h-3 w-3 mr-1" />
+                        {item.views}
+                      </span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
         </div>
       </CardContent>
     </Card>
   );
 }
 
-function ReviewsSection({ profile }: { profile: User }) {
-  const rating = profile.professionalProfile?.averageRating || profile.averageRating || 0;
-  const reviews = profile.professionalProfile?.totalReviews || profile.totalReviews || 0;
-
+function ReviewsSection() {
   return (
     <Card className="glass border-white/10">
       <CardHeader>
@@ -352,30 +493,105 @@ function ReviewsSection({ profile }: { profile: User }) {
             </CardTitle>
             <CardDescription>Lo que dicen los clientes</CardDescription>
           </div>
-          {rating > 0 && (
-            <div className="text-right">
-              <div className="text-2xl font-bold">{rating.toFixed(1)}</div>
-              <div className="text-sm text-muted-foreground">{reviews} reseñas</div>
-            </div>
-          )}
+          <div className="text-right">
+            <div className="text-2xl font-bold">{publicProfile.rating}</div>
+            <div className="text-sm text-muted-foreground">{publicProfile.reviews} reseñas</div>
+          </div>
         </div>
       </CardHeader>
-
-      <CardContent>
-        <div className="text-center py-12 text-muted-foreground">
-          No hay reseñas disponibles en este momento.
+      
+      <CardContent className="space-y-6">
+        {/* Rating Overview */}
+        <div className="flex items-center space-x-8 p-4 glass-medium rounded-lg">
+          <div className="text-center">
+            <div className="text-3xl font-bold">{publicProfile.rating}</div>
+            <div className="flex items-center justify-center mt-1">
+              {[1,2,3,4,5].map((star) => (
+                <Star key={star} className="h-4 w-4 text-warning fill-current" />
+              ))}
+            </div>
+            <div className="text-sm text-muted-foreground mt-1">{publicProfile.reviews} reseñas</div>
+          </div>
+          
+          <div className="flex-1 space-y-2">
+            {[5,4,3,2,1].map((stars) => (
+              <div key={stars} className="flex items-center space-x-3">
+                <span className="text-sm w-8">{stars}★</span>
+                <Progress value={stars === 5 ? 85 : stars === 4 ? 15 : 0} className="flex-1" />
+                <span className="text-sm text-muted-foreground w-8">
+                  {stars === 5 ? '85%' : stars === 4 ? '15%' : '0%'}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        {/* Reviews List */}
+        <div className="space-y-4">
+          {publicReviews.map((review) => (
+            <div key={review.id} className="glass-medium rounded-lg p-4">
+              <div className="flex items-start space-x-4">
+                <Avatar>
+                  <AvatarImage src={review.client.avatar} />
+                  <AvatarFallback>{review.client.name.charAt(0)}</AvatarFallback>
+                </Avatar>
+                
+                <div className="flex-1">
+                  <div className="flex items-center justify-between mb-2">
+                    <div>
+                      <div className="font-medium">{review.client.name}</div>
+                      <div className="text-sm text-muted-foreground">{review.client.company}</div>
+                      <div className="text-sm text-muted-foreground">{review.serviceTitle}</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="flex items-center space-x-1">
+                        {[1,2,3,4,5].map((star) => (
+                          <Star 
+                            key={star} 
+                            className={`h-4 w-4 ${
+                              star <= review.rating 
+                                ? 'text-warning fill-current' 
+                                : 'text-muted-foreground'
+                            }`} 
+                          />
+                        ))}
+                      </div>
+                      <div className="text-sm text-muted-foreground mt-1">{review.date}</div>
+                    </div>
+                  </div>
+                  
+                  <p className="text-muted-foreground mb-3">{review.comment}</p>
+                  
+                  {review.response && (
+                    <div className="bg-primary/10 border-l-4 border-primary pl-4 py-2 mt-3">
+                      <div className="font-medium text-sm text-primary mb-1">Respuesta del profesional:</div>
+                      <p className="text-sm">{review.response}</p>
+                    </div>
+                  )}
+                  
+                  <div className="flex items-center space-x-4 text-sm mt-3">
+                    <Button variant="ghost" size="sm" className="p-0 h-auto">
+                      <ThumbsUp className="h-4 w-4 mr-1" />
+                      Útil ({review.helpful})
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        
+        <div className="text-center">
+          <Button variant="outline" className="glass border-white/20 hover:glass-medium">
+            Ver Todas las Reseñas
+          </Button>
         </div>
       </CardContent>
     </Card>
   );
 }
 
-function StatsSection({ profile }: { profile: User }) {
-  const professionalProfile = profile.professionalProfile;
-  const completedServices = professionalProfile?.completedServices || profile.completedServices || 0;
-  const totalServices = professionalProfile?.totalServices || profile.totalServices || 0;
-  const completionRate = totalServices > 0 ? Math.round((completedServices / totalServices) * 100) : 0;
-
+function StatsSection() {
   return (
     <Card className="glass border-white/10">
       <CardHeader>
@@ -384,31 +600,31 @@ function StatsSection({ profile }: { profile: User }) {
           <span>Estadísticas del Profesional</span>
         </CardTitle>
       </CardHeader>
-
+      
       <CardContent>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="text-center glass-medium rounded-lg p-4">
             <Shield className="h-8 w-8 text-success mx-auto mb-2" />
-            <div className="text-2xl font-bold">{completionRate}%</div>
+            <div className="text-2xl font-bold">{publicProfile.stats.completionRate}%</div>
             <div className="text-sm text-muted-foreground">Tasa de finalización</div>
           </div>
-
+          
           <div className="text-center glass-medium rounded-lg p-4">
             <Clock className="h-8 w-8 text-primary mx-auto mb-2" />
-            <div className="text-2xl font-bold">{completedServices}</div>
-            <div className="text-sm text-muted-foreground">Servicios completados</div>
+            <div className="text-2xl font-bold">{publicProfile.stats.onTimeDelivery}%</div>
+            <div className="text-sm text-muted-foreground">Entregas a tiempo</div>
           </div>
-
+          
           <div className="text-center glass-medium rounded-lg p-4">
             <Users className="h-8 w-8 text-warning mx-auto mb-2" />
-            <div className="text-2xl font-bold">{profile.totalReviews || 0}</div>
-            <div className="text-sm text-muted-foreground">Reseñas totales</div>
+            <div className="text-2xl font-bold">{publicProfile.stats.repeatClients}%</div>
+            <div className="text-sm text-muted-foreground">Clientes recurrentes</div>
           </div>
-
+          
           <div className="text-center glass-medium rounded-lg p-4">
             <Briefcase className="h-8 w-8 text-blue-400 mx-auto mb-2" />
-            <div className="text-2xl font-bold">{totalServices}</div>
-            <div className="text-sm text-muted-foreground">Servicios totales</div>
+            <div className="text-2xl font-bold">${publicProfile.stats.avgProjectValue}</div>
+            <div className="text-sm text-muted-foreground">Valor promedio proyecto</div>
           </div>
         </div>
       </CardContent>
@@ -416,140 +632,13 @@ function StatsSection({ profile }: { profile: User }) {
   );
 }
 
-function LoadingSkeleton() {
-  return (
-    <div className="min-h-screen bg-background">
-      <FixiaNavigation />
-
-      <main className="container mx-auto px-6 py-8">
-        <div className="space-y-8">
-          <Card className="glass border-white/10">
-            <CardContent className="p-8">
-              <div className="flex items-center justify-center py-20">
-                <div className="text-center space-y-4">
-                  <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto" />
-                  <p className="text-muted-foreground">Cargando perfil...</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </main>
-    </div>
-  );
-}
-
-function ErrorState({ message }: { message: string }) {
-  const navigate = useNavigate();
-
-  return (
-    <div className="min-h-screen bg-background">
-      <FixiaNavigation />
-
-      <main className="container mx-auto px-6 py-8">
-        <div className="space-y-8">
-          <Card className="glass border-white/10">
-            <CardContent className="p-8">
-              <div className="flex flex-col items-center justify-center py-20 space-y-6">
-                <div className="h-20 w-20 rounded-full bg-destructive/10 flex items-center justify-center">
-                  <Flag className="h-10 w-10 text-destructive" />
-                </div>
-                <div className="text-center space-y-2">
-                  <h2 className="text-2xl font-bold">Perfil no encontrado</h2>
-                  <p className="text-muted-foreground max-w-md">{message}</p>
-                </div>
-                <Button onClick={() => navigate('/services')} className="liquid-gradient">
-                  Volver a Servicios
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </main>
-    </div>
-  );
-}
-
 export default function PublicProfilePage() {
-  const { userId } = useParams<{ userId: string }>();
-  const [profile, setProfile] = useState<User | null>(null);
-  const [services, setServices] = useState<Service[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [servicesLoading, setServicesLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchProfileData = async () => {
-      if (!userId) {
-        setError("ID de usuario no proporcionado");
-        setLoading(false);
-        return;
-      }
-
-      try {
-        setLoading(true);
-        setError(null);
-
-        // Fetch user profile
-        const profileData = await userService.getPublicProfile(userId);
-
-        // Validate that profile exists
-        if (!profileData) {
-          setError("El perfil no existe");
-          setLoading(false);
-          return;
-        }
-
-        setProfile(profileData);
-        setLoading(false);
-
-        // Fetch services in parallel
-        fetchServices(userId);
-      } catch (err: any) {
-        console.error("Error fetching profile:", err);
-        const errorMessage = err?.response?.status === 404
-          ? "El perfil que buscas no existe o ha sido eliminado"
-          : err?.message || "Ocurrió un error al cargar el perfil. Por favor, intenta nuevamente.";
-        setError(errorMessage);
-        setLoading(false);
-      }
-    };
-
-    const fetchServices = async (professionalId: string) => {
-      try {
-        setServicesLoading(true);
-
-        // Fetch services for this professional
-        const response = await servicesService.getServices({
-          professionalId: professionalId,
-          active: true
-        });
-
-        setServices(response.data || []);
-      } catch (err: any) {
-        console.error("Error fetching services:", err);
-        // Don't set error state for services - just show empty state
-        setServices([]);
-      } finally {
-        setServicesLoading(false);
-      }
-    };
-
-    fetchProfileData();
-  }, [userId]);
-
-  if (loading) {
-    return <LoadingSkeleton />;
-  }
-
-  if (error || !profile) {
-    return <ErrorState message={error || "Perfil no encontrado"} />;
-  }
+  const { userId } = useParams();
 
   return (
     <div className="min-h-screen bg-background">
-      <FixiaNavigation />
-
+      <Navigation />
+      
       <main className="container mx-auto px-6 py-8">
         <div className="space-y-8">
           {/* Profile Header */}
@@ -558,7 +647,7 @@ export default function PublicProfilePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <ProfileHeader profile={profile} />
+            <ProfileHeader />
           </motion.div>
 
           {/* Profile Content */}
@@ -576,19 +665,19 @@ export default function PublicProfilePage() {
               </TabsList>
 
               <TabsContent value="services" className="mt-6">
-                <ServicesSection services={services} loading={servicesLoading} />
+                <ServicesSection />
               </TabsContent>
-
+              
               <TabsContent value="portfolio" className="mt-6">
                 <PortfolioSection />
               </TabsContent>
-
+              
               <TabsContent value="reviews" className="mt-6">
-                <ReviewsSection profile={profile} />
+                <ReviewsSection />
               </TabsContent>
-
+              
               <TabsContent value="stats" className="mt-6">
-                <StatsSection profile={profile} />
+                <StatsSection />
               </TabsContent>
             </Tabs>
           </motion.div>

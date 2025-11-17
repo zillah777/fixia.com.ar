@@ -1,10 +1,10 @@
-import { TrendingUp, Users, Heart, Zap, Target, DollarSign, CheckCircle, Clock } from "lucide-react";
+import { TrendingUp, Users, Star, Zap, Target, DollarSign, CheckCircle, Clock } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "./ui/chart";
 import { Bar, BarChart, Line, LineChart, ResponsiveContainer, XAxis, YAxis, Area, AreaChart } from "recharts";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 
 const serviceData = [
   { month: "Ene", servicios: 156, ingresos: 12400, satisfaccion: 4.8 },
@@ -18,37 +18,34 @@ const serviceData = [
 const chartConfig = {
   servicios: {
     label: "Servicios",
-    color: "#667eea"},
+    color: "#667eea",
+  },
   ingresos: {
     label: "Ingresos",
-    color: "#764ba2"},
+    color: "#764ba2",
+  },
   satisfaccion: {
     label: "Satisfacción",
-    color: "#51cf66"}};
+    color: "#51cf66",
+  },
+};
 
 export function FixiaHeroPanel() {
   return (
     <div className="space-y-8">
-      {/* Welcome Section - Modern High-Contrast Design */}
-      <motion.div
+      {/* Welcome Section */}
+      <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="relative overflow-hidden rounded-2xl p-6 border-2 border-primary shadow-2xl shadow-primary/20"
+        className="flex flex-col space-y-3"
       >
-        {/* Animated Gradient Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-blue-500/20 to-purple-500/20 backdrop-blur-xl" />
-
-        {/* Subtle animated shine effect */}
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-100%] animate-shimmer" />
-
-        {/* Content */}
-        <div className="relative z-10 flex items-center justify-between">
+        <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-4xl font-extrabold mb-2 text-white tracking-tight drop-shadow-lg">
+            <h1 className="bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent">
               ¡Hola Juan! 👋
             </h1>
-            <p className="text-lg text-white/90 font-medium">
+            <p className="text-muted-foreground">
               Tu tiempo vale. Fixia lo cuida. Aquí está tu resumen de actividad.
             </p>
           </div>
@@ -82,7 +79,7 @@ export function FixiaHeroPanel() {
             title: "Rating Promedio",
             value: "4.9",
             change: "Excelente reputación",
-            icon: Heart,
+            icon: Star,
             color: "text-warning",
             delay: 0.3
           },

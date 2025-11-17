@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { Link } from "react-router-dom";
 import { 
   ArrowLeft, Shield, Lock, Eye, Database, 
@@ -9,13 +9,40 @@ import { Button } from "../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Alert, AlertDescription } from "../components/ui/alert";
-import { FixiaNavigation } from "../components/FixiaNavigation";
 
+function Navigation() {
+  return (
+    <motion.header 
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      className="sticky top-0 z-50 w-full glass border-b border-white/10"
+    >
+      <div className="container mx-auto flex h-16 items-center justify-between px-6">
+        <Link to="/" className="flex items-center space-x-3">
+          <div className="h-8 w-8 liquid-gradient rounded-lg flex items-center justify-center shadow-lg">
+            <span className="text-white font-bold">F</span>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-lg font-semibold">Fixia</span>
+            <span className="text-xs text-muted-foreground -mt-1">Conecta. Confía. Resuelve.</span>
+          </div>
+        </Link>
+        
+        <Link to="/">
+          <Button variant="ghost" className="hover:glass-medium">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Volver al Inicio
+          </Button>
+        </Link>
+      </div>
+    </motion.header>
+  );
+}
 
 export default function PrivacyPage() {
   return (
     <div className="min-h-screen bg-background">
-      <FixiaNavigation />
+      <Navigation />
       
       <main className="container mx-auto px-6 py-12">
         <motion.div
@@ -26,7 +53,7 @@ export default function PrivacyPage() {
         >
           {/* Header */}
           <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold mb-4 text-foreground">
+            <h1 className="text-4xl font-bold mb-4">
               Política de Privacidad
             </h1>
             <p className="text-muted-foreground mb-4">
@@ -48,7 +75,7 @@ export default function PrivacyPage() {
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground leading-relaxed">
-                En <strong>Fixia</strong>, respetamos y protegemos la privacidad de nuestros usuarios. 
+                En <strong>Fixia.com.ar</strong>, respetamos y protegemos la privacidad de nuestros usuarios. 
                 Esta política describe cómo recopilamos, usamos, almacenamos y protegemos tu información personal 
                 cuando utilizas nuestra plataforma de matchmaking de servicios profesionales en la Provincia del Chubut, Argentina.
               </p>
@@ -96,7 +123,7 @@ export default function PrivacyPage() {
                 <div>
                   <h5 className="font-semibold mb-3 flex items-center space-x-2">
                     <Shield className="h-4 w-4 text-warning" />
-                    <span>Datos Profesionales</span>
+                    <span>Datos Profesionales (AS)</span>
                   </h5>
                   <div className="space-y-2">
                     <div className="flex items-center space-x-2">
@@ -148,7 +175,7 @@ export default function PrivacyPage() {
                     <Shield className="h-5 w-5 text-primary mt-0.5" />
                     <div>
                       <h6 className="font-medium">Matchmaking Inteligente</h6>
-                      <p className="text-sm text-muted-foreground">Conectar Profesionales con Clientes según ubicación, categorías y necesidades específicas</p>
+                      <p className="text-sm text-muted-foreground">Conectar AS con Exploradores según ubicación, categorías y necesidades específicas</p>
                     </div>
                   </div>
                   <div className="flex items-start space-x-3">
@@ -171,7 +198,7 @@ export default function PrivacyPage() {
                     <Shield className="h-5 w-5 text-primary mt-0.5" />
                     <div>
                       <h6 className="font-medium">Facturación y Pagos</h6>
-                      <p className="text-sm text-muted-foreground">Procesar suscripciones mensuales de profesionales ($3,900 ARS/mes)</p>
+                      <p className="text-sm text-muted-foreground">Procesar suscripciones mensuales de profesionales ($5000/mes)</p>
                     </div>
                   </div>
                   <div className="flex items-start space-x-3">
@@ -374,7 +401,7 @@ export default function PrivacyPage() {
                   <Mail className="h-5 w-5 text-primary" />
                   <div>
                     <p className="text-sm font-medium">Email Privacidad</p>
-                    <p className="text-sm text-muted-foreground">privacidad@fixia.app</p>
+                    <p className="text-sm text-muted-foreground">privacidad@fixia.com.ar</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-3 p-3 glass-medium rounded-lg">
@@ -417,7 +444,7 @@ export default function PrivacyPage() {
             <CardContent className="p-6 text-center">
               <h4 className="font-semibold mb-4">Consentimiento y Aceptación</h4>
               <p className="text-sm text-muted-foreground mb-6">
-                Al utilizar <strong>Fixia</strong>, consientes el procesamiento de tus datos personales
+                Al utilizar <strong>Fixia.com.ar</strong>, consientes el procesamiento de tus datos personales 
                 según se describe en esta política de privacidad. Tu confianza es fundamental para nosotros.
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
