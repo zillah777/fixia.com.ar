@@ -1,6 +1,7 @@
 /// <reference types="vite/client" />
 import axios, { AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import { toast } from 'sonner';
+import { secureTokenManager } from '../utils/secureTokenManager';
 
 // API Configuration with robust validation
 const getAPIBaseURL = (): string => {
@@ -73,20 +74,21 @@ const getCookieValue = (name: string): string | null => {
 // Also adds CSRF token for state-changing requests
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    // FALLBACK: For cross-domain compatibility, add token from localStorage to Authorization header
-    // This is necessary because httpOnly cookies don't work between fixia.app and fixia-api.onrender.com
-    // TODO: Remove this when deployed to same domain (api.fixia.com.ar)
-    const accessToken = localStorage.getItem('fixia_access_token');
-
-    if (accessToken && config.headers) {
-      config.headers.Authorization = `Bearer ${accessToken}`;
-    }
+    // The Authorization header is no longer needed from the client.
+    // The browser will automatically send the secure httpOnly cookie.
 
     // SECURITY: Add CSRF token for state-changing requests (POST, PUT, DELETE, PATCH)
     // CSRF protection is implemented on backend (see csrf.guard.ts)
     if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(config.method?.toUpperCase() || '')) {
       const csrfToken = getCookieValue('csrf-token');
-      if (csrfToken && config.headers) {
+      // SECURITY FIX: CSRF token is now mandatory for state-changing requests.
+      if (!csrfToken) {
+        const errorMessage = 'CSRF token missing. Request blocked for security reasons. Please refresh the page.';
+        console.error(errorMessage);
+        toast.error('Error de seguridad. Por favor, recarga la página.');
+        return Promise.reject(new Error(errorMessage));
+      }
+      if (config.headers) {
         config.headers['X-CSRF-Token'] = csrfToken;
       }
     }
@@ -139,30 +141,19 @@ apiClient.interceptors.response.use(
       originalRequest._retry = true;
       isRefreshing = true;
 
+      // The refresh logic is now handled by secureTokenManager, which relies on HttpOnly cookies.
+      // We no longer need to manually handle refresh tokens from localStorage here.
       try {
-        // SECURITY: Attempt token refresh via httpOnly cookies AND localStorage token
-        const refreshToken = localStorage.getItem('fixia_refresh_token');
-        const response = await axios.post(`${API_BASE_URL}/auth/refresh`,
-          { refresh_token: refreshToken },
-          {
-            withCredentials: true, // Include httpOnly cookies
-            timeout: 5000,
-            validateStatus: (status) => status === 200
-          }
-        );
+        // Delegate refresh logic to the secure manager
+        const refreshed = await secureTokenManager.refreshToken();
 
-        if (response.status === 200 && response.data) {
-          // Update access token in localStorage if provided
-          const newAccessToken = response.data.access_token || response.data.data?.access_token;
-          if (newAccessToken) {
-            localStorage.setItem('fixia_access_token', newAccessToken);
-            console.log('✅ Access token refreshed and stored');
-          }
-
+        if (refreshed) {
+          console.log('✅ Token refreshed successfully via secure manager.');
           processQueue(null);
           return apiClient(originalRequest);
         } else {
-          throw new Error('Token refresh failed');
+          console.error('Token refresh failed via secure manager.');
+          throw new Error('Token refresh failed.');
         }
       } catch (refreshError) {
         processQueue(refreshError);
@@ -174,11 +165,8 @@ apiClient.interceptors.response.use(
         const isAuthVerification = originalRequest?.url?.includes('/auth/verify');
         const hadUserData = localStorage.getItem('fixia_user_basic');
 
-        // Clear all authentication data on refresh failure
-        localStorage.removeItem('fixia_access_token');
-        localStorage.removeItem('fixia_refresh_token');
-        localStorage.removeItem('fixia_user_basic');
-        localStorage.removeItem('fixia_preferences');
+        // The secureTokenManager's refreshToken method already handles clearing local data on failure.
+        // No need to manually clear localStorage here.
 
         // Only redirect if:
         // 1. NOT on an auth page already

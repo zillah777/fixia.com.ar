@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from "react";
 import { toast } from "sonner";
 import { notificationsService, type Notification as APINotification } from "../lib/services/notifications.service";
-import { useSecureAuth } from "./SecureAuthContext";
+import { useAuth } from "./SecureAuthContext"; // CORRECTED: Use the new, secure useAuth hook
 import { useWebSocket, useWebSocketEvent } from "../hooks/useWebSocket";
 
 interface Notification {
@@ -32,7 +32,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(true);
-  const { user, isAuthenticated } = useSecureAuth();
+  const { user, isAuthenticated } = useAuth();
   const [pollingInterval, setPollingInterval] = useState<NodeJS.Timeout | null>(null);
 
   // WebSocket integration for real-time notifications

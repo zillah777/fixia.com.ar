@@ -12,8 +12,10 @@ import { Badge } from "../components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Progress } from "../components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
-import { useAuth } from "../context/AuthContext";
+// CORRECTED: Use the new, secure AuthContext
+import { useAuth } from "../context/SecureAuthContext"; 
 import { useDashboardStats, useCurrentProjects, useRecentActivity } from "../hooks/useDashboardData";
+import { StatCardSkeleton, ProjectCardSkeleton, ActivityItemSkeleton } from "../components/skeletons/DashboardSkeletons";
 
 function Navigation() {
   const { user, logout } = useAuth();
@@ -63,7 +65,7 @@ function Navigation() {
           </Button>
           <Link to="/profile">
             <Avatar className="h-8 w-8 cursor-pointer ring-2 ring-primary/20 hover:ring-primary/40 transition-all">
-              <AvatarImage src={user?.avatar} />
+              <AvatarImage src={user?.avatar || undefined} />
               <AvatarFallback>{user?.name?.charAt(0)}</AvatarFallback>
             </Avatar>
           </Link>
@@ -172,7 +174,13 @@ function RecentActivity() {
         <CardTitle>Actividad Reciente</CardTitle>
       </CardHeader>
       <CardContent className="min-h-[200px]">
-        {isLoading ? <p className="text-muted-foreground">Cargando actividad...</p> : <div className="space-y-4">
+        {isLoading ? (
+          <div className="space-y-4">
+            <ActivityItemSkeleton />
+            <ActivityItemSkeleton />
+            <ActivityItemSkeleton />
+          </div>
+        ) : <div className="space-y-4">
           {activities.map((activity) => {
             const Icon = activity.icon;
             return (
@@ -207,14 +215,15 @@ function StatCards() {
 
   return (
     <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-      {isLoading && Array.from({ length: 4 }).map((_, index) => (
-        <Card key={index} className="glass border-white/10 h-[130px] p-6 flex items-center justify-center"><p className="text-muted-foreground">Cargando...</p></Card>
-      ))}
+      {isLoading &&
+        Array.from({ length: 4 }).map((_, index) => (
+          <StatCardSkeleton key={index} />
+        ))}
       {!isLoading && stats?.map((stat, index) => {
         const Icon = stat.icon;
         return (
           <motion.div
-            key={stat.title}
+            key={index}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 * index }}
@@ -261,7 +270,12 @@ function CurrentProjects() {
         </div>
       </CardHeader>
       <CardContent className="min-h-[200px]">
-        {isLoading && <p className="text-muted-foreground">Cargando proyectos...</p>}
+        {isLoading && (
+          <div className="space-y-4">
+            <ProjectCardSkeleton />
+            <ProjectCardSkeleton />
+          </div>
+        )}
         {!isLoading && !projects?.length && <p className="text-muted-foreground">No tienes proyectos activos.</p>}
         {!isLoading && projects?.length && (
           <div className="space-y-4">
@@ -303,15 +317,26 @@ function CurrentProjects() {
 }
 
 export default function DashboardPage() {
-  const { user } = useAuth();
+  const { user, isLoading, isAuthenticated } = useAuth();
 
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
       
       <main className="container mx-auto px-6 py-8">
-        {/* Welcome Header */}
-        <motion.div
+        {isLoading ? (
+          // Skeleton loader for the welcome message
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="mb-8"
+          >
+            <div className="h-9 w-1/2 bg-slate-700/50 rounded-md animate-pulse mb-2"></div>
+            <div className="h-6 w-3/4 bg-slate-700/50 rounded-md animate-pulse"></div>
+          </motion.div>
+        ) : isAuthenticated && user ? (
+          // Welcome Header
+          <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
@@ -323,7 +348,10 @@ export default function DashboardPage() {
           <p className="text-muted-foreground">
             Gestiona tus servicios, proyectos y aprovecha nuevas oportunidades en Fixia
           </p>
-        </motion.div>
+          </motion.div>
+        ) : (
+          <div className="text-center py-16 text-muted-foreground">Redirigiendo a la página de inicio de sesión...</div>
+        )}
 
         {/* Quick Actions */}
         <motion.div

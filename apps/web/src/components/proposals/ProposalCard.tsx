@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { ChevronDown, Star, MapPin, Clock, DollarSign, CheckCircle, AlertCircle, MessageSquare, Loader2, ClipboardCheck, Phone } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { Badge } from '../ui/badge';
@@ -7,9 +8,8 @@ import { Button } from '../ui/button';
 import { Card, CardContent } from '../ui/card';
 import { VerificationBadge } from '../verification/VerificationBadge';
 import { toast } from 'sonner';
-import opportunitiesService from '../../lib/services/opportunities.service';
-import { matchService } from '../../lib/services/match.service';
-import { useSecureAuth } from '../../context/SecureAuthContext';
+import opportunitiesService from '@/lib/services/opportunities.service';
+import { useCurrentUser } from '@/utils/useCurrentUser';
 
 interface Professional {
   id: string;
@@ -63,10 +63,40 @@ export function ProposalCard({
   userProposalsForProject = [],
 }: ProposalCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
   const [showWhatsApp, setShowWhatsApp] = useState(false);
   const professional = proposal.professional;
-  const { user } = useSecureAuth();
+  const { data: user } = useCurrentUser();
+  const queryClient = useQueryClient();
+
+  const { mutate: acceptProposal, isPending: isAccepting } = useMutation({
+    mutationFn: () => opportunitiesService.acceptProposal(projectId, proposal.id),
+    onSuccess: () => {
+      toast.success('Propuesta aceptada exitosamente. Ya puedes contactar al profesional por WhatsApp.');
+      onProposalUpdated?.(proposal.id, 'accepted');
+      setShowWhatsApp(true);
+      toast.info('Match creado automáticamente. Refrescando datos...');
+      onAfterMatchCreated?.();
+      // Invalidate queries related to proposals or projects to refetch data
+      queryClient.invalidateQueries({ queryKey: ['projectProposals', projectId] });
+    },
+    onError: (error: any) => {
+      toast.error(error.message || 'Error al aceptar la propuesta');
+    },
+  });
+
+  const { mutate: rejectProposal, isPending: isRejecting } = useMutation({
+    mutationFn: () => opportunitiesService.rejectProposal(projectId, proposal.id),
+    onSuccess: () => {
+      toast.success('Propuesta rechazada');
+      onProposalUpdated?.(proposal.id, 'rejected');
+      queryClient.invalidateQueries({ queryKey: ['projectProposals', projectId] });
+    },
+    onError: (error: any) => {
+      toast.error(error.message || 'Error al rechazar la propuesta');
+    },
+  });
+
+  const isProcessing = isAccepting || isRejecting;
 
   const statusConfig = {
     pending: { label: 'Pendiente', color: 'bg-warning/20 text-warning border-warning/30', icon: AlertCircle },
@@ -75,37 +105,6 @@ export function ProposalCard({
   };
 
   const currentStatus = statusConfig[proposal.status];
-
-  const handleAcceptProposal = async () => {
-    setIsProcessing(true);
-    try {
-      await opportunitiesService.acceptProposal(projectId, proposal.id);
-      toast.success('Propuesta aceptada exitosamente. Ya puedes contactar al profesional por WhatsApp.');
-      onProposalUpdated?.(proposal.id, 'accepted');
-      setShowWhatsApp(true);
-      // El match ahora se crea automáticamente en el backend.
-      // Disparamos el refresco del dashboard para reflejar el nuevo estado.
-      toast.info('Match creado automáticamente. Refrescando datos...');
-      onAfterMatchCreated?.();
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Error al aceptar la propuesta');
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  const handleRejectProposal = async () => {
-    setIsProcessing(true);
-    try {
-      await opportunitiesService.rejectProposal(projectId, proposal.id);
-      toast.success('Propuesta rechazada');
-      onProposalUpdated?.(proposal.id, 'rejected');
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Error al rechazar la propuesta');
-    } finally {
-      setIsProcessing(false);
-    }
-  };
 
   // Lógica robusta para máximo 2 propuestas
   const proposalsSafe = userProposalsForProject ?? [];
@@ -280,7 +279,7 @@ export function ProposalCard({
                     className="flex gap-3 pt-2"
                   >
                     <Button
-                      onClick={handleRejectProposal}
+                      onClick={() => rejectProposal()}
                       disabled={isProcessing}
                       variant="outline"
                       className="flex-1 border-destructive/30 text-destructive/80 hover:text-destructive hover:bg-destructive/10"
@@ -288,7 +287,7 @@ export function ProposalCard({
                       Rechazar
                     </Button>
                     <Button
-                      onClick={handleAcceptProposal}
+                      onClick={() => acceptProposal()}
                       disabled={isProcessing}
                       className="flex-1 bg-gradient-to-r from-success via-success to-success/80 hover:from-success/90 hover:to-success/70 text-white font-semibold shadow-lg transition-all disabled:opacity-50"
                     >

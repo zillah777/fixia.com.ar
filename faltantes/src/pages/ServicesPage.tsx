@@ -794,7 +794,10 @@ export default function ServicesPage() {
             transition={{ duration: 0.6, delay: 0.6 }}
             className="text-center mt-12"
           >
-            <Button variant="outline" className="glass border-white/20 hover:glass-medium">
+            <Button 
+              variant="outline" className="glass border-white/20 hover:glass-medium"
+              onClick={() => toast.info('Funcionalidad de paginación en desarrollo.')}
+            >
               Cargar Más Servicios
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>

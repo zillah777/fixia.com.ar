@@ -22,7 +22,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Textarea } from "../components/ui/textarea";
 import { Label } from "../components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/SecureAuthContext";
 import { toast } from "sonner";
 import { useOpportunities } from "../hooks/useOpportunities";
 
@@ -465,7 +465,10 @@ function SearchAndFilters({
             </Button>
           </div>
           
-          <Button variant="outline" size="sm" className="glass border-white/20">
+          <Button 
+            variant="outline" size="sm" className="glass border-white/20"
+            onClick={() => refetch()}
+          >
             <RefreshCw className="h-4 w-4" />
           </Button>
         </div>
@@ -790,17 +793,18 @@ function ProposalForm({ opportunity, onClose }: { opportunity: any, onClose: () 
     deliveryTime: '',
     questions: ''
   });
+  const { mutate: submitProposal, isPending } = useSubmitProposal();
 
   const handleSubmit = async () => {
-    try {
-      // Here you would send the proposal to your backend
-      console.log('Sending proposal:', proposalData);
-      
-      toast.success("¡Propuesta enviada correctamente!");
-      onClose();
-    } catch (error) {
-      toast.error("Error al enviar la propuesta");
-    }
+    submitProposal(
+      { ...proposalData, opportunityId: opportunity.id },
+      {
+        onSuccess: () => {
+          // Cierra el modal solo si la mutación es exitosa
+          onClose();
+        }
+      }
+    );
   };
 
   return (
@@ -1050,7 +1054,10 @@ export default function OpportunitiesPage() {
             transition={{ duration: 0.6, delay: 0.6 }}
             className="text-center mt-12"
           >
-            <Button variant="outline" className="glass border-white/20 hover:glass-medium">
+            <Button 
+              variant="outline" className="glass border-white/20 hover:glass-medium"
+              onClick={() => toast.info('Funcionalidad de paginación en desarrollo.')}
+            >
               Cargar Más Oportunidades
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>

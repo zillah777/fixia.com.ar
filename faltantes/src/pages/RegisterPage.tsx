@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs"
 import { Checkbox } from "../components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import { Alert, AlertDescription } from "../components/ui/alert";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/SecureAuthContext";
 
 interface FormData {
   // Common fields
@@ -851,30 +851,30 @@ export default function RegisterPage() {
     e.preventDefault();
     
     if (formData.password !== formData.confirmPassword) {
-      alert('Las contraseñas no coinciden');
+      toast.error('Las contraseñas no coinciden');
       return;
     }
 
     if (currentTab === 'professional' && formData.serviceCategories.length === 0) {
-      alert('Debes seleccionar al menos una categoría de servicio');
+      toast.error('Debes seleccionar al menos una categoría de servicio');
       return;
     }
 
     if (currentTab === 'professional' && formData.serviceCategories.length > 10) {
-      alert('No puedes tener más de 10 categorías de servicio');
+      toast.error('No puedes tener más de 10 categorías de servicio');
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      await register({
+      const result = await register({
         email: formData.email,
         password: formData.password,
         fullName: formData.fullName,
         phone: formData.phone,
         location: formData.location,
-        userType: currentTab,
+        userType: currentTab as 'client' | 'professional',
         businessName: formData.businessName,
         serviceCategories: formData.serviceCategories,
         description: formData.description,
@@ -885,10 +885,13 @@ export default function RegisterPage() {
         certifications: formData.certifications
       });
       
-      navigate('/dashboard');
+      if (result.success) {
+        // The context now handles the success toast.
+        // Redirect to login page to verify email.
+        navigate('/login?status=registered');
+      }
     } catch (error) {
       console.error('Error en registro:', error);
-      alert('Error al crear la cuenta. Intenta nuevamente.');
     } finally {
       setIsSubmitting(false);
     }

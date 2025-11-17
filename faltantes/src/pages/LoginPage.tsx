@@ -6,8 +6,7 @@ import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
-import { Checkbox } from "../components/ui/checkbox";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/SecureAuthContext";
 import { toast } from "sonner@2.0.3";
 
 export default function LoginPage() {
@@ -15,33 +14,21 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
-  const [loading, setLoading] = useState(false);
   
   const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!email || !password) {
-      toast.error("Por favor completa todos los campos");
-      return;
-    }
-
-    setLoading(true);
-    
     try {
-      const success = await login(email, password);
-      if (success) {
-        toast.success("¡Bienvenido de vuelta!");
-        navigate("/dashboard");
-      } else {
-        toast.error("Credenciales incorrectas");
-      }
+      await login(email, password);
+      // The login function in SecureAuthContext now handles success toast and invalidates queries.
+      // We can redirect on success.
+      navigate("/dashboard");
     } catch (error) {
-      toast.error("Algo salió mal. Inténtalo de nuevo.");
-    } finally {
-      setLoading(false);
+      // The login function now throws an error and the api interceptor shows a detailed toast.
+      // We just need to catch it to prevent the app from crashing.
+      console.error("Login failed:", error);
     }
   };
 
@@ -140,11 +127,11 @@ export default function LoginPage() {
 
                 {/* Options */}
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
+                  <div className="flex items-center space-x-2 opacity-50 cursor-not-allowed">
+                    <input
                       id="remember"
-                      checked={rememberMe}
-                      onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+                      type="checkbox"
+                      disabled
                     />
                     <Label htmlFor="remember" className="text-sm text-muted-foreground">
                       Recordarme
@@ -162,9 +149,9 @@ export default function LoginPage() {
                 <Button
                   type="submit"
                   className="w-full liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg"
-                  disabled={loading}
+                  disabled={login.isLoading}
                 >
-                  {loading ? (
+                  {login.isLoading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       Iniciando sesión...

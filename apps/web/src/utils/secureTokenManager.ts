@@ -7,13 +7,17 @@ interface TokenInfo {
   lastRefresh?: number;
 }
 
+type AuthStateListener = (isAuthenticated: boolean) => void;
+
 /**
  * Gestor seguro de tokens que usa httpOnly cookies en lugar de localStorage
  * Los tokens reales se almacenan en cookies httpOnly inaccesibles desde JavaScript
  */
 class SecureTokenManager {
+  private listeners: AuthStateListener[] = [];
   private tokenInfo: TokenInfo = { isAuthenticated: false };
   private refreshPromise: Promise<void> | null = null;
+  private currentUser: any | null = null; // Store user data internally
   private skipVerificationUntil = 0; // Timestamp until which to skip verification after login
 
   /**
@@ -27,17 +31,10 @@ class SecureTokenManager {
       return this.tokenInfo.isAuthenticated;
     }
 
-    // Check if we have access token in localStorage (mobile fallback)
-    const hasAccessToken = !!localStorage.getItem('fixia_access_token');
-    if (!hasAccessToken) {
-      console.log('⚠️ No access token found in localStorage');
-      this.tokenInfo = { isAuthenticated: false };
-      return false;
-    }
-
     try {
       // Hacer una llamada liviana al servidor para verificar la autenticación
       const response = await api.get('/auth/verify');
+      this.currentUser = response.data?.user || null;
 
       if (response.data) {
         this.tokenInfo = {
@@ -48,6 +45,7 @@ class SecureTokenManager {
         console.log('✅ Authentication verified successfully');
         return true;
       } else {
+        this.currentUser = null;
         this.tokenInfo = { isAuthenticated: false };
         return false;
       }
@@ -59,6 +57,7 @@ class SecureTokenManager {
         // Silent handling for expected 401 responses (user not logged in)
         console.debug('No authenticated session found - this is normal on first visit');
       }
+      this.currentUser = null;
       this.tokenInfo = { isAuthenticated: false };
       return false;
     }
@@ -111,32 +110,12 @@ class SecureTokenManager {
         };
       }
 
-      // Debug: Log token extraction
-      console.log('🔍 Extracted tokens:', {
-        hasAccessToken: !!accessToken,
-        hasRefreshToken: !!refreshToken,
-        accessTokenPreview: accessToken ? accessToken.substring(0, 20) + '...' : 'undefined',
-        refreshTokenPreview: refreshToken ? refreshToken.substring(0, 20) + '...' : 'undefined',
-      });
+      // The server is now responsible for setting the httpOnly cookies.
+      // The client no longer needs to store tokens in localStorage.
+      // We will still clear any old data from localStorage on logout.
 
-      // SECURITY: Primary authentication via httpOnly cookies (set by server)
-      // FALLBACK: Also store tokens in localStorage for cross-domain scenarios
-      // (www.fixia.app -> fixia-api.onrender.com requires explicit credential handling)
-
-      // Store tokens as fallback for Authorization header
-      if (accessToken) {
-        localStorage.setItem('fixia_access_token', accessToken);
-        console.log('✅ Access token stored in localStorage');
-      } else {
-        console.error('❌ No access token to store!');
-      }
-
-      if (refreshToken) {
-        localStorage.setItem('fixia_refresh_token', refreshToken);
-        console.log('✅ Refresh token stored in localStorage');
-      } else {
-        console.error('❌ No refresh token to store!');
-      }
+      // Store user data internally for consistency
+      this.currentUser = userData;
 
       console.log('✅ Authentication successful - tokens storage attempted');
 
@@ -170,6 +149,30 @@ class SecureTokenManager {
   }
 
   /**
+   * Realizar el registro de un nuevo usuario.
+   * No inicia sesión automáticamente; el backend debe enviar un email de verificación.
+   */
+  async register(userData: any): Promise<{ success: boolean; error?: string }> {
+    try {
+      // El endpoint de registro no devuelve datos de sesión, solo un mensaje de éxito.
+      await api.post('/auth/register', userData);
+      return { success: true };
+    } catch (error: any) {
+      // El interceptor de api.ts ya muestra un toast con el error.
+      // Aquí devolvemos el mensaje para que el formulario pueda manejarlo si es necesario.
+      console.error('Error en registro - Details:', {
+        message: error?.message || 'Unknown error',
+        response: error?.response?.data || 'No response data',
+      });
+
+      return {
+        success: false,
+        error: error?.response?.data?.message || error?.message || 'Error de registro',
+      };
+    }
+  }
+
+  /**
    * Realizar logout y limpiar cookies httpOnly en el servidor
    * Las cookies httpOnly se limpian automáticamente en el servidor
    */
@@ -180,9 +183,9 @@ class SecureTokenManager {
       console.error('Error en logout:', error);
     } finally {
       this.tokenInfo = { isAuthenticated: false };
-      // Tokens are in httpOnly cookies - they're automatically cleared by server on logout
-      // No manual localStorage cleanup needed (not using localStorage for tokens anymore)
+      // Clear any remaining sensitive data from local storage.
       this.clearLocalData();
+      this.notifyListeners();
     }
   }
 
@@ -209,16 +212,9 @@ class SecureTokenManager {
 
   private async _performRefresh(): Promise<void> {
     try {
-      const response = await api.post('/auth/refresh', {});
-      const data = response.data;
-
-      // Update localStorage tokens if provided in response
-      if (data?.access_token) {
-        localStorage.setItem('fixia_access_token', data.access_token);
-      }
-      if (data?.refresh_token) {
-        localStorage.setItem('fixia_refresh_token', data.refresh_token);
-      }
+      // The refresh endpoint now uses httpOnly cookies for the refresh token.
+      const data = await api.post('/auth/refresh', {});
+      this.currentUser = data.user || null;
 
       this.tokenInfo = {
         isAuthenticated: true,
@@ -232,8 +228,10 @@ class SecureTokenManager {
       } else {
         console.debug('Refresh token expired or invalid - user needs to login again');
       }
+      this.currentUser = null;
       this.tokenInfo = { isAuthenticated: false };
       this.clearLocalData();
+      this.notifyListeners(); // CRITICAL: Notify listeners on refresh failure
     }
   }
 
@@ -271,6 +269,20 @@ class SecureTokenManager {
     localStorage.removeItem('fixia_access_token');
     localStorage.removeItem('fixia_refresh_token');
     sessionStorage.clear();
+  }
+
+  // --- Event Listener System ---
+  subscribe(listener: AuthStateListener): () => void {
+    this.listeners.push(listener);
+    return () => {
+      this.listeners = this.listeners.filter(l => l !== listener);
+    };
+  }
+
+  private notifyListeners(): void {
+    for (const listener of this.listeners) {
+      listener(this.tokenInfo.isAuthenticated);
+    }
   }
 
   /**
