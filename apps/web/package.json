@@ -1,6 +1,7 @@
 {
       "name": "web",
       "version": "0.1.0",
+      "type": "module",
       "private": true,
       "dependencies": {
             "@radix-ui/react-accordion": "^1.2.3",
@@ -56,6 +57,6 @@
       },
       "scripts": {
             "dev": "vite",
-            "build": "vite build"
+            "build": "tsc && vite build"
       }
 }
