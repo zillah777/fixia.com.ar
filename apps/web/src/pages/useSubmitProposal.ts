@@ -13,13 +13,14 @@ interface ProposalData {
  * Simula una llamada a la API para enviar una propuesta.
  * En una aplicación real, esto haría una petición POST a un endpoint del backend.
  */
-const sendProposal = async (proposalData: ProposalData) => {
-  console.log("Enviando propuesta a la API:", proposalData);
+const sendProposal = async (proposalData: ProposalData): Promise<{ success: boolean; message: string }> => {
+  // console.log("Enviando propuesta a la API:", proposalData);
   // Simula la latencia de la red
   await new Promise(resolve => setTimeout(resolve, 1500));
 
   // Simula un posible error para presupuestos muy bajos
   if (proposalData.proposedBudget < 100) {
+    // Para que onError se active, la promesa debe ser rechazada (throw o Promise.reject)
     throw new Error("El presupuesto propuesto es demasiado bajo.");
   }
 
@@ -32,13 +33,13 @@ export const useSubmitProposal = () => {
 
   return useMutation({
     mutationFn: sendProposal,
-    onSuccess: (data) => {
+    onSuccess: (data: { success: boolean; message: string }) => {
       toast.success(data.message);
       // Invalida la query de 'opportunities' para que se actualice la lista.
       // Esto es útil para, por ejemplo, actualizar el contador de propuestas.
       queryClient.invalidateQueries({ queryKey: ['opportunities'] });
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       toast.error(`Error al enviar la propuesta: ${error.message}`);
     },
   });

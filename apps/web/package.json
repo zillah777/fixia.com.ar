@@ -5,6 +5,7 @@
   "type": "module",
   "private": true,
   "dependencies": {
+    "@tanstack/react-query": "^5.90.10",
     "@mercadopago/sdk-js": "^0.0.3",
     "@radix-ui/react-accordion": "^1.2.3",
     "@radix-ui/react-alert-dialog": "*",
@@ -62,6 +63,7 @@
     "typescript": "^5.9.3"
   },
   "devDependencies": {
+    "@tanstack/react-query-devtools": "^5.90.10",
     "@testing-library/jest-dom": "^6.8.0",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
