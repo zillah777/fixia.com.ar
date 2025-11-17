@@ -11,7 +11,7 @@
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "clean": "rimraf node_modules",
-    "prepare": "husky install"
+    "prepare": "if [ -z \"$CI\" ]; then husky install; fi"
   },
   "engines": {
     "node": "20.x"
