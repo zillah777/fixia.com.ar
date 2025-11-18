@@ -12,6 +12,7 @@ import { Checkbox } from "../components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import { Alert, AlertDescription } from "../components/ui/alert";
 import { useSecureAuth as useAuth } from "../context/SecureAuthContext";
+import { toast } from "sonner";
 
 interface FormData {
   // Common fields
