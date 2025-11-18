@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ThumbsUp, Loader2, ChevronDown } from 'lucide-react';
+import { ThumbsUp, Loader2, ChevronDown, Edit, Trash2, Star } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../ui/button';
 import { Textarea } from '../ui/textarea';
@@ -274,3 +274,93 @@ export const FeedbackCard: React.FC<FeedbackCardProps> = ({
     </motion.div>
   );
 }
+
+// Component for displaying existing feedback
+interface FeedbackDisplayCardProps {
+  feedback: Feedback;
+  currentUserId: string;
+  variant: 'received' | 'given';
+  onEdit?: (feedback: Feedback) => void;
+  onDelete?: (feedbackId: string) => void;
+}
+
+export const FeedbackDisplayCard: React.FC<FeedbackDisplayCardProps> = ({
+  feedback,
+  currentUserId,
+  variant,
+  onEdit,
+  onDelete,
+}) => {
+  const isOwnFeedback = feedback.fromUser.id === currentUserId;
+  const canEdit = isOwnFeedback && variant === 'given';
+  const canDelete = isOwnFeedback && variant === 'given';
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="glass border-white/10 rounded-xl p-4 space-y-3"
+    >
+      <div className="flex items-start justify-between">
+        <div className="flex items-center space-x-3">
+          <Avatar className="h-10 w-10">
+            <AvatarImage src={feedback.fromUser.avatar} />
+            <AvatarFallback>{feedback.fromUser.name.charAt(0)}</AvatarFallback>
+          </Avatar>
+          <div>
+            <p className="font-medium text-sm">{feedback.fromUser.name}</p>
+            <p className="text-xs text-muted-foreground">
+              {new Date(feedback.createdAt).toLocaleDateString()}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center space-x-2">
+          {feedback.hasLike && (
+            <div className="flex items-center space-x-1 text-success">
+              <ThumbsUp className="h-4 w-4 fill-current" />
+              <span className="text-xs">Recomendado</span>
+            </div>
+          )}
+
+          {(canEdit || canDelete) && (
+            <div className="flex space-x-1">
+              {canEdit && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={() => onEdit?.(feedback)}
+                >
+                  <Edit className="h-4 w-4" />
+                </Button>
+              )}
+              {canDelete && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-destructive hover:bg-destructive/10"
+                  onClick={() => onDelete?.(feedback.id)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {feedback.comment && (
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          {feedback.comment}
+        </p>
+      )}
+
+      {!feedback.comment && feedback.hasLike && (
+        <p className="text-sm text-muted-foreground italic">
+          Recomendó sin comentario adicional
+        </p>
+      )}
+    </motion.div>
+  );
+};

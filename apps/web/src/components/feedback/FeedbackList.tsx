@@ -1,7 +1,7 @@
 import React from 'react';
 import { MessageSquare } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FeedbackCard } from './FeedbackCard';
+import { FeedbackDisplayCard } from './FeedbackCard';
 import { Feedback } from '../../lib/services/feedback.service';
 
 interface FeedbackListProps {
@@ -41,7 +41,7 @@ export const FeedbackList: React.FC<FeedbackListProps> = ({
     <div className="space-y-4">
       <AnimatePresence mode="popLayout">
         {feedbacks.map((feedback) => (
-          <FeedbackCard
+          <FeedbackDisplayCard
             key={feedback.id}
             feedback={feedback}
             currentUserId={currentUserId}
