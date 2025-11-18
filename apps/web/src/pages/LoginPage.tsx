@@ -14,12 +14,14 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   const { login } = useSecureAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
     try {
       await login(email, password);
       // The login function in SecureAuthContext now handles success toast and invalidates queries.
@@ -29,6 +31,8 @@ export default function LoginPage() {
       // The login function now throws an error and the api interceptor shows a detailed toast.
       // We just need to catch it to prevent the app from crashing.
       console.error("Login failed:", error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -149,9 +153,9 @@ export default function LoginPage() {
                 <Button
                   type="submit"
                   className="w-full liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg"
-                  disabled={login.isLoading}
+                  disabled={isSubmitting}
                 >
-                  {login.isLoading ? (
+                  {isSubmitting ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       Iniciando sesión...

@@ -291,11 +291,6 @@ const transformBackendUserSecurely = (backendUser: any): User => {
 
 export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
   // React Query is now the single source of truth for user data and auth state.
-  const { data: user, isLoading, isError, refetch } = useCurrentUser();
-  const queryClient = useQueryClient();
-
-  // The user is authenticated if the query is successful and returns a user object.
-  const isAuthenticated = !!user && !isError;
 
   // This effect ensures that if the user logs out in another tab, this tab will react.
   useEffect(() => {
@@ -484,8 +479,6 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
       } else if (result?.user) {
         // Legacy flow - user was logged in automatically (shouldn't happen with new flow)
         const transformedUser = transformBackendUserSecurely(result.user);
-        setUser(transformedUser);
-        setIsAuthenticated(true);
         return {
           success: true,
           message: 'Registro exitoso',

@@ -1,16 +1,12 @@
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { motion } from "motion/react";
-import { 
-  Search, Filter, MapPin, Star, Heart, Share2, Clock, DollarSign, 
-  Users, Award, Zap, ChevronDown, SlidersHorizontal, Grid3X3, 
-  List, Map, ArrowRight, CheckCircle, Briefcase
+import {
+  Search, SlidersHorizontal, Grid3X3, List, ArrowRight
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
-import { Card, CardContent, CardHeader } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Slider } from "../components/ui/slider";
 import { Checkbox } from "../components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
@@ -18,6 +14,8 @@ import { Separator } from "../components/ui/separator";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "../components/ui/sheet";
 import { useServices } from "../hooks/useServices";
 import { toast } from "sonner";
+import { PublicPageLayout } from "../components/layouts/PublicPageLayout";
+import { ServiceCard } from "../components/services/ServiceCard";
 
 // Mock data for services
 export const mockServices = [
@@ -201,63 +199,6 @@ const sortOptions = [
   { label: "Más recientes", value: "newest" }
 ];
 
-function Navigation() {
-  return (
-    <motion.header 
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      className="sticky top-0 z-50 w-full glass border-b border-white/10"
-    >
-      <div className="container mx-auto flex h-20 items-center justify-between px-6">
-        {/* Logo */}
-        <Link to="/" className="flex items-center space-x-3">
-          <motion.div 
-            className="relative"
-            whileHover={{ scale: 1.05 }}
-            transition={{ type: "spring", stiffness: 400, damping: 10 }}
-          >
-            <div className="h-10 w-10 liquid-gradient rounded-xl flex items-center justify-center shadow-lg">
-              <span className="text-white font-bold text-lg">F</span>
-            </div>
-            <div className="absolute -inset-1 liquid-gradient rounded-xl blur opacity-20 animate-pulse-slow"></div>
-          </motion.div>
-          <div className="flex flex-col">
-            <span className="text-xl font-semibold tracking-tight">Fixia</span>
-            <span className="text-xs text-muted-foreground -mt-1">Conecta. Confía. Resuelve.</span>
-          </div>
-        </Link>
-
-        {/* Navigation */}
-        <nav className="hidden lg:flex items-center space-x-8">
-          <Link to="/services" className="text-primary hover:text-primary/80 transition-colors font-medium">
-            Explorar Servicios
-          </Link>
-          <Link to="/register?type=professional" className="text-foreground/80 hover:text-foreground transition-colors">
-            Ofrecer Servicios
-          </Link>
-          <Link to="/dashboard" className="text-foreground/80 hover:text-foreground transition-colors">
-            Mi Dashboard
-          </Link>
-        </nav>
-
-        {/* Actions */}
-        <div className="flex items-center space-x-4">
-          <Link to="/login">
-            <Button variant="ghost" className="hover:glass-medium transition-all duration-300">
-              Iniciar Sesión
-            </Button>
-          </Link>
-          <Link to="/register">
-            <Button className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg">
-              Únete Gratis
-            </Button>
-          </Link>
-        </div>
-      </div>
-    </motion.header>
-  );
-}
-
 interface SearchAndFiltersProps {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
@@ -269,7 +210,7 @@ interface SearchAndFiltersProps {
   setSortBy: (sort: string) => void;
   viewMode: string;
   setViewMode: (mode: string) => void;
-}
+} // NOTE: This component is specific to this page, so it's fine to keep it here.
 
 function SearchAndFilters({ 
   searchQuery, 
@@ -435,249 +376,6 @@ function SearchAndFilters({
   );
 }
 
-function ServiceCard({ service, viewMode }: { service: any, viewMode: string }) {
-  const [isFavorite, setIsFavorite] = useState(false);
-
-  if (viewMode === "list") {
-    return (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        whileHover={{ y: -2 }}
-        transition={{ duration: 0.3 }}
-      >
-        <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 overflow-hidden">
-          <div className="flex">
-            {/* Image */}
-            <div className="relative w-48 h-36 flex-shrink-0">
-              <img 
-                src={service.image} 
-                alt={service.title}
-                className="w-full h-full object-cover"
-              />
-              {service.featured && (
-                <Badge className="absolute top-2 left-2 bg-warning/20 text-warning border-warning/30">
-                  <Award className="h-3 w-3 mr-1" />
-                  Destacado
-                </Badge>
-              )}
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute top-2 right-2 h-8 w-8 glass"
-                onClick={() => setIsFavorite(!isFavorite)}
-              >
-                <Heart className={`h-4 w-4 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-white'}`} />
-              </Button>
-            </div>
-            
-            {/* Content */}
-            <div className="flex-1 p-6">
-              <div className="flex justify-between items-start mb-4">
-                <div className="flex-1">
-                  <Link to={`/services/${service.id}`}>
-                    <h3 className="font-semibold hover:text-primary transition-colors cursor-pointer mb-2">
-                      {service.title}
-                    </h3>
-                  </Link>
-                  <p className="text-muted-foreground text-sm mb-3 line-clamp-2">
-                    {service.description}
-                  </p>
-                  
-                  {/* Professional Info */}
-                  <div className="flex items-center space-x-3 mb-4">
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage src={service.professional.avatar} />
-                      <AvatarFallback>{service.professional.name.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <div className="flex items-center space-x-2">
-                        <span className="text-sm font-medium">{service.professional.name}</span>
-                        {service.professional.verified && (
-                          <CheckCircle className="h-4 w-4 text-success" />
-                        )}
-                      </div>
-                      <div className="flex items-center space-x-4 text-xs text-muted-foreground">
-                        <span className="flex items-center">
-                          <MapPin className="h-3 w-3 mr-1" />
-                          {service.location}
-                        </span>
-                        <span className="flex items-center">
-                          <Clock className="h-3 w-3 mr-1" />
-                          Responde en {service.responseTime}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Price and Rating */}
-                <div className="text-right">
-                  <div className="flex items-center space-x-1 mb-2">
-                    <Star className="h-4 w-4 text-warning fill-current" />
-                    <span className="font-medium">{service.rating}</span>
-                    <span className="text-muted-foreground text-sm">({service.reviews})</span>
-                  </div>
-                  <div className="text-right">
-                    {service.originalPrice > service.price && (
-                      <span className="text-muted-foreground line-through text-sm mr-2">
-                        ${service.originalPrice}
-                      </span>
-                    )}
-                    <span className="text-2xl font-bold text-primary">${service.price}</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1">{service.duration}</p>
-                </div>
-              </div>
-              
-              {/* Tags and Stats */}
-              <div className="flex items-center justify-between">
-                <div className="flex flex-wrap gap-1">
-                  {service.tags.slice(0, 3).map((tag: string) => (
-                    <Badge key={tag} variant="outline" className="glass border-white/20 text-xs">
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-                
-                <div className="flex items-center space-x-4 text-xs text-muted-foreground">
-                  <span className="flex items-center">
-                    <Briefcase className="h-3 w-3 mr-1" />
-                    {service.completedProjects} proyectos
-                  </span>
-                  <Badge className="bg-success/20 text-success border-success/30 text-xs">
-                    {service.deliveryTime}
-                  </Badge>
-                </div>
-              </div>
-            </div>
-          </div>
-        </Card>
-      </motion.div>
-    );
-  }
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -4 }}
-      transition={{ duration: 0.3 }}
-    >
-      <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 overflow-hidden group">
-        {/* Image */}
-        <div className="relative aspect-[4/3] overflow-hidden">
-          <img 
-            src={service.image} 
-            alt={service.title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-          />
-          {service.featured && (
-            <Badge className="absolute top-3 left-3 bg-warning/20 text-warning border-warning/30">
-              <Award className="h-3 w-3 mr-1" />
-              Destacado
-            </Badge>
-          )}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute top-3 right-3 h-8 w-8 glass opacity-0 group-hover:opacity-100 transition-opacity"
-            onClick={() => setIsFavorite(!isFavorite)}
-          >
-            <Heart className={`h-4 w-4 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-white'}`} />
-          </Button>
-          <div className="absolute bottom-3 right-3">
-            <Badge className="bg-background/80 backdrop-blur-sm text-xs">
-              {service.category}
-            </Badge>
-          </div>
-        </div>
-        
-        {/* Content */}
-        <CardContent className="p-4 space-y-3">
-          {/* Professional Info */}
-          <div className="flex items-center space-x-3">
-            <Avatar className="h-8 w-8">
-              <AvatarImage src={service.professional.avatar} />
-              <AvatarFallback>{service.professional.name.charAt(0)}</AvatarFallback>
-            </Avatar>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center space-x-1">
-                <span className="text-sm font-medium truncate">{service.professional.name}</span>
-                {service.professional.verified && (
-                  <CheckCircle className="h-4 w-4 text-success flex-shrink-0" />
-                )}
-              </div>
-              <Badge className="bg-primary/20 text-primary border-primary/30 text-xs">
-                {service.professional.level}
-              </Badge>
-            </div>
-            <Button variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity">
-              <Share2 className="h-4 w-4" />
-            </Button>
-          </div>
-          
-          {/* Title and Description */}
-          <Link to={`/services/${service.id}`}>
-            <h3 className="font-semibold hover:text-primary transition-colors cursor-pointer line-clamp-2">
-              {service.title}
-            </h3>
-          </Link>
-          
-          <p className="text-muted-foreground text-sm line-clamp-2">
-            {service.description}
-          </p>
-          
-          {/* Tags */}
-          <div className="flex flex-wrap gap-1">
-            {service.tags.slice(0, 3).map((tag: string) => (
-              <Badge key={tag} variant="outline" className="glass border-white/20 text-xs">
-                {tag}
-              </Badge>
-            ))}
-          </div>
-          
-          {/* Stats */}
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <div className="flex items-center space-x-3">
-              <span className="flex items-center">
-                <Star className="h-3 w-3 mr-1 text-warning fill-current" />
-                {service.rating} ({service.reviews})
-              </span>
-              <span className="flex items-center">
-                <Clock className="h-3 w-3 mr-1" />
-                {service.deliveryTime}
-              </span>
-            </div>
-            <span className="flex items-center">
-              <MapPin className="h-3 w-3 mr-1" />
-              {service.location.split(',')[0]}
-            </span>
-          </div>
-          
-          {/* Price */}
-          <div className="flex items-center justify-between pt-2 border-t border-white/10">
-            <div className="flex items-center space-x-2">
-              {service.originalPrice > service.price && (
-                <span className="text-muted-foreground line-through text-sm">
-                  ${service.originalPrice}
-                </span>
-              )}
-              <span className="text-xl font-bold text-primary">${service.price}</span>
-            </div>
-            <Link to={`/services/${service.id}`}>
-              <Button size="sm" className="liquid-gradient hover:opacity-90 transition-all duration-300">
-                Ver Detalles
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
-          </div>
-        </CardContent>
-      </Card>
-    </motion.div>
-  );
-}
-
 export default function ServicesPage() {
   const [searchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
@@ -701,9 +399,7 @@ export default function ServicesPage() {
   const services = filteredServices ?? [];
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      
+    <PublicPageLayout>
       <main className="container mx-auto px-6 py-8">
         {/* Hero Section */}
         <motion.div
@@ -782,7 +478,7 @@ export default function ServicesPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 * index }}
             >
-              <ServiceCard service={service} viewMode={viewMode} />
+              <ServiceCard service={service as any} viewMode={viewMode as 'grid' | 'list'} />
             </motion.div>
           ))}
         </motion.div>
@@ -835,6 +531,6 @@ export default function ServicesPage() {
           </motion.div>
         )}
       </main>
-    </div>
+    </PublicPageLayout>
   );
 }

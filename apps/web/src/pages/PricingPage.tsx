@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
 import { Badge } from "../components/ui/badge";
 import { Alert, AlertDescription } from "../components/ui/alert";
 import { useAuth } from "../context/AuthContext";
+import { PublicPageLayout } from "../components/layouts/PublicPageLayout";
 
 interface PlanFeature {
   name: string;
@@ -99,35 +100,6 @@ const planFeatures: PlanFeature[] = [
     professional: true
   }
 ];
-
-function Navigation() {
-  return (
-    <motion.header 
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      className="sticky top-0 z-50 w-full glass border-b border-white/10"
-    >
-      <div className="container mx-auto flex h-16 items-center justify-between px-6">
-        <Link to="/" className="flex items-center space-x-3">
-          <div className="h-8 w-8 liquid-gradient rounded-lg flex items-center justify-center shadow-lg">
-            <span className="text-white font-bold">F</span>
-          </div>
-          <div className="flex flex-col">
-            <span className="text-lg font-semibold">Fixia</span>
-            <span className="text-xs text-muted-foreground -mt-1">Conecta. Confía. Resuelve.</span>
-          </div>
-        </Link>
-        
-        <Link to="/">
-          <Button variant="ghost" className="hover:glass-medium">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Volver al Inicio
-          </Button>
-        </Link>
-      </div>
-    </motion.header>
-  );
-}
 
 function HeroSection() {
   return (
@@ -635,13 +607,12 @@ function CTASection() {
 
 export default function PricingPage() {
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
+    <PublicPageLayout>
       <HeroSection />
       <PricingCardsSection />
       <ComparisonTableSection />
       <FAQSection />
       <CTASection />
-    </div>
+    </PublicPageLayout>
   );
 }

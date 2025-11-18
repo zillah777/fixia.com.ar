@@ -20,55 +20,8 @@ import { Skeleton } from "../components/ui/skeleton";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../components/ui/dialog";
 import { ProposalDetailsModal } from "../components/proposals/ProposalDetailsModal";
 import { ProposalCard } from "../components/proposals/ProposalCard";
-
-interface Project {
-  id: string;
-  title: string;
-  description: string;
-  budgetMin: number | null;
-  budgetMax: number | null;
-  deadline: string | null;
-  location: string | null;
-  skillsRequired: string[];
-  status: 'open' | 'in_progress' | 'completed' | 'cancelled';
-  createdAt: string;
-  updatedAt: string;
-  category: {
-    name: string;
-    slug: string;
-    icon: string;
-  } | null;
-  _count: {
-    proposals: number;
-  };
-  proposals?: Proposal[];
-}
-
-interface Proposal {
-  id: string;
-  message: string;
-  quotedPrice: number;
-  deliveryTimeDays: number;
-  status: 'pending' | 'accepted' | 'rejected';
-  created_at: string;
-  professional: {
-    id: string;
-    name: string;
-    email: string;
-    avatar: string | null;
-    location: string | null;
-    phone: string | null;
-    whatsapp_number: string | null;
-    isVerified?: boolean;
-    userType?: 'client' | 'professional' | 'dual';
-    created_at?: string;
-    professional_profile?: {
-      bio?: string;
-      average_rating: number;
-      total_reviews: number;
-    };
-  };
-}
+import { Project, Proposal } from "../../types"; // Importar tipos centralizados
+import { formatBudget, formatDate } from "../../lib/utils"; // Importar utilidades
 
 export default function MyAnnouncementsPage() {
   const { user } = useSecureAuth();
@@ -184,23 +137,6 @@ export default function MyAnnouncementsPage() {
       case 'cancelled': return 'Cancelado';
       default: return status;
     }
-  };
-
-  const formatBudget = (min: number | null, max: number | null) => {
-    if (!min && !max) return 'A convenir';
-    if (min && max) return `$${min.toLocaleString()} - $${max.toLocaleString()}`;
-    if (min) return `Desde $${min.toLocaleString()}`;
-    if (max) return `Hasta $${max.toLocaleString()}`;
-    return 'A convenir';
-  };
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('es-AR', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric'
-    });
   };
 
   if (!user) {

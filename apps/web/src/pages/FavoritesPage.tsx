@@ -16,26 +16,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { useSecureAuth as useAuth } from "../context/SecureAuthContext";
-
-interface FavoriteService {
-  id: string;
-  title: string;
-  description: string;
-  professional: {
-    name: string;
-    avatar?: string;
-    verified: boolean;
-    level: string;
-    location: string;
-  };
-  image: string;
-  price: number;
-  rating: number;
-  reviews: number;
-  category: string;
-  dateAdded: string;
-  lastUpdated: string;
-}
+import { ServiceCard } from "../components/services/ServiceCard"; // Importar el componente reutilizable
+import { Service as FavoriteService } from "../types"; // Importar el tipo centralizado
 
 interface FavoriteProfessional {
   id: string;
@@ -178,113 +160,6 @@ function Navigation() {
         </Link>
       </div>
     </motion.header>
-  );
-}
-
-function FavoriteServiceCard({ service, onRemove }: { 
-  service: FavoriteService; 
-  onRemove: (id: string) => void;
-}) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      whileHover={{ y: -4 }}
-    >
-      <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 overflow-hidden group cursor-pointer">
-        <div className="relative aspect-video overflow-hidden">
-          <img 
-            src={service.image} 
-            alt={service.title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-          />
-          <div className="absolute top-4 left-4">
-            <Badge className="bg-primary/20 text-primary border-primary/30">
-              {service.category}
-            </Badge>
-          </div>
-          <div className="absolute top-4 right-4 flex space-x-2">
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="h-8 w-8 glass text-red-400 hover:bg-red-500/20"
-              onClick={(e) => {
-                e.preventDefault();
-                onRemove(service.id);
-              }}
-            >
-              <Heart className="h-4 w-4 fill-current" />
-            </Button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8 glass">
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="glass border-white/20">
-                <DropdownMenuItem>
-                  <Share2 className="h-4 w-4 mr-2" />
-                  Compartir
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <MessageSquare className="h-4 w-4 mr-2" />
-                  Contactar
-                </DropdownMenuItem>
-                <DropdownMenuItem 
-                  onClick={() => onRemove(service.id)}
-                  className="text-red-400 hover:bg-red-500/10"
-                >
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Quitar de favoritos
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </div>
-        
-        <CardContent className="p-6">
-          <div className="flex items-center space-x-3 mb-4">
-            <Avatar className="h-10 w-10">
-              <AvatarImage src={service.professional.avatar} />
-              <AvatarFallback>{service.professional.name.charAt(0)}</AvatarFallback>
-            </Avatar>
-            <div className="flex-1">
-              <div className="flex items-center space-x-2">
-                <span className="font-medium text-sm">{service.professional.name}</span>
-                {service.professional.verified && (
-                  <CheckCircle className="h-4 w-4 text-success" />
-                )}
-              </div>
-              <div className="flex items-center space-x-1 text-xs text-muted-foreground">
-                <MapPin className="h-3 w-3" />
-                <span>{service.professional.location}</span>
-              </div>
-              <Badge className="bg-warning/20 text-warning border-warning/30 text-xs mt-1">
-                {service.professional.level}
-              </Badge>
-            </div>
-          </div>
-          
-          <h3 className="font-semibold mb-2 line-clamp-2">{service.title}</h3>
-          <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{service.description}</p>
-          
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center space-x-1">
-              <Star className="h-4 w-4 text-warning fill-current" />
-              <span className="font-medium">{service.rating}</span>
-              <span className="text-muted-foreground text-sm">({service.reviews})</span>
-            </div>
-            <span className="text-xl font-bold text-primary">${service.price.toLocaleString()}</span>
-          </div>
-
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <span>Agregado: {new Date(service.dateAdded).toLocaleDateString()}</span>
-            <span>Actualizado: {new Date(service.lastUpdated).toLocaleDateString()}</span>
-          </div>
-        </CardContent>
-      </Card>
-    </motion.div>
   );
 }
 
@@ -538,11 +413,12 @@ export default function FavoritesPage() {
                       ? "md:grid-cols-2 lg:grid-cols-3" 
                       : "grid-cols-1 max-w-4xl"
                   }`}>
-                    {filteredServices.map((service) => (
-                      <FavoriteServiceCard
+                    {filteredServices.map((service: any) => (
+                      <ServiceCard
                         key={service.id}
                         service={service}
-                        onRemove={handleRemoveService}
+                        onRemoveFavorite={handleRemoveService}
+                        viewMode={viewMode}
                       />
                     ))}
                   </div>

@@ -13,7 +13,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Progress } from "../components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 // CORRECTED: Use the new, secure AuthContext
-import { useSecureAuth as useAuth } from "../context/SecureAuthContext";
+import { useSecureAuth } from "../context/SecureAuthContext";
 import { useDashboardStats, useCurrentProjects, useRecentActivity } from "../hooks/useDashboardData";
 import { StatCardSkeleton, ProjectCardSkeleton, ActivityItemSkeleton } from "../components/skeletons/DashboardSkeletons";
 
@@ -317,7 +317,7 @@ function CurrentProjects() {
 }
 
 export default function DashboardPage() {
-  const { user, isLoading, isAuthenticated } = useAuth();
+  const { user, loading: isLoading, isAuthenticated } = useSecureAuth();
 
   return (
     <div className="min-h-screen bg-background">
