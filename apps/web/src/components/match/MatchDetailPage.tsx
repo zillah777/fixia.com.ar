@@ -25,7 +25,7 @@ export function MatchDetailPage({
 }: MatchDetailPageProps) {
   const { toast } = useToast();
   const [match, setMatch] = useState<Match | null>(null);
-  const [completionStatus, setCompletionStatus] = useState<CompletionStatus | null>(null);
+  const [completionStatus, setCompletionStatus] = useState<CompletionStatus | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
 

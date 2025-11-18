@@ -15,13 +15,13 @@ import { toast } from 'sonner';
 
 interface Notification {
   id: string;
-  type: 'message' | 'system' | 'proposal_received' | 'review_received' | 'job_started' | 'job_completed' | 'job_milestone' | 'payment_received' | 'new_project' | 'match_created' | 'match_completed' | 'phone_revealed' | 'review_requested';
+  type: 'message' | 'service' | 'payment' | 'system';
   title: string;
   message: string;
   read: boolean;
   timestamp: Date;
   actionUrl?: string;
-  metadata?: Record<string, unknown>;
+  avatar?: string;
 }
 
 interface NotificationBellProps {
@@ -51,7 +51,7 @@ const notificationTypeConfig: Record<string, { color: string; icon: string }> = 
 
 export function NotificationBell({ className }: NotificationBellProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const { notifications, loading, markAsRead, markAllAsRead, deleteNotification } = useNotifications();
+  const { notifications, markAsRead, markAllAsRead, deleteNotification } = useNotifications();
   const { user } = useSecureAuth();
   const navigate = useNavigate();
 
@@ -78,11 +78,15 @@ export function NotificationBell({ className }: NotificationBellProps) {
       } else {
         // Use smart routing based on notification type and user role
         const userType = (user?.userType || 'professional') as UserType;
-        redirectUrl = getNotificationUrl(
-          notification.type as NotificationType,
-          userType,
-          notification.metadata
-        );
+        // For basic notification types, use simple routing
+        const typeMap: Record<string, NotificationType> = {
+          'message': 'message',
+          'service': 'new_project', // Map service to new_project
+          'payment': 'payment_received',
+          'system': 'system'
+        };
+        const mappedType = typeMap[notification.type] || 'system';
+        redirectUrl = getNotificationUrl(mappedType, userType);
       }
 
       // Use React Router navigate instead of window.location.href
@@ -187,15 +191,7 @@ export function NotificationBell({ className }: NotificationBellProps) {
                 
                 <CardContent className="p-0">
                   <ScrollArea className="h-96">
-                    {loading ? (
-                      <div className="flex items-center justify-center py-8">
-                        <motion.div
-                          animate={{ rotate: 360 }}
-                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                          className="h-6 w-6 border-2 border-primary border-t-transparent rounded-full"
-                        />
-                      </div>
-                    ) : notifications.length === 0 ? (
+                    {notifications.length === 0 ? (
                       <div className="flex flex-col items-center justify-center py-8 text-center">
                         <Bell className="h-12 w-12 text-muted-foreground mb-2" />
                         <p className="text-muted-foreground">No hay notificaciones</p>
