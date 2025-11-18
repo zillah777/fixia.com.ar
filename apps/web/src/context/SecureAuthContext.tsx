@@ -141,6 +141,7 @@ interface RegisterRequest {
   birthdate?: string;
   dni?: string;
   // Professional-specific fields
+  businessName?: string;
   serviceCategories?: string[];
   description?: string;
   experience?: string;

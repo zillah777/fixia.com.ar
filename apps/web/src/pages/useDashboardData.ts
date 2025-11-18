@@ -118,4 +118,4 @@ const fetchCurrentProjects = async () => {
 
 export const useDashboardStats = () => useQuery({ queryKey: ['dashboardStats'], queryFn: fetchDashboardStats });
 export const useCurrentProjects = () => useQuery({ queryKey: ['currentProjects'], queryFn: fetchCurrentProjects });
-export const useRecentActivity = () => useQuery({ queryKey: ['recentActivity'], queryFn: mockActivities }); // No async for simplicity here
+export const useRecentActivity = () => useQuery({ queryKey: ['recentActivity'], queryFn: () => Promise.resolve(mockActivities) });

@@ -11,7 +11,7 @@ import { toast } from "sonner";
 export default function SubscriptionSuccess() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { user, refreshUser } = useSecureAuth();
+  const { user, refreshUserData } = useSecureAuth();
   const [isProcessing, setIsProcessing] = useState(true);
   const [planType, setPlanType] = useState<string>('');
 
@@ -33,7 +33,7 @@ export default function SubscriptionSuccess() {
     // Refresh user data after a delay to get updated subscription status
     const timer = setTimeout(async () => {
       try {
-        await refreshUser();
+        await refreshUserData();
         setIsProcessing(false);
         toast.success('¡Suscripción activada exitosamente!');
       } catch (error) {
@@ -43,7 +43,7 @@ export default function SubscriptionSuccess() {
     }, 2000);
 
     return () => clearTimeout(timer);
-  }, [searchParams, refreshUser]);
+  }, [searchParams, refreshUserData]);
 
   const getPlanIcon = () => {
     if (planType === 'premium') {

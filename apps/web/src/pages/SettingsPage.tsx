@@ -53,12 +53,12 @@ function ProfileTab() {
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState({
-    fullName: user?.fullName || '',
+    fullName: user?.name || '',
     email: user?.email || '',
     phone: user?.phone || '',
     location: user?.location || '',
-    businessName: user?.businessName || '',
-    description: user?.description || ''
+    businessName: '',
+    description: user?.bio || ''
   });
 
   const locations = [
@@ -371,7 +371,7 @@ function SecurityTab() {
                 Recibe códigos de verificación por SMS o app de autenticación
               </p>
             </div>
-            <Switch onCheckedChange={handle2FAToggle} />
+            <Switch onCheckedChange={(checked: boolean) => handle2FAToggle(checked)} />
           </div>
         </CardContent>
       </Card>
@@ -459,9 +459,9 @@ function NotificationsTab() {
                 Cuando hay trabajos que coinciden con tu perfil
               </p>
             </div>
-            <Switch 
+            <Switch
               checked={emailNotifications.newOpportunities}
-              onCheckedChange={(checked) => 
+              onCheckedChange={(checked: boolean) =>
                 setEmailNotifications({ ...emailNotifications, newOpportunities: checked })
               }
             />
@@ -476,9 +476,9 @@ function NotificationsTab() {
                 Cuando alguien te contacta o te envía un mensaje
               </p>
             </div>
-            <Switch 
+            <Switch
               checked={emailNotifications.messages}
-              onCheckedChange={(checked) => 
+              onCheckedChange={(checked: boolean) =>
                 setEmailNotifications({ ...emailNotifications, messages: checked })
               }
             />
@@ -493,9 +493,9 @@ function NotificationsTab() {
                 Promociones, noticias y tips de Fixia
               </p>
             </div>
-            <Switch 
+            <Switch
               checked={emailNotifications.marketing}
-              onCheckedChange={(checked) => 
+              onCheckedChange={(checked: boolean) =>
                 setEmailNotifications({ ...emailNotifications, marketing: checked })
               }
             />
@@ -510,9 +510,9 @@ function NotificationsTab() {
                 Inicios de sesión y cambios importantes en tu cuenta
               </p>
             </div>
-            <Switch 
+            <Switch
               checked={emailNotifications.security}
-              onCheckedChange={(checked) => 
+              onCheckedChange={(checked: boolean) =>
                 setEmailNotifications({ ...emailNotifications, security: checked })
               }
             />
@@ -539,9 +539,9 @@ function NotificationsTab() {
                 Notificación inmediata de trabajos relevantes
               </p>
             </div>
-            <Switch 
+            <Switch
               checked={pushNotifications.newOpportunities}
-              onCheckedChange={(checked) => 
+              onCheckedChange={(checked: boolean) =>
                 setPushNotifications({ ...pushNotifications, newOpportunities: checked })
               }
             />
@@ -556,9 +556,9 @@ function NotificationsTab() {
                 Cuando recibes un mensaje directo
               </p>
             </div>
-            <Switch 
+            <Switch
               checked={pushNotifications.messages}
-              onCheckedChange={(checked) => 
+              onCheckedChange={(checked: boolean) =>
                 setPushNotifications({ ...pushNotifications, messages: checked })
               }
             />
@@ -573,9 +573,9 @@ function NotificationsTab() {
                 Recordatorios de trabajos pendientes y citas
               </p>
             </div>
-            <Switch 
+            <Switch
               checked={pushNotifications.reminders}
-              onCheckedChange={(checked) => 
+              onCheckedChange={(checked: boolean) =>
                 setPushNotifications({ ...pushNotifications, reminders: checked })
               }
             />

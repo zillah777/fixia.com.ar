@@ -6,7 +6,7 @@ import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
-import { useAuth } from "../context/SecureAuthContext";
+import { useSecureAuth } from "../context/SecureAuthContext";
 import { toast } from "sonner";
 
 export default function LoginPage() {
@@ -15,7 +15,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   
-  const { login } = useAuth();
+  const { login } = useSecureAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {

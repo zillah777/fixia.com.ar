@@ -240,8 +240,8 @@ function ClientRegistrationForm({
               <Checkbox
                 id="agreeTerms"
                 checked={formData.agreeTerms}
-                onCheckedChange={(checked) => 
-                  setFormData({ ...formData, agreeTerms: checked as boolean })
+                onCheckedChange={(checked: boolean) =>
+                  setFormData({ ...formData, agreeTerms: checked })
                 }
                 required
               />
@@ -258,8 +258,8 @@ function ClientRegistrationForm({
               <Checkbox
                 id="agreePrivacy"
                 checked={formData.agreePrivacy}
-                onCheckedChange={(checked) => 
-                  setFormData({ ...formData, agreePrivacy: checked as boolean })
+                onCheckedChange={(checked: boolean) =>
+                  setFormData({ ...formData, agreePrivacy: checked })
                 }
                 required
               />
@@ -276,8 +276,8 @@ function ClientRegistrationForm({
               <Checkbox
                 id="agreeMarketing"
                 checked={formData.agreeMarketing}
-                onCheckedChange={(checked) => 
-                  setFormData({ ...formData, agreeMarketing: checked as boolean })
+                onCheckedChange={(checked: boolean) =>
+                  setFormData({ ...formData, agreeMarketing: checked })
                 }
               />
               <Label htmlFor="agreeMarketing" className="text-sm leading-relaxed">
@@ -759,8 +759,8 @@ function ProfessionalRegistrationForm({
               <Checkbox
                 id="agreeTerms"
                 checked={formData.agreeTerms}
-                onCheckedChange={(checked) => 
-                  setFormData({ ...formData, agreeTerms: checked as boolean })
+                onCheckedChange={(checked: boolean) =>
+                  setFormData({ ...formData, agreeTerms: checked })
                 }
                 required
               />
@@ -777,8 +777,8 @@ function ProfessionalRegistrationForm({
               <Checkbox
                 id="agreePrivacy"
                 checked={formData.agreePrivacy}
-                onCheckedChange={(checked) => 
-                  setFormData({ ...formData, agreePrivacy: checked as boolean })
+                onCheckedChange={(checked: boolean) =>
+                  setFormData({ ...formData, agreePrivacy: checked })
                 }
                 required
               />
@@ -795,8 +795,8 @@ function ProfessionalRegistrationForm({
               <Checkbox
                 id="agreeMarketing"
                 checked={formData.agreeMarketing}
-                onCheckedChange={(checked) => 
-                  setFormData({ ...formData, agreeMarketing: checked as boolean })
+                onCheckedChange={(checked: boolean) =>
+                  setFormData({ ...formData, agreeMarketing: checked })
                 }
               />
               <Label htmlFor="agreeMarketing" className="text-sm leading-relaxed">

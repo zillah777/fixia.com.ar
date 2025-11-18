@@ -100,7 +100,7 @@ export function OnboardingMessages({ user, dashboardData, clientStats }: Onboard
       description: 'Revisa las ofertas recibidas. Compara precios, tiempos y perfiles antes de decidir.',
       icon: MessageSquare,
       color: 'from-purple-500 to-pink-500',
-      condition: (user, stats) => stats?.proposals_received > 0 && stats?.open_announcements > 0,
+      condition: (user, stats) => (stats.proposals_received ?? 0) > 0 && (stats.open_announcements ?? 0) > 0,
       priority: 1
     },
     {
@@ -109,7 +109,7 @@ export function OnboardingMessages({ user, dashboardData, clientStats }: Onboard
       description: '⭐ Califica a los profesionales que contrataste. Tu feedback ayuda a otros clientes a decidir mejor.',
       icon: Heart,
       color: 'from-amber-500 to-yellow-500',
-      condition: (user, stats) => stats?.in_progress > 0,
+      condition: (user, stats) => (stats.in_progress ?? 0) > 0,
       priority: 4
     },
     {
@@ -118,7 +118,7 @@ export function OnboardingMessages({ user, dashboardData, clientStats }: Onboard
       description: '💡 Tip: Sé específico con fechas, ubicación y presupuesto. Los anuncios claros atraen mejores profesionales.',
       icon: Target,
       color: 'from-indigo-500 to-purple-500',
-      condition: (user, stats) => stats?.open_announcements > 0 && stats?.proposals_received < 3,
+      condition: (user, stats) => (stats.open_announcements ?? 0) > 0 && (stats.proposals_received ?? 0) < 3,
       priority: 5
     },
     {
@@ -201,7 +201,7 @@ export function OnboardingMessages({ user, dashboardData, clientStats }: Onboard
       description: '⭐ Cada trabajo completado suma. Pide a tus clientes que te califiquen para destacar en búsquedas.',
       icon: Heart,
       color: 'from-purple-500 to-pink-500',
-      condition: (user, stats) => user?.userType === 'professional' && stats?.total_reviews < 5,
+      condition: (user, stats) => user?.userType === 'professional' && (stats.total_reviews ?? 0) < 5,
       priority: 7
     },
     {
@@ -280,6 +280,12 @@ export function OnboardingMessages({ user, dashboardData, clientStats }: Onboard
     profile_views: 0,
     messages_count: 0,
     pending_proposals: 0,
+    open_announcements: 0,
+    proposals_received: 0,
+    in_progress: 0,
+    client_rating: 0,
+    total_reviews: 0,
+    has_switched_role: false,
     ...dashboardData,
     ...clientStats
   };

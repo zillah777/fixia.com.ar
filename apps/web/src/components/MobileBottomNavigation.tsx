@@ -49,7 +49,7 @@ export const MobileBottomNavigation = memo<MobileBottomNavigationProps>(({ class
           : <Plus className="h-5 w-5" />,
         label: user?.userType === 'professional' ? 'Trabajos' : 'Crear',
         requiresAuth: true,
-        userType: user?.userType
+        userType: user?.userType === 'dual' ? 'both' : user?.userType
       },
       {
         href: '/notifications',

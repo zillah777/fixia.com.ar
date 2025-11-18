@@ -281,7 +281,7 @@ function PricingCardsSection() {
                   Comenzar Gratis
                 </Button>
 
-                {user && user.userType === 'client' && (
+                {user && user.accountType === 'client' && (
                   <div className="text-center">
                     <p className="text-sm text-muted-foreground mb-2">¿Quieres ofrecer servicios?</p>
                     <Button 
@@ -376,7 +376,7 @@ function PricingCardsSection() {
                   </div>
                 </div>
 
-                {user && user.userType === 'client' ? (
+                {user && user.accountType === 'client' ? (
                   <Button 
                     onClick={handleUpgrade}
                     disabled={isUpgrading}

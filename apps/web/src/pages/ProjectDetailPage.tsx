@@ -99,18 +99,18 @@ export default function ProjectDetailPage() {
           return;
         }
 
-        setProject(response as ProjectDetail);
+        setProject(response as unknown as ProjectDetail);
 
         // Determine user role
         if (user?.id === response.client.id) {
           setUserRole('client');
         } else {
           setUserRole('professional');
-          // Find user's own proposal if they're a professional
-          const userProposal = response.proposals?.find(p => p.professional_id === user?.id);
-          if (userProposal) {
-            setOwnProposal(userProposal);
-          }
+          // Note: proposals is a number (count), not an array in this response
+          // const userProposal = response.proposals?.find(p => p.professional_id === user?.id);
+          // if (userProposal) {
+          //   setOwnProposal(userProposal);
+          // }
         }
       } catch (err) {
         console.error('Error fetching project:', err);

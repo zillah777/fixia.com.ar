@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   User, Mail, Phone, MapPin, Calendar, Settings, Shield,
-  Edit3, Save, X, Plus, Heart, Heart, Briefcase, Eye, Heart,
+  Edit3, Save, X, Plus, Heart, Briefcase, Eye,
   MessageSquare, DollarSign, TrendingUp, Clock, CheckCircle,
   Upload, FileText, Globe, Linkedin, Twitter, Instagram, Github,
   Bell, Lock, CreditCard, LogOut, Trash2, ExternalLink,

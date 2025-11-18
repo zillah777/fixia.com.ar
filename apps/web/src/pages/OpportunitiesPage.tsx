@@ -266,13 +266,14 @@ interface SearchAndFiltersProps {
   setUrgencyFilter: (filter: string[]) => void;
   locationFilter: string;
   setLocationFilter: (filter: string) => void;
+  refetch: () => void;
 }
 
 // NOTE: The 'refetch' prop was added to allow manual data refreshing.
-function SearchAndFilters({ 
-  searchQuery, 
-  setSearchQuery, 
-  selectedCategory, 
+function SearchAndFilters({
+  searchQuery,
+  setSearchQuery,
+  selectedCategory,
   setSelectedCategory,
   budgetRange,
   setBudgetRange,
@@ -283,7 +284,8 @@ function SearchAndFilters({
   urgencyFilter,
   setUrgencyFilter,
   locationFilter,
-  setLocationFilter
+  setLocationFilter,
+  refetch
 }: SearchAndFiltersProps) {
   const [showFilters, setShowFilters] = useState(false);
 
@@ -374,10 +376,10 @@ function SearchAndFilters({
                       { value: "normal", label: "Prioridad normal" }
                     ].map((option) => (
                       <div key={option.value} className="flex items-center space-x-2">
-                        <Checkbox 
+                        <Checkbox
                           id={option.value}
                           checked={urgencyFilter.includes(option.value)}
-                          onCheckedChange={(checked) => {
+                          onCheckedChange={(checked: boolean) => {
                             if (checked) {
                               setUrgencyFilter([...urgencyFilter, option.value]);
                             } else {
