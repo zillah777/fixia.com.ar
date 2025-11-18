@@ -295,27 +295,21 @@ export function OnboardingMessages({ user, dashboardData, clientStats }: Onboard
     .filter(msg => msg.condition(user, mergedStats))
     .sort((a, b) => a.priority - b.priority);
 
-  // Synchronous dismissal without state race conditions
   const handleDismiss = (messageId: string) => {
-    // Avoid dismissing already dismissed messages
-    if (dismissedMessages.includes(messageId)) {
-      return;
-    }
-
-    // Update dismissed messages synchronously
-    const updated = [...dismissedMessages, messageId];
-    setDismissedMessages(updated);
-
-    // Try to save to localStorage, but don't fail if it doesn't work
+    // Add the message to the dismissed list
+    const updatedDismissed = [...dismissedMessages, messageId];
+    setDismissedMessages(updatedDismissed);
     try {
-      localStorage.setItem('dismissedOnboarding', JSON.stringify(updated));
+      localStorage.setItem('dismissedOnboarding', JSON.stringify(updatedDismissed));
     } catch (storageError) {
-      // Silently fail - dismissal in memory is sufficient for this session
       console.warn('Failed to save dismissed messages to localStorage:', storageError);
     }
 
-    // Reset message index if needed - allows showing next message
-    setCurrentMessageIndex(0);
+    // If there are more messages, move to the next one.
+    // Otherwise, the component will disappear as activeMessages becomes empty.
+    // We don't need to manage the index, React will re-render with the new filtered list.
+    // The component will always show the first element of the `activeMessages` array.
+    // By updating `dismissedMessages`, we trigger a re-filter and re-render.
   };
 
   const handleDismissAll = () => {

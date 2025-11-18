@@ -11,19 +11,21 @@ import { Service } from "../../types"; // Import centralizado
 interface ServiceCardProps {
   service: Service;
   viewMode: 'grid' | 'list';
-  onRemoveFavorite?: (id: string) => void;
+  isFavorite: boolean;
+  onToggleFavorite: (id: string) => void;
 }
 
-export function ServiceCard({ service, viewMode, onRemoveFavorite }: ServiceCardProps) {
-  const [isFavorite, setIsFavorite] = useState(true); // Asumimos que es favorito si está en la página de favoritos
+export function ServiceCard({ service, viewMode, isFavorite, onToggleFavorite }: ServiceCardProps) {
+  // El estado de favorito ahora es controlado por el padre.
+  // El componente solo invoca el callback cuando se hace clic.
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (onRemoveFavorite) {
-      onRemoveFavorite(service.id);
-    } else {
-      setIsFavorite(!isFavorite);
+    // Notificamos al padre que el estado de favorito debe cambiar.
+    // El padre es responsable de la lógica (ej. llamar a una API).
+    if (onToggleFavorite) {
+      onToggleFavorite(service.id);
     }
   };
 

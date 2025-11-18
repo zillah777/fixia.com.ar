@@ -31,6 +31,7 @@ export default function MyAnnouncementsPage() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [showProposals, setShowProposals] = useState(false);
   const [deleteProjectId, setDeleteProjectId] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   // Redirect if not authenticated (professionals with dual role can access as clients)
@@ -84,6 +85,7 @@ export default function MyAnnouncementsPage() {
   const confirmDelete = async () => {
     if (!deleteProjectId) return;
 
+    setIsDeleting(true);
     try {
       await opportunitiesService.deleteProject(deleteProjectId);
       toast.success('Anuncio eliminado correctamente');
@@ -93,6 +95,8 @@ export default function MyAnnouncementsPage() {
     } catch (error: any) {
       console.error('Error deleting project:', error);
       toast.error('Error al eliminar el anuncio');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -468,7 +472,11 @@ export default function MyAnnouncementsPage() {
             <Button
               variant="destructive"
               onClick={confirmDelete}
+              disabled={isDeleting}
             >
+              {isDeleting && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
               Eliminar Anuncio
             </Button>
           </div>

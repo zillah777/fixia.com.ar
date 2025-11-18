@@ -861,6 +861,11 @@ export default function RegisterPage() {
       return;
     }
 
+    if (currentTab === 'professional' && formData.serviceCategories.length === 0) {
+      toast.error('Debes seleccionar al menos una categoría de servicio para registrarte como profesional.');
+      return;
+    }
+
     if (currentTab === 'professional' && formData.serviceCategories.length > 10) {
       toast.error('No puedes tener más de 10 categorías de servicio');
       return;

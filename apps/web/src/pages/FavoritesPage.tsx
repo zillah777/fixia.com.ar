@@ -417,8 +417,9 @@ export default function FavoritesPage() {
                       <ServiceCard
                         key={service.id}
                         service={service}
-                        onRemoveFavorite={handleRemoveService}
                         viewMode={viewMode}
+                        isFavorite={true} // En esta página, todos los servicios son favoritos
+                        onToggleFavorite={() => handleRemoveService(service.id)}
                       />
                     ))}
                   </div>

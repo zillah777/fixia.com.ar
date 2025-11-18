@@ -218,7 +218,7 @@ export function MatchDetailPage({
           )
         }
         onFinalizeUnsuccessful={() => handleFinalizeUnsuccessful(match.id)}
-        isLoading={false}
+        isLoading={isLoading} // Correctly pass the loading state
       />
 
       {/* Reviews Section */}

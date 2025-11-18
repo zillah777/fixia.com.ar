@@ -209,7 +209,7 @@ export function NotificationBell({ className }: NotificationBellProps) {
                             >
                               <div
                                 className={cn(
-                                  "flex items-start gap-3 p-4 hover:bg-muted/50 cursor-pointer border-l-4 transition-colors",
+                                  "group flex items-start gap-3 p-4 hover:bg-muted/50 cursor-pointer border-l-4 transition-colors",
                                   !notification.read && "bg-primary/10 border-l-primary",
                                   notification.read && "border-l-transparent"
                                 )}

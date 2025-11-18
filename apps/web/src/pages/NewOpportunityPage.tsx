@@ -153,7 +153,7 @@ export default function NewOpportunityPage() {
       return false;
     }
 
-    if (formData.budget_min > 0 && formData.budget_max > 0 && formData.budget_min >= formData.budget_max) {
+    if (formData.budget_min > 0 && formData.budget_max > 0 && formData.budget_min > formData.budget_max) {
       toast.error('El presupuesto mínimo debe ser menor al máximo');
       return false;
     }
