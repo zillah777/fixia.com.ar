@@ -93,8 +93,8 @@ function Navigation() {
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 400, damping: 10 }}
           >
-            <div className="h-10 w-10 liquid-gradient rounded-xl flex items-center justify-center shadow-lg">
-              <span className="text-white font-bold text-lg">F</span>
+            <div className="h-10 w-10 rounded-xl flex items-center justify-center overflow-hidden">
+              <img src="/logo.png" alt="Fixia" className="h-full w-full object-contain" />
             </div>
             <div className="absolute -inset-1 liquid-gradient rounded-xl blur opacity-20 animate-pulse-slow"></div>
           </motion.div>
@@ -562,8 +562,8 @@ function Footer() {
           {/* Logo and Description */}
           <div className="space-y-4">
             <Link to="/" className="flex items-center space-x-3">
-              <div className="h-10 w-10 liquid-gradient rounded-xl flex items-center justify-center">
-                <span className="text-white font-bold text-lg">F</span>
+              <div className="h-10 w-10 rounded-xl flex items-center justify-center overflow-hidden">
+                <img src="/logo.png" alt="Fixia" className="h-full w-full object-contain" />
               </div>
               <div className="flex flex-col">
                 <span className="text-xl font-semibold">Fixia</span>
