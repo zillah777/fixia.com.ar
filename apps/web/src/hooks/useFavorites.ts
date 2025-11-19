@@ -57,8 +57,8 @@ function useFavorites() {
   const addProfessionalToFavorites = useCallback((professional: User) => {
     const favorite: FavoriteProfessional = {
       id: professional.id,
-      name: professional.fullName,
-      businessName: professional.businessName,
+      name: professional.name,
+      businessName: professional.professionalProfile?.description?.substring(0, 50),
       dateAdded: new Date().toISOString()
     };
 
@@ -99,14 +99,14 @@ function useFavorites() {
     removeServiceFromFavorites,
     isServiceFavorite,
     toggleServiceFavorite,
-    
+
     // Professionals
     favoriteProfessionals,
     addProfessionalToFavorites,
     removeProfessionalFromFavorites,
     isProfessionalFavorite,
     toggleProfessionalFavorite,
-    
+
     // Utilities
     clearAllFavorites,
     totalFavorites: favoriteServices.length + favoriteProfessionals.length

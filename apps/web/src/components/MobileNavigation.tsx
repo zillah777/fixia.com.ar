@@ -139,17 +139,18 @@ export const MobileNavigation = memo<MobileNavigationProps>(({ className }) => {
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
+      {/* @ts-expect-error - SheetTrigger asChild is valid but TypeScript doesn't recognize it */}
       <SheetTrigger asChild>
-        <Button 
-          variant="ghost" 
-          size="icon" 
+        <Button
+          variant="ghost"
+          size="icon"
           className={cn("lg:hidden", className)}
           aria-label="Abrir menú de navegación"
         >
           <Menu className="h-5 w-5" />
         </Button>
       </SheetTrigger>
-      
+
       <SheetContent side="left" className="w-[80vw] sm:w-72 max-w-xs p-0 overflow-y-auto max-h-screen">
         <div className="flex flex-col h-full">
           {/* Header - Ultra Compact */}

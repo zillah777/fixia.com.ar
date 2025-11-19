@@ -477,7 +477,7 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const value: SecureAuthContextType = {
-    user,
+    user: user ?? null,
     loading: isLoading,
     isAuthenticated,
     login,

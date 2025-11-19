@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "motion/react";
-import { 
+import {
   Search, Filter, MapPin, Clock, DollarSign, Users, Award, Zap,
   ChevronDown, SlidersHorizontal, Grid3X3, List, Eye, ArrowRight,
   Calendar, CheckCircle, AlertCircle, Star, Briefcase, Globe,
@@ -206,7 +206,7 @@ function Navigation() {
   const { user, logout } = useAuth();
 
   return (
-    <motion.header 
+    <motion.header
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       className="sticky top-0 z-50 w-full glass border-b border-white/10"
@@ -218,7 +218,7 @@ function Navigation() {
           </div>
           <span className="font-semibold">Fixia</span>
         </Link>
-        
+
         <nav className="hidden md:flex items-center space-x-6">
           <Link to="/dashboard" className="text-muted-foreground hover:text-primary transition-colors">
             Dashboard
@@ -233,7 +233,7 @@ function Navigation() {
             Mi Perfil
           </Link>
         </nav>
-        
+
         <div className="flex items-center space-x-3">
           <Button variant="ghost" className="relative">
             <Bookmark className="h-4 w-4" />
@@ -319,16 +319,17 @@ function SearchAndFilters({
               variant={selectedCategory === category ? "default" : "outline"}
               size="sm"
               onClick={() => setSelectedCategory(category)}
-              className={selectedCategory === category 
-                ? "liquid-gradient hover:opacity-90" 
+              className={selectedCategory === category
+                ? "liquid-gradient hover:opacity-90"
                 : "glass border-white/20 hover:glass-medium"
               }
             >
               {category}
             </Button>
           ))}
-          
+
           <Sheet open={showFilters} onOpenChange={setShowFilters}>
+            {/* @ts-expect-error - SheetTrigger asChild is valid but TypeScript doesn't recognize it */}
             <SheetTrigger asChild>
               <Button variant="outline" size="sm" className="glass border-white/20 hover:glass-medium">
                 <SlidersHorizontal className="h-4 w-4 mr-2" />
@@ -342,7 +343,7 @@ function SearchAndFilters({
                   Encuentra las oportunidades perfectas para tu perfil
                 </SheetDescription>
               </SheetHeader>
-              
+
               <div className="space-y-6 mt-6">
                 {/* Budget Range */}
                 <div className="space-y-3">
@@ -362,9 +363,9 @@ function SearchAndFilters({
                     </div>
                   </div>
                 </div>
-                
+
                 <Separator />
-                
+
                 {/* Urgency */}
                 <div className="space-y-3">
                   <label className="font-medium">Urgencia del Proyecto</label>
@@ -392,9 +393,9 @@ function SearchAndFilters({
                     ))}
                   </div>
                 </div>
-                
+
                 <Separator />
-                
+
                 {/* Location */}
                 <div className="space-y-3">
                   <label className="font-medium">Ubicación</label>
@@ -410,15 +411,15 @@ function SearchAndFilters({
                     </SelectContent>
                   </Select>
                 </div>
-                
+
                 <Separator />
-                
+
                 {/* Client Rating */}
                 <div className="space-y-3">
                   <label className="font-medium">Rating Mínimo del Cliente</label>
                   <div className="flex items-center space-x-2">
-                    {[1,2,3,4,5].map((rating) => (
-                      <Button 
+                    {[1, 2, 3, 4, 5].map((rating) => (
+                      <Button
                         key={rating}
                         variant="outline"
                         size="sm"
@@ -448,7 +449,7 @@ function SearchAndFilters({
               ))}
             </SelectContent>
           </Select>
-          
+
           <div className="flex glass rounded-lg p-1 border-white/20">
             <Button
               variant={viewMode === "grid" ? "default" : "ghost"}
@@ -467,8 +468,8 @@ function SearchAndFilters({
               <List className="h-4 w-4" />
             </Button>
           </div>
-          
-          <Button 
+
+          <Button
             variant="outline" size="sm" className="glass border-white/20"
             onClick={refetch}
           >
@@ -518,7 +519,7 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
                   <AvatarFallback>{opportunity.client.name.charAt(0)}</AvatarFallback>
                 </Avatar>
               </div>
-              
+
               {/* Main Content */}
               <div className="flex-1 space-y-4">
                 {/* Header */}
@@ -538,7 +539,7 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
                         {getUrgencyText(opportunity.urgency)}
                       </Badge>
                     </div>
-                    
+
                     <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                       <span className="flex items-center">
                         <Users className="h-4 w-4 mr-1" />
@@ -557,7 +558,7 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
                       </span>
                     </div>
                   </div>
-                  
+
                   <div className="text-right space-y-2">
                     <div className="text-2xl font-bold text-success">
                       ${opportunity.budget.min} - ${opportunity.budget.max}
@@ -565,12 +566,12 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
                     <div className="text-sm text-muted-foreground">{opportunity.duration}</div>
                   </div>
                 </div>
-                
+
                 {/* Description */}
                 <p className="text-muted-foreground line-clamp-2">
                   {opportunity.description}
                 </p>
-                
+
                 {/* Skills */}
                 <div className="flex flex-wrap gap-2">
                   {opportunity.skills.slice(0, 5).map((skill: string) => (
@@ -584,7 +585,7 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
                     </Badge>
                   )}
                 </div>
-                
+
                 {/* Footer */}
                 <div className="flex items-center justify-between pt-4 border-t border-white/10">
                   <div className="flex items-center space-x-6 text-sm text-muted-foreground">
@@ -601,7 +602,7 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
                       {opportunity.proposals} propuestas
                     </span>
                   </div>
-                  
+
                   <div className="flex items-center space-x-2">
                     <Button
                       variant="ghost"
@@ -613,7 +614,7 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
                     <Button variant="ghost" size="sm">
                       <Share2 className="h-4 w-4" />
                     </Button>
-                    <Button 
+                    <Button
                       onClick={() => setShowProposal(true)}
                       className="liquid-gradient hover:opacity-90"
                     >
@@ -626,7 +627,7 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
             </div>
           </CardContent>
         </Card>
-        
+
         {/* Proposal Modal */}
         <Dialog open={showProposal} onOpenChange={setShowProposal}>
           <DialogContent className="glass border-white/10 max-w-2xl">
@@ -674,7 +675,7 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
                 </div>
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-2">
               {opportunity.featured && (
                 <Badge className="bg-warning/20 text-warning border-warning/30 text-xs">
@@ -692,7 +693,7 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
               </Button>
             </div>
           </div>
-          
+
           {/* Title and Category */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
@@ -708,13 +709,13 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
             </h3>
           </div>
         </CardHeader>
-        
+
         <CardContent className="space-y-4">
           {/* Description */}
           <p className="text-muted-foreground text-sm line-clamp-3">
             {opportunity.description}
           </p>
-          
+
           {/* Skills */}
           <div className="flex flex-wrap gap-1">
             {opportunity.skills.slice(0, 4).map((skill: string) => (
@@ -728,7 +729,7 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
               </Badge>
             )}
           </div>
-          
+
           {/* Budget and Duration */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
@@ -742,7 +743,7 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
               <span className="text-sm">{opportunity.duration}</span>
             </div>
           </div>
-          
+
           {/* Footer Stats */}
           <div className="flex items-center justify-between text-xs text-muted-foreground pt-4 border-t border-white/10">
             <div className="flex items-center space-x-3">
@@ -760,9 +761,9 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
               {opportunity.deadline}
             </span>
           </div>
-          
+
           {/* Apply Button */}
-          <Button 
+          <Button
             onClick={() => setShowProposal(true)}
             className="w-full liquid-gradient hover:opacity-90 transition-all duration-300 mt-4"
           >
@@ -771,7 +772,7 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
           </Button>
         </CardContent>
       </Card>
-      
+
       {/* Proposal Modal */}
       <Dialog open={showProposal} onOpenChange={setShowProposal}>
         <DialogContent className="glass border-white/10 max-w-2xl">
@@ -828,7 +829,7 @@ function ProposalForm({ opportunity, onClose }: { opportunity: any, onClose: () 
           </div>
         </CardContent>
       </Card>
-      
+
       {/* Proposal Form */}
       <div className="space-y-4">
         <div className="space-y-2">
@@ -844,7 +845,7 @@ function ProposalForm({ opportunity, onClose }: { opportunity: any, onClose: () 
             {proposalData.coverLetter.length}/1000 caracteres
           </div>
         </div>
-        
+
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label>Presupuesto Propuesto (USD) *</Label>
@@ -855,7 +856,7 @@ function ProposalForm({ opportunity, onClose }: { opportunity: any, onClose: () 
               className="glass border-white/20"
             />
           </div>
-          
+
           <div className="space-y-2">
             <Label>Tiempo de Entrega *</Label>
             <Select
@@ -875,7 +876,7 @@ function ProposalForm({ opportunity, onClose }: { opportunity: any, onClose: () 
             </Select>
           </div>
         </div>
-        
+
         <div className="space-y-2">
           <Label>Preguntas para el Cliente (Opcional)</Label>
           <Textarea
@@ -887,7 +888,7 @@ function ProposalForm({ opportunity, onClose }: { opportunity: any, onClose: () 
           />
         </div>
       </div>
-      
+
       <div className="flex items-center justify-between">
         <div className="text-sm text-muted-foregoing">
           Al enviar esta propuesta, aceptas los términos de servicio de Fixia
@@ -896,7 +897,7 @@ function ProposalForm({ opportunity, onClose }: { opportunity: any, onClose: () 
           <Button variant="outline" onClick={onClose} className="glass border-white/20">
             Cancelar
           </Button>
-          <Button 
+          <Button
             onClick={handleSubmit}
             className="liquid-gradient hover:opacity-90 w-48"
             disabled={isPending || !proposalData.coverLetter || !proposalData.deliveryTime}
@@ -925,9 +926,9 @@ export default function OpportunitiesPage() {
   const [urgencyFilter, setUrgencyFilter] = useState(["all"]);
   const [locationFilter, setLocationFilter] = useState("all");
 
-  const { 
-    data: filteredOpportunities, 
-    isLoading, 
+  const {
+    data: filteredOpportunities,
+    isLoading,
     isError,
     refetch
   } = useOpportunities({
@@ -938,7 +939,7 @@ export default function OpportunitiesPage() {
     urgencyFilter,
     locationFilter,
   });
-  
+
   // Fallback to an empty array to prevent errors on initial render
   // when filteredOpportunities is undefined.
   const opportunities = filteredOpportunities ?? [];
@@ -946,7 +947,7 @@ export default function OpportunitiesPage() {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      
+
       <main className="container mx-auto px-6 py-8">
         {/* Hero Section */}
         <motion.div
@@ -959,10 +960,10 @@ export default function OpportunitiesPage() {
             Descubre Oportunidades Extraordinarias
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Conecta con clientes que necesitan exactamente tus habilidades. 
+            Conecta con clientes que necesitan exactamente tus habilidades.
             Encuentra proyectos que impulsen tu carrera al siguiente nivel.
           </p>
-          
+
           {/* Quick Stats */}
           <div className="flex items-center justify-center space-x-8 mt-8">
             <div className="text-center">
@@ -1023,7 +1024,7 @@ export default function OpportunitiesPage() {
               </Badge>
             )}
           </div>
-          
+
           <div className="flex items-center space-x-4 text-sm text-muted-foreground min-h-[20px]">
             <span>{opportunities.filter(o => o.urgency === 'urgent').length} urgentes</span>
             <span>•</span>
@@ -1036,8 +1037,8 @@ export default function OpportunitiesPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.4 }}
-          className={viewMode === "grid" 
-            ? "grid md:grid-cols-2 lg:grid-cols-3 gap-6" 
+          className={viewMode === "grid"
+            ? "grid md:grid-cols-2 lg:grid-cols-3 gap-6"
             : "space-y-6"
           }
         >
@@ -1061,7 +1062,7 @@ export default function OpportunitiesPage() {
             transition={{ duration: 0.6, delay: 0.6 }}
             className="text-center mt-12"
           >
-            <Button 
+            <Button
               variant="outline" className="glass border-white/20 hover:glass-medium"
               onClick={() => toast.info('Funcionalidad de paginación en desarrollo.')}
             >
@@ -1088,7 +1089,7 @@ export default function OpportunitiesPage() {
                 Intenta ajustar tus filtros o buscar con términos diferentes
               </p>
               <div className="space-y-2">
-                <Button 
+                <Button
                   onClick={() => {
                     setSearchQuery("");
                     setSelectedCategory("Todos");

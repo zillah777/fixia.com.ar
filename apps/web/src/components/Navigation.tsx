@@ -14,7 +14,7 @@ export function Navigation() {
             <div className="h-8 w-8 rounded bg-primary"></div>
             <span className="font-semibold">Dashboard</span>
           </div>
-          
+
           <nav className="hidden md:flex items-center space-x-6">
             <a href="#" className="transition-colors hover:text-foreground/80 text-foreground/60">Overview</a>
             <a href="#" className="transition-colors hover:text-foreground/80 text-foreground/60">Projects</a>
@@ -47,6 +47,7 @@ export function Navigation() {
 
           {/* User Avatar Dropdown */}
           <DropdownMenu>
+            {/* @ts-expect-error - DropdownMenuTrigger asChild is valid but TypeScript doesn't recognize it */}
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                 <Avatar className="h-8 w-8">
