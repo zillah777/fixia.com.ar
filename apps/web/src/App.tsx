@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 // Pages
 import HomePage from "./pages/HomePage";
@@ -219,6 +220,17 @@ function AppRoutes() {
   );
 }
 
+// Create QueryClient instance
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+    },
+  },
+});
+
 export default function App() {
   const [loading, setLoading] = useState(true);
 
@@ -231,19 +243,21 @@ export default function App() {
   }
 
   return (
-    <SecureAuthProvider>
-      <NotificationProvider>
-        <div className="min-h-screen bg-background">
-          <AppRoutes />
+    <QueryClientProvider client={queryClient}>
+      <SecureAuthProvider>
+        <NotificationProvider>
+          <div className="min-h-screen bg-background">
+            <AppRoutes />
 
-          {/* Background decorative elements */}
-          <div className="fixed inset-0 pointer-events-none overflow-hidden">
-            <div className="absolute top-1/4 -left-32 w-64 h-64 liquid-gradient rounded-full blur-3xl opacity-10 animate-float"></div>
-            <div className="absolute top-3/4 -right-32 w-64 h-64 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full blur-3xl opacity-10 animate-float" style={{ animationDelay: '2s' }}></div>
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-full blur-3xl animate-pulse-slow"></div>
+            {/* Background decorative elements */}
+            <div className="fixed inset-0 pointer-events-none overflow-hidden">
+              <div className="absolute top-1/4 -left-32 w-64 h-64 liquid-gradient rounded-full blur-3xl opacity-10 animate-float"></div>
+              <div className="absolute top-3/4 -right-32 w-64 h-64 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full blur-3xl opacity-10 animate-float" style={{ animationDelay: '2s' }}></div>
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-full blur-3xl animate-pulse-slow"></div>
+            </div>
           </div>
-        </div>
-      </NotificationProvider>
-    </SecureAuthProvider>
+        </NotificationProvider>
+      </SecureAuthProvider>
+    </QueryClientProvider>
   );
 }
