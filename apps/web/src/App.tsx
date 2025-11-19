@@ -29,7 +29,7 @@ import FavoritesPage from "./pages/FavoritesPage";
 import Error404Page from "./pages/Error404Page";
 
 // Context
-import { AuthProvider, useAuth } from "./context/AuthContext";
+import { SecureAuthProvider, useSecureAuth } from "./context/SecureAuthContext";
 import { NotificationProvider } from "./context/NotificationContext";
 
 // Loading component
@@ -65,7 +65,7 @@ function LoadingScreen() {
 
 // Protected Route component
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useAuth();
+  const { user, loading } = useSecureAuth();
 
   if (loading) {
     return <LoadingScreen />;
@@ -80,7 +80,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
 // Public Route component (redirect if authenticated)
 function PublicRoute({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useAuth();
+  const { user, loading } = useSecureAuth();
 
   if (loading) {
     return <LoadingScreen />;
@@ -231,7 +231,7 @@ export default function App() {
   }
 
   return (
-    <AuthProvider>
+    <SecureAuthProvider>
       <NotificationProvider>
         <div className="min-h-screen bg-background">
           <AppRoutes />
@@ -244,6 +244,6 @@ export default function App() {
           </div>
         </div>
       </NotificationProvider>
-    </AuthProvider>
+    </SecureAuthProvider>
   );
 }
