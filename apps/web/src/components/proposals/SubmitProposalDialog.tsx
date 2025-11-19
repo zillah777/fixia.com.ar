@@ -3,7 +3,11 @@
 
 import React from 'react';
 
-interface SubmitProposalDialogProps {
+export interface SubmitProposalDialogProps {
+    projectId?: string;
+    projectTitle?: string;
+    budgetMin?: number;
+    budgetMax?: number;
     opportunityId?: string;
     open?: boolean;
     onOpenChange?: (open: boolean) => void;
@@ -11,6 +15,10 @@ interface SubmitProposalDialogProps {
 }
 
 export function SubmitProposalDialog({
+    projectId,
+    projectTitle,
+    budgetMin,
+    budgetMax,
     opportunityId,
     open,
     onOpenChange,

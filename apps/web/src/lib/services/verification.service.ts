@@ -40,14 +40,30 @@ export interface VerificationRequest {
     status: VerificationStatus;
     notes?: string;
     additionalInfo?: Record<string, any>;
+    documents?: string[];
+    reviewedAt?: string;
+    rejectionReason?: string;
+    reviewer?: string;
+    user?: {
+        id: string;
+        name: string;
+        email: string;
+    };
     createdAt: string;
     updatedAt: string;
+}
+
+export interface VerificationStats {
+    total: number;
+    pending: number;
+    approved: number;
+    rejected: number;
 }
 
 export const verificationService = {
     async getVerificationGuide(type: VerificationType): Promise<VerificationGuide> {
         return {
-            title: 'Verificación de ' + type,
+            title: `Verificación de ${type}`,
             description: 'Guía de verificación',
             requirements: ['Requisito 1', 'Requisito 2'],
             documents: ['Documento 1', 'Documento 2'],
@@ -56,11 +72,16 @@ export const verificationService = {
         };
     },
 
-    async createVerificationRequest(data: CreateVerificationRequestDto, files: File[]): Promise<VerificationRequest> {
+    async createVerificationRequest(
+        data: CreateVerificationRequestDto,
+        files: File[]
+    ): Promise<VerificationRequest> {
         const formData = new FormData();
         formData.append('verificationType', data.verificationType);
         if (data.notes) formData.append('notes', data.notes);
-        if (data.additionalInfo) formData.append('additionalInfo', JSON.stringify(data.additionalInfo));
+        if (data.additionalInfo) {
+            formData.append('additionalInfo', JSON.stringify(data.additionalInfo));
+        }
         files.forEach((file) => formData.append('files', file));
         return api.post<VerificationRequest>('/verifications', formData);
     },
@@ -73,48 +94,83 @@ export const verificationService = {
         return api.get<VerificationRequest[]>('/verifications/my-verifications');
     },
 
+    async getMyVerificationStatus(): Promise<any> {
+        return api.get('/verifications/status');
+    },
+
+    async getMyVerificationRequests(): Promise<VerificationRequest[]> {
+        return this.getMyVerifications();
+    },
+
+    async getPendingVerificationRequests(): Promise<VerificationRequest[]> {
+        return api.get<VerificationRequest[]>('/verifications/pending');
+    },
+
+    async getVerificationStats(): Promise<VerificationStats> {
+        return api.get<VerificationStats>('/verifications/stats');
+    },
+
+    async reviewVerificationRequest(
+        requestId: string,
+        approved: boolean,
+        rejectionReason?: string
+    ): Promise<void> {
+        return api.post(`/verifications/${requestId}/review`, {
+            approved,
+            rejectionReason
+        });
+    },
+
     getEstimatedProcessingTime(type: VerificationType): string {
-        if (type === VerificationType.IDENTITY) return '1-2 días hábiles';
-        if (type === VerificationType.SKILLS) return '3-5 días hábiles';
-        if (type === VerificationType.BUSINESS) return '5-7 días hábiles';
-        if (type === VerificationType.BACKGROUND_CHECK) return '7-10 días hábiles';
-        if (type === VerificationType.ADDRESS) return '2-3 días hábiles';
-        if (type === VerificationType.PHONE) return 'Instantáneo';
-        if (type === VerificationType.EMAIL) return 'Instantáneo';
-        return '3-5 días hábiles';
+        const times: Record<VerificationType, string> = {
+            [VerificationType.IDENTITY]: '1-2 días hábiles',
+            [VerificationType.SKILLS]: '3-5 días hábiles',
+            [VerificationType.BUSINESS]: '5-7 días hábiles',
+            [VerificationType.BACKGROUND_CHECK]: '7-10 días hábiles',
+            [VerificationType.ADDRESS]: '2-3 días hábiles',
+            [VerificationType.PHONE]: 'Instantáneo',
+            [VerificationType.EMAIL]: 'Instantáneo'
+        };
+        return times[type] || '3-5 días hábiles';
     },
 
     async cancelVerificationRequest(requestId: string): Promise<void> {
-        return api.delete('/verifications/' + requestId);
+        return api.delete(`/verifications/${requestId}`);
     },
 
     getVerificationTypeLabel(type: VerificationType): string {
-        if (type === VerificationType.IDENTITY) return 'Identidad';
-        if (type === VerificationType.SKILLS) return 'Habilidades';
-        if (type === VerificationType.BUSINESS) return 'Negocio';
-        if (type === VerificationType.BACKGROUND_CHECK) return 'Antecedentes';
-        if (type === VerificationType.ADDRESS) return 'Dirección';
-        if (type === VerificationType.PHONE) return 'Teléfono';
-        if (type === VerificationType.EMAIL) return 'Email';
-        return type;
+        const labels: Record<VerificationType, string> = {
+            [VerificationType.IDENTITY]: 'Identidad',
+            [VerificationType.SKILLS]: 'Habilidades',
+            [VerificationType.BUSINESS]: 'Negocio',
+            [VerificationType.BACKGROUND_CHECK]: 'Antecedentes',
+            [VerificationType.ADDRESS]: 'Dirección',
+            [VerificationType.PHONE]: 'Teléfono',
+            [VerificationType.EMAIL]: 'Email'
+        };
+        return labels[type] || type;
     },
 
     getVerificationStatusColor(status: VerificationStatus): string {
-        if (status === VerificationStatus.PENDING) return 'text-warning';
-        if (status === VerificationStatus.APPROVED) return 'text-success';
-        if (status === VerificationStatus.REJECTED) return 'text-destructive';
-        if (status === VerificationStatus.EXPIRED) return 'text-muted-foreground';
-        if (status === VerificationStatus.CANCELLED) return 'text-muted-foreground';
-        return 'text-muted-foreground';
+        const colors: Record<VerificationStatus, string> = {
+            [VerificationStatus.PENDING]: 'text-warning',
+            [VerificationStatus.APPROVED]: 'text-success',
+            [VerificationStatus.REJECTED]: 'text-destructive',
+            [VerificationStatus.EXPIRED]: 'text-muted-foreground',
+            [VerificationStatus.CANCELLED]: 'text-muted-foreground'
+        };
+        return colors[status] || 'text-muted-foreground';
     },
 
     getVerificationStatusLabel(status: VerificationStatus): string {
-        if (status === VerificationStatus.PENDING) return 'Pendiente';
-        if (status === VerificationStatus.APPROVED) return 'Aprobado';
-        if (status === VerificationStatus.REJECTED) return 'Rechazado';
-        if (status === VerificationStatus.EXPIRED) return 'Expirado';
-        if (status === VerificationStatus.CANCELLED) return 'Cancelado';
-        return status;
+        const labels: Record<VerificationStatus, string> = {
+            [VerificationStatus.PENDING]: 'Pendiente',
+            [VerificationStatus.APPROVED]: 'Aprobado',
+            [VerificationStatus.REJECTED]: 'Rechazado',
+            [VerificationStatus.EXPIRED]: 'Expirado',
+            [VerificationStatus.CANCELLED]: 'Cancelado'
+        };
+        return labels[status] || status;
     },
 
     async sendPhoneVerification(phone: string): Promise<void> {
