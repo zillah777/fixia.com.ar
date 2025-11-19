@@ -1,17 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../lib/api';
-
-export interface User {
-  id: string;
-  name: string;
-  email: string;
-  avatar: string | null;
-  user_type: 'client' | 'professional' | 'dual' | 'admin';
-  subscription_type?: 'free' | 'premium' | 'professional';
-  subscription_status?: 'active' | 'inactive';
-  isVerified: boolean;
-  // ... otras propiedades del usuario
-}
+import type { User } from '../context/SecureAuthContext';
 
 const fetchCurrentUser = async (): Promise<User | null> => {
   try {
@@ -39,3 +28,6 @@ export const useCurrentUser = () => {
     retry: false, // No reintentar en caso de 401, ya que significa que no está logueado.
   });
 };
+
+// Re-export User type for convenience
+export type { User };
