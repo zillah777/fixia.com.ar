@@ -1,8 +1,8 @@
-```typescript
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { ValidationPipe, Logger } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { Request, Response } from 'express';
 import helmet from 'helmet';
 import * as cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
@@ -19,8 +19,8 @@ async function bootstrap() {
   const port = parseInt(process.env.PORT) || 3001;
   const host = '0.0.0.0';
 
-  logger.log(`🚀 Starting Fixia API on ${ host }:${ port } `);
-  logger.log(`🌍 Environment: ${ process.env.NODE_ENV || 'development' } `);
+  logger.log(`🚀 Starting Fixia API on ${host}:${port}`);
+  logger.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
 
   try {
     // Create NestJS application with explicit Express platform
@@ -71,17 +71,11 @@ async function bootstrap() {
       });
     });
 
-    // Emergency services seeding endpoint removed for security
-    // This endpoint was a critical security risk (CVSS 8.1) as it allowed
-    // unauthorized database manipulation in production.
-    // Seeding must be performed through secure admin-only endpoints with authentication.
-
-
     // Handle common bot/crawler requests for JS files to prevent 404 errors
     app.getHttpAdapter().get('/js/:filename', (req: Request, res: Response) => {
       const filename = req.params.filename;
-      logger.warn(`🤖 Bot / crawler requesting JS file: /js/${ filename } - returning empty response`);
-      
+      logger.warn(`🤖 Bot/crawler requesting JS file: /js/${filename} - returning empty response`);
+
       // Return empty JavaScript file to prevent 404 errors
       res.set('Content-Type', 'application/javascript');
       res.send('// File not found - empty response to prevent 404 errors');
@@ -101,38 +95,32 @@ async function bootstrap() {
       });
     });
 
-    // Enable CORS with production-ready configuration - Updated for actual deployment URLs
+    // Enable CORS with production-ready configuration
     const isProduction = process.env.NODE_ENV === 'production' || process.env.RENDER || process.env.RAILWAY_ENVIRONMENT;
 
     const allowedOrigins = isProduction
       ? [
-        // Primary Vercel deployments
         'https://fixiaweb.vercel.app',
         'https://fixia.vercel.app',
-        // Custom domains
         'https://fixia.com.ar',
         'https://www.fixia.com.ar',
         'https://fixia.app',
         'https://www.fixia.app',
-        // Render.com domain
         'https://fixia-api.onrender.com',
-        // Allow all Vercel preview deployments
         /https:\/\/.*\.vercel\.app$/
       ]
       : process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000', 'http://localhost:5173', 'http://localhost:4000'];
 
-    logger.log(`🌐 Environment: ${ process.env.NODE_ENV || 'development' } (isProduction: ${ isProduction })`);
-    logger.log(`🌐 CORS enabled for origins: ${ JSON.stringify(allowedOrigins) } `);
+    logger.log(`🌐 Environment: ${process.env.NODE_ENV || 'development'} (isProduction: ${isProduction})`);
+    logger.log(`🌐 CORS enabled for origins: ${JSON.stringify(allowedOrigins)}`);
 
     app.enableCors({
       origin: (origin, callback) => {
-        // Allow requests with no origin (mobile apps, Postman, curl, etc.)
         if (!origin) {
-          logger.log(`✅ CORS allowed for request with no origin(mobile / tools)`);
+          logger.log(`✅ CORS allowed for request with no origin (mobile/tools)`);
           return callback(null, true);
         }
 
-        // Check if origin is allowed
         const isAllowed = allowedOrigins.some(allowedOrigin => {
           if (allowedOrigin instanceof RegExp) {
             return allowedOrigin.test(origin);
@@ -141,12 +129,11 @@ async function bootstrap() {
         });
 
         if (isAllowed) {
-          logger.log(`✅ CORS allowed for origin: ${ origin } `);
+          logger.log(`✅ CORS allowed for origin: ${origin}`);
           callback(null, true);
         } else {
-          logger.warn(`❌ CORS blocked for origin: ${ origin } `);
-          logger.warn(`   Allowed origins: ${ JSON.stringify(allowedOrigins) } `);
-          // In production, block; in development, allow for debugging
+          logger.warn(`❌ CORS blocked for origin: ${origin}`);
+          logger.warn(`   Allowed origins: ${JSON.stringify(allowedOrigins)}`);
           if (isProduction) {
             callback(new Error('Not allowed by CORS'));
           } else {
@@ -161,23 +148,23 @@ async function bootstrap() {
       credentials: true,
       optionsSuccessStatus: 200,
       preflightContinue: false,
-      maxAge: 86400 // Cache preflight requests for 24 hours
+      maxAge: 86400
     });
 
     // Global error handling and interceptors
     app.useGlobalFilters(new HttpExceptionFilter());
     app.useGlobalInterceptors(new LoggingInterceptor());
-    app.useGlobalInterceptors(new RateLimitInterceptor()); // Rate limiting for POST/PUT/DELETE
-    app.useGlobalInterceptors(new SnakeToCamelInterceptor()); // Transform snake_case to camelCase
+    app.useGlobalInterceptors(new RateLimitInterceptor());
+    app.useGlobalInterceptors(new SnakeToCamelInterceptor());
     app.useGlobalInterceptors(new TransformInterceptor());
 
-    // Global validation pipe with error formatting
+    // Global validation pipe
     app.useGlobalPipes(
       new ValidationPipe({
         whitelist: true,
         forbidNonWhitelisted: true,
         transform: true,
-        disableErrorMessages: false, // Temporarily enabled to debug subscription issues
+        disableErrorMessages: false,
         validationError: {
           target: false,
           value: false,
@@ -215,21 +202,21 @@ async function bootstrap() {
     await app.listen(port, host);
 
     logger.log(`🚀 Fixia API running on: http://${host}:${port}${apiPrefix ? `/${apiPrefix}` : ''}`);
-logger.log(`🏥 Health check: http://${host}:${port}/health`);
+    logger.log(`🏥 Health check: http://${host}:${port}/health`);
 
-if (process.env.NODE_ENV !== 'production') {
-  logger.log(`📖 API Documentation: http://${host}:${port}/docs`);
-}
+    if (process.env.NODE_ENV !== 'production') {
+      logger.log(`📖 API Documentation: http://${host}:${port}/docs`);
+    }
 
-if (process.env.RAILWAY_ENVIRONMENT) {
-  logger.log(`🚂 Railway deployment successful - Service: ${process.env.RAILWAY_SERVICE_NAME}`);
-}
+    if (process.env.RAILWAY_ENVIRONMENT) {
+      logger.log(`🚂 Railway deployment successful - Service: ${process.env.RAILWAY_SERVICE_NAME}`);
+    }
 
-return app;
+    return app;
   } catch (error) {
-  logger.error('❌ Failed to start application:', error);
-  process.exit(1);
-}
+    logger.error('❌ Failed to start application:', error);
+    process.exit(1);
+  }
 }
 
 bootstrap().catch((error) => {
