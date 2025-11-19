@@ -19,7 +19,9 @@
     "node": "20.x"
   },
   "dependencies": {
-    "@nestjs/platform-express": "^10.0.0"
+    "@nestjs/platform-express": "^10.0.0",
+    "class-validator": "^0.14.0",
+    "class-transformer": "^0.5.1"
   },
   "devDependencies": {
     "prettier": "^3.2.5",
