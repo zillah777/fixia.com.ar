@@ -26,7 +26,7 @@ export const VerificationRequestForm = memo<VerificationRequestFormProps>(({
   onClose,
   onSuccess
 }) => {
-  const [selectedType, setSelectedType] = useState<VerificationType | null>(initialType);
+  const [selectedType, setSelectedType] = useState<VerificationType | null>(initialType || null);
   const [guide, setGuide] = useState<VerificationGuide | null>(null);
   const [files, setFiles] = useState<File[]>([]);
   const [notes, setNotes] = useState('');
@@ -43,7 +43,7 @@ export const VerificationRequestForm = memo<VerificationRequestFormProps>(({
 
   const loadVerificationGuide = async () => {
     if (!selectedType) return;
-    
+
     setIsLoadingGuide(true);
     try {
       const guideData = await verificationService.getVerificationGuide(selectedType);
@@ -57,22 +57,22 @@ export const VerificationRequestForm = memo<VerificationRequestFormProps>(({
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(event.target.files || []);
-    
+
     // Validate file types and sizes
     const validFiles = selectedFiles.filter(file => {
       const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'application/pdf'];
       const maxSize = 10 * 1024 * 1024; // 10MB
-      
+
       if (!validTypes.includes(file.type)) {
         setError(`${file.name}: Solo se permiten imágenes y archivos PDF`);
         return false;
       }
-      
+
       if (file.size > maxSize) {
         setError(`${file.name}: El archivo es demasiado grande (máximo 10MB)`);
         return false;
       }
-      
+
       return true;
     });
 
@@ -91,7 +91,7 @@ export const VerificationRequestForm = memo<VerificationRequestFormProps>(({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!selectedType) {
       setError('Por favor selecciona un tipo de verificación');
       return;
@@ -186,7 +186,7 @@ export const VerificationRequestForm = memo<VerificationRequestFormProps>(({
                 </Button>
               </CardTitle>
             </CardHeader>
-            
+
             <CardContent className="space-y-6">
               <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Verification Type Selection */}

@@ -1,4 +1,4 @@
-import React, { useState, Suspense } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "motion/react";
 import {
@@ -12,18 +12,11 @@ import { Badge } from "../components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Progress } from "../components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
-// CORRECTED: Use the new, secure AuthContext
 import { useSecureAuth } from "../context/SecureAuthContext";
-import { useDashboardStats, useCurrentProjects, useRecentActivity } from "../hooks/useDashboardData";
-import { StatCardSkeleton, ProjectCardSkeleton, ActivityItemSkeleton } from "../components/skeletons/DashboardSkeletons";
-
-// Lazy load the main sections of the dashboard for better initial performance
-const StatCards = React.lazy(() => import('../components/dashboard/StatCards'));
-const CurrentProjects = React.lazy(() => import('../components/dashboard/CurrentProjects'));
-const RecentActivity = React.lazy(() => import('../components/dashboard/RecentActivity'));
+import { useRecentActivity } from "../hooks/useRecentActivity";
 
 function Navigation() {
-  const { user, logout } = useAuth();
+  const { user, logout } = useSecureAuth();
 
   return (
     <motion.header
@@ -189,6 +182,153 @@ function QuickActions() {
   );
 }
 
+function StatCards() {
+  const stats = [
+    {
+      title: "Vistas del Perfil",
+      value: "2,543",
+      change: "+12.5%",
+      icon: Eye,
+      color: "text-blue-400",
+      bgColor: "bg-blue-500/20"
+    },
+    {
+      title: "Proyectos Activos",
+      value: "8",
+      change: "+2",
+      icon: Briefcase,
+      color: "text-purple-400",
+      bgColor: "bg-purple-500/20"
+    },
+    {
+      title: "Calificación",
+      value: "4.9",
+      change: "+0.2",
+      icon: Star,
+      color: "text-warning",
+      bgColor: "bg-warning/20"
+    },
+    {
+      title: "Ingresos del Mes",
+      value: "$45,231",
+      change: "+18.2%",
+      icon: DollarSign,
+      color: "text-success",
+      bgColor: "bg-success/20"
+    }
+  ];
+
+  return (
+    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {stats.map((stat, index) => {
+        const Icon = stat.icon;
+        return (
+          <motion.div
+            key={stat.title}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: index * 0.1 }}
+          >
+            <Card className="glass border-white/10">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className={`h-12 w-12 rounded-xl ${stat.bgColor} flex items-center justify-center`}>
+                    <Icon className={`h-6 w-6 ${stat.color}`} />
+                  </div>
+                  <Badge className="bg-success/20 text-success border-success/30">
+                    {stat.change}
+                  </Badge>
+                </div>
+                <h3 className="text-2xl font-bold mb-1">{stat.value}</h3>
+                <p className="text-sm text-muted-foreground">{stat.title}</p>
+              </CardContent>
+            </Card>
+          </motion.div>
+        );
+      })}
+    </div>
+  );
+}
+
+function CurrentProjects() {
+  const projects = [
+    {
+      id: "1",
+      title: "Desarrollo de App Móvil",
+      client: "TechStart Inc.",
+      progress: 75,
+      deadline: "15 Nov 2024",
+      status: "En Progreso",
+      budget: "$8,500"
+    },
+    {
+      id: "2",
+      title: "Diseño de Sitio Web",
+      client: "Creative Agency",
+      progress: 45,
+      deadline: "22 Nov 2024",
+      status: "En Progreso",
+      budget: "$3,200"
+    },
+    {
+      id: "3",
+      title: "Consultoría SEO",
+      client: "Marketing Pro",
+      progress: 90,
+      deadline: "10 Nov 2024",
+      status: "Por Completar",
+      budget: "$1,800"
+    }
+  ];
+
+  return (
+    <Card className="glass border-white/10">
+      <CardHeader>
+        <CardTitle>Proyectos Actuales</CardTitle>
+        <CardDescription>Gestiona tus proyectos en curso</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          {projects.map((project) => (
+            <div key={project.id} className="p-4 glass-medium rounded-lg hover:glass-strong transition-all cursor-pointer">
+              <div className="flex items-start justify-between mb-3">
+                <div>
+                  <h4 className="font-semibold mb-1">{project.title}</h4>
+                  <p className="text-sm text-muted-foreground">{project.client}</p>
+                </div>
+                <Badge className="bg-primary/20 text-primary border-primary/30">
+                  {project.status}
+                </Badge>
+              </div>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Progreso</span>
+                  <span className="font-medium">{project.progress}%</span>
+                </div>
+                <Progress value={project.progress} className="h-2" />
+                <div className="flex items-center justify-between text-sm pt-2">
+                  <div className="flex items-center text-muted-foreground">
+                    <Calendar className="h-4 w-4 mr-1" />
+                    {project.deadline}
+                  </div>
+                  <div className="font-semibold text-success">
+                    {project.budget}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="mt-4">
+          <Button variant="outline" className="w-full glass border-white/20 hover:glass-medium">
+            Ver Todos los Proyectos
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 function RecentActivity() {
   const { data: activities, isLoading } = useRecentActivity();
 
@@ -200,30 +340,38 @@ function RecentActivity() {
       <CardContent className="min-h-[200px]">
         {isLoading ? (
           <div className="space-y-4">
-            <ActivityItemSkeleton />
-            <ActivityItemSkeleton />
-            <ActivityItemSkeleton />
-          </div>
-        ) : <div className="space-y-4">
-          {activities.map((activity) => {
-            const Icon = activity.icon;
-            return (
-              <div key={activity.id} className="flex items-start space-x-4 p-3 glass-medium rounded-lg hover:glass-strong transition-all cursor-pointer">
-                <div className={`h-10 w-10 rounded-full bg-muted flex items-center justify-center ${activity.color}`}>
-                  <Icon className="h-5 w-5" />
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="flex items-start space-x-4 p-3 glass-medium rounded-lg animate-pulse">
+                <div className="h-10 w-10 rounded-full bg-muted"></div>
+                <div className="flex-1 space-y-2">
+                  <div className="h-4 bg-muted rounded w-3/4"></div>
+                  <div className="h-3 bg-muted rounded w-1/2"></div>
                 </div>
-                <div className="flex-1">
-                  <h4 className="font-medium">{activity.title}</h4>
-                  <p className="text-sm text-muted-foreground">{activity.description}</p>
-                  <span className="text-xs text-muted-foreground">{activity.time}</span>
-                </div>
-                {activity.status === 'new' && (
-                  <Badge className="bg-success/20 text-success border-success/30">Nuevo</Badge>
-                )}
               </div>
-            );
-          })}
-        </div>}
+            ))}
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {activities?.map((activity) => {
+              const Icon = activity.icon;
+              return (
+                <div key={activity.id} className="flex items-start space-x-4 p-3 glass-medium rounded-lg hover:glass-strong transition-all cursor-pointer">
+                  <div className={`h-10 w-10 rounded-full bg-muted flex items-center justify-center ${activity.color}`}>
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-medium">{activity.title}</h4>
+                    <p className="text-sm text-muted-foreground">{activity.description}</p>
+                    <span className="text-xs text-muted-foreground">{activity.time}</span>
+                  </div>
+                  {activity.status === 'new' && (
+                    <Badge className="bg-success/20 text-success border-success/30">Nuevo</Badge>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
         <div className="mt-4">
           <Button variant="outline" className="w-full glass border-white/20 hover:glass-medium">
             Ver Todo el Historial
@@ -243,7 +391,6 @@ export default function DashboardPage() {
 
       <main className="container mx-auto px-6 py-8">
         {isLoading ? (
-          // Skeleton loader for the welcome message
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -253,7 +400,6 @@ export default function DashboardPage() {
             <div className="h-6 w-3/4 bg-slate-700/50 rounded-md animate-pulse"></div>
           </motion.div>
         ) : isAuthenticated && user ? (
-          // Welcome Header
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -288,9 +434,7 @@ export default function DashboardPage() {
           transition={{ duration: 0.6, delay: 0.3 }}
           className="mb-8"
         >
-          <Suspense fallback={<div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6"><StatCardSkeleton /><StatCardSkeleton /><StatCardSkeleton /><StatCardSkeleton /></div>}>
-            <StatCards />
-          </Suspense>
+          <StatCards />
         </motion.div>
 
         {/* Main Content Grid */}
@@ -302,16 +446,12 @@ export default function DashboardPage() {
         >
           {/* Current Projects */}
           <div className="lg:col-span-2">
-            <Suspense fallback={<ProjectCardSkeleton />}>
-              <CurrentProjects />
-            </Suspense>
+            <CurrentProjects />
           </div>
 
           {/* Recent Activity */}
           <div>
-            <Suspense fallback={<ActivityItemSkeleton />}>
-              <RecentActivity />
-            </Suspense>
+            <RecentActivity />
           </div>
         </motion.div>
 

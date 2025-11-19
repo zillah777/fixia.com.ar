@@ -50,8 +50,6 @@ export function ProposalSubmissionCard({ opportunity, onClose, onSuccess }: Prop
         proposedBudget: proposalData.quotedPrice,
         estimatedDuration: `${proposalData.deliveryTimeDays} días`,
         portfolio: [],
-        availableToStart: true,
-        flexibleSchedule: true,
       });
 
       toast.success("¡Propuesta enviada exitosamente!");

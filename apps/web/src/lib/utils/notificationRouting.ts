@@ -150,7 +150,7 @@ export function getNotificationUrl(
   if (metadata) {
     // For proposal routes, append proposal ID
     if (
-      (notificationType === 'proposal_received' || notificationType === 'proposal_accepted') &&
+      notificationType === 'proposal_received' &&
       metadata.projectId
     ) {
       url = `/projects/${metadata.projectId}`;
@@ -159,8 +159,8 @@ export function getNotificationUrl(
     // For job routes, append job ID
     if (
       (notificationType === 'job_started' ||
-       notificationType === 'job_completed' ||
-       notificationType === 'job_milestone') &&
+        notificationType === 'job_completed' ||
+        notificationType === 'job_milestone') &&
       metadata.jobId
     ) {
       url = `/my-jobs/${metadata.jobId}`;

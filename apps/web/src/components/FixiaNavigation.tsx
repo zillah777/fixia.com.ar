@@ -8,7 +8,7 @@ import { motion } from "motion/react";
 
 export function FixiaNavigation() {
   return (
-    <motion.header 
+    <motion.header
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       className="sticky top-0 z-50 w-full glass border-b border-white/10"
@@ -16,7 +16,7 @@ export function FixiaNavigation() {
       <div className="container mx-auto flex h-20 items-center justify-between px-6">
         {/* Logo and Navigation Links */}
         <div className="flex items-center space-x-8">
-          <motion.div 
+          <motion.div
             className="flex items-center space-x-3"
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 400, damping: 10 }}
@@ -39,7 +39,7 @@ export function FixiaNavigation() {
               <span className="text-xs text-muted-foreground -mt-1">Conecta. Confía. Resuelve.</span>
             </div>
           </motion.div>
-          
+
           <nav className="hidden lg:flex items-center space-x-1">
             <Button variant="ghost" className="glass-medium hover:glass-strong transition-all duration-300">
               Inicio
@@ -89,9 +89,9 @@ export function FixiaNavigation() {
 
           {/* User Avatar Dropdown */}
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-10 w-10 rounded-full hover:glass-medium transition-all duration-300">
-                <Avatar className="h-10 w-10 ring-2 ring-primary/20">
+            <DropdownMenuTrigger>
+              <Button variant="ghost" className="relative h-8 w-8 rounded-full hover:glass-medium transition-all duration-300">
+                <Avatar className="h-8 w-8 ring-2 ring-primary/20">
                   <AvatarImage src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face" alt="Usuario" />
                   <AvatarFallback className="glass">JD</AvatarFallback>
                 </Avatar>

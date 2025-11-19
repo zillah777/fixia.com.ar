@@ -44,12 +44,12 @@ export const InstantVerificationCard = memo<InstantVerificationCardProps>(({
 
     try {
       if (isPhone) {
-        const result = await verificationService.initiatePhoneVerification(inputValue);
-        setSuccessMessage(result.message);
+        await verificationService.sendPhoneVerification(inputValue);
+        setSuccessMessage('Código enviado a tu teléfono');
         setStep('verify');
       } else {
-        const result = await verificationService.sendEmailVerification();
-        setSuccessMessage(result.message);
+        await verificationService.sendEmailVerification(inputValue);
+        setSuccessMessage('Código enviado a tu email');
         setStep('verify');
       }
     } catch (error: unknown) {
@@ -69,22 +69,17 @@ export const InstantVerificationCard = memo<InstantVerificationCardProps>(({
     setError(null);
 
     try {
-      let result;
       if (isPhone) {
-        result = await verificationService.verifyPhone(inputValue, verificationCode);
+        await verificationService.verifyPhone(inputValue, verificationCode);
       } else {
-        result = await verificationService.verifyEmail(verificationCode);
+        await verificationService.verifyEmail(inputValue, verificationCode);
       }
 
-      if (result.verified) {
-        setStep('completed');
-        setSuccessMessage(result.message);
-        setTimeout(() => {
-          onSuccess();
-        }, 2000);
-      } else {
-        setError('Código de verificación inválido');
-      }
+      setStep('completed');
+      setSuccessMessage('Verificación exitosa');
+      setTimeout(() => {
+        onSuccess();
+      }, 2000);
     } catch (error: unknown) {
       setError(extractErrorMessage(error, 'Error al verificar código'));
     } finally {
@@ -104,13 +99,13 @@ export const InstantVerificationCard = memo<InstantVerificationCardProps>(({
     if (isVerified) {
       return <CheckCircle className="h-6 w-6 text-success" />;
     }
-    
+
     if (step === 'completed') {
       return <CheckCircle className="h-6 w-6 text-success" />;
     }
 
-    return isPhone ? 
-      <Phone className="h-6 w-6 text-primary" /> : 
+    return isPhone ?
+      <Phone className="h-6 w-6 text-primary" /> :
       <Mail className="h-6 w-6 text-primary" />;
   };
 
@@ -167,8 +162,8 @@ export const InstantVerificationCard = memo<InstantVerificationCardProps>(({
               onChange={(e) => setInputValue(e.target.value)}
               disabled={isLoading}
             />
-            <Button 
-              onClick={handleInitiate} 
+            <Button
+              onClick={handleInitiate}
               disabled={isLoading || !inputValue.trim()}
               className="w-full"
             >
@@ -185,8 +180,8 @@ export const InstantVerificationCard = memo<InstantVerificationCardProps>(({
             className="space-y-3"
           >
             <div className="text-sm text-muted-foreground">
-              {isPhone 
-                ? `Código enviado a ${inputValue}` 
+              {isPhone
+                ? `Código enviado a ${inputValue}`
                 : 'Revisa tu bandeja de entrada y spam'
               }
             </div>
@@ -199,16 +194,16 @@ export const InstantVerificationCard = memo<InstantVerificationCardProps>(({
               maxLength={isPhone ? 6 : undefined}
             />
             <div className="flex space-x-2">
-              <Button 
-                onClick={handleVerify} 
+              <Button
+                onClick={handleVerify}
                 disabled={isLoading || !verificationCode.trim()}
                 className="flex-1"
               >
                 {isLoading && <div className="animate-spin rounded-full border-2 border-current border-t-transparent h-4 w-4 mr-2" />}
                 Verificar
               </Button>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={reset}
                 disabled={isLoading}
               >

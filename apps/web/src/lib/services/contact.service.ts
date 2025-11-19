@@ -61,8 +61,9 @@ export const contactService = {
    */
   async contactProfessional(data: CreateContactInteractionDto): Promise<ContactInteraction> {
     try {
+      // api.post already returns the data directly, no need to access .data
       const response = await api.post<ContactInteraction>('/jobs/contacts', data);
-      return response.data;
+      return response;
     } catch (error: any) {
       console.error('Error creating contact interaction:', error);
       throw error;
@@ -74,8 +75,9 @@ export const contactService = {
    */
   async getMyContacts(): Promise<ContactInteraction[]> {
     try {
+      // api.get already returns the data directly, no need to access .data
       const response = await api.get<ContactInteraction[]>('/jobs/contacts/my-contacts');
-      return response.data;
+      return response;
     } catch (error: any) {
       console.error('Error fetching contact interactions:', error);
       throw error;
@@ -91,11 +93,12 @@ export const contactService = {
     conversionValue?: number
   ): Promise<ContactInteraction> {
     try {
+      // api.put already returns the data directly, no need to access .data
       const response = await api.put<ContactInteraction>(
         `/jobs/contacts/${contactId}/convert`,
         { jobId, conversionValue }
       );
-      return response.data;
+      return response;
     } catch (error: any) {
       console.error('Error marking contact as converted:', error);
       throw error;

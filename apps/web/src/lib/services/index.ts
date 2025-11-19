@@ -2,7 +2,7 @@
 export * from './auth.service';
 export * from './services.service';
 export * from './user.service';
-export * from './contact.service';
+// export * from './contact.service'; // Commented to avoid ambiguity
 export * from './projects.service';
 export * from './opportunities.service';
 export * from './jobs.service';

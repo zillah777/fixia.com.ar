@@ -27,7 +27,7 @@ const mockServices = [
     deliveries: "2/4"
   },
   {
-    id: "FX002", 
+    id: "FX002",
     title: "Diseño de identidad corporativa",
     client: {
       name: "Carlos Ruiz",
@@ -246,7 +246,7 @@ export function FixiaServicesTable() {
                   <TableCell>
                     <div className="flex items-center space-x-3">
                       <div className="w-16 h-2 bg-muted rounded-full overflow-hidden">
-                        <motion.div 
+                        <motion.div
                           className="h-full bg-gradient-to-r from-primary to-purple-500 rounded-full"
                           initial={{ width: 0 }}
                           animate={{ width: `${service.progress}%` }}
@@ -273,9 +273,9 @@ export function FixiaServicesTable() {
                   </TableCell>
                   <TableCell>
                     <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0 hover:glass-medium transition-all duration-300">
-                          <span className="sr-only">Abrir menú</span>
+                      <DropdownMenuTrigger>
+                        <Button variant="ghost" className="h-8 w-8 p-0">
+                          <span className="sr-only">Open menu</span>
                           <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>

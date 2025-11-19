@@ -20,8 +20,23 @@ import { Skeleton } from "../components/ui/skeleton";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../components/ui/dialog";
 import { ProposalDetailsModal } from "../components/proposals/ProposalDetailsModal";
 import { ProposalCard } from "../components/proposals/ProposalCard";
-import { Project, Proposal } from "../../types"; // Importar tipos centralizados
-import { formatBudget, formatDate } from "../../lib/utils"; // Importar utilidades
+import { formatCurrency, formatDate } from "../lib/utils"; // Importar utilidades
+
+// Temporary types until backend types are aligned
+type Project = any;
+type Proposal = any;
+
+// Helper function for budget formatting
+const formatBudget = (min?: number, max?: number) => {
+  if (min && max) {
+    return `${formatCurrency(min)} - ${formatCurrency(max)}`;
+  } else if (min) {
+    return `Desde ${formatCurrency(min)}`;
+  } else if (max) {
+    return `Hasta ${formatCurrency(max)}`;
+  }
+  return 'A convenir';
+};
 
 export default function MyAnnouncementsPage() {
   const { user } = useSecureAuth();
@@ -322,7 +337,7 @@ export default function MyAnnouncementsPage() {
                               {/* Skills */}
                               {project.skillsRequired && project.skillsRequired.length > 0 && (
                                 <div className="flex flex-wrap gap-1 sm:gap-2">
-                                  {project.skillsRequired.slice(0, 4).map((skill) => (
+                                  {project.skillsRequired.slice(0, 4).map((skill: any) => (
                                     <Badge key={skill} variant="secondary" className="text-xs px-2 py-1 whitespace-nowrap">
                                       {skill}
                                     </Badge>

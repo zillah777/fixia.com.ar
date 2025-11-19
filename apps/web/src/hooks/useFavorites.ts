@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import useLocalStorage from './useLocalStorage';
-import { Service, User } from '../types';
+import { Service } from '../types';
 
 interface FavoriteService {
   id: string;
@@ -15,6 +15,9 @@ interface FavoriteProfessional {
   businessName?: string;
   dateAdded: string;
 }
+
+// Temporary User type until backend types are aligned
+type User = any;
 
 function useFavorites() {
   const [favoriteServices, setFavoriteServices] = useLocalStorage<FavoriteService[]>('fixia_favorite_services', []);
@@ -57,8 +60,8 @@ function useFavorites() {
   const addProfessionalToFavorites = useCallback((professional: User) => {
     const favorite: FavoriteProfessional = {
       id: professional.id,
-      name: professional.name,
-      businessName: professional.professionalProfile?.description?.substring(0, 50),
+      name: professional.name || professional.fullName || 'Professional',
+      businessName: professional.businessName || professional.description?.substring(0, 50),
       dateAdded: new Date().toISOString()
     };
 

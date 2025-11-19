@@ -380,10 +380,10 @@ function SearchAndFilters({
                         <Checkbox
                           id={option.value}
                           checked={urgencyFilter.includes(option.value)}
-                          onCheckedChange={(checked: boolean) => {
-                            if (checked) {
+                          onCheckedChange={(checked: boolean | 'indeterminate') => {
+                            if (checked === true) {
                               setUrgencyFilter([...urgencyFilter, option.value]);
-                            } else {
+                            } else if (checked === false) {
                               setUrgencyFilter(urgencyFilter.filter((u: string) => u !== option.value));
                             }
                           }}

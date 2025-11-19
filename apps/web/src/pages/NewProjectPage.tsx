@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
 import {
@@ -22,6 +22,7 @@ import { Alert, AlertDescription } from "../components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { useAuth } from "../context/AuthContext";
 import { servicesService, ServiceCategory } from "../lib/services/services.service";
+import { toast } from "sonner";
 
 // Remove hardcoded categories
 // const categories = [ ... ];
@@ -134,17 +135,17 @@ function StepProgress({ currentStep, totalSteps }: { currentStep: number; totalS
             <div
               key={step.id}
               className={`text-center p-3 rounded-lg transition-all ${step.id === currentStep
-                  ? 'glass-medium border border-primary/20'
-                  : step.id < currentStep
-                    ? 'glass-light border border-success/20'
-                    : 'glass border border-white/10'
+                ? 'glass-medium border border-primary/20'
+                : step.id < currentStep
+                  ? 'glass-light border border-success/20'
+                  : 'glass border border-white/10'
                 }`}
             >
               <div className={`w-8 h-8 rounded-full mx-auto mb-2 flex items-center justify-center ${step.id === currentStep
-                  ? 'liquid-gradient text-white'
-                  : step.id < currentStep
-                    ? 'bg-success/20 text-success'
-                    : 'bg-muted text-muted-foreground'
+                ? 'liquid-gradient text-white'
+                : step.id < currentStep
+                  ? 'bg-success/20 text-success'
+                  : 'bg-muted text-muted-foreground'
                 }`}>
                 {step.id < currentStep ? <Check className="h-4 w-4" /> : step.id}
               </div>
@@ -291,8 +292,8 @@ function CategoryStep({ data, setData }: { data: ProjectData; setData: (data: Pr
                     <Card
                       key={category.id}
                       className={`cursor-pointer transition-all ${data.category === category.id
-                          ? 'ring-2 ring-primary glass-medium'
-                          : 'glass hover:glass-medium border-white/10'
+                        ? 'ring-2 ring-primary glass-medium'
+                        : 'glass hover:glass-medium border-white/10'
                         }`}
                       onClick={() => setData({ ...data, category: category.id })}
                     >
@@ -603,8 +604,8 @@ function MediaStep({ data, setData }: { data: ProjectData; setData: (data: Proje
             <Label>Imagen Principal del Servicio *</Label>
             <div
               className={`border-2 border-dashed rounded-lg p-8 text-center transition-all ${draggedOver
-                  ? 'border-primary/50 bg-primary/10'
-                  : 'border-white/20 glass hover:glass-medium'
+                ? 'border-primary/50 bg-primary/10'
+                : 'border-white/20 glass hover:glass-medium'
                 }`}
               onDragOver={(e) => {
                 e.preventDefault();

@@ -177,8 +177,8 @@ export function EntriesTable() {
                 <TableCell>
                   <div className="flex items-center space-x-2">
                     <div className="w-16 bg-muted rounded-full h-2">
-                      <div 
-                        className="bg-primary h-2 rounded-full transition-all" 
+                      <div
+                        className="bg-primary h-2 rounded-full transition-all"
                         style={{ width: `${entry.progress}%` }}
                       ></div>
                     </div>
@@ -188,7 +188,7 @@ export function EntriesTable() {
                 <TableCell>{entry.budget}</TableCell>
                 <TableCell>
                   <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
+                    <DropdownMenuTrigger>
                       <Button variant="ghost" className="h-8 w-8 p-0">
                         <span className="sr-only">Open menu</span>
                         <MoreHorizontal className="h-4 w-4" />

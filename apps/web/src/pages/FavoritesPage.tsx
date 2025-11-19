@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { motion } from "motion/react";
 import { Link } from "react-router-dom";
-import { 
-  ArrowLeft, Heart, Search, Filter, Star, MapPin, 
+import {
+  ArrowLeft, Heart, Search, Filter, Star, MapPin,
   Crown, CheckCircle, Trash2, Grid, List, SortAsc,
   Clock, Users, Briefcase, MoreHorizontal, Share2,
   MessageSquare, Phone, Mail, Calendar
@@ -37,37 +37,50 @@ interface FavoriteProfessional {
   availability: string;
 }
 
-const favoriteServices: FavoriteService[] = [
+const favoriteServices: any[] = [
   {
     id: "1",
     title: "Desarrollo Web Completo",
     description: "Sitios web profesionales y e-commerce con tecnologías modernas",
     professional: {
+      id: "prof-1",
       name: "Carlos Rodríguez",
       avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=120&h=120&fit=crop&crop=face",
       verified: true,
       level: "Top Rated Plus",
-      location: "Rawson, Chubut"
-    },
-    image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=300&fit=crop",
+      location: "Rawson, Chubut",
+      rating: 4.9,
+      reviewsCount: 187
+    } as any,
     price: 25000,
-    rating: 4.9,
-    reviews: 187,
+    priceType: 'fixed' as const,
+    currency: 'ARS' as const,
+    images: ["https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=300&fit=crop"],
+    tags: ["desarrollo", "web", "ecommerce"],
+    featured: true,
+    available: true,
+    viewsCount: 1250,
+    contactsCount: 87,
+    completedJobsCount: 45,
+    professionalId: "prof-1",
     category: "Desarrollo Web",
-    dateAdded: "2024-01-15",
-    lastUpdated: "2024-01-20"
+    createdAt: "2024-01-15",
+    updatedAt: "2024-01-20"
   },
   {
     id: "2",
     title: "Identidad Visual Premium",
     description: "Logo, branding completo y diseño gráfico para tu empresa",
     professional: {
+      id: "prof-2",
       name: "Ana Martínez",
       avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b77c?w=120&h=120&fit=crop&crop=face",
       verified: true,
       level: "Profesional Verificado",
-      location: "Puerto Madryn, Chubut"
-    },
+      location: "Puerto Madryn, Chubut",
+      rating: 4.8,
+      reviewsCount: 143
+    } as any,
     image: "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=400&h=300&fit=crop",
     price: 15000,
     rating: 4.8,
@@ -81,12 +94,15 @@ const favoriteServices: FavoriteService[] = [
     title: "Reparación de Electrodomésticos",
     description: "Servicio técnico especializado con garantía incluida",
     professional: {
+      id: "prof-3",
       name: "Miguel Santos",
       avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&h=120&fit=crop&crop=face",
       verified: true,
       level: "Técnico Certificado",
-      location: "Comodoro Rivadavia, Chubut"
-    },
+      location: "Comodoro Rivadavia, Chubut",
+      rating: 5.0,
+      reviewsCount: 89
+    } as any,
     image: "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400&h=300&fit=crop",
     price: 3500,
     rating: 5.0,
@@ -136,7 +152,7 @@ const favoriteProfessionals: FavoriteProfessional[] = [
 
 function Navigation() {
   return (
-    <motion.header 
+    <motion.header
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       className="sticky top-0 z-50 w-full glass border-b border-white/10"
@@ -151,7 +167,7 @@ function Navigation() {
             <span className="text-xs text-muted-foreground -mt-1">Favoritos</span>
           </div>
         </Link>
-        
+
         <Link to="/dashboard">
           <Button variant="ghost" className="hover:glass-medium">
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -163,8 +179,8 @@ function Navigation() {
   );
 }
 
-function FavoriteProfessionalCard({ professional, onRemove }: { 
-  professional: FavoriteProfessional; 
+function FavoriteProfessionalCard({ professional, onRemove }: {
+  professional: FavoriteProfessional;
   onRemove: (id: string) => void;
 }) {
   return (
@@ -201,7 +217,7 @@ function FavoriteProfessionalCard({ professional, onRemove }: {
             </div>
 
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
+              <DropdownMenuTrigger>
                 <Button variant="ghost" size="icon" className="h-8 w-8 hover:glass-medium">
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>
@@ -219,7 +235,7 @@ function FavoriteProfessionalCard({ professional, onRemove }: {
                   <Share2 className="h-4 w-4 mr-2" />
                   Compartir
                 </DropdownMenuItem>
-                <DropdownMenuItem 
+                <DropdownMenuItem
                   onClick={() => onRemove(professional.id)}
                   className="text-red-400 hover:bg-red-500/10"
                 >
@@ -281,7 +297,7 @@ function EmptyFavorites({ type }: { type: 'services' | 'professionals' }) {
           No tienes {type === 'services' ? 'servicios' : 'profesionales'} favoritos
         </h3>
         <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-          Cuando encuentres {type === 'services' ? 'servicios' : 'profesionales'} que te interesen, 
+          Cuando encuentres {type === 'services' ? 'servicios' : 'profesionales'} que te interesen,
           haz clic en el corazón para guardarlos aquí.
         </p>
         <Link to="/services">
@@ -320,7 +336,7 @@ export default function FavoritesPage() {
   const filteredProfessionals = professionals.filter(professional =>
     professional.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     professional.businessName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    professional.specialties.some(specialty => 
+    professional.specialties.some(specialty =>
       specialty.toLowerCase().includes(searchQuery.toLowerCase())
     )
   );
@@ -328,7 +344,7 @@ export default function FavoritesPage() {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      
+
       <div className="py-8 px-6">
         <div className="container mx-auto max-w-7xl">
           <motion.div
@@ -408,11 +424,10 @@ export default function FavoritesPage() {
 
               <TabsContent value="services">
                 {filteredServices.length > 0 ? (
-                  <div className={`grid gap-6 ${
-                    viewMode === "grid" 
-                      ? "md:grid-cols-2 lg:grid-cols-3" 
-                      : "grid-cols-1 max-w-4xl"
-                  }`}>
+                  <div className={`grid gap-6 ${viewMode === "grid"
+                    ? "md:grid-cols-2 lg:grid-cols-3"
+                    : "grid-cols-1 max-w-4xl"
+                    }`}>
                     {filteredServices.map((service: any) => (
                       <ServiceCard
                         key={service.id}
@@ -430,11 +445,10 @@ export default function FavoritesPage() {
 
               <TabsContent value="professionals">
                 {filteredProfessionals.length > 0 ? (
-                  <div className={`grid gap-6 ${
-                    viewMode === "grid" 
-                      ? "md:grid-cols-2 lg:grid-cols-3" 
-                      : "grid-cols-1 max-w-4xl"
-                  }`}>
+                  <div className={`grid gap-6 ${viewMode === "grid"
+                    ? "md:grid-cols-2 lg:grid-cols-3"
+                    : "grid-cols-1 max-w-4xl"
+                    }`}>
                     {filteredProfessionals.map((professional) => (
                       <FavoriteProfessionalCard
                         key={professional.id}

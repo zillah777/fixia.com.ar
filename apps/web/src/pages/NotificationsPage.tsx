@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { motion } from "motion/react";
 import { Link } from "react-router-dom";
-import { 
-  ArrowLeft, Bell, Check, X, Trash2, Settings, 
+import {
+  ArrowLeft, Bell, Check, X, Trash2, Settings,
   MessageSquare, Crown, Star, AlertCircle, Clock,
   Users, Briefcase, Heart, TrendingUp, Filter,
   CheckCircle, MoreHorizontal, Mail, Phone
@@ -127,7 +127,7 @@ const notificationsData: Notification[] = [
 
 function Navigation() {
   return (
-    <motion.header 
+    <motion.header
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       className="sticky top-0 z-50 w-full glass border-b border-white/10"
@@ -142,7 +142,7 @@ function Navigation() {
             <span className="text-xs text-muted-foreground -mt-1">Notificaciones</span>
           </div>
         </Link>
-        
+
         <div className="flex items-center space-x-3">
           <Link to="/settings?tab=notifications">
             <Button variant="ghost" size="icon" className="hover:glass-medium">
@@ -226,9 +226,8 @@ function NotificationItem({ notification, onMarkRead, onDelete }: {
       transition={{ duration: 0.3 }}
       whileHover={{ scale: 1.01 }}
     >
-      <Card className={`glass transition-all duration-300 cursor-pointer ${
-        notification.read ? 'opacity-75' : getPriorityColor()
-      }`}>
+      <Card className={`glass transition-all duration-300 cursor-pointer ${notification.read ? 'opacity-75' : getPriorityColor()
+        }`}>
         <CardContent className="p-4">
           <div className="flex items-start space-x-4">
             {/* Avatar or Icon */}
@@ -273,7 +272,7 @@ function NotificationItem({ notification, onMarkRead, onDelete }: {
 
                 {/* Actions */}
                 <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
+                  <DropdownMenuTrigger>
                     <Button variant="ghost" size="icon" className="h-8 w-8 hover:glass-medium">
                       <MoreHorizontal className="h-4 w-4" />
                     </Button>
@@ -291,7 +290,7 @@ function NotificationItem({ notification, onMarkRead, onDelete }: {
                         Marcar como no leída
                       </DropdownMenuItem>
                     )}
-                    <DropdownMenuItem 
+                    <DropdownMenuItem
                       onClick={() => onDelete(notification.id)}
                       className="text-red-400 hover:bg-red-500/10"
                     >
@@ -307,16 +306,16 @@ function NotificationItem({ notification, onMarkRead, onDelete }: {
           {/* Action Button */}
           {notification.actionUrl && (
             <div className="mt-3 pl-14">
-              <Button 
-                size="sm" 
-                variant="outline" 
+              <Button
+                size="sm"
+                variant="outline"
                 className="glass border-white/20 text-xs"
               >
                 {notification.type === 'message' ? 'Responder' :
-                 notification.type === 'opportunity' ? 'Ver Oportunidad' :
-                 notification.type === 'review' ? 'Ver Reseña' :
-                 notification.type === 'payment' ? 'Ver Detalles' :
-                 'Ver Más'}
+                  notification.type === 'opportunity' ? 'Ver Oportunidad' :
+                    notification.type === 'review' ? 'Ver Reseña' :
+                      notification.type === 'payment' ? 'Ver Detalles' :
+                        'Ver Más'}
               </Button>
             </div>
           )}
@@ -326,10 +325,10 @@ function NotificationItem({ notification, onMarkRead, onDelete }: {
   );
 }
 
-function NotificationsHeader({ 
-  unreadCount, 
-  onMarkAllRead, 
-  onDeleteAll 
+function NotificationsHeader({
+  unreadCount,
+  onMarkAllRead,
+  onDeleteAll
 }: {
   unreadCount: number;
   onMarkAllRead: () => void;
@@ -340,7 +339,7 @@ function NotificationsHeader({
       <div>
         <h1 className="text-3xl font-bold mb-2">Notificaciones</h1>
         <p className="text-muted-foreground">
-          {unreadCount > 0 
+          {unreadCount > 0
             ? `Tienes ${unreadCount} ${unreadCount === 1 ? 'notificación nueva' : 'notificaciones nuevas'}`
             : 'Todas las notificaciones están al día'
           }
@@ -348,9 +347,9 @@ function NotificationsHeader({
       </div>
 
       <div className="flex items-center space-x-2">
-        <Button 
-          onClick={onMarkAllRead} 
-          variant="outline" 
+        <Button
+          onClick={onMarkAllRead}
+          variant="outline"
           size="sm"
           className="glass border-white/20"
           disabled={unreadCount === 0}
@@ -358,9 +357,9 @@ function NotificationsHeader({
           <CheckCircle className="h-4 w-4 mr-2" />
           Marcar todas como leídas
         </Button>
-        <Button 
-          onClick={onDeleteAll} 
-          variant="outline" 
+        <Button
+          onClick={onDeleteAll}
+          variant="outline"
           size="sm"
           className="glass border-red-500/30 text-red-400 hover:bg-red-500/10"
         >
@@ -430,7 +429,7 @@ function EmptyState() {
         <Bell className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
         <h3 className="text-xl font-semibold mb-2">No hay notificaciones</h3>
         <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-          Cuando tengas nuevos mensajes, oportunidades o actualizaciones importantes, 
+          Cuando tengas nuevos mensajes, oportunidades o actualizaciones importantes,
           aparecerán aquí.
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-2">
@@ -456,8 +455,8 @@ export default function NotificationsPage() {
   const [selectedTab, setSelectedTab] = useState("all");
 
   const handleMarkRead = (id: string) => {
-    setNotifications(notifications.map(notification => 
-      notification.id === id 
+    setNotifications(notifications.map(notification =>
+      notification.id === id
         ? { ...notification, read: !notification.read }
         : notification
     ));
@@ -498,7 +497,7 @@ export default function NotificationsPage() {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      
+
       <div className="py-8 px-6">
         <div className="container mx-auto max-w-4xl">
           <motion.div
@@ -506,7 +505,7 @@ export default function NotificationsPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <NotificationsHeader 
+            <NotificationsHeader
               unreadCount={unreadCount}
               onMarkAllRead={handleMarkAllRead}
               onDeleteAll={handleDeleteAll}
