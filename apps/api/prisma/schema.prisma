@@ -38,6 +38,7 @@ model User {
   notifications_newsletter         Boolean                  @default(false)
   timezone                         String?                  @default("buenos-aires")
   auto_renew                       Boolean                  @default(true)
+  is_hidden                        Boolean                  @default(false)
   is_professional_active           Boolean                  @default(false)
   professional_since               DateTime?
   subscription_expires_at          DateTime?

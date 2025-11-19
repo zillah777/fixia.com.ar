@@ -1,6 +1,5 @@
 import * as React from "react";
-import { Slot } from "@radix-ui/react-slot@1.1.2";
-import { cva, type VariantProps } from "class-variance-authority@0.7.1";
+import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "./utils";
 
@@ -25,22 +24,38 @@ const badgeVariants = cva(
   },
 );
 
-function Badge({
-  className,
-  variant,
-  asChild = false,
-  ...props
-}: React.ComponentProps<"span"> &
-  VariantProps<typeof badgeVariants> & { asChild?: boolean }) {
-  const Comp = asChild ? Slot : "span";
-
-  return (
-    <Comp
-      data-slot="badge"
-      className={cn(badgeVariants({ variant }), className)}
-      {...props}
-    />
-  );
+export interface BadgeProps
+  extends React.HTMLAttributes<HTMLSpanElement>,
+  VariantProps<typeof badgeVariants> {
+  asChild?: boolean;
 }
+
+const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
+  ({ className, variant, asChild = false, children, ...props }, ref) => {
+    const classes = cn(badgeVariants({ variant }), className);
+
+    // If asChild is true, clone the single child element and merge props
+    if (asChild && React.isValidElement(children)) {
+      return React.cloneElement(children, {
+        ...props,
+        "data-slot": "badge",
+        className: cn(classes, children.props.className),
+        ref,
+      } as any);
+    }
+
+    return (
+      <span
+        ref={ref}
+        data-slot="badge"
+        className={classes}
+        {...props}
+      >
+        {children}
+      </span>
+    );
+  }
+);
+Badge.displayName = "Badge";
 
 export { Badge, badgeVariants };

@@ -10,6 +10,7 @@ import {
   HttpStatus,
   Headers,
   BadRequestException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
 import { CreatePaymentDto, CreatePreferenceDto, WebhookDto } from './dto/payment.dto';
@@ -21,7 +22,7 @@ import { Public } from '../auth/decorators/public.decorator';
 export class PaymentsController {
   private readonly logger = new Logger(PaymentsController.name);
 
-  constructor(private readonly paymentsService: PaymentsService) {}
+  constructor(private readonly paymentsService: PaymentsService) { }
 
   /**
    * Create a direct payment
@@ -33,10 +34,10 @@ export class PaymentsController {
     @CurrentUser() user: any,
   ) {
     this.logger.log(`💳 Creating payment for user: ${user.id}`);
-    
+
     try {
       const result = await this.paymentsService.createPayment(createPaymentDto, user.id);
-      
+
       return {
         success: true,
         message: 'Payment created successfully',
@@ -58,10 +59,10 @@ export class PaymentsController {
     @CurrentUser() user: any,
   ) {
     this.logger.log(`🛒 Creating preference for user: ${user.id}`);
-    
+
     try {
       const result = await this.paymentsService.createPreference(createPreferenceDto, user.id);
-      
+
       return {
         success: true,
         message: 'Payment preference created successfully',
@@ -85,7 +86,7 @@ export class PaymentsController {
     @Headers('x-request-id') requestId?: string,
   ) {
     this.logger.log(`📨 Webhook received - Type: ${webhookData.type}, Action: ${webhookData.action}`);
-    
+
     try {
       // Verify webhook signature in production
       if (process.env.NODE_ENV === 'production') {
@@ -97,7 +98,7 @@ export class PaymentsController {
       }
 
       await this.paymentsService.handleWebhook(webhookData);
-      
+
       return {
         success: true,
         message: 'Webhook processed successfully',
@@ -122,10 +123,10 @@ export class PaymentsController {
     @CurrentUser() user: any,
   ) {
     this.logger.log(`📊 Getting payment status: ${paymentId} for user: ${user.id}`);
-    
+
     try {
       const result = await this.paymentsService.getPaymentStatus(paymentId);
-      
+
       if (!result) {
         return {
           success: false,
@@ -133,7 +134,7 @@ export class PaymentsController {
           data: null,
         };
       }
-      
+
       return {
         success: true,
         message: 'Payment status retrieved successfully',
@@ -152,7 +153,7 @@ export class PaymentsController {
   @Public()
   async getPaymentMethods() {
     this.logger.log('💳 Getting available payment methods');
-    
+
     // Return common Argentine payment methods
     const paymentMethods = [
       {
@@ -192,7 +193,7 @@ export class PaymentsController {
         thumbnail: 'https://img.icons8.com/color/48/000000/money-bag.png',
       },
     ];
-    
+
     return {
       success: true,
       message: 'Payment methods retrieved successfully',
@@ -207,7 +208,7 @@ export class PaymentsController {
   @Public()
   async paymentSuccess() {
     this.logger.log('✅ Payment success callback received');
-    
+
     return {
       success: true,
       message: 'Payment completed successfully',
@@ -222,7 +223,7 @@ export class PaymentsController {
   @Public()
   async paymentFailure() {
     this.logger.log('❌ Payment failure callback received');
-    
+
     return {
       success: false,
       message: 'Payment failed',
@@ -237,7 +238,7 @@ export class PaymentsController {
   @Public()
   async paymentPending() {
     this.logger.log('⏳ Payment pending callback received');
-    
+
     return {
       success: true,
       message: 'Payment is pending',
@@ -252,10 +253,10 @@ export class PaymentsController {
   @Public()
   async testConfiguration() {
     this.logger.log('🧪 Testing MercadoPago configuration');
-    
+
     try {
       const result = await this.paymentsService.testConfiguration();
-      
+
       return {
         success: true,
         message: 'MercadoPago configuration test completed',
@@ -277,8 +278,11 @@ export class PaymentsController {
   @Post('simulate-webhook')
   @Public()
   async simulateWebhook() {
+    if (process.env.NODE_ENV === 'production') {
+      throw new ForbiddenException('This endpoint is disabled in production');
+    }
     this.logger.log('🧪 Simulating webhook notification');
-    
+
     try {
       const simulatedWebhookData = {
         action: 'payment.updated',
@@ -294,10 +298,10 @@ export class PaymentsController {
       };
 
       this.logger.log('📨 Simulated webhook data:', simulatedWebhookData);
-      
+
       // Process the webhook without validation for testing
       const result = await this.paymentsService.handleSimulatedWebhook(simulatedWebhookData);
-      
+
       return {
         success: true,
         message: 'Webhook simulation completed successfully',
@@ -319,8 +323,11 @@ export class PaymentsController {
   @Post('test-preference')
   @Public()
   async createTestPreference() {
+    if (process.env.NODE_ENV === 'production') {
+      throw new ForbiddenException('This endpoint is disabled in production');
+    }
     this.logger.log('🧪 Creating test payment preference');
-    
+
     try {
       const testPreferenceData = {
         amount: 1000,
@@ -334,7 +341,7 @@ export class PaymentsController {
       };
 
       const result = await this.paymentsService.createTestPreference(testPreferenceData);
-      
+
       return {
         success: true,
         message: 'Test preference created successfully',

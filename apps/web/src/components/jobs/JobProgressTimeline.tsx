@@ -12,7 +12,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
-import { cn } from '../../lib/utils';
+import { cn } from '../ui/utils';
 
 export interface TimelineEvent {
   id: string;

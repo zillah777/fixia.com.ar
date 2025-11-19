@@ -4,7 +4,7 @@ import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class MatchService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   /**
    * Create a match when a proposal is accepted
@@ -330,13 +330,17 @@ export class MatchService {
   /**
    * Get completion status
    */
-  async getCompletionStatus(matchId: string) {
+  async getCompletionStatus(matchId: string, userId?: string) {
     const match = await this.prisma.match.findUnique({
       where: { id: matchId },
     });
 
     if (!match) {
       throw new NotFoundException(`Match ${matchId} not found`);
+    }
+
+    if (userId && match.client_id !== userId && match.professional_id !== userId) {
+      throw new ForbiddenException('You are not a participant in this match');
     }
 
     const job = await this.prisma.job.findFirst({

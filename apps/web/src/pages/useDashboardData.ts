@@ -1,121 +1,101 @@
 import { useQuery } from "@tanstack/react-query";
-import { TrendingUp, Briefcase, Users, Award } from "lucide-react";
-import { DollarSign, MessageSquare, Star } from "lucide-react";
+import { TrendingUp, Briefcase, Users, Award, DollarSign, MessageSquare, Star } from "lucide-react";
+import { usersService } from "../lib/services/users.service";
+import { projectsService } from "../lib/services/projects.service";
 
-// --- Mock Data (extraído de DashboardPage.tsx) ---
+// --- Mappers ---
 
-const mockStats = [
+const mapStats = (data: any) => [
   {
-    title: "Ingresos del Mes",
-    value: "$3,247",
-    change: "+12.3%",
-    changeType: "positive",
+    title: "Ingresos Totales",
+    value: `$${data.total_earnings || 0}`,
+    change: "+0%", // Backend doesn't provide change yet
+    changeType: "neutral",
     icon: TrendingUp,
-    description: "vs. mes anterior"
+    description: "Total acumulado"
   },
   {
-    title: "Servicios Activos",
-    value: "8",
-    change: "+2",
-    changeType: "positive", 
+    title: "Servicios/Proyectos",
+    value: `${data.total_services || 0}`,
+    change: "Activos",
+    changeType: "neutral",
     icon: Briefcase,
-    description: "servicios publicados"
+    description: "En curso"
   },
   {
-    title: "Clientes Satisfechos",
-    value: "156",
-    change: "+8",
-    changeType: "positive",
-    icon: Users,
-    description: "proyectos completados"
+    title: "Interacciones",
+    value: `${data.messages_count || 0}`,
+    change: "Mensajes",
+    changeType: "neutral",
+    icon: MessageSquare,
+    description: "Total mensajes"
   },
   {
-    title: "Rating Promedio",
-    value: "4.9",
-    change: "+0.2",
+    title: "Calificación",
+    value: `${data.average_rating || 0}`,
+    change: `${data.review_count || 0} reseñas`,
     changeType: "positive",
     icon: Award,
-    description: "de 187 reseñas"
-  }
-];
-
-const mockProjects = [
-  {
-    id: 1,
-    title: "E-commerce para ModaStyle",
-    client: "Ana García",
-    deadline: "En 5 días",
-    progress: 75,
-    status: "in_progress",
-    priority: "high"
-  },
-  {
-    id: 2,
-    title: "App Móvil FitTracker",
-    client: "Roberto Silva",
-    deadline: "En 12 días",
-    progress: 45,
-    status: "in_progress",
-    priority: "normal"
-  },
-  {
-    id: 3,
-    title: "Branding TechVision",
-    client: "María López",
-    deadline: "En 8 días",
-    progress: 90,
-    status: "review",
-    priority: "normal"
-  }
-];
-
-const mockActivities = [
-  {
-    id: 1,
-    type: 'order',
-    title: 'Nuevo pedido recibido',
-    description: 'Desarrollo E-commerce - Cliente: TechStart',
-    time: 'Hace 2 horas',
-    status: 'new',
-    icon: DollarSign,
-    color: 'text-success'
-  },
-  {
-    id: 2,
-    type: 'message',
-    title: 'Mensaje de cliente',
-    description: 'Carlos Mendoza envió una consulta',
-    time: 'Hace 5 horas',
-    status: 'unread',
-    icon: MessageSquare,
-    color: 'text-primary'
-  },
-  {
-    id: 3,
-    type: 'review',
-    title: 'Nueva reseña recibida',
-    description: '5 estrellas - "Excelente trabajo"',
-    time: 'Ayer',
-    status: 'completed',
-    icon: Star,
-    color: 'text-warning'
+    description: "Promedio general"
   }
 ];
 
 // --- Fetch Functions ---
 
 const fetchDashboardStats = async () => {
-  await new Promise(resolve => setTimeout(resolve, 700));
-  return mockStats;
+  const data = await usersService.getDashboardStats();
+  return mapStats(data);
 };
 
 const fetchCurrentProjects = async () => {
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  return mockProjects;
+  // Fetch real projects from the API
+  // We use 'in_progress' status to get active projects
+  const projects = await projectsService.getMyProjects('in_progress');
+
+  // Map to the format expected by the dashboard component
+  return projects.map(p => ({
+    id: p.id,
+    title: p.title,
+    client: p.client?.name || 'Cliente',
+    deadline: p.deadline ? new Date(p.deadline).toLocaleDateString() : 'Sin fecha',
+    progress: 0, // Backend doesn't track progress percentage yet
+    status: p.status,
+    priority: p.priority || 'normal'
+  }));
+};
+
+const fetchRecentActivity = async () => {
+  // For now, we'll keep this mocked or implement a real activity log endpoint later
+  // as it requires a dedicated ActivityService on the backend
+  return [
+    {
+      id: 1,
+      type: 'system',
+      title: 'Bienvenido a Fixia',
+      description: 'Tu panel de control está listo',
+      time: 'Ahora',
+      status: 'new',
+      icon: Star,
+      color: 'text-primary'
+    }
+  ];
 };
 
 // --- Hooks ---
 
-export const useDashboardStats = () => useQuery({ queryKey: ['dashboardStats'], queryFn: fetchDashboardStats });
-export const useCurrentProjects = () => useQuery({ queryKey: ['currentProjects'], queryFn: fetchCurrentProjects });
-export const useRecentActivity = () => useQuery({ queryKey: ['recentActivity'], queryFn: () => Promise.resolve(mockActivities) });
+export const useDashboardStats = () => useQuery({
+  queryKey: ['dashboardStats'],
+  queryFn: fetchDashboardStats,
+  retry: 1
+});
+
+export const useCurrentProjects = () => useQuery({
+  queryKey: ['currentProjects'],
+  queryFn: fetchCurrentProjects,
+  retry: 1
+});
+
+export const useRecentActivity = () => useQuery({
+  queryKey: ['recentActivity'],
+  queryFn: fetchRecentActivity
+});

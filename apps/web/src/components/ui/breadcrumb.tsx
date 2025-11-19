@@ -1,6 +1,5 @@
 import * as React from "react";
-import { Slot } from "@radix-ui/react-slot@1.1.2";
-import { ChevronRight, MoreHorizontal } from "lucide-react@0.487.0";
+import { ChevronRight, MoreHorizontal } from "lucide-react";
 
 import { cn } from "./utils";
 
@@ -31,23 +30,38 @@ function BreadcrumbItem({ className, ...props }: React.ComponentProps<"li">) {
   );
 }
 
-function BreadcrumbLink({
-  asChild,
-  className,
-  ...props
-}: React.ComponentProps<"a"> & {
+interface BreadcrumbLinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
   asChild?: boolean;
-}) {
-  const Comp = asChild ? Slot : "a";
-
-  return (
-    <Comp
-      data-slot="breadcrumb-link"
-      className={cn("hover:text-foreground transition-colors", className)}
-      {...props}
-    />
-  );
 }
+
+const BreadcrumbLink = React.forwardRef<HTMLAnchorElement, BreadcrumbLinkProps>(
+  ({ asChild, className, children, ...props }, ref) => {
+    const classes = cn("hover:text-foreground transition-colors", className);
+
+    // If asChild is true, clone the single child element and merge props
+    if (asChild && React.isValidElement(children)) {
+      return React.cloneElement(children, {
+        ...props,
+        "data-slot": "breadcrumb-link",
+        className: cn(classes, children.props.className),
+        ref,
+      } as any);
+    }
+
+    return (
+      <a
+        ref={ref}
+        data-slot="breadcrumb-link"
+        className={classes}
+        {...props}
+      >
+        {children}
+      </a>
+    );
+  }
+);
+BreadcrumbLink.displayName = "BreadcrumbLink";
+
 
 function BreadcrumbPage({ className, ...props }: React.ComponentProps<"span">) {
   return (

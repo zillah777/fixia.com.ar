@@ -1,13 +1,10 @@
-"use client";
-
 import * as React from "react";
-import * as TogglePrimitive from "@radix-ui/react-toggle@1.1.2";
-import { cva, type VariantProps } from "class-variance-authority@0.7.1";
+import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "./utils";
 
 const toggleVariants = cva(
-  "inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium hover:bg-muted hover:text-muted-foreground disabled:pointer-events-none disabled:opacity-50 data-[state=on]:bg-accent data-[state=on]:text-accent-foreground [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 [&_svg]:shrink-0 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] outline-none transition-[color,box-shadow] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive whitespace-nowrap",
+  "inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium hover:bg-muted hover:text-muted-foreground disabled:pointer-events-none disabled:opacity-50 aria-pressed:bg-accent aria-pressed:text-accent-foreground [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 [&_svg]:shrink-0 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] outline-none transition-[color,box-shadow] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive whitespace-nowrap",
   {
     variants: {
       variant: {
@@ -28,20 +25,42 @@ const toggleVariants = cva(
   },
 );
 
-function Toggle({
-  className,
-  variant,
-  size,
-  ...props
-}: React.ComponentProps<typeof TogglePrimitive.Root> &
-  VariantProps<typeof toggleVariants>) {
-  return (
-    <TogglePrimitive.Root
-      data-slot="toggle"
-      className={cn(toggleVariants({ variant, size, className }))}
-      {...props}
-    />
-  );
+export interface ToggleProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+  VariantProps<typeof toggleVariants> {
+  pressed?: boolean;
+  defaultPressed?: boolean;
+  onPressedChange?: (pressed: boolean) => void;
 }
+
+const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(
+  ({ className, variant, size, pressed: controlledPressed, defaultPressed, onPressedChange, onClick, ...props }, ref) => {
+    const [internalPressed, setInternalPressed] = React.useState(defaultPressed || false);
+    const pressed = controlledPressed !== undefined ? controlledPressed : internalPressed;
+
+    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+      const newPressed = !pressed;
+      if (controlledPressed === undefined) {
+        setInternalPressed(newPressed);
+      }
+      onPressedChange?.(newPressed);
+      onClick?.(e);
+    };
+
+    return (
+      <button
+        ref={ref}
+        type="button"
+        data-slot="toggle"
+        data-state={pressed ? "on" : "off"}
+        aria-pressed={pressed}
+        onClick={handleClick}
+        className={cn(toggleVariants({ variant, size, className }))}
+        {...props}
+      />
+    );
+  }
+);
+Toggle.displayName = "Toggle";
 
 export { Toggle, toggleVariants };

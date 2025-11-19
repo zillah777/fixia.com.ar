@@ -7,12 +7,14 @@ import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 import DashboardPage from "./pages/DashboardPage";
 import ServicesPage from "./pages/ServicesPage";
 import ServiceDetailPage from "./pages/ServiceDetailPage";
 import ProfilePage from "./pages/ProfilePage";
 import PublicProfilePage from "./pages/PublicProfilePage";
 import NewProjectPage from "./pages/NewProjectPage";
+import CreateRequestPage from "./pages/CreateRequestPage";
 import OpportunitiesPage from "./pages/OpportunitiesPage";
 import TermsPage from "./pages/TermsPage";
 import PrivacyPage from "./pages/PrivacyPage";
@@ -64,30 +66,30 @@ function LoadingScreen() {
 // Protected Route component
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
-  
+
   if (loading) {
     return <LoadingScreen />;
   }
-  
+
   if (!user) {
     return <Navigate to="/login" replace />;
   }
-  
+
   return <>{children}</>;
 }
 
 // Public Route component (redirect if authenticated)
 function PublicRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
-  
+
   if (loading) {
     return <LoadingScreen />;
   }
-  
+
   if (user) {
     return <Navigate to="/dashboard" replace />;
   }
-  
+
   return <>{children}</>;
 }
 
@@ -108,91 +110,107 @@ function AppRoutes() {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/pricing" element={<PricingPage />} />
           <Route path="/help" element={<HelpPage />} />
-          
+
           {/* Auth Routes */}
-          <Route 
-            path="/login" 
+          <Route
+            path="/login"
             element={
               <PublicRoute>
                 <LoginPage />
               </PublicRoute>
-            } 
+            }
           />
-          <Route 
-            path="/register" 
+          <Route
+            path="/register"
             element={
               <PublicRoute>
                 <RegisterPage />
               </PublicRoute>
-            } 
+            }
           />
-          <Route 
-            path="/forgot-password" 
+          <Route
+            path="/forgot-password"
             element={
               <PublicRoute>
                 <ForgotPasswordPage />
               </PublicRoute>
-            } 
+            }
           />
-          
+          <Route
+            path="/reset-password"
+            element={
+              <PublicRoute>
+                <ResetPasswordPage />
+              </PublicRoute>
+            }
+          />
+
           {/* Protected Routes */}
-          <Route 
-            path="/dashboard" 
+          <Route
+            path="/dashboard"
             element={
               <ProtectedRoute>
                 <DashboardPage />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path="/profile" 
+          <Route
+            path="/profile"
             element={
               <ProtectedRoute>
                 <ProfilePage />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path="/new-project" 
+          <Route
+            path="/new-project"
             element={
               <ProtectedRoute>
                 <NewProjectPage />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path="/opportunities" 
+          <Route
+            path="/create-request"
+            element={
+              <ProtectedRoute>
+                <CreateRequestPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/opportunities"
             element={
               <ProtectedRoute>
                 <OpportunitiesPage />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path="/settings" 
+          <Route
+            path="/settings"
             element={
               <ProtectedRoute>
                 <SettingsPage />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path="/notifications" 
+          <Route
+            path="/notifications"
             element={
               <ProtectedRoute>
                 <NotificationsPage />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path="/favorites" 
+          <Route
+            path="/favorites"
             element={
               <ProtectedRoute>
                 <FavoritesPage />
               </ProtectedRoute>
-            } 
+            }
           />
-          
+
           {/* 404 Route */}
           <Route path="*" element={<Error404Page />} />
         </Routes>
@@ -205,12 +223,7 @@ export default function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate app initialization
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1500);
-
-    return () => clearTimeout(timer);
+    setLoading(false);
   }, []);
 
   if (loading) {
@@ -222,7 +235,7 @@ export default function App() {
       <NotificationProvider>
         <div className="min-h-screen bg-background">
           <AppRoutes />
-          
+
           {/* Background decorative elements */}
           <div className="fixed inset-0 pointer-events-none overflow-hidden">
             <div className="absolute top-1/4 -left-32 w-64 h-64 liquid-gradient rounded-full blur-3xl opacity-10 animate-float"></div>

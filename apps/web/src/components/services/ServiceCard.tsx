@@ -2,11 +2,11 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Star, Heart, Share2, MapPin, CheckCircle, Award, ArrowRight, Clock } from "lucide-react";
-import { Button } from "./components/ui/button";
-import { Card, CardContent } from "./components/ui/card";
-import { Badge } from "./components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "./components/ui/avatar";
-import { Service } from "./types";
+import { Button } from "../ui/button";
+import { Card, CardContent } from "../ui/card";
+import { Badge } from "../ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Service } from "../../types";
 
 interface ServiceCardProps {
   service: Service;

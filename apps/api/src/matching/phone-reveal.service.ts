@@ -12,7 +12,7 @@ export class PhoneRevealService {
   private readonly PHONE_REVEAL_TOKEN_LENGTH = 32;
   private readonly PHONE_REVEAL_EXPIRY_HOURS = 24;
 
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   /**
    * Generate a secure one-time token for phone reveal
@@ -235,7 +235,11 @@ export class PhoneRevealService {
 
   private encryptPhone(phone: string): string {
     const algorithm = 'aes-256-gcm';
-    const secretKey = Buffer.from(process.env.ENCRYPTION_KEY || 'default-key-change-in-production').slice(0, 32);
+    const encryptionKey = process.env.ENCRYPTION_KEY;
+    if (!encryptionKey) {
+      throw new Error('ENCRYPTION_KEY environment variable is not set');
+    }
+    const secretKey = Buffer.from(encryptionKey).slice(0, 32);
     const iv = crypto.randomBytes(16);
     const cipher = crypto.createCipheriv(algorithm, secretKey, iv);
 
@@ -249,7 +253,11 @@ export class PhoneRevealService {
   private decryptPhone(encryptedData: string): string {
     try {
       const algorithm = 'aes-256-gcm';
-      const secretKey = Buffer.from(process.env.ENCRYPTION_KEY || 'default-key-change-in-production').slice(0, 32);
+      const encryptionKey = process.env.ENCRYPTION_KEY;
+      if (!encryptionKey) {
+        throw new Error('ENCRYPTION_KEY environment variable is not set');
+      }
+      const secretKey = Buffer.from(encryptionKey).slice(0, 32);
 
       const [ivHex, authTagHex, ciphertext] = encryptedData.split('.');
       const iv = Buffer.from(ivHex, 'hex');

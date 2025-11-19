@@ -1,9 +1,9 @@
-import { 
-  Controller, 
-  Get, 
-  Post, 
-  Body, 
-  Param, 
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
   Put,
   Delete,
   UseGuards,
@@ -21,7 +21,7 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator';
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class ProjectsController {
-  constructor(private readonly projectsService: ProjectsService) {}
+  constructor(private readonly projectsService: ProjectsService) { }
 
   @Post()
   @ApiOperation({ summary: 'Crear un nuevo proyecto' })
@@ -32,9 +32,16 @@ export class ProjectsController {
     return this.projectsService.create(user.sub, createProjectDto);
   }
 
+  @Get('my-projects')
+  @ApiOperation({ summary: 'Listar proyectos propios del usuario' })
+  @ApiResponse({ status: 200, description: 'Lista de proyectos propios' })
+  async getMyProjects(@CurrentUser() user: any) {
+    return this.projectsService.findAll(user.sub);
+  }
+
   @Get()
-  @ApiOperation({ 
-    summary: 'Listar proyectos del usuario',
+  @ApiOperation({
+    summary: 'Listar proyectos',
     description: 'Clientes ven sus propios proyectos. Profesionales ven proyectos abiertos disponibles.'
   })
   @ApiResponse({ status: 200, description: 'Lista de proyectos' })

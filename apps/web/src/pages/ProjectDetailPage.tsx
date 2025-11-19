@@ -15,6 +15,7 @@ import { FavoriteButton } from '../components/ui/FavoriteButton';
 import { useSecureAuth } from '../context/SecureAuthContext';
 import { opportunitiesService } from '../lib/services/opportunities.service';
 import { toast } from 'sonner';
+import { SubmitProposalDialog } from '../components/proposals/SubmitProposalDialog';
 
 interface Proposal {
   id: string;
@@ -122,6 +123,36 @@ export default function ProjectDetailPage() {
 
     fetchProject();
   }, [id, user?.id]);
+
+  const handleAcceptProposal = async (proposalId: string) => {
+    if (!project) return;
+
+    try {
+      const loadingToast = toast.loading("Procesando aceptación...");
+      await opportunitiesService.acceptProposal(project.id, proposalId);
+      toast.dismiss(loadingToast);
+      toast.success("¡Propuesta aceptada! Se ha creado un match.");
+
+      // Update local state to reflect change
+      setProject(prev => {
+        if (!prev) return null;
+        return {
+          ...prev,
+          proposals: prev.proposals.map(p =>
+            p.id === proposalId
+              ? { ...p, status: 'accepted' }
+              : p
+          )
+        };
+      });
+
+      // Optional: Redirect to a "Match Success" page or refresh
+      // navigate('/dashboard'); 
+    } catch (error) {
+      console.error("Error accepting proposal:", error);
+      toast.error("Error al aceptar la propuesta. Intenta nuevamente.");
+    }
+  };
 
   if (loading) {
     return (
@@ -428,11 +459,10 @@ export default function ProjectDetailPage() {
                                     {[...Array(5)].map((_, i) => (
                                       <Star
                                         key={i}
-                                        className={`h-3.5 w-3.5 ${
-                                          i < Math.floor(proposal.professional.rating)
-                                            ? 'fill-warning text-warning'
-                                            : 'text-muted-foreground'
-                                        }`}
+                                        className={`h-3.5 w-3.5 ${i < Math.floor(proposal.professional.rating)
+                                          ? 'fill-warning text-warning'
+                                          : 'text-muted-foreground'
+                                          }`}
                                       />
                                     ))}
                                   </div>
@@ -489,8 +519,8 @@ export default function ProjectDetailPage() {
                               proposal.status === 'accepted'
                                 ? 'default'
                                 : proposal.status === 'rejected'
-                                ? 'destructive'
-                                : 'secondary'
+                                  ? 'destructive'
+                                  : 'secondary'
                             }
                             className="flex-shrink-0 whitespace-nowrap"
                           >
@@ -546,7 +576,7 @@ export default function ProjectDetailPage() {
                           </Button>
                           {proposal.status === 'pending' && (
                             <Button
-                              size="sm"
+                              onClick={() => handleAcceptProposal(proposal.id)}
                               className="flex-1 liquid-gradient text-xs sm:text-sm"
                             >
                               <Check className="h-4 w-4 mr-1" />
@@ -608,8 +638,8 @@ export default function ProjectDetailPage() {
                               ownProposal.status === 'accepted'
                                 ? 'default'
                                 : ownProposal.status === 'rejected'
-                                ? 'destructive'
-                                : 'secondary'
+                                  ? 'destructive'
+                                  : 'secondary'
                             }
                             className="mt-1"
                           >
@@ -625,9 +655,17 @@ export default function ProjectDetailPage() {
                       <p className="text-sm text-muted-foreground">
                         Envía tu propuesta para esta oportunidad y el cliente podrá revisarla.
                       </p>
-                      <Button className="w-full liquid-gradient">
-                        Enviar Propuesta
-                      </Button>
+                      <SubmitProposalDialog
+                        projectId={project.id}
+                        projectTitle={project.title}
+                        budgetMin={project.budget_min}
+                        budgetMax={project.budget_max}
+                        onSuccess={() => {
+                          // Refresh project data to show the new proposal
+                          // We can trigger a re-fetch by invalidating cache or reloading page
+                          window.location.reload();
+                        }}
+                      />
                     </>
                   )}
                 </CardContent>
@@ -642,14 +680,15 @@ export default function ProjectDetailPage() {
 
 function formatTimeAgo(date: Date): string {
   const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffMins = Math.floor(diffMs / (1000 * 60));
-  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  const diffMs = now.getTime() - new Date(date).getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMins / 60);
+  const diffDays = Math.floor(diffHours / 24);
 
   if (diffMins < 1) return 'hace unos segundos';
   if (diffMins < 60) return `hace ${diffMins} minuto${diffMins > 1 ? 's' : ''}`;
   if (diffHours < 24) return `hace ${diffHours} hora${diffHours > 1 ? 's' : ''}`;
   if (diffDays < 30) return `hace ${diffDays} día${diffDays > 1 ? 's' : ''}`;
-  return date.toLocaleDateString('es-AR');
+
+  return new Date(date).toLocaleDateString('es-AR');
 }

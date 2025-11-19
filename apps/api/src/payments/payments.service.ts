@@ -42,7 +42,7 @@ export class PaymentsService {
 
   private initializeMercadoPago() {
     const accessToken = this.configService.get<string>('MERCADOPAGO_ACCESS_TOKEN');
-    
+
     if (!accessToken) {
       this.logger.warn('⚠️ MercadoPago not configured - ACCESS_TOKEN missing');
       return;
@@ -174,12 +174,12 @@ export class PaymentsService {
 
     } catch (error) {
       this.logger.error('❌ Payment creation failed:', error);
-      
+
       if (error.cause?.length > 0) {
         const cause = error.cause[0];
         throw new BadRequestException(`Payment failed: ${cause.description}`);
       }
-      
+
       throw new InternalServerErrorException('Payment processing failed');
     }
   }
@@ -286,7 +286,7 @@ export class PaymentsService {
     try {
       if (webhookData.type === 'payment') {
         const paymentId = webhookData.data?.id;
-        
+
         if (paymentId) {
           await this.processPaymentNotification(paymentId);
         }
@@ -328,7 +328,7 @@ export class PaymentsService {
 
   private async processPaymentNotification(paymentId: string): Promise<void> {
     const paymentStatus = await this.getPaymentStatus(paymentId);
-    
+
     if (!paymentStatus) {
       this.logger.error(`❌ Could not fetch payment status for: ${paymentId}`);
       return;
@@ -350,7 +350,7 @@ export class PaymentsService {
 
   private async handleApprovedPayment(payment: PaymentResult): Promise<void> {
     this.logger.log(`✅ Payment approved: ${payment.id}`);
-    
+
     // Business logic for approved payments
     // - Update job status
     // - Send notifications
@@ -360,7 +360,7 @@ export class PaymentsService {
 
   private async handleRejectedPayment(payment: PaymentResult): Promise<void> {
     this.logger.log(`❌ Payment rejected: ${payment.id}`);
-    
+
     // Business logic for rejected payments
     // - Notify user
     // - Update job status
@@ -396,11 +396,11 @@ export class PaymentsService {
   private async savePaymentRecord(data: any): Promise<void> {
     try {
       this.logger.log(`💾 Saving payment record: ${data.mpPaymentId}`);
-      
+
       // Map data to current Payment schema structure
       const paymentData = {
         job_id: data.jobId || null,
-        service_id: data.serviceId || null, 
+        service_id: data.serviceId || null,
         amount: data.amount,
         currency: 'ARS',
         status: this.mapMPStatusToPaymentStatus(data.status),
@@ -423,7 +423,7 @@ export class PaymentsService {
 
       await this.prisma.payment.create({ data: paymentData });
       this.logger.log(`✅ Payment record saved successfully`);
-      
+
     } catch (error) {
       this.logger.error('❌ Failed to save payment record:', error);
     }
@@ -432,7 +432,7 @@ export class PaymentsService {
   private async savePreferenceRecord(data: any): Promise<void> {
     try {
       this.logger.log(`💾 Saving preference record: ${data.mpPreferenceId}`);
-      
+
       const preferenceData = {
         mp_preference_id: data.mpPreferenceId,
         external_reference: data.externalReference,
@@ -456,7 +456,7 @@ export class PaymentsService {
 
       await this.prisma.paymentPreference.create({ data: preferenceData });
       this.logger.log(`✅ Preference record saved successfully`);
-      
+
     } catch (error) {
       this.logger.error('❌ Failed to save preference record:', error);
     }
@@ -465,7 +465,7 @@ export class PaymentsService {
   private async updatePaymentRecord(paymentId: string, updates: any): Promise<void> {
     try {
       this.logger.log(`🔄 Updating payment record: ${paymentId}`);
-      
+
       const updateData = {
         status: this.mapMPStatusToPaymentStatus(updates.status),
         status_detail: updates.statusDetail,
@@ -474,7 +474,7 @@ export class PaymentsService {
       };
 
       // Remove undefined values
-      Object.keys(updateData).forEach(key => 
+      Object.keys(updateData).forEach(key =>
         updateData[key] === undefined && delete updateData[key]
       );
 
@@ -482,9 +482,9 @@ export class PaymentsService {
         where: { mp_payment_id: paymentId },
         data: updateData,
       });
-      
+
       this.logger.log(`✅ Payment record updated successfully`);
-      
+
     } catch (error) {
       this.logger.error('❌ Failed to update payment record:', error);
     }
@@ -492,11 +492,11 @@ export class PaymentsService {
 
   async testConfiguration(): Promise<any> {
     this.logger.log('🧪 Testing MercadoPago configuration...');
-    
+
     const accessToken = this.configService.get<string>('MERCADOPAGO_ACCESS_TOKEN');
     const publicKey = this.configService.get<string>('MERCADOPAGO_PUBLIC_KEY');
     const webhookSecret = this.configService.get<string>('MERCADOPAGO_WEBHOOK_SECRET');
-    
+
     const result = {
       hasAccessToken: !!accessToken,
       hasPublicKey: !!publicKey,
@@ -507,21 +507,21 @@ export class PaymentsService {
       environment: process.env.NODE_ENV,
       timestamp: new Date().toISOString()
     };
-    
+
     this.logger.log('🔍 Configuration test results:', result);
-    
+
     return result;
   }
 
   async createTestPreference(testData: any): Promise<PreferenceResult> {
     this.logger.log('🧪 Creating test preference with MercadoPago...');
-    
+
     if (!this.preference) {
       throw new InternalServerErrorException('MercadoPago not initialized');
     }
 
     const externalReference = this.generateExternalReference('test-user', testData.serviceId);
-    
+
     const preferenceBody = {
       items: [
         {
@@ -543,7 +543,7 @@ export class PaymentsService {
       },
       auto_return: 'approved',
       external_reference: externalReference,
-      notification_url: `${process.env.APP_URL || 'https://api.fixia.app'}/payments/webhook`,
+      notification_url: `${this.configService.get('API_URL')}/payments/webhook`,
       expires: false,
       // Test environment settings
       payment_methods: {
@@ -556,11 +556,11 @@ export class PaymentsService {
 
     try {
       this.logger.log('📝 Preference request body:', JSON.stringify(preferenceBody, null, 2));
-      
+
       const preference = await this.preference.create({ body: preferenceBody });
-      
+
       this.logger.log('✅ Preference created successfully:', preference.id);
-      
+
       const result: PreferenceResult = {
         id: preference.id!,
         sandboxInitPoint: preference.sandbox_init_point || undefined,
@@ -589,14 +589,14 @@ export class PaymentsService {
       });
 
       return result;
-      
+
     } catch (error) {
       this.logger.error('❌ MercadoPago preference creation failed:', error);
-      
+
       if (error.cause) {
         this.logger.error('📋 Error details:', JSON.stringify(error.cause, null, 2));
       }
-      
+
       throw new InternalServerErrorException(
         `Failed to create payment preference: ${error.message}`
       );
@@ -606,13 +606,13 @@ export class PaymentsService {
   async handleSimulatedWebhook(webhookData: any): Promise<any> {
     this.logger.log('🧪 Processing simulated webhook...');
     this.logger.log(`📨 Webhook Type: ${webhookData.type}, Action: ${webhookData.action}`);
-    
+
     if (webhookData.type === 'payment' && webhookData.action === 'payment.updated') {
       const paymentId = webhookData.data?.id;
-      
+
       if (paymentId) {
         this.logger.log(`🔍 Processing payment update for: ${paymentId}`);
-        
+
         // Simulate payment status check (normally would call MercadoPago API)
         const simulatedPaymentStatus = {
           id: paymentId,
@@ -625,12 +625,12 @@ export class PaymentsService {
           externalReference: 'SRV_test-service-123_test-user_1728422127369',
           createdAt: new Date(),
         };
-        
+
         this.logger.log('✅ Simulated payment approved:', simulatedPaymentStatus);
-        
+
         // Trigger business logic for approved payment
         await this.handleApprovedPayment(simulatedPaymentStatus);
-        
+
         return {
           processed: true,
           paymentStatus: simulatedPaymentStatus,
@@ -638,7 +638,7 @@ export class PaymentsService {
         };
       }
     }
-    
+
     return {
       processed: false,
       message: 'Webhook simulation completed but no action taken'

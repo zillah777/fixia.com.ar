@@ -1,8 +1,8 @@
-import { 
-  Controller, 
-  Post, 
-  Body, 
-  HttpCode, 
+import {
+  Controller,
+  Post,
+  Body,
+  HttpCode,
   HttpStatus,
   UseGuards,
   Get,
@@ -33,7 +33,7 @@ export class AuthController {
     private readonly authService: AuthService,
     private readonly subscriptionService: SubscriptionService,
     private readonly configService: ConfigService,
-  ) {}
+  ) { }
 
   @Post('login')
   @Throttle({ default: { limit: 5, ttl: 900000 } }) // 5 intentos por 15 minutos
@@ -43,7 +43,7 @@ export class AuthController {
   @ApiResponse({ status: 401, description: 'Credenciales inválidas o email no verificado' })
   async login(@Body() loginDto: LoginDto, @Res({ passthrough: true }) res): Promise<AuthResponse> {
     const result = await this.authService.login(loginDto);
-    
+
     // Set httpOnly cookies for secure token management
     this.logger.log(`🔐 Login successful - Setting auth cookies for user: ${result.user?.email}`, {
       hasAccessToken: !!result.access_token,
@@ -52,9 +52,9 @@ export class AuthController {
       refreshTokenPreview: result.refresh_token ? `${result.refresh_token.substring(0, 10)}...` : 'none',
       isProduction: process.env.NODE_ENV === 'production'
     });
-    
+
     this.setAuthCookies(res, result.access_token, result.refresh_token);
-    
+
     return result;
   }
 
@@ -66,7 +66,7 @@ export class AuthController {
   @ApiResponse({ status: 409, description: 'Email ya registrado' })
   async register(@Body() registerDto: any, @Res({ passthrough: true }) res, @Ip() clientIp: string) {
     this.logger.log(`🚀 PRODUCTION Registration attempt from IP ${clientIp} for email: ${registerDto.email}`);
-    
+
     try {
       // PRODUCTION VALIDATION - Required fields
       if (!registerDto.email) {
@@ -104,7 +104,7 @@ export class AuthController {
         failed_login_attempts: 0,
       };
 
-      this.logger.log(`🔨 Creating production user:`, { 
+      this.logger.log(`🔨 Creating production user:`, {
         email: userData.email,
         name: userData.name,
         user_type: userData.user_type,
@@ -220,15 +220,15 @@ export class AuthController {
 
     } catch (error) {
       this.logger.error(`❌ PRODUCTION Registration failed for ${registerDto.email}:`, error);
-      
+
       if (error instanceof ConflictException || error instanceof BadRequestException) {
         throw error;
       }
-      
+
       if (error.code === 'P2002') {
         throw new ConflictException('Ya existe un usuario registrado con este correo electrónico');
       }
-      
+
       throw new BadRequestException(error.message || 'Error creando cuenta de usuario');
     }
   }
@@ -254,7 +254,7 @@ export class AuthController {
     const bodyToken = refreshTokenDto?.refresh_token;
     const cookieToken = req.cookies?.refresh_token;
     const refreshToken = bodyToken || cookieToken;
-    
+
     // Reduced logging - only debug level for refresh attempts
     this.logger.debug(`Token refresh attempt`, {
       hasBodyToken: !!bodyToken,
@@ -262,14 +262,14 @@ export class AuthController {
       userAgent: req.headers['user-agent']?.substring(0, 50) + '...',
       ip: req.ip,
     });
-    
+
     if (!refreshToken) {
       const { ERROR_CODES, createSecureError } = await import('../common/constants/error-codes');
       throw createSecureError(ERROR_CODES.AUTH_TOKEN_MISSING, UnauthorizedException);
     }
-    
+
     const result = await this.authService.refreshToken(refreshToken);
-    
+
     // Update access token cookie (refresh token remains the same)
     res.cookie('access_token', result.access_token, {
       httpOnly: true,
@@ -277,9 +277,9 @@ export class AuthController {
       sameSite: 'none' as const, // Use 'none' for cross-domain cookies
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
-    
+
     this.logger.debug(`Token refreshed successfully`);
-    
+
     return result;
   }
 
@@ -291,14 +291,14 @@ export class AuthController {
   @ApiResponse({ status: 200, description: 'Sesión cerrada exitosamente' })
   async logout(@Request() req, @Body() refreshTokenDto: RefreshTokenDto, @Res({ passthrough: true }) res) {
     const refreshToken = refreshTokenDto.refresh_token || req.cookies?.refresh_token;
-    
+
     if (refreshToken) {
       await this.authService.logout(req.user.sub, refreshToken);
     }
-    
+
     // Clear httpOnly cookies
     this.clearAuthCookies(res);
-    
+
     return { message: 'Logout successful' };
   }
 
@@ -331,9 +331,9 @@ export class AuthController {
     try {
       // Basic verify with minimal logging
       this.logger.debug(`Auth verify for user: ${req.user?.sub?.substring(0, 8)}...`);
-      
-      return { 
-        isAuthenticated: true, 
+
+      return {
+        isAuthenticated: true,
         userId: req.user.sub,
         email: req.user.email,
         userType: req.user.user_type,
@@ -372,22 +372,22 @@ export class AuthController {
   @ApiResponse({ status: 302, description: 'Redirect a frontend con resultado' })
   async verifyEmailByGet(@Param('token') token: string, @Res() res, @Ip() clientIp: string) {
     this.logger.log(`Email verification attempt via GET: token=${token.substring(0, 8)}..., ip=${clientIp}`);
-    
+
     try {
       const result = await this.authService.verifyEmail(token);
-      
+
       this.logger.log(`Email verification successful via GET: ip=${clientIp}, success=${result.success}`);
-      
+
       // Redirect to frontend with success message
-      // IMPORTANT: Always use www.fixia.app because fixia.app redirects to www
-      const redirectUrl = `${process.env.FRONTEND_URL || 'https://www.fixia.app'}/login?verified=true&message=Email verificado exitosamente`;
+      const frontendUrl = process.env.FRONTEND_URL || 'https://www.fixia.app';
+      const redirectUrl = `${frontendUrl}/login?verified=true&message=Email verificado exitosamente`;
       res.redirect(redirectUrl);
     } catch (error) {
       this.logger.warn(`Email verification failed via GET: ip=${clientIp}, error=${error.message}`);
 
       // Redirect to frontend with error message
-      // IMPORTANT: Always use www.fixia.app because fixia.app redirects to www
-      const redirectUrl = `${process.env.FRONTEND_URL || 'https://www.fixia.app'}/register?error=token_invalid&message=Token de verificación inválido o expirado`;
+      const frontendUrl = process.env.FRONTEND_URL || 'https://www.fixia.app';
+      const redirectUrl = `${frontendUrl}/register?error=token_invalid&message=Token de verificación inválido o expirado`;
       res.redirect(redirectUrl);
     }
   }
@@ -412,8 +412,8 @@ export class AuthController {
   @ApiResponse({ status: 401, description: 'Contraseña actual incorrecta' })
   async changePassword(@Request() req, @Body() changePasswordDto: ChangePasswordDto) {
     return this.authService.changePassword(
-      req.user.sub, 
-      changePasswordDto.current_password, 
+      req.user.sub,
+      changePasswordDto.current_password,
       changePasswordDto.new_password
     );
   }

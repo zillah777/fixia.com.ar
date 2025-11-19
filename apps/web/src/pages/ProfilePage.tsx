@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "motion/react";
-import { 
-  User, Mail, Phone, MapPin, Calendar, Camera, Settings, Shield, 
-  Edit3, Save, X, Plus, Star, Award, Briefcase, Eye, Heart, 
-  MessageSquare, DollarSign, TrendingUp, Clock, CheckCircle, 
+import {
+  User, Mail, Phone, MapPin, Calendar, Camera, Settings, Shield,
+  Edit3, Save, X, Plus, Star, Award, Briefcase, Eye, Heart,
+  MessageSquare, DollarSign, TrendingUp, Clock, CheckCircle,
   Upload, FileText, Globe, Linkedin, Twitter, Instagram, Github,
   Bell, Lock, CreditCard, LogOut, Trash2, ExternalLink,
   BarChart3, Users, Target, Zap
@@ -23,6 +23,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Progress } from "../components/ui/progress";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "../components/ui/dialog";
 import { useSecureAuth as useAuth } from "../context/SecureAuthContext";
+import { usersService } from "../lib/services/users.service";
 import { toast } from "sonner";
 
 // Mock data for portfolio items
@@ -94,7 +95,7 @@ function Navigation() {
   const { logout } = useAuth();
 
   return (
-    <motion.header 
+    <motion.header
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       className="sticky top-0 z-50 w-full glass border-b border-white/10"
@@ -106,7 +107,7 @@ function Navigation() {
           </div>
           <span className="font-semibold">Fixia</span>
         </Link>
-        
+
         <nav className="hidden md:flex items-center space-x-6">
           <Link to="/dashboard" className="text-muted-foreground hover:text-primary transition-colors">
             Dashboard
@@ -118,8 +119,8 @@ function Navigation() {
             Mi Perfil
           </Link>
         </nav>
-        
-        <Button 
+
+        <Button
           variant="ghost"
           onClick={logout}
           className="text-muted-foreground hover:text-destructive"
@@ -134,19 +135,24 @@ function Navigation() {
 
 function ProfileHeader({ user, isEditing, setIsEditing }: any) {
   const [profileData, setProfileData] = useState({
-    name: user.name,
-    bio: user.role === 'professional' 
-      ? "Desarrolladora Full Stack especializada en e-commerce con +5 años de experiencia."
-      : "Emprendedor apasionado por la tecnología y la innovación digital.",
-    location: "Ciudad de México, MX",
-    website: "https://anamartinez.dev",
-    phone: "+52 55 1234 5678"
+    name: user.name || '',
+    bio: user.bio || '',
+    location: user.location || '',
+    website: user.website || '',
+    phone: user.phone || ''
   });
 
-  const handleSave = () => {
-    // Here you would update the user profile
-    toast.success("Perfil actualizado correctamente");
-    setIsEditing(false);
+  const handleSave = async () => {
+    try {
+      await usersService.updateProfile(profileData);
+      toast.success("Perfil actualizado correctamente");
+      setIsEditing(false);
+      // Optionally trigger a re-fetch of user data here if needed
+      // window.location.reload(); // Simple but effective for now
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      toast.error("Error al actualizar el perfil");
+    }
   };
 
   return (
@@ -159,11 +165,11 @@ function ProfileHeader({ user, isEditing, setIsEditing }: any) {
               <AvatarImage src={user.avatar} alt={user.name} />
               <AvatarFallback className="text-2xl">{user.name.charAt(0)}</AvatarFallback>
             </Avatar>
-            
+
             <Dialog>
               <DialogTrigger asChild>
-                <Button 
-                  size="icon" 
+                <Button
+                  size="icon"
                   className="absolute -bottom-2 -right-2 h-10 w-10 rounded-full liquid-gradient shadow-lg"
                 >
                   <Camera className="h-5 w-5" />
@@ -195,7 +201,7 @@ function ProfileHeader({ user, isEditing, setIsEditing }: any) {
                 </div>
               </DialogContent>
             </Dialog>
-            
+
             {user.verified && (
               <div className="absolute -top-2 -right-2">
                 <Badge className="bg-success/20 text-success border-success/30 text-xs px-2">
@@ -205,7 +211,7 @@ function ProfileHeader({ user, isEditing, setIsEditing }: any) {
               </div>
             )}
           </div>
-          
+
           {/* Profile Info */}
           <div className="flex-1 space-y-4">
             <div className="flex items-center justify-between">
@@ -214,14 +220,14 @@ function ProfileHeader({ user, isEditing, setIsEditing }: any) {
                   <div className="space-y-2">
                     <Input
                       value={profileData.name}
-                      onChange={(e) => setProfileData({...profileData, name: e.target.value})}
+                      onChange={(e) => setProfileData({ ...profileData, name: e.target.value })}
                       className="text-2xl font-bold glass border-white/20"
                     />
                   </div>
                 ) : (
                   <h1 className="text-3xl font-bold">{profileData.name}</h1>
                 )}
-                
+
                 <div className="flex items-center space-x-3 mt-2">
                   <Badge className="bg-primary/20 text-primary border-primary/30">
                     {user.role === 'professional' ? 'Top Rated Plus' : 'Cliente Premium'}
@@ -235,7 +241,7 @@ function ProfileHeader({ user, isEditing, setIsEditing }: any) {
                   )}
                 </div>
               </div>
-              
+
               <div className="flex items-center space-x-2">
                 {isEditing ? (
                   <>
@@ -255,13 +261,13 @@ function ProfileHeader({ user, isEditing, setIsEditing }: any) {
                 )}
               </div>
             </div>
-            
+
             {/* Bio */}
             <div>
               {isEditing ? (
                 <Textarea
                   value={profileData.bio}
-                  onChange={(e) => setProfileData({...profileData, bio: e.target.value})}
+                  onChange={(e) => setProfileData({ ...profileData, bio: e.target.value })}
                   className="glass border-white/20"
                   rows={3}
                 />
@@ -269,7 +275,7 @@ function ProfileHeader({ user, isEditing, setIsEditing }: any) {
                 <p className="text-muted-foreground leading-relaxed">{profileData.bio}</p>
               )}
             </div>
-            
+
             {/* Contact Info */}
             <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
               <div className="flex items-center space-x-1">
@@ -277,7 +283,7 @@ function ProfileHeader({ user, isEditing, setIsEditing }: any) {
                 {isEditing ? (
                   <Input
                     value={profileData.location}
-                    onChange={(e) => setProfileData({...profileData, location: e.target.value})}
+                    onChange={(e) => setProfileData({ ...profileData, location: e.target.value })}
                     className="w-32 h-6 text-sm glass border-white/20"
                   />
                 ) : (
@@ -293,7 +299,7 @@ function ProfileHeader({ user, isEditing, setIsEditing }: any) {
                 {isEditing ? (
                   <Input
                     value={profileData.website}
-                    onChange={(e) => setProfileData({...profileData, website: e.target.value})}
+                    onChange={(e) => setProfileData({ ...profileData, website: e.target.value })}
                     className="w-32 h-6 text-sm glass border-white/20"
                   />
                 ) : (
@@ -303,7 +309,7 @@ function ProfileHeader({ user, isEditing, setIsEditing }: any) {
                 )}
               </div>
             </div>
-            
+
             {/* Stats for professionals */}
             {user.role === 'professional' && (
               <div className="flex space-x-8 pt-4 border-t border-white/10">
@@ -394,7 +400,7 @@ function ProfessionalPortfolio() {
           </Dialog>
         </div>
       </CardHeader>
-      
+
       <CardContent className="space-y-6">
         {/* Filter */}
         <div className="flex flex-wrap gap-2">
@@ -404,8 +410,8 @@ function ProfessionalPortfolio() {
               variant={selectedCategory === category ? "default" : "outline"}
               size="sm"
               onClick={() => setSelectedCategory(category)}
-              className={selectedCategory === category 
-                ? "liquid-gradient hover:opacity-90" 
+              className={selectedCategory === category
+                ? "liquid-gradient hover:opacity-90"
                 : "glass border-white/20 hover:glass-medium"
               }
             >
@@ -413,7 +419,7 @@ function ProfessionalPortfolio() {
             </Button>
           ))}
         </div>
-        
+
         {/* Portfolio Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {portfolioItems.map((item) => (
@@ -426,7 +432,7 @@ function ProfessionalPortfolio() {
             >
               <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 overflow-hidden group">
                 <div className="relative aspect-video overflow-hidden">
-                  <img 
+                  <img
                     src={item.image}
                     alt={item.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
@@ -451,7 +457,7 @@ function ProfessionalPortfolio() {
                     </div>
                   </div>
                 </div>
-                
+
                 <CardContent className="p-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <Badge variant="outline" className="glass border-white/20 text-xs">
@@ -459,10 +465,10 @@ function ProfessionalPortfolio() {
                     </Badge>
                     <span className="text-xs text-muted-foreground">{item.date}</span>
                   </div>
-                  
+
                   <h3 className="font-semibold line-clamp-1">{item.title}</h3>
                   <p className="text-sm text-muted-foreground line-clamp-2">{item.description}</p>
-                  
+
                   <div className="flex flex-wrap gap-1">
                     {item.technologies.slice(0, 3).map((tech) => (
                       <Badge key={tech} variant="outline" className="glass border-white/20 text-xs">
@@ -470,7 +476,7 @@ function ProfessionalPortfolio() {
                       </Badge>
                     ))}
                   </div>
-                  
+
                   <div className="flex items-center justify-between pt-2 border-t border-white/10">
                     <span className="text-sm text-muted-foreground">Cliente: {item.client}</span>
                     <div className="flex space-x-1">
@@ -502,22 +508,22 @@ function ReviewsSection() {
         </CardTitle>
         <CardDescription>Lo que dicen mis clientes</CardDescription>
       </CardHeader>
-      
+
       <CardContent className="space-y-6">
         {/* Rating Overview */}
         <div className="flex items-center space-x-8 p-4 glass-medium rounded-lg">
           <div className="text-center">
             <div className="text-3xl font-bold">4.9</div>
             <div className="flex items-center justify-center mt-1">
-              {[1,2,3,4,5].map((star) => (
+              {[1, 2, 3, 4, 5].map((star) => (
                 <Star key={star} className="h-4 w-4 text-warning fill-current" />
               ))}
             </div>
             <div className="text-sm text-muted-foreground mt-1">187 reseñas</div>
           </div>
-          
+
           <div className="flex-1 space-y-2">
-            {[5,4,3,2,1].map((stars) => (
+            {[5, 4, 3, 2, 1].map((stars) => (
               <div key={stars} className="flex items-center space-x-3">
                 <span className="text-sm w-8">{stars}★</span>
                 <Progress value={stars === 5 ? 85 : stars === 4 ? 15 : 0} className="flex-1" />
@@ -528,7 +534,7 @@ function ReviewsSection() {
             ))}
           </div>
         </div>
-        
+
         {/* Reviews List */}
         <div className="space-y-4">
           {userReviews.map((review) => (
@@ -538,7 +544,7 @@ function ReviewsSection() {
                   <AvatarImage src={review.client.avatar} />
                   <AvatarFallback>{review.client.name.charAt(0)}</AvatarFallback>
                 </Avatar>
-                
+
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-2">
                     <div>
@@ -547,30 +553,29 @@ function ReviewsSection() {
                     </div>
                     <div className="text-right">
                       <div className="flex items-center space-x-1">
-                        {[1,2,3,4,5].map((star) => (
-                          <Star 
-                            key={star} 
-                            className={`h-4 w-4 ${
-                              star <= review.rating 
-                                ? 'text-warning fill-current' 
-                                : 'text-muted-foreground'
-                            }`} 
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <Star
+                            key={star}
+                            className={`h-4 w-4 ${star <= review.rating
+                              ? 'text-warning fill-current'
+                              : 'text-muted-foreground'
+                              }`}
                           />
                         ))}
                       </div>
                       <div className="text-sm text-muted-foreground mt-1">{review.date}</div>
                     </div>
                   </div>
-                  
+
                   <p className="text-muted-foreground mb-3">{review.comment}</p>
-                  
+
                   {review.response && (
                     <div className="bg-primary/10 border-l-4 border-primary pl-4 py-2 mt-3">
                       <div className="font-medium text-sm text-primary mb-1">Tu respuesta:</div>
                       <p className="text-sm">{review.response}</p>
                     </div>
                   )}
-                  
+
                   {!review.response && (
                     <Button size="sm" variant="outline" className="glass border-white/20">
                       <MessageSquare className="h-4 w-4 mr-2" />
@@ -598,7 +603,7 @@ function SettingsSection() {
             <span>Configuración de Cuenta</span>
           </CardTitle>
         </CardHeader>
-        
+
         <CardContent className="space-y-6">
           <div className="grid md:grid-cols-2 gap-6">
             <div className="space-y-2">
@@ -610,7 +615,7 @@ function SettingsSection() {
               <Input defaultValue="+52 55 1234 5678" className="glass border-white/20" />
             </div>
           </div>
-          
+
           <div className="space-y-2">
             <Label>Zona Horaria</Label>
             <Select defaultValue="mexico">
@@ -624,7 +629,7 @@ function SettingsSection() {
               </SelectContent>
             </Select>
           </div>
-          
+
           <div className="space-y-4">
             <h4 className="font-medium">Redes Sociales</h4>
             <div className="grid md:grid-cols-2 gap-4">
@@ -657,7 +662,7 @@ function SettingsSection() {
             <span>Preferencias de Notificación</span>
           </CardTitle>
         </CardHeader>
-        
+
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
@@ -666,7 +671,7 @@ function SettingsSection() {
             </div>
             <Switch defaultChecked />
           </div>
-          
+
           <div className="flex items-center justify-between">
             <div>
               <div className="font-medium">Nuevos pedidos</div>
@@ -674,7 +679,7 @@ function SettingsSection() {
             </div>
             <Switch defaultChecked />
           </div>
-          
+
           <div className="flex items-center justify-between">
             <div>
               <div className="font-medium">Actualizaciones de proyectos</div>
@@ -682,7 +687,7 @@ function SettingsSection() {
             </div>
             <Switch defaultChecked />
           </div>
-          
+
           <div className="flex items-center justify-between">
             <div>
               <div className="font-medium">Newsletter semanal</div>
@@ -701,13 +706,13 @@ function SettingsSection() {
             <span>Seguridad</span>
           </CardTitle>
         </CardHeader>
-        
+
         <CardContent className="space-y-4">
           <Button variant="outline" className="w-full glass border-white/20 hover:glass-medium">
             <Lock className="h-4 w-4 mr-2" />
             Cambiar Contraseña
           </Button>
-          
+
           <div className="flex items-center justify-between">
             <div>
               <div className="font-medium">Autenticación de dos factores</div>
@@ -715,7 +720,7 @@ function SettingsSection() {
             </div>
             <Switch />
           </div>
-          
+
           <Button variant="outline" className="w-full glass border-white/20 hover:glass-medium">
             <FileText className="h-4 w-4 mr-2" />
             Descargar Datos Personales
@@ -728,7 +733,7 @@ function SettingsSection() {
         <CardHeader>
           <CardTitle className="text-destructive">Zona Peligrosa</CardTitle>
         </CardHeader>
-        
+
         <CardContent className="space-y-4">
           <Button variant="outline" className="w-full border-destructive/20 text-destructive hover:bg-destructive/10">
             <Trash2 className="h-4 w-4 mr-2" />
@@ -749,7 +754,7 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      
+
       <main className="container mx-auto px-6 py-8">
         <div className="space-y-8">
           {/* Profile Header */}
@@ -792,11 +797,11 @@ export default function ProfilePage() {
                   <TabsContent value="portfolio" className="mt-6">
                     <ProfessionalPortfolio />
                   </TabsContent>
-                  
+
                   <TabsContent value="reviews" className="mt-6">
                     <ReviewsSection />
                   </TabsContent>
-                  
+
                   <TabsContent value="analytics" className="mt-6">
                     <Card className="glass border-white/10">
                       <CardHeader>
@@ -857,7 +862,7 @@ export default function ProfilePage() {
                             </div>
                             <div className="text-sm text-muted-foreground">Hace 2 días</div>
                           </div>
-                          
+
                           <div className="flex items-center space-x-4 p-4 glass-medium rounded-lg">
                             <div className="h-10 w-10 bg-primary/20 rounded-full flex items-center justify-center">
                               <MessageSquare className="h-5 w-5 text-primary" />
@@ -872,7 +877,7 @@ export default function ProfilePage() {
                       </CardContent>
                     </Card>
                   </TabsContent>
-                  
+
                   <TabsContent value="favorites" className="mt-6">
                     <Card className="glass border-white/10">
                       <CardHeader>
@@ -892,7 +897,7 @@ export default function ProfilePage() {
                       </CardContent>
                     </Card>
                   </TabsContent>
-                  
+
                   <TabsContent value="orders" className="mt-6">
                     <Card className="glass border-white/10">
                       <CardHeader>
@@ -902,7 +907,7 @@ export default function ProfilePage() {
                         <div className="space-y-4">
                           <div className="flex items-center justify-between p-4 glass-medium rounded-lg">
                             <div className="flex items-center space-x-4">
-                              <img 
+                              <img
                                 src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=60&h=60&fit=crop"
                                 alt="Servicio"
                                 className="w-12 h-12 rounded object-cover"

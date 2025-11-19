@@ -16,6 +16,10 @@ export interface Job {
   started_at?: string;
   completed_at?: string;
   cancelled_at?: string;
+  completion_requested_at?: string;
+  completion_confirmed_at?: string;
+  unread_messages_count?: number;
+  attachments_count?: number;
   created_at: string;
   updated_at: string;
   client: {
@@ -23,12 +27,16 @@ export interface Job {
     name: string;
     email: string;
     whatsapp_number?: string;
+    avatar?: string;
+    rating?: number;
   };
   professional: {
     id: string;
     name: string;
     email: string;
     whatsapp_number?: string;
+    avatar?: string;
+    rating?: number;
   };
   project: {
     id: string;

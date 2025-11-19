@@ -7,6 +7,7 @@ import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { toast } from "sonner";
+import { authService } from "../lib/services/auth.service";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -15,7 +16,7 @@ export default function ForgotPasswordPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!email) {
       toast.error("Por favor ingresa tu correo electrónico");
       return;
@@ -28,13 +29,13 @@ export default function ForgotPasswordPage() {
     }
 
     setLoading(true);
-    
-    // Simulate API call
+
     try {
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await authService.forgotPassword(email);
       setEmailSent(true);
       toast.success("Correo de recuperación enviado");
     } catch (error) {
+      console.error("Error sending recovery email:", error);
       toast.error("Error al enviar el correo. Inténtalo de nuevo.");
     } finally {
       setLoading(false);
@@ -43,7 +44,7 @@ export default function ForgotPasswordPage() {
 
   const handleResendEmail = async () => {
     setLoading(true);
-    
+
     try {
       await new Promise(resolve => setTimeout(resolve, 1000));
       toast.success("Correo reenviado");
@@ -96,13 +97,13 @@ export default function ForgotPasswordPage() {
                 {emailSent ? "Revisa tu correo" : "Recuperar contraseña"}
               </CardTitle>
               <CardDescription>
-                {emailSent 
+                {emailSent
                   ? "Te hemos enviado un enlace para restablecer tu contraseña"
                   : "Ingresa tu correo y te enviaremos un enlace para restablecer tu contraseña"
                 }
               </CardDescription>
             </CardHeader>
-            
+
             <CardContent>
               {!emailSent ? (
                 <form onSubmit={handleSubmit} className="space-y-6">
@@ -152,14 +153,14 @@ export default function ForgotPasswordPage() {
                     <div className="mx-auto w-16 h-16 liquid-gradient rounded-full flex items-center justify-center">
                       <Check className="h-8 w-8 text-white" />
                     </div>
-                    
+
                     <div className="space-y-2">
                       <p className="font-medium">Correo enviado a:</p>
                       <p className="text-primary font-mono bg-primary/10 px-3 py-2 rounded-lg">
                         {email}
                       </p>
                     </div>
-                    
+
                     <div className="glass-medium rounded-lg p-4 space-y-2">
                       <h4 className="font-medium text-sm">Próximos pasos:</h4>
                       <ol className="text-xs text-muted-foreground space-y-1 list-decimal list-inside">
@@ -223,7 +224,7 @@ export default function ForgotPasswordPage() {
               </Link>
             </p>
           )}
-          
+
           <Link
             to="/"
             className="inline-flex items-center text-sm text-muted-foreground hover:text-primary transition-colors"

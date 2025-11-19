@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
-import { 
-  ArrowLeft, ArrowRight, Check, Upload, X, Plus, Minus, 
-  Image, FileText, DollarSign, Clock, Tag, Settings, 
+import {
+  ArrowLeft, ArrowRight, Check, Upload, X, Plus, Minus,
+  Image, FileText, DollarSign, Clock, Tag, Settings,
   Eye, Save, AlertCircle, Info, Star, Briefcase, Globe,
   Camera, Trash2, Edit3, Zap, Shield, Award
 } from "lucide-react";
@@ -21,18 +21,10 @@ import { Progress } from "../components/ui/progress";
 import { Alert, AlertDescription } from "../components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { useAuth } from "../context/AuthContext";
-import { toast } from "sonner";
+import { servicesService, ServiceCategory } from "../lib/services/services.service";
 
-const categories = [
-  { value: "web-development", label: "Desarrollo Web", icon: Globe },
-  { value: "mobile-development", label: "Desarrollo Móvil", icon: Camera },
-  { value: "graphic-design", label: "Diseño Gráfico", icon: Image },
-  { value: "digital-marketing", label: "Marketing Digital", icon: Star },
-  { value: "writing", label: "Redacción y Contenido", icon: FileText },
-  { value: "video-animation", label: "Video y Animación", icon: Eye },
-  { value: "consulting", label: "Consultoría", icon: Briefcase },
-  { value: "cybersecurity", label: "Ciberseguridad", icon: Shield }
-];
+// Remove hardcoded categories
+// const categories = [ ... ];
 
 const skillSuggestions = {
   "web-development": ["React", "Vue.js", "Angular", "Node.js", "Python", "PHP", "WordPress", "Shopify"],
@@ -52,24 +44,24 @@ interface ProjectData {
   category: string;
   subcategory: string;
   tags: string[];
-  
+
   // Pricing
   packages: {
     basic: { name: string; price: number; description: string; deliveryTime: number; revisions: number; features: string[] };
     standard: { name: string; price: number; description: string; deliveryTime: number; revisions: number; features: string[] };
     premium: { name: string; price: number; description: string; deliveryTime: number; revisions: number; features: string[] };
   };
-  
+
   // Media
   images: string[];
   gallery: string[];
-  
+
   // Requirements
   requirements: string[];
-  
+
   // FAQ
   faqs: { question: string; answer: string }[];
-  
+
   // Settings
   isActive: boolean;
   allowRevisions: boolean;
@@ -80,27 +72,27 @@ function Navigation() {
   const navigate = useNavigate();
 
   return (
-    <motion.header 
+    <motion.header
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       className="sticky top-0 z-50 w-full glass border-b border-white/10"
     >
       <div className="container mx-auto flex h-16 items-center justify-between px-6">
-        <button 
+        <button
           onClick={() => navigate(-1)}
           className="flex items-center space-x-2 text-muted-foreground hover:text-primary transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
           Volver
         </button>
-        
+
         <Link to="/dashboard" className="flex items-center space-x-3">
           <div className="h-8 w-8 liquid-gradient rounded-lg flex items-center justify-center">
             <span className="text-white font-bold">F</span>
           </div>
           <span className="font-semibold">Fixia</span>
         </Link>
-        
+
         <div className="flex items-center space-x-2">
           <Button variant="ghost" size="sm">
             <Eye className="h-4 w-4 mr-2" />
@@ -136,26 +128,24 @@ function StepProgress({ currentStep, totalSteps }: { currentStep: number; totalS
           </div>
           <Progress value={(currentStep / totalSteps) * 100} className="h-2" />
         </div>
-        
+
         <div className="grid grid-cols-2 lg:grid-cols-6 gap-4">
           {steps.map((step) => (
-            <div 
+            <div
               key={step.id}
-              className={`text-center p-3 rounded-lg transition-all ${
-                step.id === currentStep 
-                  ? 'glass-medium border border-primary/20' 
-                  : step.id < currentStep 
-                    ? 'glass-light border border-success/20' 
+              className={`text-center p-3 rounded-lg transition-all ${step.id === currentStep
+                  ? 'glass-medium border border-primary/20'
+                  : step.id < currentStep
+                    ? 'glass-light border border-success/20'
                     : 'glass border border-white/10'
-              }`}
+                }`}
             >
-              <div className={`w-8 h-8 rounded-full mx-auto mb-2 flex items-center justify-center ${
-                step.id === currentStep 
-                  ? 'liquid-gradient text-white' 
-                  : step.id < currentStep 
-                    ? 'bg-success/20 text-success' 
+              <div className={`w-8 h-8 rounded-full mx-auto mb-2 flex items-center justify-center ${step.id === currentStep
+                  ? 'liquid-gradient text-white'
+                  : step.id < currentStep
+                    ? 'bg-success/20 text-success'
                     : 'bg-muted text-muted-foreground'
-              }`}>
+                }`}>
                 {step.id < currentStep ? <Check className="h-4 w-4" /> : step.id}
               </div>
               <div className="text-xs font-medium mb-1">{step.title}</div>
@@ -187,7 +177,7 @@ function BasicInfoStep({ data, setData }: { data: ProjectData; setData: (data: P
             Define el título y descripción que verán los clientes potenciales
           </CardDescription>
         </CardHeader>
-        
+
         <CardContent className="space-y-6">
           {/* Title */}
           <div className="space-y-2">
@@ -203,7 +193,7 @@ function BasicInfoStep({ data, setData }: { data: ProjectData; setData: (data: P
               <span>{data.title.length}/80</span>
             </div>
           </div>
-          
+
           {/* Description */}
           <div className="space-y-2">
             <Label>Descripción Detallada *</Label>
@@ -219,7 +209,7 @@ function BasicInfoStep({ data, setData }: { data: ProjectData; setData: (data: P
               <span>{data.description.length}/2000</span>
             </div>
           </div>
-          
+
           {/* Tips */}
           <Alert>
             <Info className="h-4 w-4" />
@@ -241,7 +231,24 @@ function BasicInfoStep({ data, setData }: { data: ProjectData; setData: (data: P
 
 function CategoryStep({ data, setData }: { data: ProjectData; setData: (data: ProjectData) => void }) {
   const [selectedSkills, setSelectedSkills] = useState<string[]>(data.tags);
-  
+  const [categories, setCategories] = useState<ServiceCategory[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const cats = await servicesService.getCategories();
+        setCategories(cats);
+      } catch (error) {
+        console.error("Failed to fetch categories", error);
+        toast.error("Error al cargar categorías");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCategories();
+  }, []);
+
   const handleSkillToggle = (skill: string) => {
     const updated = selectedSkills.includes(skill)
       ? selectedSkills.filter(s => s !== skill)
@@ -268,34 +275,38 @@ function CategoryStep({ data, setData }: { data: ProjectData; setData: (data: Pr
             Ayuda a los clientes a encontrar tu servicio más fácilmente
           </CardDescription>
         </CardHeader>
-        
+
         <CardContent className="space-y-6">
           {/* Category Selection */}
           <div className="space-y-4">
             <Label>Categoría Principal *</Label>
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {categories.map((category) => {
-                const Icon = category.icon;
-                return (
-                  <Card
-                    key={category.value}
-                    className={`cursor-pointer transition-all ${
-                      data.category === category.value
-                        ? 'ring-2 ring-primary glass-medium'
-                        : 'glass hover:glass-medium border-white/10'
-                    }`}
-                    onClick={() => setData({ ...data, category: category.value })}
-                  >
-                    <CardContent className="p-4 text-center">
-                      <Icon className="h-8 w-8 mx-auto mb-2 text-primary" />
-                      <div className="font-medium text-sm">{category.label}</div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
+            {loading ? (
+              <div className="text-center py-4">Cargando categorías...</div>
+            ) : (
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {categories.map((category) => {
+                  // Use a default icon if dynamic icon mapping is complex or missing
+                  const Icon = Globe;
+                  return (
+                    <Card
+                      key={category.id}
+                      className={`cursor-pointer transition-all ${data.category === category.id
+                          ? 'ring-2 ring-primary glass-medium'
+                          : 'glass hover:glass-medium border-white/10'
+                        }`}
+                      onClick={() => setData({ ...data, category: category.id })}
+                    >
+                      <CardContent className="p-4 text-center">
+                        <Icon className="h-8 w-8 mx-auto mb-2 text-primary" />
+                        <div className="font-medium text-sm">{category.name}</div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            )}
           </div>
-          
+
           {/* Skills/Tags */}
           {data.category && (
             <div className="space-y-4">
@@ -305,7 +316,7 @@ function CategoryStep({ data, setData }: { data: ProjectData; setData: (data: Pr
                   Selecciona máximo 8 tags
                 </span>
               </div>
-              
+
               <div className="space-y-4">
                 <div className="flex flex-wrap gap-2">
                   {skillSuggestions[data.category as keyof typeof skillSuggestions]?.map((skill) => (
@@ -325,7 +336,7 @@ function CategoryStep({ data, setData }: { data: ProjectData; setData: (data: Pr
                     </Button>
                   ))}
                 </div>
-                
+
                 <div className="flex items-center space-x-2">
                   <Input
                     placeholder="Agregar habilidad personalizada"
@@ -345,14 +356,14 @@ function CategoryStep({ data, setData }: { data: ProjectData; setData: (data: Pr
                   </Button>
                 </div>
               </div>
-              
+
               {/* Selected Tags */}
               {selectedSkills.length > 0 && (
                 <div className="space-y-2">
                   <Label>Tags Seleccionados ({selectedSkills.length}/8)</Label>
                   <div className="flex flex-wrap gap-2">
                     {selectedSkills.map((skill) => (
-                      <Badge 
+                      <Badge
                         key={skill}
                         className="bg-primary/20 text-primary border-primary/30 pr-1"
                       >
@@ -424,15 +435,14 @@ function PricingStep({ data, setData }: { data: ProjectData; setData: (data: Pro
             Crea diferentes opciones de servicio para atraer más clientes
           </CardDescription>
         </CardHeader>
-        
+
         <CardContent>
           <div className="grid lg:grid-cols-3 gap-6">
             {(['basic', 'standard', 'premium'] as const).map((packageType, index) => (
-              <Card 
+              <Card
                 key={packageType}
-                className={`glass border-white/10 ${
-                  packageType === 'standard' ? 'ring-2 ring-primary/30' : ''
-                }`}
+                className={`glass border-white/10 ${packageType === 'standard' ? 'ring-2 ring-primary/30' : ''
+                  }`}
               >
                 <CardHeader className="text-center">
                   <div className="flex items-center justify-center space-x-2">
@@ -446,7 +456,7 @@ function PricingStep({ data, setData }: { data: ProjectData; setData: (data: Pro
                     )}
                   </div>
                 </CardHeader>
-                
+
                 <CardContent className="space-y-4">
                   {/* Package Name */}
                   <div className="space-y-2">
@@ -458,7 +468,7 @@ function PricingStep({ data, setData }: { data: ProjectData; setData: (data: Pro
                       className="glass border-white/20"
                     />
                   </div>
-                  
+
                   {/* Price */}
                   <div className="space-y-2">
                     <Label>Precio (USD)</Label>
@@ -473,7 +483,7 @@ function PricingStep({ data, setData }: { data: ProjectData; setData: (data: Pro
                       />
                     </div>
                   </div>
-                  
+
                   {/* Description */}
                   <div className="space-y-2">
                     <Label>Descripción</Label>
@@ -485,7 +495,7 @@ function PricingStep({ data, setData }: { data: ProjectData; setData: (data: Pro
                       rows={2}
                     />
                   </div>
-                  
+
                   {/* Delivery Time */}
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
@@ -498,7 +508,7 @@ function PricingStep({ data, setData }: { data: ProjectData; setData: (data: Pro
                         className="glass border-white/20"
                       />
                     </div>
-                    
+
                     <div className="space-y-2">
                       <Label>Revisiones</Label>
                       <Input
@@ -510,7 +520,7 @@ function PricingStep({ data, setData }: { data: ProjectData; setData: (data: Pro
                       />
                     </div>
                   </div>
-                  
+
                   {/* Features */}
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
@@ -525,7 +535,7 @@ function PricingStep({ data, setData }: { data: ProjectData; setData: (data: Pro
                         Agregar
                       </Button>
                     </div>
-                    
+
                     <div className="space-y-2">
                       {data.packages[packageType].features.map((feature, featureIndex) => (
                         <div key={featureIndex} className="flex items-center space-x-2">
@@ -551,11 +561,11 @@ function PricingStep({ data, setData }: { data: ProjectData; setData: (data: Pro
               </Card>
             ))}
           </div>
-          
+
           <Alert className="mt-6">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
-              <strong>Tip de precios:</strong> El paquete Estándar suele ser el más popular. 
+              <strong>Tip de precios:</strong> El paquete Estándar suele ser el más popular.
               Asegúrate de que ofrezca un buen balance entre precio y valor.
             </AlertDescription>
           </Alert>
@@ -586,17 +596,16 @@ function MediaStep({ data, setData }: { data: ProjectData; setData: (data: Proje
             Las imágenes de calidad aumentan las conversiones hasta un 40%
           </CardDescription>
         </CardHeader>
-        
+
         <CardContent className="space-y-6">
           {/* Main Image Upload */}
           <div className="space-y-4">
             <Label>Imagen Principal del Servicio *</Label>
-            <div 
-              className={`border-2 border-dashed rounded-lg p-8 text-center transition-all ${
-                draggedOver 
-                  ? 'border-primary/50 bg-primary/10' 
+            <div
+              className={`border-2 border-dashed rounded-lg p-8 text-center transition-all ${draggedOver
+                  ? 'border-primary/50 bg-primary/10'
                   : 'border-white/20 glass hover:glass-medium'
-              }`}
+                }`}
               onDragOver={(e) => {
                 e.preventDefault();
                 setDraggedOver(true);
@@ -621,18 +630,18 @@ function MediaStep({ data, setData }: { data: ProjectData; setData: (data: Proje
               </Button>
             </div>
           </div>
-          
+
           {/* Gallery */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <Label>Galería de Imágenes (Opcional)</Label>
               <span className="text-sm text-muted-foreground">Hasta 5 imágenes adicionales</span>
             </div>
-            
+
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
               {/* Upload slots */}
               {[...Array(5)].map((_, index) => (
-                <div 
+                <div
                   key={index}
                   className="aspect-square border-2 border-dashed border-white/20 rounded-lg flex items-center justify-center glass hover:glass-medium cursor-pointer transition-all"
                 >
@@ -644,7 +653,7 @@ function MediaStep({ data, setData }: { data: ProjectData; setData: (data: Proje
               ))}
             </div>
           </div>
-          
+
           {/* Video URL */}
           <div className="space-y-2">
             <Label>Video Demostrativo (Opcional)</Label>
@@ -656,7 +665,7 @@ function MediaStep({ data, setData }: { data: ProjectData; setData: (data: Proje
               Los servicios con video tienen 3x más conversiones
             </div>
           </div>
-          
+
           {/* Tips */}
           <Alert>
             <Camera className="h-4 w-4" />
@@ -726,7 +735,7 @@ function RequirementsStep({ data, setData }: { data: ProjectData; setData: (data
             Define qué información necesitas del cliente para comenzar
           </CardDescription>
         </CardHeader>
-        
+
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <Label>Lista de Requisitos</Label>
@@ -740,7 +749,7 @@ function RequirementsStep({ data, setData }: { data: ProjectData; setData: (data
               Agregar
             </Button>
           </div>
-          
+
           <div className="space-y-3">
             {data.requirements.map((requirement, index) => (
               <div key={index} className="flex items-center space-x-2">
@@ -760,7 +769,7 @@ function RequirementsStep({ data, setData }: { data: ProjectData; setData: (data
                 </Button>
               </div>
             ))}
-            
+
             {data.requirements.length === 0 && (
               <div className="text-center py-8 text-muted-foreground">
                 <AlertCircle className="h-8 w-8 mx-auto mb-2 opacity-50" />
@@ -783,7 +792,7 @@ function RequirementsStep({ data, setData }: { data: ProjectData; setData: (data
             Responde las dudas más comunes para reducir consultas
           </CardDescription>
         </CardHeader>
-        
+
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <Label>FAQs</Label>
@@ -797,7 +806,7 @@ function RequirementsStep({ data, setData }: { data: ProjectData; setData: (data
               Agregar FAQ
             </Button>
           </div>
-          
+
           <div className="space-y-4">
             {data.faqs.map((faq, index) => (
               <Card key={index} className="glass border-white/10">
@@ -829,7 +838,7 @@ function RequirementsStep({ data, setData }: { data: ProjectData; setData: (data
                 </CardContent>
               </Card>
             ))}
-            
+
             {data.faqs.length === 0 && (
               <div className="text-center py-8 text-muted-foreground">
                 <Info className="h-8 w-8 mx-auto mb-2 opacity-50" />
@@ -863,12 +872,12 @@ function FinalStep({ data, setData }: { data: ProjectData; setData: (data: Proje
             Últimos ajustes antes de publicar tu servicio
           </CardDescription>
         </CardHeader>
-        
+
         <CardContent className="space-y-6">
           {/* Service Settings */}
           <div className="space-y-4">
             <Label>Configuración del Servicio</Label>
-            
+
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
@@ -882,7 +891,7 @@ function FinalStep({ data, setData }: { data: ProjectData; setData: (data: Proje
                   onCheckedChange={(checked: boolean) => setData({ ...data, isActive: checked })}
                 />
               </div>
-              
+
               <div className="flex items-center justify-between">
                 <div>
                   <div className="font-medium">Permitir revisiones</div>
@@ -895,7 +904,7 @@ function FinalStep({ data, setData }: { data: ProjectData; setData: (data: Proje
                   onCheckedChange={(checked: boolean) => setData({ ...data, allowRevisions: checked })}
                 />
               </div>
-              
+
               <div className="flex items-center justify-between">
                 <div>
                   <div className="font-medium">Entrega instantánea</div>
@@ -910,13 +919,13 @@ function FinalStep({ data, setData }: { data: ProjectData; setData: (data: Proje
               </div>
             </div>
           </div>
-          
+
           <Separator />
-          
+
           {/* Service Preview */}
           <div className="space-y-4">
             <Label>Vista Previa del Servicio</Label>
-            
+
             <Card className="glass border-white/10">
               <CardContent className="p-6">
                 <div className="space-y-4">
@@ -936,7 +945,7 @@ function FinalStep({ data, setData }: { data: ProjectData; setData: (data: Proje
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="flex flex-wrap gap-2">
                     {data.tags.map((tag) => (
                       <Badge key={tag} variant="outline" className="glass border-white/20 text-xs">
@@ -944,7 +953,7 @@ function FinalStep({ data, setData }: { data: ProjectData; setData: (data: Proje
                       </Badge>
                     ))}
                   </div>
-                  
+
                   <div className="flex items-center justify-between text-sm text-muted-foreground">
                     <span>Entrega: {data.packages.standard.deliveryTime || 0} días</span>
                     <span>Revisiones: {data.packages.standard.revisions || 0}</span>
@@ -956,11 +965,11 @@ function FinalStep({ data, setData }: { data: ProjectData; setData: (data: Proje
               </CardContent>
             </Card>
           </div>
-          
+
           <Alert>
             <Zap className="h-4 w-4" />
             <AlertDescription>
-              <strong>¡Casi listo!</strong> Revisa toda la información antes de publicar. 
+              <strong>¡Casi listo!</strong> Revisa toda la información antes de publicar.
               Podrás editar tu servicio después de publicarlo, pero es mejor que esté completo desde el inicio.
             </AlertDescription>
           </Alert>
@@ -975,7 +984,7 @@ export default function NewProjectPage() {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const totalSteps = 6;
-  
+
   const [projectData, setProjectData] = useState<ProjectData>({
     title: '',
     description: '',
@@ -1029,15 +1038,30 @@ export default function NewProjectPage() {
 
   const handlePublish = async () => {
     try {
-      // Here you would typically send the data to your backend
-      console.log('Publishing project:', projectData);
-      
+      // Use Standard package data for the main service fields
+      // The backend currently supports single price/delivery time per service
+      const servicePayload = {
+        title: projectData.title,
+        description: projectData.description,
+        category_id: projectData.category,
+        price: projectData.packages.standard.price,
+        delivery_time_days: projectData.packages.standard.deliveryTime,
+        revisions_included: projectData.packages.standard.revisions,
+        tags: projectData.tags,
+        // Map other fields as needed
+      };
+
+      console.log('Publishing service:', servicePayload);
+
+      await servicesService.createService(servicePayload);
+
       toast.success("¡Servicio publicado correctamente!");
-      
+
       // Redirect to dashboard or service page
       navigate('/dashboard');
     } catch (error) {
-      toast.error("Error al publicar el servicio");
+      console.error(error);
+      toast.error("Error al publicar el servicio. Verifica los datos.");
     }
   };
 
@@ -1063,7 +1087,7 @@ export default function NewProjectPage() {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      
+
       <main className="container mx-auto px-6 py-8 max-w-6xl">
         {/* Header */}
         <motion.div
@@ -1076,7 +1100,7 @@ export default function NewProjectPage() {
             Crear Nuevo Servicio
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Comparte tu expertise con miles de clientes. 
+            Comparte tu expertise con miles de clientes.
             Configura tu servicio paso a paso y comienza a generar ingresos.
           </p>
         </motion.div>
@@ -1111,12 +1135,12 @@ export default function NewProjectPage() {
             <ArrowLeft className="h-4 w-4 mr-2" />
             Anterior
           </Button>
-          
+
           <div className="flex items-center space-x-4">
             <Button variant="ghost" className="text-muted-foreground">
               Guardar Borrador
             </Button>
-            
+
             {currentStep === totalSteps ? (
               <Button
                 onClick={handlePublish}

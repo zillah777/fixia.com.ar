@@ -26,7 +26,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 export class SubscriptionController {
   private readonly logger = new Logger(SubscriptionController.name);
 
-  constructor(private readonly subscriptionService: SubscriptionService) {}
+  constructor(private readonly subscriptionService: SubscriptionService) { }
 
   @Post('create-preference')
   @UseGuards(JwtAuthGuard)
@@ -68,9 +68,9 @@ export class SubscriptionController {
       throw new BadRequestException('Invalid subscription type. Only "basic" plan is available');
     }
 
-    // Validate subscription price against hardcoded server values
+    // Validate subscription price against configured server values
     const hardcodedPrices = {
-      basic: 3900,
+      basic: Number(process.env.SUBSCRIPTION_PRICE_BASIC) || 3900,
     };
 
     if (!dto.price || typeof dto.price !== 'number' || dto.price < 0) {

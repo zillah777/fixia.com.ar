@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { toast } from "sonner@2.0.3";
+import { toast } from "sonner";
 
 interface Notification {
   id: string;
@@ -78,7 +78,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
             message: "Tu verificación de identidad ha sido aprobada",
           }
         ];
-        
+
         const randomNotif = mockNotifications[Math.floor(Math.random() * mockNotifications.length)];
         addNotification(randomNotif);
       }
@@ -96,7 +96,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     };
 
     setNotifications(prev => [newNotification, ...prev]);
-    
+
     // Show toast notification
     toast(notification.title, {
       description: notification.message,

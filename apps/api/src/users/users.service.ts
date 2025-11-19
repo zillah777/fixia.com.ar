@@ -6,13 +6,13 @@ import { DashboardStats } from '@fixia/types';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async getUserProfile(userId: string) {
     const user = await this.prisma.user.findUnique({
-      where: { 
+      where: {
         id: userId,
-        deleted_at: null 
+        deleted_at: null
       },
       include: {
         professional_profile: true,
@@ -30,9 +30,9 @@ export class UsersService {
 
   async getPublicProfile(userId: string) {
     const user = await this.prisma.user.findUnique({
-      where: { 
+      where: {
         id: userId,
-        deleted_at: null 
+        deleted_at: null
       },
       select: {
         id: true,
@@ -85,6 +85,7 @@ export class UsersService {
               select: {
                 name: true,
                 avatar: true,
+                verified: true,
               },
             },
             service: {
@@ -222,9 +223,9 @@ export class UsersService {
     console.log('[DEBUG] Services found:', servicesStats._count.id);
 
     const activeServicesStats = await this.prisma.service.aggregate({
-      where: { 
+      where: {
         professional_id: userId,
-        active: true 
+        active: true
       },
       _count: { id: true },
     });
@@ -236,7 +237,7 @@ export class UsersService {
     });
 
     const pendingProposalsStats = await this.prisma.proposal.aggregate({
-      where: { 
+      where: {
         professional_id: userId,
         status: 'pending'
       },
@@ -280,7 +281,7 @@ export class UsersService {
     });
 
     const activeProjectsStats = await this.prisma.project.aggregate({
-      where: { 
+      where: {
         client_id: userId,
         status: 'in_progress'
       },
@@ -317,119 +318,26 @@ export class UsersService {
     return { message: 'Account deleted successfully' };
   }
 
-  async getTopRatedProfessionals(limit: number = 6) {
-    const FEATURED_PROFESSIONAL_ID = '02f82f4a-0b6b-46d8-9b83-3ba2e169dd6b';
-
-    const featuredProfessional = await this.prisma.user.findUnique({
-      where: { id: FEATURED_PROFESSIONAL_ID },
-      select: {
-        id: true,
-        name: true,
-        avatar: true,
-        location: true,
-        verified: true,
-        created_at: true,
-        professional_profile: {
-          select: {
-            bio: true,
-            specialties: true,
-            rating: true,
-            review_count: true,
-            level: true,
-            years_experience: true,
-          },
-        },
-        services: {
-          where: { active: true },
-          select: {
-            id: true,
-            title: true,
-            description: true,
-            price: true,
-            main_image: true,
-            category: {
-              select: {
-                name: true,
-                icon: true,
-              },
-            },
-          },
-          orderBy: { created_at: 'desc' },
-          take: 1,
-        },
-        reviews_received: {
-          select: {
-            rating: true,
-          },
-        },
-      },
-    });
-
-    const remainingLimit = featuredProfessional ? limit - 1 : limit;
-    const professionals = await this.prisma.user.findMany({
+  async getTopRatedProfessionals(limit: number = 10) {
+    return this.prisma.user.findMany({
       where: {
-        user_type: 'professional',
-        verified: true,
+        user_type: { in: ['professional', 'dual'] },
+        is_hidden: false,
         deleted_at: null,
         professional_profile: {
           isNot: null,
         },
-        NOT: {
-          id: FEATURED_PROFESSIONAL_ID,
-        },
       },
-      select: {
-        id: true,
-        name: true,
-        avatar: true,
-        location: true,
-        verified: true,
-        created_at: true,
-        professional_profile: {
-          select: {
-            bio: true,
-            specialties: true,
-            rating: true,
-            review_count: true,
-            level: true,
-            years_experience: true,
-          },
-        },
-        services: {
-          where: { active: true },
-          select: {
-            id: true,
-            title: true,
-            description: true,
-            price: true,
-            main_image: true,
-            category: {
-              select: {
-                name: true,
-                icon: true,
-              },
-            },
-          },
-          orderBy: { created_at: 'desc' },
-          take: 1,
-        },
-        reviews_received: {
-          select: {
-            rating: true,
-          },
-        },
+      take: limit,
+      include: {
+        professional_profile: true,
       },
       orderBy: {
         professional_profile: {
           rating: 'desc',
         },
       },
-      take: remainingLimit,
     });
-
-    return featuredProfessional
-      ? [featuredProfessional, ...professionals]
-      : professionals;
   }
 
   async getPublicStats() {

@@ -10,6 +10,7 @@ import {
   Request,
   Query,
   BadRequestException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { MatchService } from './match.service';
@@ -34,7 +35,7 @@ export class MatchController {
     private matchService: MatchService,
     private phoneRevealService: PhoneRevealService,
     private reviewService: ReviewService,
-  ) {}
+  ) { }
 
   /**
    * GET /matches - Get all matches for current user
@@ -61,7 +62,12 @@ export class MatchController {
     if (!body?.proposalId || !body?.projectId || !body?.clientId || !body?.professionalId) {
       throw new BadRequestException('Missing required fields');
     }
-    // Optionally validate that req.user.id matches body.clientId or professionalId
+
+    // Security: Validate that the authenticated user is the client creating the match
+    if (body.clientId !== req.user.id) {
+      throw new ForbiddenException('You can only create matches for yourself');
+    }
+
     return await this.matchService.createMatch(
       body.proposalId,
       body.clientId,
@@ -132,7 +138,7 @@ export class MatchController {
     @Request() req,
     @Param('matchId') matchId: string,
   ) {
-    return await this.matchService.getCompletionStatus(matchId);
+    return await this.matchService.getCompletionStatus(matchId, req.user.id);
   }
 
   /**
@@ -197,7 +203,10 @@ export class MatchController {
     @Request() req,
     @Param('matchId') matchId: string,
   ) {
-    // TODO: Add admin check
+    // Verify user is participant (or admin)
+    // We reuse getMatch which throws Forbidden if user is not participant
+    await this.matchService.getMatch(matchId, req.user.id);
+
     return await this.phoneRevealService.getRevealHistory(matchId);
   }
 

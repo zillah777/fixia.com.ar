@@ -1,7 +1,7 @@
 import React, { useState, Suspense } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "motion/react";
-import { 
+import {
   Plus, TrendingUp, Users, Award, Star, Eye, MessageSquare,
   Calendar, Clock, DollarSign, ArrowRight, Briefcase, Target,
   Zap, CheckCircle, AlertCircle, Search, Settings, Bell, LogOut
@@ -26,14 +26,14 @@ function Navigation() {
   const { user, logout } = useAuth();
 
   return (
-    <motion.header 
+    <motion.header
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       className="sticky top-0 z-50 w-full glass border-b border-white/10"
     >
       <div className="container mx-auto flex h-16 items-center justify-between px-6">
         <Link to="/" className="flex items-center space-x-3">
-          <motion.div 
+          <motion.div
             className="relative"
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 400, damping: 10 }}
@@ -45,7 +45,7 @@ function Navigation() {
           </motion.div>
           <span className="font-semibold">Fixia</span>
         </Link>
-        
+
         <nav className="hidden md:flex items-center space-x-6">
           <Link to="/dashboard" className="text-primary font-medium">
             Dashboard
@@ -60,7 +60,7 @@ function Navigation() {
             Mi Perfil
           </Link>
         </nav>
-        
+
         <div className="flex items-center space-x-3">
           <Button variant="ghost" size="icon" className="relative">
             <Bell className="h-4 w-4" />
@@ -74,7 +74,7 @@ function Navigation() {
               <AvatarFallback>{user?.name?.charAt(0)}</AvatarFallback>
             </Avatar>
           </Link>
-          <Button 
+          <Button
             variant="ghost"
             size="icon"
             onClick={logout}
@@ -90,7 +90,26 @@ function Navigation() {
 
 function QuickActions() {
   return (
-    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-4">
+      <motion.div
+        whileHover={{ y: -2 }}
+        transition={{ duration: 0.2 }}
+      >
+        <Link to="/create-request">
+          <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 cursor-pointer group">
+            <CardContent className="p-6 text-center">
+              <div className="h-12 w-12 liquid-gradient rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                <Plus className="h-6 w-6 text-white" />
+              </div>
+              <h3 className="font-semibold mb-2">Publicar Solicitud</h3>
+              <p className="text-sm text-muted-foreground">
+                Describe tu proyecto y recibe propuestas de expertos
+              </p>
+            </CardContent>
+          </Card>
+        </Link>
+      </motion.div>
+
       <motion.div
         whileHover={{ y: -2 }}
         transition={{ duration: 0.2 }}
@@ -98,8 +117,8 @@ function QuickActions() {
         <Link to="/new-project">
           <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 cursor-pointer group">
             <CardContent className="p-6 text-center">
-              <div className="h-12 w-12 liquid-gradient rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                <Plus className="h-6 w-6 text-white" />
+              <div className="h-12 w-12 bg-purple-500/20 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                <Briefcase className="h-6 w-6 text-purple-400" />
               </div>
               <h3 className="font-semibold mb-2">Crear Servicio</h3>
               <p className="text-sm text-muted-foreground">
@@ -221,7 +240,7 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      
+
       <main className="container mx-auto px-6 py-8">
         {isLoading ? (
           // Skeleton loader for the welcome message
@@ -236,17 +255,17 @@ export default function DashboardPage() {
         ) : isAuthenticated && user ? (
           // Welcome Header
           <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="mb-8"
-        >
-          <h1 className="text-3xl font-bold mb-2">
-            Bienvenido de vuelta, {user?.name} 👋
-          </h1>
-          <p className="text-muted-foreground">
-            Gestiona tus servicios, proyectos y aprovecha nuevas oportunidades en Fixia
-          </p>
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="mb-8"
+          >
+            <h1 className="text-3xl font-bold mb-2">
+              Bienvenido de vuelta, {user?.name} 👋
+            </h1>
+            <p className="text-muted-foreground">
+              Gestiona tus servicios, proyectos y aprovecha nuevas oportunidades en Fixia
+            </p>
           </motion.div>
         ) : (
           <div className="text-center py-16 text-muted-foreground">Redirigiendo a la página de inicio de sesión...</div>
@@ -310,7 +329,7 @@ export default function DashboardPage() {
                   ¿Listo para crecer en Fixia?
                 </h3>
                 <p className="text-muted-foreground mb-6">
-                  Crea nuevos servicios, explora oportunidades y conecta con más clientes. 
+                  Crea nuevos servicios, explora oportunidades y conecta con más clientes.
                   Tu próximo proyecto te está esperando.
                 </p>
                 <div className="flex items-center justify-center space-x-4">

@@ -16,15 +16,15 @@ Handlebars.registerHelper('escapeHtml', (text: string) => {
 // Register safe URL helper for URLs
 Handlebars.registerHelper('escapeUrl', (url: string) => {
   if (!url || typeof url !== 'string') return '';
-  
+
   // Block dangerous protocols
   const dangerousProtocols = ['javascript:', 'data:', 'vbscript:', 'file:', 'ftp:'];
   const lowerUrl = url.toLowerCase().trim();
-  
+
   if (dangerousProtocols.some(protocol => lowerUrl.startsWith(protocol))) {
     return ''; // Return empty string for dangerous protocols
   }
-  
+
   // Basic URL validation and encoding
   try {
     const urlObj = new URL(url);
@@ -77,7 +77,7 @@ export class EmailService {
     // In production (dist), templates are copied to dist/templates/emails
     // In development, they're in src/templates/emails
     const isDev = process.env.NODE_ENV === 'development';
-    
+
     if (isDev) {
       return path.join(__dirname, '../../templates/emails');
     } else {
@@ -88,32 +88,32 @@ export class EmailService {
 
   constructor(private configService: ConfigService) {
     this.logger.log(`📧 Email configuration check:`);
-    
+
     // Try to configure Resend first (HTTP-based, works with Railway)
     const resendApiKey = this.configService.get<string>('RESEND_API_KEY');
     this.logger.log(`- Resend API Key present: ${!!resendApiKey}`);
-    
+
     if (resendApiKey) {
       this.resend = new Resend(resendApiKey);
       this.logger.log('✅ Resend API service initialized (HTTP-based)');
     }
-    
+
     // Try to configure SendGrid as secondary
     const sendgridApiKey = this.configService.get<string>('SENDGRID_API_KEY');
     this.logger.log(`- SendGrid API Key present: ${!!sendgridApiKey}`);
-    
+
     if (sendgridApiKey) {
       sgMail.setApiKey(sendgridApiKey);
       this.logger.log('✅ SendGrid email service initialized');
     }
-    
+
     // Configure Gmail SMTP as fallback
     const gmailUser = this.configService.get<string>('GMAIL_USER');
     const gmailPass = this.configService.get<string>('GMAIL_APP_PASSWORD');
-    
+
     this.logger.log(`- Gmail SMTP User: ${gmailUser}`);
     this.logger.log(`- Gmail App Password present: ${!!gmailPass}`);
-    
+
     if (gmailUser && gmailPass) {
       this.gmailTransporter = nodemailer.createTransport({
         host: 'smtp.gmail.com',
@@ -131,7 +131,7 @@ export class EmailService {
         socketTimeout: 75000,     // 75 seconds
       });
       this.logger.log('✅ Gmail SMTP transporter initialized with explicit configuration');
-      
+
       // Test connection
       this.gmailTransporter.verify().then(() => {
         this.logger.log('✅ Gmail SMTP connection verified successfully');
@@ -139,9 +139,9 @@ export class EmailService {
         this.logger.error(`❌ Gmail SMTP connection verification failed:`, error.message);
       });
     }
-    
+
     this.logger.log(`- Email FROM configured: ${this.configService.get<string>('EMAIL_FROM')}`);
-    
+
     if (!resendApiKey && !sendgridApiKey && (!gmailUser || !gmailPass)) {
       this.logger.error('❌ No email service configured. None of Resend, SendGrid, or Gmail SMTP available.');
     } else {
@@ -159,12 +159,12 @@ export class EmailService {
   async sendTemplatedEmail(emailData: EmailTemplate): Promise<boolean> {
     try {
       this.logger.log(`📧 Attempting to send email to: ${emailData.to} with template: ${emailData.template}`);
-      
+
       const htmlContent = await this.renderTemplate(emailData.template, emailData.templateData);
-      
+
       // Use appropriate FROM email based on service
       let fromEmail = emailData.from || this.configService.get<string>('EMAIL_FROM');
-      
+
       // Configure appropriate FROM email based on service and purpose
       if (this.resend && (!fromEmail || fromEmail.includes('@gmail.com'))) {
         // Use Resend with fixia.app domain if configured, otherwise default
@@ -172,25 +172,25 @@ export class EmailService {
       } else if (!fromEmail) {
         fromEmail = this.configService.get<string>('EMAIL_FROM') || 'no-reply@fixia.app';
       }
-      
+
       this.logger.log(`Sending from: ${fromEmail}`);
 
       // Try Resend first if available (HTTP-based, works with Railway)
       if (this.resend) {
         return await this.sendWithResend(emailData, fromEmail, htmlContent);
       }
-      
+
       // Try SendGrid as secondary
       const sendgridApiKey = this.configService.get<string>('SENDGRID_API_KEY');
       if (sendgridApiKey) {
         return await this.sendWithSendGrid(emailData, fromEmail, htmlContent);
       }
-      
+
       // Fallback to Gmail SMTP (likely blocked on Railway)
       if (this.gmailTransporter) {
         return await this.sendWithGmail(emailData, fromEmail, htmlContent);
       }
-      
+
       // Development fallback - log email content for testing
       if (process.env.NODE_ENV === 'development') {
         this.logger.warn(`📧 DEVELOPMENT FALLBACK: Email would be sent to ${emailData.to}`);
@@ -206,7 +206,7 @@ export class EmailService {
         // Return true for development to not block the flow
         return true;
       }
-      
+
       this.logger.error(`❌ No email service available`);
       return false;
 
@@ -316,13 +316,13 @@ export class EmailService {
    * Send welcome email
    */
   async sendWelcomeEmail(
-    to: string, 
-    userName: string, 
+    to: string,
+    userName: string,
     userType: 'cliente' | 'profesional',
     isProfessional: boolean = false
   ): Promise<boolean> {
     const baseUrl = this.configService.get('APP_URL', 'https://fixia.com.ar');
-    
+
     return this.sendTemplatedEmail({
       to,
       subject: `¡Bienvenido/a a Fixia, ${userName}!`,
@@ -348,7 +348,7 @@ export class EmailService {
    */
   async sendPasswordReset(to: string, userName: string, resetUrl: string): Promise<boolean> {
     const baseUrl = this.configService.get('APP_URL', 'https://fixia.com.ar');
-    
+
     return this.sendTemplatedEmail({
       to,
       subject: 'Restablecer contraseña - Fixia',
@@ -365,12 +365,12 @@ export class EmailService {
    * Send account deletion confirmation
    */
   async sendAccountDeletion(
-    to: string, 
-    userName: string, 
+    to: string,
+    userName: string,
     deletionDate: string
   ): Promise<boolean> {
     const baseUrl = this.configService.get('APP_URL', 'https://fixia.com.ar');
-    
+
     return this.sendTemplatedEmail({
       to,
       subject: 'Confirmación de eliminación de cuenta - Fixia',
@@ -411,7 +411,7 @@ export class EmailService {
     }
   ): Promise<boolean> {
     const baseUrl = this.configService.get('APP_URL', 'https://fixia.com.ar');
-    
+
     return this.sendTemplatedEmail({
       to: professionalEmail,
       subject: '¡Nuevo cliente interesado! - Fixia',
@@ -466,7 +466,7 @@ export class EmailService {
     }
   ): Promise<boolean> {
     const baseUrl = this.configService.get('APP_URL', 'https://fixia.com.ar');
-    
+
     return this.sendTemplatedEmail({
       to: professionalEmail,
       subject: `Nueva consulta sobre "${serviceData.name}" - Fixia`,
@@ -504,18 +504,18 @@ export class EmailService {
       const templatePath = path.join(this.templatesPath, `${templateName}.html`);
       this.logger.log(`Looking for template at: ${templatePath}`);
       this.logger.log(`Template data: ${JSON.stringify(data)}`);
-      
+
       if (!fs.existsSync(templatePath)) {
         this.logger.error(`Template file not found: ${templatePath}`);
         throw new Error(`Template file not found: ${templatePath}`);
       }
-      
+
       const templateContent = fs.readFileSync(templatePath, 'utf8');
       this.logger.log(`Template loaded successfully, size: ${templateContent.length} chars`);
-      
+
       const template = Handlebars.compile(templateContent);
       const renderedContent = template(data);
-      
+
       this.logger.log(`Template rendered successfully, output size: ${renderedContent.length} chars`);
       return renderedContent;
 
@@ -536,17 +536,64 @@ export class EmailService {
     html?: string
   ): Promise<boolean> {
     try {
-      const message = {
-        to: Array.isArray(to) ? to : [to],
-        from: this.configService.get<string>('EMAIL_FROM', 'noreply@fixia.com.ar'),
-        subject,
-        text,
-        html: html || text,
-      };
+      // Determine FROM address
+      let fromEmail = this.configService.get<string>('EMAIL_FROM');
 
-      await sgMail.send(message);
-      this.logger.log(`Plain email sent successfully to ${to}`);
-      return true;
+      // Configure appropriate FROM email based on service
+      if (this.resend && (!fromEmail || fromEmail.includes('@gmail.com'))) {
+        fromEmail = this.configService.get<string>('EMAIL_FROM') || 'Fixia <no-reply@fixia.app>';
+      } else if (!fromEmail) {
+        fromEmail = 'no-reply@fixia.app';
+      }
+
+      // 1. Try Resend
+      if (this.resend) {
+        try {
+          await this.resend.emails.send({
+            from: fromEmail,
+            to: Array.isArray(to) ? to : [to],
+            subject,
+            text,
+            html: html || text,
+          });
+          this.logger.log(`Plain email sent successfully via Resend to ${to}`);
+          return true;
+        } catch (error) {
+          this.logger.error(`Resend failed for plain email: ${error.message}`);
+          // Continue to fallbacks
+        }
+      }
+
+      // 2. Try SendGrid
+      const sendgridApiKey = this.configService.get<string>('SENDGRID_API_KEY');
+      if (sendgridApiKey) {
+        const message = {
+          to: Array.isArray(to) ? to : [to],
+          from: fromEmail,
+          subject,
+          text,
+          html: html || text,
+        };
+        await sgMail.send(message);
+        this.logger.log(`Plain email sent successfully via SendGrid to ${to}`);
+        return true;
+      }
+
+      // 3. Try Gmail
+      if (this.gmailTransporter) {
+        await this.gmailTransporter.sendMail({
+          from: fromEmail,
+          to: Array.isArray(to) ? to.join(', ') : to,
+          subject,
+          text,
+          html: html || text,
+        });
+        this.logger.log(`Plain email sent successfully via Gmail to ${to}`);
+        return true;
+      }
+
+      this.logger.error('No email service available for plain email');
+      return false;
 
     } catch (error) {
       this.logger.error(`Failed to send plain email: ${error.message}`);
