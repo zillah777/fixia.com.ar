@@ -12,6 +12,7 @@ import { es } from 'date-fns/locale';
 interface VerificationRequestCardProps {
     request: VerificationRequest;
     onCancel?: (requestId: string) => void;
+    onUpdate?: () => void | Promise<void>;
 }
 
 export function VerificationRequestCard({ request, onCancel }: VerificationRequestCardProps) {
