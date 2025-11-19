@@ -1,4 +1,5 @@
 import { NestFactory } from '@nestjs/core';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { ValidationPipe, Logger } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import helmet from 'helmet';
@@ -12,7 +13,7 @@ import { SnakeToCamelInterceptor } from './common/interceptors/snake-to-camel.in
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
-  
+
   // Server port configuration
   const port = parseInt(process.env.PORT) || 3001;
   const host = '0.0.0.0';
@@ -21,10 +22,10 @@ async function bootstrap() {
   logger.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
 
   try {
-    // Create NestJS application
-    const app = await NestFactory.create(AppModule, {
-      logger: process.env.NODE_ENV === 'production' 
-        ? ['error', 'warn', 'log'] 
+    // Create NestJS application with explicit Express platform
+    const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+      logger: process.env.NODE_ENV === 'production'
+        ? ['error', 'warn', 'log']
         : ['error', 'warn', 'log', 'debug', 'verbose']
     });
 
@@ -35,8 +36,8 @@ async function bootstrap() {
     app.use(helmet({
       crossOriginEmbedderPolicy: false,
       crossOriginOpenerPolicy: false,
-      crossOriginResourcePolicy: { 
-        policy: process.env.NODE_ENV === 'production' ? "cross-origin" : "same-site" 
+      crossOriginResourcePolicy: {
+        policy: process.env.NODE_ENV === 'production' ? "cross-origin" : "same-site"
       },
       contentSecurityPolicy: {
         directives: {
@@ -79,7 +80,7 @@ async function bootstrap() {
     app.getHttpAdapter().get('/js/:filename', (req, res) => {
       const filename = req.params.filename;
       logger.warn(`🤖 Bot/crawler requesting JS file: /js/${filename} - returning empty response`);
-      
+
       // Return empty JavaScript file to prevent 404 errors
       res.set('Content-Type', 'application/javascript');
       res.send('// File not found - empty response to prevent 404 errors');
@@ -104,19 +105,19 @@ async function bootstrap() {
 
     const allowedOrigins = isProduction
       ? [
-          // Primary Vercel deployments
-          'https://fixiaweb.vercel.app',
-          'https://fixia.vercel.app',
-          // Custom domains
-          'https://fixia.com.ar',
-          'https://www.fixia.com.ar',
-          'https://fixia.app',
-          'https://www.fixia.app',
-          // Render.com domain
-          'https://fixia-api.onrender.com',
-          // Allow all Vercel preview deployments
-          /https:\/\/.*\.vercel\.app$/
-        ]
+        // Primary Vercel deployments
+        'https://fixiaweb.vercel.app',
+        'https://fixia.vercel.app',
+        // Custom domains
+        'https://fixia.com.ar',
+        'https://www.fixia.com.ar',
+        'https://fixia.app',
+        'https://www.fixia.app',
+        // Render.com domain
+        'https://fixia-api.onrender.com',
+        // Allow all Vercel preview deployments
+        /https:\/\/.*\.vercel\.app$/
+      ]
       : process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000', 'http://localhost:5173', 'http://localhost:4000'];
 
     logger.log(`🌐 Environment: ${process.env.NODE_ENV || 'development'} (isProduction: ${isProduction})`);
@@ -200,7 +201,7 @@ async function bootstrap() {
         .addServer('https://api.fixia.app', 'Producción')
         .addServer('https://api.fixia.com.ar', 'Producción (Legacy)')
         .build();
-      
+
       const document = SwaggerModule.createDocument(app, config);
       SwaggerModule.setup('docs', app, document, {
         swaggerOptions: {
@@ -208,13 +209,13 @@ async function bootstrap() {
         },
       });
     }
-    
+
     // Start NestJS server
     await app.listen(port, host);
-    
+
     logger.log(`🚀 Fixia API running on: http://${host}:${port}${apiPrefix ? `/${apiPrefix}` : ''}`);
     logger.log(`🏥 Health check: http://${host}:${port}/health`);
-    
+
     if (process.env.NODE_ENV !== 'production') {
       logger.log(`📖 API Documentation: http://${host}:${port}/docs`);
     }
