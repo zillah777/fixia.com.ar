@@ -22,7 +22,7 @@ interface FormData {
   confirmPassword: string;
   phone: string;
   location: string;
-  
+
   // Professional fields
   businessName: string;
   serviceCategories: string[];
@@ -32,7 +32,7 @@ interface FormData {
   availability: string;
   portfolio: string;
   certifications: string;
-  
+
   // Agreements
   agreeTerms: boolean;
   agreePrivacy: boolean;
@@ -60,7 +60,7 @@ const initialFormData: FormData = {
 };
 
 const popularCategories = [
-  "Peluquería", "Manicura", "Pedicura", "Desarrollo Web", "Diseño Gráfico", 
+  "Peluquería", "Manicura", "Pedicura", "Desarrollo Web", "Diseño Gráfico",
   "Reparaciones", "Plomería", "Electricidad", "Limpieza", "Jardinería",
   "Marketing Digital", "Fotografía", "Contaduría", "Asesoría Legal",
   "Clases Particulares", "Traducción", "Catering", "Decoración",
@@ -71,7 +71,7 @@ const popularCategories = [
 
 function Navigation() {
   return (
-    <motion.header 
+    <motion.header
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       className="sticky top-0 z-50 w-full glass border-b border-white/10"
@@ -86,7 +86,7 @@ function Navigation() {
             <span className="text-xs text-muted-foreground -mt-1">Conecta. Confía. Resuelve.</span>
           </div>
         </Link>
-        
+
         <Link to="/">
           <Button variant="ghost" className="hover:glass-medium">
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -113,7 +113,7 @@ function ClientRegistrationForm({
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const locations = [
-    "Rawson", "Puerto Madryn", "Comodoro Rivadavia", "Trelew", 
+    "Rawson", "Puerto Madryn", "Comodoro Rivadavia", "Trelew",
     "Esquel", "Gaiman", "Puerto Deseado", "Caleta Olivia",
     "Río Gallegos", "El Calafate", "Ushuaia", "Otra ubicación"
   ];
@@ -241,8 +241,8 @@ function ClientRegistrationForm({
               <Checkbox
                 id="agreeTerms"
                 checked={formData.agreeTerms}
-                onCheckedChange={(checked: boolean) =>
-                  setFormData({ ...formData, agreeTerms: checked })
+                onCheckedChange={(checked: boolean | "indeterminate") =>
+                  setFormData({ ...formData, agreeTerms: checked === true })
                 }
                 required
               />
@@ -259,8 +259,8 @@ function ClientRegistrationForm({
               <Checkbox
                 id="agreePrivacy"
                 checked={formData.agreePrivacy}
-                onCheckedChange={(checked: boolean) =>
-                  setFormData({ ...formData, agreePrivacy: checked })
+                onCheckedChange={(checked: boolean | "indeterminate") =>
+                  setFormData({ ...formData, agreePrivacy: checked === true })
                 }
                 required
               />
@@ -277,8 +277,8 @@ function ClientRegistrationForm({
               <Checkbox
                 id="agreeMarketing"
                 checked={formData.agreeMarketing}
-                onCheckedChange={(checked: boolean) =>
-                  setFormData({ ...formData, agreeMarketing: checked })
+                onCheckedChange={(checked: boolean | "indeterminate") =>
+                  setFormData({ ...formData, agreeMarketing: checked === true })
                 }
               />
               <Label htmlFor="agreeMarketing" className="text-sm leading-relaxed">
@@ -321,9 +321,9 @@ function TagsInput({
 }) {
   const [inputValue, setInputValue] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
-  
+
   const filteredSuggestions = suggestions.filter(
-    suggestion => 
+    suggestion =>
       suggestion.toLowerCase().includes(inputValue.toLowerCase()) &&
       !categories.includes(suggestion)
   );
@@ -332,17 +332,17 @@ function TagsInput({
     // Handle both hashtags (#) and comma-separated values
     const hashtagPattern = /#[\w\sÀ-ÿ]+/g;
     const hashtags = input.match(hashtagPattern) || [];
-    
+
     // Remove hashtags from input and split by comma
     const withoutHashtags = input.replace(hashtagPattern, '').trim();
     const commaSeparated = withoutHashtags
       .split(',')
       .map(item => item.trim())
       .filter(item => item.length > 0);
-    
+
     // Clean hashtags (remove # and trim)
     const cleanHashtags = hashtags.map(tag => tag.replace('#', '').trim());
-    
+
     return [...cleanHashtags, ...commaSeparated].filter(item => item.length > 0);
   };
 
@@ -366,12 +366,12 @@ function TagsInput({
 
   const addCategoriesFromInput = () => {
     if (!inputValue.trim()) return;
-    
+
     const newCategories = parseInput(inputValue);
     const validCategories = newCategories.filter(
       cat => cat.length >= 2 && cat.length <= 30 && !categories.includes(cat)
     );
-    
+
     if (validCategories.length > 0) {
       onCategoriesChange([...categories, ...validCategories]);
       setInputValue('');
@@ -420,7 +420,7 @@ function TagsInput({
             </Button>
           )}
         </div>
-        
+
         {/* Suggestions dropdown */}
         {showSuggestions && filteredSuggestions.length > 0 && (
           <div className="absolute top-full left-0 right-0 mt-1 glass border border-white/20 rounded-lg max-h-48 overflow-y-auto z-10">
@@ -499,7 +499,7 @@ function ProfessionalRegistrationForm({
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const locations = [
-    "Rawson", "Puerto Madryn", "Comodoro Rivadavia", "Trelew", 
+    "Rawson", "Puerto Madryn", "Comodoro Rivadavia", "Trelew",
     "Esquel", "Gaiman", "Puerto Deseado", "Caleta Olivia",
     "Río Gallegos", "El Calafate", "Ushuaia", "Otra ubicación"
   ];
@@ -755,13 +755,13 @@ function ProfessionalRegistrationForm({
           {/* Terms and Privacy */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-primary">Términos y Condiciones</h3>
-            
+
             <div className="flex items-start space-x-3">
               <Checkbox
                 id="agreeTerms"
                 checked={formData.agreeTerms}
-                onCheckedChange={(checked: boolean) =>
-                  setFormData({ ...formData, agreeTerms: checked })
+                onCheckedChange={(checked: boolean | "indeterminate") =>
+                  setFormData({ ...formData, agreeTerms: checked === true })
                 }
                 required
               />
@@ -778,8 +778,8 @@ function ProfessionalRegistrationForm({
               <Checkbox
                 id="agreePrivacy"
                 checked={formData.agreePrivacy}
-                onCheckedChange={(checked: boolean) =>
-                  setFormData({ ...formData, agreePrivacy: checked })
+                onCheckedChange={(checked: boolean | "indeterminate") =>
+                  setFormData({ ...formData, agreePrivacy: checked === true })
                 }
                 required
               />
@@ -796,8 +796,8 @@ function ProfessionalRegistrationForm({
               <Checkbox
                 id="agreeMarketing"
                 checked={formData.agreeMarketing}
-                onCheckedChange={(checked: boolean) =>
-                  setFormData({ ...formData, agreeMarketing: checked })
+                onCheckedChange={(checked: boolean | "indeterminate") =>
+                  setFormData({ ...formData, agreeMarketing: checked === true })
                 }
               />
               <Label htmlFor="agreeMarketing" className="text-sm leading-relaxed">
@@ -808,7 +808,7 @@ function ProfessionalRegistrationForm({
             <Alert className="border-warning/50 bg-warning/10">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
-                <strong>Promoción de Lanzamiento:</strong> Los primeros 200 profesionales obtienen 
+                <strong>Promoción de Lanzamiento:</strong> Los primeros 200 profesionales obtienen
                 2 meses completamente gratis. Después se aplicará la tarifa mensual de $4500 ARS.
               </AlertDescription>
             </Alert>
@@ -841,7 +841,7 @@ export default function RegisterPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { register } = useAuth();
-  
+
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [currentTab, setCurrentTab] = useState(
@@ -850,7 +850,7 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (formData.password !== formData.confirmPassword) {
       toast.error('Las contraseñas no coinciden');
       return;
@@ -890,7 +890,7 @@ export default function RegisterPage() {
         portfolio: formData.portfolio,
         certifications: formData.certifications
       });
-      
+
       if (result.success) {
         // The context now handles the success toast.
         // Redirect to login page to verify email.
@@ -906,7 +906,7 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      
+
       <div className="py-12 px-6">
         <div className="container mx-auto">
           <motion.div
@@ -917,7 +917,7 @@ export default function RegisterPage() {
           >
             <h1 className="text-4xl font-bold mb-4">Únete a Fixia</h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Elige tu tipo de cuenta y comienza a conectar con la mejor red 
+              Elige tu tipo de cuenta y comienza a conectar con la mejor red
               de profesionales de Chubut
             </p>
           </motion.div>
@@ -927,8 +927,8 @@ export default function RegisterPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <Tabs 
-              value={currentTab} 
+            <Tabs
+              value={currentTab}
               onValueChange={setCurrentTab}
               className="max-w-6xl mx-auto"
             >

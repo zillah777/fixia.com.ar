@@ -180,7 +180,7 @@ export const mockServices = [
 const categories = [
   "Todos",
   "Desarrollo Web",
-  "Diseño Gráfico", 
+  "Diseño Gráfico",
   "Desarrollo Móvil",
   "Marketing Digital",
   "Video y Animación",
@@ -212,17 +212,17 @@ interface SearchAndFiltersProps {
   setViewMode: (mode: string) => void;
 } // NOTE: This component is specific to this page, so it's fine to keep it here.
 
-function SearchAndFilters({ 
-  searchQuery, 
-  setSearchQuery, 
-  selectedCategory, 
+function SearchAndFilters({
+  searchQuery,
+  setSearchQuery,
+  selectedCategory,
   setSelectedCategory,
   priceRange,
   setPriceRange,
   sortBy,
   setSortBy,
   viewMode,
-  setViewMode 
+  setViewMode
 }: SearchAndFiltersProps) {
   const [showFilters, setShowFilters] = useState(false);
 
@@ -256,16 +256,17 @@ function SearchAndFilters({
               variant={selectedCategory === category ? "default" : "outline"}
               size="sm"
               onClick={() => setSelectedCategory(category)}
-              className={selectedCategory === category 
-                ? "liquid-gradient hover:opacity-90" 
+              className={selectedCategory === category
+                ? "liquid-gradient hover:opacity-90"
                 : "glass border-white/20 hover:glass-medium"
               }
             >
               {category}
             </Button>
           ))}
-          
+
           <Sheet open={showFilters} onOpenChange={setShowFilters}>
+            {/* @ts-expect-error - SheetTrigger asChild is valid but TypeScript doesn't recognize it */}
             <SheetTrigger asChild>
               <Button variant="outline" size="sm" className="glass border-white/20 hover:glass-medium">
                 <SlidersHorizontal className="h-4 w-4 mr-2" />
@@ -279,7 +280,7 @@ function SearchAndFilters({
                   Personaliza tu búsqueda para encontrar el servicio perfecto
                 </SheetDescription>
               </SheetHeader>
-              
+
               <div className="space-y-6 mt-6">
                 {/* Price Range */}
                 <div className="space-y-3">
@@ -299,9 +300,9 @@ function SearchAndFilters({
                     </div>
                   </div>
                 </div>
-                
+
                 <Separator />
-                
+
                 {/* Professional Level */}
                 <div className="space-y-3">
                   <label className="font-medium">Nivel del Profesional</label>
@@ -314,9 +315,9 @@ function SearchAndFilters({
                     ))}
                   </div>
                 </div>
-                
+
                 <Separator />
-                
+
                 {/* Delivery Time */}
                 <div className="space-y-3">
                   <label className="font-medium">Tiempo de Entrega</label>
@@ -351,7 +352,7 @@ function SearchAndFilters({
               ))}
             </SelectContent>
           </Select>
-          
+
           <div className="flex glass rounded-lg p-1 border-white/20">
             <Button
               variant={viewMode === "grid" ? "default" : "ghost"}
@@ -384,9 +385,9 @@ export default function ServicesPage() {
   const [sortBy, setSortBy] = useState("relevance");
   const [viewMode, setViewMode] = useState("grid");
 
-  const { 
-    data: filteredServices, 
-    isLoading 
+  const {
+    data: filteredServices,
+    isLoading
   } = useServices({
     searchQuery,
     selectedCategory,
@@ -412,7 +413,7 @@ export default function ServicesPage() {
             Explora Servicios Profesionales
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Descubre profesionales altamente calificados y servicios únicos. 
+            Descubre profesionales altamente calificados y servicios únicos.
             Tu próximo proyecto está a un clic de distancia.
           </p>
         </motion.div>
@@ -455,7 +456,7 @@ export default function ServicesPage() {
               </Badge>
             )}
           </div>
-          
+
           <div className="text-sm text-muted-foreground">
             Mostrando {services.length} de {mockServices.length} servicios
           </div>
@@ -466,8 +467,8 @@ export default function ServicesPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.4 }}
-          className={viewMode === "grid" 
-            ? "grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" 
+          className={viewMode === "grid"
+            ? "grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
             : "space-y-6"
           }
         >
@@ -478,7 +479,12 @@ export default function ServicesPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 * index }}
             >
-              <ServiceCard service={service as any} viewMode={viewMode as 'grid' | 'list'} />
+              <ServiceCard
+                service={service as any}
+                viewMode={viewMode as 'grid' | 'list'}
+                isFavorite={false}
+                onToggleFavorite={() => toast.info('Funcionalidad de favoritos en desarrollo')}
+              />
             </motion.div>
           ))}
         </motion.div>
@@ -491,7 +497,7 @@ export default function ServicesPage() {
             transition={{ duration: 0.6, delay: 0.6 }}
             className="text-center mt-12"
           >
-            <Button 
+            <Button
               variant="outline" className="glass border-white/20 hover:glass-medium"
               onClick={() => toast.info('Funcionalidad de paginación en desarrollo.')}
             >
@@ -517,7 +523,7 @@ export default function ServicesPage() {
               <p className="text-muted-foreground mb-6">
                 Intenta ajustar tus filtros o buscar con términos diferentes
               </p>
-              <Button 
+              <Button
                 onClick={() => {
                   setSearchQuery("");
                   setSelectedCategory("Todos");
