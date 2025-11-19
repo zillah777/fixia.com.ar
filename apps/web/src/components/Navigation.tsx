@@ -11,7 +11,7 @@ export function Navigation() {
         {/* Logo and Navigation Links */}
         <div className="flex items-center space-x-8">
           <div className="flex items-center space-x-2">
-            <div className="h-8 w-8 rounded bg-primary"></div>
+            <img src="/logo.png" alt="Fixia" className="h-8 w-auto" />
             <span className="font-semibold">Dashboard</span>
           </div>
 

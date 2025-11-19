@@ -22,15 +22,8 @@ export function FixiaNavigation() {
             transition={{ type: "spring", stiffness: 400, damping: 10 }}
           >
             <div className="relative">
-              <div className="h-10 w-10 liquid-gradient rounded-xl flex items-center justify-center shadow-lg">
-                <motion.div
-                  className="text-white font-bold text-lg"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.2 }}
-                >
-                  F
-                </motion.div>
+              <div className="h-10 w-10 rounded-xl flex items-center justify-center overflow-hidden">
+                <img src="/logo.png" alt="Fixia" className="h-full w-full object-contain" />
               </div>
               <div className="absolute -inset-1 liquid-gradient rounded-xl blur opacity-20 animate-pulse-slow"></div>
             </div>
