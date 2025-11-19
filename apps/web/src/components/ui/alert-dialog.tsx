@@ -117,6 +117,7 @@ const AlertDialogContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes
           document.body.style.overflow = "";
         };
       }
+      return; // Add return for other code paths
     }, [context?.open]);
 
     if (!context?.open) return null;

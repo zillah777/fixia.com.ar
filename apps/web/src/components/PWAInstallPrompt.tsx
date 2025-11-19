@@ -25,6 +25,7 @@ export function PWAInstallPrompt() {
 
       return () => clearTimeout(timer);
     }
+    return; // Add return for other code paths
   }, [isInstallable, isInstalled]);
 
   const handleInstall = async () => {

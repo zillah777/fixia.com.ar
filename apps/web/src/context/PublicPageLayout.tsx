@@ -1,7 +1,8 @@
-import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
-import { ArrowLeft, Gift } from "lucide-react";
-import { Button } from "../ui/button";
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { Gift } from 'lucide-react';
+import { Button } from '../components/ui/button';
 
 function PublicNavigation() {
   return (

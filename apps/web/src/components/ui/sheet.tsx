@@ -135,6 +135,7 @@ const SheetContent = React.forwardRef<HTMLDivElement, SheetContentProps>(
           document.body.style.overflow = "";
         };
       }
+      return; // Add return for other code paths
     }, [context?.open]);
 
     if (!context?.open) return null;

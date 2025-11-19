@@ -42,6 +42,7 @@ export function PWAiOSInstallModal() {
         return () => clearTimeout(timer);
       }
     }
+    return; // Add return for other code paths
   }, []);
 
   const handleDismiss = () => {

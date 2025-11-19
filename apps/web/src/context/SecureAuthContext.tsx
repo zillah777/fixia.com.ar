@@ -1,10 +1,13 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, ReactNode } from 'react';
 import { toast } from 'sonner';
+import { useQueryClient } from '@tanstack/react-query';
 import { api } from '../lib/api';
 import { secureTokenManager } from '../utils/secureTokenManager';
 import { sanitizeInput, detectMaliciousContent } from '../utils/sanitization';
 import { validatePassword } from '../utils/passwordValidation';
 import { validateProductionCredentials } from '../utils/credentialValidator';
+import { getUserFriendlyErrorMessage, logError } from '../utils/errorHandler';
+import { useCurrentUser } from '../utils/useCurrentUser';
 
 // Interfaces existentes mantenidas para compatibilidad
 export interface Badge {
@@ -29,27 +32,17 @@ export interface User {
   isVerified: boolean;
   emailVerified: boolean;
   role?: string;
-
-  // Profile fields
   bio?: string;
   whatsapp_number?: string;
-
-  // Social networks
   social_linkedin?: string;
   social_twitter?: string;
   social_facebook?: string;
   social_instagram?: string;
-
-  // Notification preferences
   notifications_messages?: boolean;
   notifications_orders?: boolean;
   notifications_projects?: boolean;
   notifications_newsletter?: boolean;
-
-  // Settings
   timezone?: string;
-
-  // Subscription fields
   isSubscriptionActive?: boolean;
   subscriptionStatus?: string;
   subscriptionType?: string;
@@ -58,8 +51,6 @@ export interface User {
   subscriptionPrice?: number;
   autoRenew?: boolean;
   isProfessionalActive?: boolean;
-
-  // Professional specific fields
   professionalProfile?: {
     id: string;
     serviceCategories: string[];
@@ -77,8 +68,6 @@ export interface User {
     createdAt: string;
     updatedAt: string;
   };
-
-  // Legacy fields for backwards compatibility
   accountType: 'client' | 'professional';
   availability: 'available' | 'busy' | 'offline';
   badges: Badge[];
@@ -87,20 +76,12 @@ export interface User {
   averageRating: number;
   totalReviews: number;
   joinDate: string;
-
-  // Contact limits for clients
   pendingContactRequests: number;
   maxContactRequests: number;
-
-  // Argentina specific (computed from location)
   province: string;
   city: string;
-
-  // Promotion tracking
   isLaunchPromotion: boolean;
   promotionExpiryDate?: string;
-
-  // Timestamps
   createdAt: string;
   updatedAt: string;
 }
@@ -123,7 +104,6 @@ interface SecureAuthContextType {
   updateProfile: (userData: Partial<User>) => Promise<void>;
   refreshUserData: () => Promise<void>;
   updateAvailability: (status: 'available' | 'busy' | 'offline') => Promise<void>;
-  // Legacy compatibility methods
   requestContactProfessional: (professionalId: string, message?: string) => Promise<void>;
   respondToContactRequest: (requestId: string, accept: boolean, message?: string) => Promise<void>;
   upgradeToPremium: () => Promise<void>;
@@ -140,7 +120,6 @@ interface RegisterRequest {
   phone?: string;
   birthdate?: string;
   dni?: string;
-  // Professional-specific fields
   businessName?: string;
   serviceCategories?: string[];
   description?: string;
@@ -153,237 +132,68 @@ interface RegisterRequest {
 
 const SecureAuthContext = createContext<SecureAuthContextType | undefined>(undefined);
 
-// Transformación segura de datos del backend con sanitización
-const transformBackendUserSecurely = (backendUser: any): User => {
-  if (!backendUser || typeof backendUser !== 'object') {
-    throw new Error('Datos de usuario inválidos recibidos del servidor');
-  }
-
-  // Sanitizar todos los campos de texto del usuario
-  const sanitizedName = sanitizeInput(backendUser.name || backendUser.fullName || '', 'plainText');
-  const sanitizedLastName = sanitizeInput(backendUser.lastName || '', 'plainText');
-  const sanitizedLocation = sanitizeInput(backendUser.location || '', 'plainText');
-  const sanitizedPhone = sanitizeInput(backendUser.phone || '', 'phone');
-  const sanitizedEmail = sanitizeInput(backendUser.email || '', 'email');
-
-  // Validar que los datos sanitizados no estén vacíos para campos críticos
-  if (!sanitizedName || !sanitizedEmail) {
-    throw new Error('Datos de usuario críticos están vacíos después de la sanitización');
-  }
-
-  // Detectar contenido malicioso en campos críticos
-  const nameCheck = detectMaliciousContent(sanitizedName);
-  const emailCheck = detectMaliciousContent(sanitizedEmail);
-
-  if (!nameCheck.isSafe || !emailCheck.isSafe) {
-    console.error('Contenido malicioso detectado en datos de usuario:', {
-      nameReasons: nameCheck.reasons,
-      emailReasons: emailCheck.reasons
-    });
-    throw new Error('Datos de usuario contienen contenido no seguro');
-  }
-
-  const now = new Date().toISOString();
-
-  // Parse location safely
-  let city = '';
-  let province = 'Chubut';
-  
-  if (sanitizedLocation) {
-    const locationParts = sanitizedLocation.includes(',') 
-      ? sanitizedLocation.split(',').map(part => part.trim()) 
-      : [sanitizedLocation];
-    
-    city = locationParts[0] || '';
-    province = locationParts[1] || 'Chubut';
-  }
-
-  // Sanitize additional fields
-  const sanitizedBio = sanitizeInput(backendUser.bio || '', 'basicHTML');
-  const sanitizedWhatsapp = sanitizeInput(backendUser.whatsapp_number || '', 'phone');
-
-  // Construir objeto usuario con datos sanitizados
-  const baseUser: User = {
-    id: String(backendUser.id || backendUser._id || ''),
-    email: sanitizedEmail,
-    name: sanitizedName,
-    lastName: sanitizedLastName || undefined,
-    phone: sanitizedPhone || undefined,
-    avatar: backendUser.avatar || undefined,
-    userType: ['client', 'professional'].includes(backendUser.userType || backendUser.user_type)
-      ? (backendUser.userType || backendUser.user_type)
-      : 'client',
-    location: sanitizedLocation || undefined,
-    planType: ['free', 'premium'].includes(backendUser.planType)
-      ? backendUser.planType
-      : 'free',
-    isVerified: Boolean(backendUser.isVerified || backendUser.verified),
-    emailVerified: Boolean(backendUser.emailVerified || backendUser.email_verified),
-    role: backendUser.role || undefined,
-
-    // New fields
-    bio: sanitizedBio || undefined,
-    whatsapp_number: sanitizedWhatsapp || undefined,
-    social_linkedin: backendUser.social_linkedin || undefined,
-    social_twitter: backendUser.social_twitter || undefined,
-    social_facebook: backendUser.social_facebook || undefined,
-    social_instagram: backendUser.social_instagram || undefined,
-    notifications_messages: backendUser.notifications_messages ?? true,
-    notifications_orders: backendUser.notifications_orders ?? true,
-    notifications_projects: backendUser.notifications_projects ?? true,
-    notifications_newsletter: backendUser.notifications_newsletter ?? false,
-    timezone: backendUser.timezone || 'buenos-aires',
-
-    accountType: ['client', 'professional'].includes(backendUser.userType || backendUser.user_type)
-      ? (backendUser.userType || backendUser.user_type)
-      : 'client',
-    availability: 'available',
-    badges: Array.isArray(backendUser.badges) ? backendUser.badges : [],
-    totalServices: Number(backendUser.totalServices) || 0,
-    completedServices: Number(backendUser.completedServices) || 0,
-    averageRating: Number(backendUser.averageRating) || 0,
-    totalReviews: Number(backendUser.totalReviews) || 0,
-    joinDate: backendUser.created_at || backendUser.createdAt || now,
-
-    // Contact limits
-    pendingContactRequests: Number(backendUser.pendingContactRequests) || 0,
-    maxContactRequests: Number(backendUser.maxContactRequests) || 3,
-
-    // Argentina specific
-    province,
-    city,
-
-    // Promotion tracking
-    isLaunchPromotion: Boolean(backendUser.isLaunchPromotion),
-    promotionExpiryDate: backendUser.promotionExpiryDate || undefined,
-
-    createdAt: backendUser.created_at || backendUser.createdAt || now,
-    updatedAt: backendUser.updated_at || backendUser.updatedAt || now
-  };
-
-  // Agregar perfil profesional si existe, con sanitización
-  if (baseUser.userType === 'professional' && backendUser.professionalProfile) {
-    const profile = backendUser.professionalProfile;
-    
-    baseUser.professionalProfile = {
-      id: String(profile.id || ''),
-      serviceCategories: Array.isArray(profile.serviceCategories) 
-        ? profile.serviceCategories.map((cat: string) => sanitizeInput(cat, 'plainText')).filter(Boolean)
-        : [],
-      description: sanitizeInput(profile.description || '', 'basicHTML'),
-      experience: sanitizeInput(profile.experience || '', 'plainText'),
-      pricing: sanitizeInput(profile.pricing || '', 'plainText'),
-      availability: sanitizeInput(profile.availability || '', 'plainText'),
-      portfolio: sanitizeInput(profile.portfolio || '', 'url'),
-      certifications: sanitizeInput(profile.certifications || '', 'basicHTML'),
-      averageRating: Number(profile.averageRating) || 0,
-      totalReviews: Number(profile.totalReviews) || 0,
-      totalServices: Number(profile.totalServices) || 0,
-      completedServices: Number(profile.completedServices) || 0,
-      verified: Boolean(profile.verified),
-      createdAt: profile.createdAt || now,
-      updatedAt: profile.updatedAt || now
-    };
-  }
-
-  return baseUser;
-};
-
 export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
-  // React Query is now the single source of truth for user data and auth state.
-
-  // This effect ensures that if the user logs out in another tab, this tab will react.
-  useEffect(() => {
-    const unsubscribe = secureTokenManager.subscribe((isAuth) => {
-      console.log('🔄 Auth state changed via event:', isAuth);
-      if (!isAuth) {
-        // If an event tells us the session is gone (e.g., logout in another tab),
-        // invalidate the user query to update the UI everywhere.
-        queryClient.invalidateQueries({ queryKey: ['currentUser'] });
-      }
-    });
-    return () => unsubscribe();
-  }, [queryClient]);
+  const queryClient = useQueryClient();
+  const { data: user, isLoading, refetch } = useCurrentUser();
+  const isAuthenticated = !!user;
 
   // Login seguro
   const login = async (email: string, password: string) => {
-    const deviceInfo = {
-      isMobile: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),
-      userAgent: navigator.userAgent,
-    };
-
-    console.log('🔐 Login attempt...', { email, isMobile: deviceInfo.isMobile });
-
     try {
-      // Validar credenciales sin sanitización agresiva
       const cleanEmail = email.trim().toLowerCase();
-      const cleanPassword = password; // No modificar password para login
+      const cleanPassword = password;
 
-      // Validar que email no esté vacío
       if (!cleanEmail || cleanEmail.length === 0) {
         throw new Error('Email inválido');
       }
 
-      // Validar que no sean credenciales demo en producción
       const credentialValidation = validateProductionCredentials(cleanEmail, cleanPassword);
       if (!credentialValidation.isValid && credentialValidation.warnings.length > 0) {
         console.warn('Demo credentials detected in login attempt:', credentialValidation.warnings);
       }
 
-      // Enhanced password validation for login (match backend requirement)
       if (!cleanPassword || cleanPassword.length < 8) {
         throw new Error('Contraseña debe tener al menos 8 caracteres');
       }
 
-      // Detectar contenido malicioso básico sin modificar el email
       const emailCheck = detectMaliciousContent(cleanEmail);
       if (!emailCheck.isSafe) {
         throw new Error('Email contiene contenido no válido');
       }
 
-      console.log('📤 Sending login request to backend...');
       const result = await secureTokenManager.login({
         email: cleanEmail,
         password: cleanPassword
       });
 
-      console.log('📥 Login response received:', {
-        success: result.success,
-        hasUser: !!result.user,
-        error: result.error,
-      });
-
       if (result.success && result.user) {
-        console.log('✅ Login successful, invalidating user query to refetch data...');
-        // Invalidate the user query to trigger a refetch of the user's data.
         await queryClient.invalidateQueries({ queryKey: ['currentUser'] });
         toast.success(`¡Hola ${result.user.name || 'Usuario'}! 👋`, {
           description: "Has iniciado sesión correctamente. Redirigiendo al dashboard...",
-          duration: 15000, // 15 segundos
+          duration: 15000,
         });
       } else {
         throw new Error(result.error || 'Error en el login');
       }
     } catch (error: any) {
       console.error('❌ Login error:', error);
-      
-      // Determinar el mensaje de error específico
+
       let errorTitle = "Error al iniciar sesión";
       let errorMessage = "";
-      
+
       const statusCode = error.response?.status;
       const serverMessage = error.response?.data?.message || error.message || "";
-      
+
       if (statusCode === 401) {
-        if (serverMessage.toLowerCase().includes('verify') || 
-            serverMessage.toLowerCase().includes('verifica') || 
-            serverMessage.toLowerCase().includes('email verification')) {
+        if (serverMessage.toLowerCase().includes('verify') ||
+          serverMessage.toLowerCase().includes('verifica') ||
+          serverMessage.toLowerCase().includes('email verification')) {
           errorTitle = "📧 Email no verificado";
           errorMessage = "Necesitas verificar tu email antes de iniciar sesión. Revisa tu bandeja de entrada o reenvía el email de verificación.";
-        } else if (serverMessage.toLowerCase().includes('credentials') || 
-                   serverMessage.toLowerCase().includes('invalid') ||
-                   serverMessage.toLowerCase().includes('contraseña') ||
-                   serverMessage.toLowerCase().includes('password')) {
+        } else if (serverMessage.toLowerCase().includes('credentials') ||
+          serverMessage.toLowerCase().includes('invalid') ||
+          serverMessage.toLowerCase().includes('contraseña') ||
+          serverMessage.toLowerCase().includes('password')) {
           errorTitle = "🔐 Credenciales incorrectas";
           errorMessage = "El email o la contraseña que ingresaste no son correctos. Verifica tus datos e intenta nuevamente.";
         } else {
@@ -403,25 +213,23 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
         errorTitle = "Error inesperado";
         errorMessage = serverMessage || "Ocurrió un error inesperado. Por favor intenta nuevamente.";
       }
-      
+
       toast.error(errorTitle, {
         description: errorMessage,
-        duration: 15000, // 15 segundos
+        duration: 15000,
       });
-      
+
       throw error;
-    } finally {
     }
   };
 
   // Register con sanitización
   const register = async (userRegistrationData: RegisterRequest) => {
     try {
-      // Sanitizar todos los campos
       const sanitizedData = {
         email: sanitizeInput(userRegistrationData.email, 'email'),
-        password: userRegistrationData.password, // No sanitizar password
-        name: sanitizeInput(userRegistrationData.fullName, 'plainText'), // Map fullName to name for backend
+        password: userRegistrationData.password,
+        name: sanitizeInput(userRegistrationData.fullName, 'plainText'),
         user_type: ['client', 'professional'].includes(userRegistrationData.userType)
           ? userRegistrationData.userType
           : 'client',
@@ -429,7 +237,6 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
         phone: sanitizeInput(userRegistrationData.phone || '', 'phone'),
         birthdate: userRegistrationData.birthdate,
         dni: sanitizeInput(userRegistrationData.dni || '', 'plainText'),
-        // Campos profesionales
         serviceCategories: userRegistrationData.serviceCategories?.map(cat =>
           sanitizeInput(cat, 'plainText')
         ).filter(Boolean),
@@ -441,65 +248,50 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
         certifications: sanitizeInput(userRegistrationData.certifications || '', 'basicHTML'),
       };
 
-      // Validaciones
       if (!sanitizedData.email || !sanitizedData.name) {
         throw new Error('Email y nombre son requeridos');
       }
 
-      // Validar que no sean credenciales demo en producción
       const credentialValidation = validateProductionCredentials(
-        sanitizedData.email, 
-        sanitizedData.password, 
+        sanitizedData.email,
+        sanitizedData.password,
         sanitizedData.name
       );
       if (!credentialValidation.isValid && credentialValidation.warnings.length > 0) {
         console.warn('Demo credentials detected in registration attempt:', credentialValidation.warnings);
       }
 
-      // Enhanced password validation
       const passwordValidation = validatePassword(sanitizedData.password);
       if (!passwordValidation.isValid) {
         throw new Error(`Contraseña no válida: ${passwordValidation.errors[0]}`);
       }
 
-      // Use production-ready registration endpoint
       const result = await api.post('/auth/register', sanitizedData);
 
-      console.log('Registration response:', result);
-
-      // Handle different response formats (temp endpoint and main endpoint)
       if (result?.success === true) {
-        // New registration flow - user must verify email before login
-        console.log('Registration successful, email verification required');
         return {
           success: true,
           message: result.message || 'Cuenta creada exitosamente. Revisa tu correo electrónico para verificar tu cuenta.',
-          requiresVerification: result.requiresVerification !== false // Default to true unless explicitly false
+          requiresVerification: result.requiresVerification !== false
         };
       } else if (result?.user) {
-        // Legacy flow - user was logged in automatically (shouldn't happen with new flow)
-        const transformedUser = transformBackendUserSecurely(result.user);
         return {
           success: true,
           message: 'Registro exitoso',
           requiresVerification: false
         };
       } else {
-        console.error('Unexpected registration response:', result);
         throw new Error('Error en el registro');
       }
     } catch (error: any) {
-      // SECURITY FIX: Centralize error handling and return a consistent object
-      // instead of re-throwing, which could crash the component.
       const friendlyMessage = getUserFriendlyErrorMessage(error);
       logError(error, 'register');
-      
+
       return {
         success: false,
         message: friendlyMessage,
-        requiresVerification: false, // Indicate failure
+        requiresVerification: false,
       };
-    } finally {
     }
   };
 
@@ -507,12 +299,10 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = async () => {
     try {
       await secureTokenManager.logout();
-      // Invalidate the user query. This will cause useCurrentUser to refetch,
-      // get a 401, and return null, effectively logging the user out.
       await queryClient.invalidateQueries({ queryKey: ['currentUser'] });
       toast.success('¡Hasta pronto! 👋', {
         description: "Has cerrado sesión correctamente. Te esperamos de vuelta.",
-        duration: 15000, // 15 segundos
+        duration: 15000,
       });
     } catch (error) {
       console.error('Error en logout:', error);
@@ -523,18 +313,15 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
   const changePassword = async (currentPassword: string, newPassword: string, confirmPassword: string) => {
     if (!user) throw new Error('Usuario no autenticado');
 
-    // Validar que las contraseñas nuevas coincidan
     if (newPassword !== confirmPassword) {
       throw new Error('Las contraseñas nuevas no coinciden');
     }
 
-    // Validar contraseña nueva
     const passwordValidation = validatePassword(newPassword);
     if (!passwordValidation.isValid) {
       throw new Error(passwordValidation.errors.join(', '));
     }
 
-    // Validar que la contraseña sea diferente
     if (currentPassword === newPassword) {
       throw new Error('La nueva contraseña debe ser diferente a la actual');
     }
@@ -561,9 +348,8 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
     if (!user) throw new Error('Usuario no autenticado');
 
     try {
-      // Sanitizar campos actualizados
       const sanitizedData: any = {};
-      
+
       if (userData.name) {
         sanitizedData.name = sanitizeInput(userData.name, 'plainText');
       }
@@ -574,9 +360,9 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
         sanitizedData.phone = sanitizeInput(userData.phone, 'phone');
       }
 
-      const updatedUserData = await api.put('/user/profile', sanitizedData);
+      await api.put('/user/profile', sanitizedData);
       await queryClient.invalidateQueries({ queryKey: ['currentUser'] });
-      
+
       toast.success('Perfil actualizado correctamente');
     } catch (error: any) {
       console.error('Error actualizando perfil:', error);
@@ -594,7 +380,6 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
         data: { password: sanitizeInput(password, 'plainText') }
       });
 
-      // Invalidate user query to log out
       await queryClient.invalidateQueries({ queryKey: ['currentUser'] });
 
       toast.success('Cuenta eliminada correctamente');
@@ -621,8 +406,8 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       await api.put('/user/availability', { status });
       await queryClient.invalidateQueries({ queryKey: ['currentUser'] });
-      const statusText = status === 'available' ? 'disponible' : 
-                        status === 'busy' ? 'ocupado' : 'desconectado';
+      const statusText = status === 'available' ? 'disponible' :
+        status === 'busy' ? 'ocupado' : 'desconectado';
       toast.success(`Estado actualizado a ${statusText}`);
     } catch (error: any) {
       console.error('Error actualizando disponibilidad:', error);
@@ -631,7 +416,7 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // Legacy compatibility methods (implement as needed)
+  // Legacy compatibility methods
   const requestContactProfessional = async (professionalId: string, message?: string) => {
     try {
       await api.post('/contact/request', { professionalId, message });
@@ -669,7 +454,6 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
   const verifyEmail = async (token: string) => {
     try {
       await api.post('/auth/verify-email', { token });
-      // Si el usuario está autenticado, refrescar sus datos
       if (isAuthenticated) {
         await queryClient.invalidateQueries({ queryKey: ['currentUser'] });
       }

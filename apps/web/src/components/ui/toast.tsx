@@ -23,7 +23,7 @@ const toastVariants = cva(
 
 export interface ToastProps
   extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof toastVariants> {
+  VariantProps<typeof toastVariants> {
   title?: string;
   description?: string;
   onClose?: () => void;
@@ -45,6 +45,7 @@ const Toast = React.forwardRef<HTMLDivElement, ToastProps>(
 
         return () => clearTimeout(timer);
       }
+      return; // Add return for other code paths
     }, [duration, onClose]);
 
     const Icon = {
