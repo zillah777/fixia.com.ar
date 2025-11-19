@@ -4,13 +4,14 @@ import { Button } from "../components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
-import { 
-  ArrowRight, Star, Shield, Clock, Users, CheckCircle, 
+import {
+  ArrowRight, Star, Shield, Clock, Users, CheckCircle,
   Search, Zap, Award, TrendingUp, Globe, Smartphone,
   Palette, Code, PenTool, Camera, Briefcase, HeadphonesIcon,
   Play, ChevronRight, MessageSquare, Heart, Bell, MapPin,
   Crown, Phone, Mail, Gift, CreditCard
 } from "lucide-react";
+import { OpportunitiesTicker } from "../components/OpportunitiesTicker";
 
 const featuredServices = [
   {
@@ -79,7 +80,7 @@ const categories = [
 
 function Navigation() {
   return (
-    <motion.header 
+    <motion.header
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       className="sticky top-0 z-50 w-full glass border-b border-white/10"
@@ -87,7 +88,7 @@ function Navigation() {
       <div className="container mx-auto flex h-20 items-center justify-between px-6">
         {/* Logo */}
         <Link to="/" className="flex items-center space-x-3">
-          <motion.div 
+          <motion.div
             className="relative"
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 400, damping: 10 }}
@@ -158,7 +159,7 @@ function HeroSection() {
               <MapPin className="h-4 w-4 mr-2" />
               Chubut, Argentina • +500 profesionales activos
             </Badge>
-            
+
             <h1 className="text-5xl lg:text-7xl font-bold mb-6 tracking-tight">
               <span className="bg-gradient-to-r from-white via-white to-white/70 bg-clip-text text-transparent">
                 Conecta.
@@ -170,12 +171,12 @@ function HeroSection() {
                 Resuelve.
               </span>
             </h1>
-            
+
             <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
-              El primer marketplace de microservicios de la Provincia del Chubut. 
+              El primer marketplace de microservicios de la Provincia del Chubut.
               Conecta con profesionales locales verificados o promociona tus servicios.
             </p>
-            
+
             {/* Launch Promotion Alert */}
             <Card className="glass border-warning/30 bg-warning/5 mb-8 max-w-2xl mx-auto">
               <CardContent className="p-4">
@@ -188,7 +189,7 @@ function HeroSection() {
                 </p>
               </CardContent>
             </Card>
-            
+
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
               <Link to="/services">
                 <Button size="lg" className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-xl px-8 py-6 text-lg">
@@ -204,7 +205,7 @@ function HeroSection() {
                 </Button>
               </Link>
             </div>
-            
+
             <div className="flex items-center justify-center space-x-8 text-sm text-muted-foreground mb-6">
               <div className="flex items-center">
                 <Shield className="h-4 w-4 mr-2 text-success" />
@@ -219,7 +220,7 @@ function HeroSection() {
                 Contacto directo WhatsApp
               </div>
             </div>
-            
+
             <Link to="/pricing">
               <Button variant="outline" className="glass border-white/20 hover:glass-medium">
                 <CreditCard className="h-4 w-4 mr-2" />
@@ -333,8 +334,8 @@ function FeaturedServicesSection() {
               <Link to={`/services/${service.id}`}>
                 <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 overflow-hidden group cursor-pointer">
                   <div className="relative aspect-video overflow-hidden">
-                    <img 
-                      src={service.image} 
+                    <img
+                      src={service.image}
                       alt={service.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
@@ -349,7 +350,7 @@ function FeaturedServicesSection() {
                       </Button>
                     </div>
                   </div>
-                  
+
                   <CardContent className="p-6">
                     <div className="flex items-center space-x-3 mb-4">
                       <Avatar className="h-10 w-10">
@@ -372,10 +373,10 @@ function FeaturedServicesSection() {
                         </Badge>
                       </div>
                     </div>
-                    
+
                     <h3 className="font-semibold mb-2 line-clamp-2">{service.title}</h3>
                     <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{service.description}</p>
-                    
+
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-1">
                         <Star className="h-4 w-4 text-warning fill-current" />
@@ -419,7 +420,7 @@ function HowItWorksSection() {
       icon: Search
     },
     {
-      number: "02", 
+      number: "02",
       title: "Conecta de forma segura",
       description: "Revisa perfiles verificados con insignias de calidad y reputación comprobada",
       icon: Users
@@ -520,7 +521,7 @@ function CTASection() {
                   ¿Listo para conectar con los mejores profesionales de Chubut?
                 </h2>
                 <p className="text-xl text-muted-foreground mb-8">
-                  Únete a la revolución del marketplace local. Sin comisiones, 
+                  Únete a la revolución del marketplace local. Sin comisiones,
                   con profesionales verificados y contacto directo.
                 </p>
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -537,7 +538,7 @@ function CTASection() {
                     </Button>
                   </Link>
                 </div>
-                
+
                 <div className="flex items-center justify-center space-x-8 mt-8 text-sm text-muted-foreground">
                   <span>✨ Sin comisiones</span>
                   <span>🛡️ Profesionales verificados</span>
@@ -664,6 +665,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
+      <OpportunitiesTicker />
       <HeroSection />
       <CategoriesSection />
       <FeaturedServicesSection />
