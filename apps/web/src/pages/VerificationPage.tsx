@@ -81,6 +81,36 @@ export function VerificationPage() {
         }
     ];
 
+    const renderVerificationForm = () => {
+        if (!selectedType) return null;
+
+        // Type guard: check if it's an instant verification type
+        if (selectedType === VerificationType.PHONE || selectedType === VerificationType.EMAIL) {
+            return (
+                <InstantVerificationCard
+                    type={selectedType}
+                    onClose={() => setSelectedType(null)}
+                    onSuccess={() => {
+                        setSelectedType(null);
+                        loadRequests();
+                    }}
+                />
+            );
+        }
+
+        // Otherwise it's a document-based verification
+        return (
+            <VerificationRequestForm
+                type={selectedType}
+                onClose={() => setSelectedType(null)}
+                onSuccess={() => {
+                    setSelectedType(null);
+                    loadRequests();
+                }}
+            />
+        );
+    };
+
     return (
         <div className="container mx-auto p-6 space-y-6">
             <div className="flex items-center justify-between">
@@ -130,25 +160,7 @@ export function VerificationPage() {
 
                     {selectedType && (
                         <div className="mt-6">
-                            {verificationService.isInstantVerification(selectedType) ? (
-                                <InstantVerificationCard
-                                    type={selectedType}
-                                    onClose={() => setSelectedType(null)}
-                                    onSuccess={() => {
-                                        setSelectedType(null);
-                                        loadRequests();
-                                    }}
-                                />
-                            ) : (
-                                <VerificationRequestForm
-                                    type={selectedType}
-                                    onClose={() => setSelectedType(null)}
-                                    onSuccess={() => {
-                                        setSelectedType(null);
-                                        loadRequests();
-                                    }}
-                                />
-                            )}
+                            {renderVerificationForm()}
                         </div>
                     )}
                 </TabsContent>

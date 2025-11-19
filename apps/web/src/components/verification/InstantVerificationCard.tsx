@@ -1,239 +1,174 @@
-import React, { useState, memo } from 'react';
-import { Phone, Mail, CheckCircle, Loader2, AlertCircle } from 'lucide-react';
-import { motion } from "framer-motion";
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
-import { Badge } from '../ui/badge';
-import { Alert, AlertDescription } from '../ui/alert';
-import { verificationService, VerificationType } from '../../lib/services/verification.service';
-import { extractErrorMessage } from '../../utils/errorHandler';
+import { Label } from '../ui/label';
+import { VerificationType, verificationService } from '../../lib/services/verification.service';
+import { X, CheckCircle } from 'lucide-react';
 
 interface InstantVerificationCardProps {
-  type: VerificationType.PHONE | VerificationType.EMAIL;
-  title: string;
-  description: string;
-  isVerified: boolean;
-  onSuccess: () => void;
+    type: VerificationType.PHONE | VerificationType.EMAIL;
+    onClose: () => void;
+    onSuccess: () => void;
 }
 
-export const InstantVerificationCard = memo<InstantVerificationCardProps>(({
-  type,
-  title,
-  description,
-  isVerified,
-  onSuccess
-}) => {
-  const [step, setStep] = useState<'input' | 'verify' | 'completed'>('input');
-  const [inputValue, setInputValue] = useState('');
-  const [verificationCode, setVerificationCode] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+export function InstantVerificationCard({ type, onClose, onSuccess }: InstantVerificationCardProps) {
+    const [value, setValue] = useState('');
+    const [code, setCode] = useState('');
+    const [codeSent, setCodeSent] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
 
-  const isPhone = type === VerificationType.PHONE;
+    const isPhone = type === VerificationType.PHONE;
+    const label = isPhone ? 'Teléfono' : 'Email';
+    const placeholder = isPhone ? '+54 9 11 1234-5678' : 'tu@email.com';
 
-  const handleInitiate = async () => {
-    if (!inputValue.trim()) {
-      setError(isPhone ? 'Por favor ingresa tu número de teléfono' : 'Verifica tu email registrado');
-      return;
-    }
+    const handleSendCode = async () => {
+        if (!value.trim()) {
+            setError(`Por favor ingresa tu ${label.toLowerCase()}`);
+            return;
+        }
 
-    setIsLoading(true);
-    setError(null);
+        try {
+            setLoading(true);
+            setError('');
+            
+            if (isPhone) {
+                await verificationService.sendPhoneVerification(value);
+            } else {
+                await verificationService.sendEmailVerification(value);
+            }
+            
+            setCodeSent(true);
+        } catch (err: any) {
+            setError(err.message || 'Error al enviar el código');
+        } finally {
+            setLoading(false);
+        }
+    };
 
-    try {
-      if (isPhone) {
-        await verificationService.sendPhoneVerification(inputValue);
-        setSuccessMessage('Código enviado a tu teléfono');
-        setStep('verify');
-      } else {
-        await verificationService.sendEmailVerification(inputValue);
-        setSuccessMessage('Código enviado a tu email');
-        setStep('verify');
-      }
-    } catch (error: unknown) {
-      setError(extractErrorMessage(error, 'Error al enviar verificación'));
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    const handleVerify = async () => {
+        if (!code.trim()) {
+            setError('Por favor ingresa el código');
+            return;
+        }
 
-  const handleVerify = async () => {
-    if (!verificationCode.trim()) {
-      setError('Por favor ingresa el código de verificación');
-      return;
-    }
+        try {
+            setLoading(true);
+            setError('');
+            
+            if (isPhone) {
+                await verificationService.verifyPhone(value, code);
+            } else {
+                await verificationService.verifyEmail(value, code);
+            }
+            
+            onSuccess();
+        } catch (err: any) {
+            setError(err.message || 'Código inválido');
+        } finally {
+            setLoading(false);
+        }
+    };
 
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      if (isPhone) {
-        await verificationService.verifyPhone(inputValue, verificationCode);
-      } else {
-        await verificationService.verifyEmail(inputValue, verificationCode);
-      }
-
-      setStep('completed');
-      setSuccessMessage('Verificación exitosa');
-      setTimeout(() => {
-        onSuccess();
-      }, 2000);
-    } catch (error: unknown) {
-      setError(extractErrorMessage(error, 'Error al verificar código'));
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const reset = () => {
-    setStep('input');
-    setInputValue('');
-    setVerificationCode('');
-    setError(null);
-    setSuccessMessage(null);
-  };
-
-  const renderIcon = () => {
-    if (isVerified) {
-      return <CheckCircle className="h-6 w-6 text-success" />;
-    }
-
-    if (step === 'completed') {
-      return <CheckCircle className="h-6 w-6 text-success" />;
-    }
-
-    return isPhone ?
-      <Phone className="h-6 w-6 text-primary" /> :
-      <Mail className="h-6 w-6 text-primary" />;
-  };
-
-  if (isVerified) {
     return (
-      <Card className="glass border-white/20">
-        <CardContent className="p-6">
-          <div className="flex items-center space-x-3">
-            <CheckCircle className="h-8 w-8 text-success" />
-            <div>
-              <h3 className="font-medium text-foreground">{title}</h3>
-              <p className="text-sm text-muted-foreground">Verificado exitosamente</p>
-            </div>
-          </div>
-          <Badge className="mt-4 bg-success/10 text-success">
-            Verificado
-          </Badge>
-        </CardContent>
-      </Card>
+        <Card>
+            <CardHeader>
+                <div className="flex items-center justify-between">
+                    <div>
+                        <CardTitle>Verificación de {label}</CardTitle>
+                        <CardDescription>
+                            {codeSent 
+                                ? `Ingresa el código enviado a tu ${label.toLowerCase()}`
+                                : `Verificación instantánea por ${label.toLowerCase()}`
+                            }
+                        </CardDescription>
+                    </div>
+                    <Button variant="ghost" size="icon" onClick={onClose}>
+                        <X className="h-4 w-4" />
+                    </Button>
+                </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                {!codeSent ? (
+                    <>
+                        <div className="space-y-2">
+                            <Label htmlFor="value">{label}</Label>
+                            <Input
+                                id="value"
+                                type={isPhone ? 'tel' : 'email'}
+                                placeholder={placeholder}
+                                value={value}
+                                onChange={(e) => setValue(e.target.value)}
+                                disabled={loading}
+                            />
+                        </div>
+                        {error && (
+                            <p className="text-sm text-destructive">{error}</p>
+                        )}
+                        <Button 
+                            onClick={handleSendCode} 
+                            disabled={loading}
+                            className="w-full"
+                        >
+                            {loading ? 'Enviando...' : 'Enviar código'}
+                        </Button>
+                    </>
+                ) : (
+                    <>
+                        <div className="p-4 bg-primary/10 rounded-lg flex items-start gap-3">
+                            <CheckCircle className="h-5 w-5 text-primary mt-0.5" />
+                            <div className="flex-1">
+                                <p className="text-sm font-medium">Código enviado</p>
+                                <p className="text-sm text-muted-foreground">
+                                    Revisa tu {label.toLowerCase()} e ingresa el código de 6 dígitos
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div className="space-y-2">
+                            <Label htmlFor="code">Código de verificación</Label>
+                            <Input
+                                id="code"
+                                type="text"
+                                placeholder="123456"
+                                value={code}
+                                onChange={(e) => setCode(e.target.value)}
+                                disabled={loading}
+                                maxLength={6}
+                            />
+                        </div>
+                        
+                        {error && (
+                            <p className="text-sm text-destructive">{error}</p>
+                        )}
+                        
+                        <div className="flex gap-2">
+                            <Button 
+                                variant="outline"
+                                onClick={() => {
+                                    setCodeSent(false);
+                                    setCode('');
+                                    setError('');
+                                }}
+                                disabled={loading}
+                                className="flex-1"
+                            >
+                                Cambiar {label.toLowerCase()}
+                            </Button>
+                            <Button 
+                                onClick={handleVerify} 
+                                disabled={loading}
+                                className="flex-1"
+                            >
+                                {loading ? 'Verificando...' : 'Verificar'}
+                            </Button>
+                        </div>
+                    </>
+                )}
+            </CardContent>
+        </Card>
     );
-  }
+}
 
-  return (
-    <Card className="glass border-white/20">
-      <CardHeader>
-        <CardTitle className="flex items-center space-x-2">
-          {renderIcon()}
-          <span>{title}</span>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <p className="text-sm text-muted-foreground">{description}</p>
-
-        {error && (
-          <Alert variant="destructive">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
-
-        {successMessage && !error && (
-          <Alert>
-            <CheckCircle className="h-4 w-4" />
-            <AlertDescription>{successMessage}</AlertDescription>
-          </Alert>
-        )}
-
-        {step === 'input' && (
-          <div className="space-y-3">
-            <Input
-              type={isPhone ? 'tel' : 'email'}
-              placeholder={isPhone ? 'Ej: +54 9 11 1234-5678' : 'tu-email@ejemplo.com'}
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              disabled={isLoading}
-            />
-            <Button
-              onClick={handleInitiate}
-              disabled={isLoading || !inputValue.trim()}
-              className="w-full"
-            >
-              {isLoading && <div className="animate-spin rounded-full border-2 border-current border-t-transparent h-4 w-4 mr-2" />}
-              {isPhone ? 'Enviar SMS' : 'Enviar Email'}
-            </Button>
-          </div>
-        )}
-
-        {step === 'verify' && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="space-y-3"
-          >
-            <div className="text-sm text-muted-foreground">
-              {isPhone
-                ? `Código enviado a ${inputValue}`
-                : 'Revisa tu bandeja de entrada y spam'
-              }
-            </div>
-            <Input
-              type="text"
-              placeholder={isPhone ? 'Código de 6 dígitos' : 'Token de verificación'}
-              value={verificationCode}
-              onChange={(e) => setVerificationCode(e.target.value)}
-              disabled={isLoading}
-              maxLength={isPhone ? 6 : undefined}
-            />
-            <div className="flex space-x-2">
-              <Button
-                onClick={handleVerify}
-                disabled={isLoading || !verificationCode.trim()}
-                className="flex-1"
-              >
-                {isLoading && <div className="animate-spin rounded-full border-2 border-current border-t-transparent h-4 w-4 mr-2" />}
-                Verificar
-              </Button>
-              <Button
-                variant="outline"
-                onClick={reset}
-                disabled={isLoading}
-              >
-                Cancelar
-              </Button>
-            </div>
-          </motion.div>
-        )}
-
-        {step === 'completed' && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="text-center space-y-3"
-          >
-            <CheckCircle className="h-12 w-12 text-success mx-auto" />
-            <div>
-              <h4 className="font-medium text-foreground">¡Verificación Exitosa!</h4>
-              <p className="text-sm text-muted-foreground">
-                Tu {isPhone ? 'teléfono' : 'email'} ha sido verificado correctamente
-              </p>
-            </div>
-            <Badge className="bg-success/10 text-success">
-              Completado
-            </Badge>
-          </motion.div>
-        )}
-      </CardContent>
-    </Card>
-  );
-});
-
-InstantVerificationCard.displayName = 'InstantVerificationCard';
+export default InstantVerificationCard;

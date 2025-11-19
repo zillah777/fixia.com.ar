@@ -47,8 +47,13 @@
   }
 
   body {
-    @apply bg-background text-foreground antialiased selection:bg-primary/30 selection:text-primary-foreground;
+    @apply bg-background text-foreground antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  ::selection {
+    background-color: hsl(var(--primary) / 0.3);
+    color: hsl(var(--primary-foreground));
   }
 
   /* Smooth Scrolling */
