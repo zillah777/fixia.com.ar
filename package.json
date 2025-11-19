@@ -13,7 +13,7 @@
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "clean": "rimraf node_modules",
-    "prepare": "if [ -z \"$CI\" ] && command -v husky > /dev/null 2>&1; then husky install; fi"
+    "prepare": "node prepare.cjs"
   },
   "engines": {
     "node": "20.x"
