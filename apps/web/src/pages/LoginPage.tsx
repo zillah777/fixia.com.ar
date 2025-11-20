@@ -15,7 +15,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   const { login } = useSecureAuth();
   const navigate = useNavigate();
 
@@ -54,8 +54,8 @@ export default function LoginPage() {
         >
           <Link to="/" className="inline-flex items-center space-x-3 mb-6">
             <div className="relative">
-              <div className="h-12 w-12 liquid-gradient rounded-2xl flex items-center justify-center shadow-lg">
-                <span className="text-white font-bold text-xl">F</span>
+              <div className="h-12 w-12 rounded-2xl flex items-center justify-center overflow-hidden">
+                <img src="/logo.png" alt="Fixia" className="h-full w-full object-contain" />
               </div>
               <div className="absolute -inset-1 liquid-gradient rounded-2xl blur opacity-30"></div>
             </div>
@@ -79,7 +79,7 @@ export default function LoginPage() {
                 Bienvenido de vuelta. Ingresa tus credenciales para continuar.
               </CardDescription>
             </CardHeader>
-            
+
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Email Field */}
