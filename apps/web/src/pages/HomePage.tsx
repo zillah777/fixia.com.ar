@@ -179,7 +179,7 @@ function HeroSection() {
                   <span className="font-semibold text-warning">¡Promoción de Lanzamiento!</span>
                 </div>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Primeros 200 usuarios obtienen 2 meses gratis de funcionalidades premium
+                  Primeros 200 usuarios obtienen 1 mes gratis de funcionalidades premium
                 </p>
               </CardContent>
             </Card>
