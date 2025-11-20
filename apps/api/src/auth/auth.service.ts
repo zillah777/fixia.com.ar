@@ -10,13 +10,13 @@ import { ERROR_CODES, createSecureError } from '../common/constants/error-codes'
 @Injectable()
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
-  
+
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
     private configService: ConfigService,
     private emailService: EmailService,
-  ) {}
+  ) { }
 
   async validateUser(email: string, password: string): Promise<any> {
     const user = await this.prisma.user.findUnique({
@@ -136,7 +136,7 @@ export class AuthService {
     // NOTE: This method is now primarily used by the controller
     // The main registration logic has been moved to the controller for better control
     this.logger.log(`🔄 Legacy register method called - redirecting to controller logic`);
-    
+
     // This method is kept for backward compatibility but should not be used directly
     throw new BadRequestException('Please use the main registration endpoint directly');
   }
@@ -154,7 +154,7 @@ export class AuthService {
           refresh_token: refreshToken,
           expires_at: { gt: new Date() },
         },
-        include: { 
+        include: {
           user: {
             select: {
               id: true,
@@ -183,8 +183,8 @@ export class AuthService {
       // Check if account is currently locked
       if (session.user.locked_until && session.user.locked_until > new Date()) {
         const remainingTime = Math.ceil((session.user.locked_until.getTime() - Date.now()) / 1000 / 60);
-        throw createSecureError(ERROR_CODES.AUTH_ACCOUNT_LOCKED, UnauthorizedException, { 
-          remainingMinutes: remainingTime 
+        throw createSecureError(ERROR_CODES.AUTH_ACCOUNT_LOCKED, UnauthorizedException, {
+          remainingMinutes: remainingTime
         });
       }
 
@@ -249,9 +249,9 @@ export class AuthService {
 
   async getUserProfile(userId: string) {
     const user = await this.prisma.user.findUnique({
-      where: { 
+      where: {
         id: userId,
-        deleted_at: null 
+        deleted_at: null
       },
       include: {
         professional_profile: true,
@@ -281,9 +281,9 @@ export class AuthService {
 
       // Invalidate any existing tokens for this user
       await this.prisma.passwordResetToken.updateMany({
-        where: { 
+        where: {
           user_id: user.id,
-          used: false 
+          used: false
         },
         data: { used: true }
       });
@@ -301,7 +301,7 @@ export class AuthService {
       // IMPORTANT: Always use www.fixia.app because fixia.app redirects to www
       // and 301 redirects lose the URL path
       const resetUrl = `${this.configService.get('FRONTEND_URL') || 'https://www.fixia.app'}/reset-password?token=${token}`;
-      
+
       try {
         await this.emailService.sendPasswordReset(email, user.name, resetUrl);
         this.logger.log(`Password reset email sent to ${email}`);
@@ -372,10 +372,10 @@ export class AuthService {
 
   async sendEmailVerification(email: string, userId?: string): Promise<{ message: string; success: boolean }> {
     let user;
-    
+
     // Security logging: Track verification attempts
     this.logger.log(`Email verification request: email=${email}, userId=${userId || 'not provided'}`);
-    
+
     if (userId) {
       user = await this.prisma.user.findUnique({ where: { id: userId } });
     } else {
@@ -406,13 +406,13 @@ export class AuthService {
 
     // Invalidate any existing tokens for this user
     const invalidatedTokens = await this.prisma.emailVerificationToken.updateMany({
-      where: { 
+      where: {
         user_id: user.id,
-        used: false 
+        used: false
       },
       data: { used: true }
     });
-    
+
     if (invalidatedTokens.count > 0) {
       this.logger.log(`Invalidated ${invalidatedTokens.count} previous verification tokens for user: ${user.id}`);
     }
@@ -425,7 +425,7 @@ export class AuthService {
         expires_at: expiresAt,
       },
     });
-    
+
     this.logger.log(`New verification token created for user: ${user.id}, expires: ${expiresAt.toISOString()}`);
 
     // Send email with verification link pointing to frontend /auth/verify endpoint
@@ -443,7 +443,7 @@ export class AuthService {
     this.logger.log(`  FRONTEND_URL: ${this.configService.get('FRONTEND_URL')}`);
     this.logger.log(`  Final Verification URL: ${verificationUrl}`);
     this.logger.log(`Attempting to send verification email to ${email}`);
-    
+
     try {
       const emailSent = await this.emailService.sendAccountVerification(email, user.name, verificationUrl);
       if (emailSent) {
@@ -466,23 +466,23 @@ export class AuthService {
 
   async verifyEmail(token: string): Promise<{ message: string; success: boolean }> {
     const startTime = Date.now();
-    
+
     // Security: Add minimum processing time to prevent timing attacks
     const normalizeResponseTime = async (result: { message: string; success: boolean }, error?: boolean) => {
       const processingTime = Date.now() - startTime;
       const minProcessingTime = 100; // 100ms minimum to normalize timing
-      
+
       if (processingTime < minProcessingTime) {
         await new Promise(resolve => setTimeout(resolve, minProcessingTime - processingTime));
       }
-      
+
       // Log security event
       this.logger.log(`Email verification attempt: token=${token.substring(0, 8)}..., success=${!error}, processingTime=${Date.now() - startTime}ms`);
-      
+
       if (error) {
         throw new BadRequestException('Token de verificación inválido o expirado');
       }
-      
+
       return result;
     };
 
@@ -530,7 +530,7 @@ export class AuthService {
       if (error instanceof BadRequestException) {
         throw error;
       }
-      
+
       // For any other errors, normalize response time and throw generic error
       return await normalizeResponseTime({ message: '', success: false }, true);
     }
@@ -620,14 +620,14 @@ export class AuthService {
       // Update user to verified
       const user = await this.prisma.user.update({
         where: { id: userId },
-        data: { 
+        data: {
           email_verified: true,
           verified: true
         }
       });
 
       this.logger.log(`✅ Admin verification completed for user: ${user.email}`);
-      
+
       return {
         message: `Usuario ${user.email} verificado exitosamente`,
         success: true
@@ -652,14 +652,14 @@ export class AuthService {
       // Update user to verified
       const updatedUser = await this.prisma.user.update({
         where: { id: user.id },
-        data: { 
+        data: {
           email_verified: true,
           verified: true
         }
       });
 
       this.logger.log(`✅ DEV: Email verification bypassed for user: ${updatedUser.email}`);
-      
+
       return {
         message: `Usuario ${updatedUser.email} verificado exitosamente (desarrollo)`,
         success: true
@@ -676,14 +676,41 @@ export class AuthService {
   async registerWithRawSQL(registerData: any): Promise<{ message: string; success: boolean; requiresVerification: boolean; userId: string }> {
     try {
       this.logger.log(`Emergency SQL registration for email: ${registerData.email}`);
-      
-      // Check if user already exists
+
+      // Validate age 18+
+      if (registerData.birthdate) {
+        const birthDate = new Date(registerData.birthdate);
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+          age--;
+        }
+
+        if (age < 18) {
+          throw new BadRequestException('Debes ser mayor de 18 años para registrarte');
+        }
+      }
+
+      // Check if user already exists by email
       const existingUser = await this.prisma.$queryRaw<Array<{ id: string }>>`
         SELECT id FROM users WHERE email = ${registerData.email}
       `;
 
       if (existingUser.length > 0) {
         throw new ConflictException('Ya existe un usuario registrado con este correo electrónico');
+      }
+
+      // Check if DNI already exists
+      if (registerData.dni) {
+        const existingDNI = await this.prisma.$queryRaw<Array<{ id: string }>>`
+          SELECT id FROM users WHERE dni = ${registerData.dni}
+        `;
+
+        if (existingDNI.length > 0) {
+          throw new ConflictException('El DNI ingresado ya está registrado en Fixia');
+        }
       }
 
       // Hash password
@@ -701,6 +728,7 @@ export class AuthService {
           phone, 
           whatsapp_number, 
           birthdate, 
+          dni,
           verified, 
           email_verified, 
           failed_login_attempts,
@@ -716,6 +744,7 @@ export class AuthService {
           ${registerData.phone || null}, 
           ${registerData.phone || null}, 
           ${registerData.birthdate ? new Date(registerData.birthdate) : null}, 
+          ${registerData.dni || null},
           false, 
           false, 
           0,
@@ -731,7 +760,7 @@ export class AuthService {
       // Create professional profile if needed (using raw SQL too)
       if ((registerData.userType || registerData.user_type) === 'professional') {
         const experienceYears = this.mapExperienceToYears(registerData.experience);
-        
+
         await this.prisma.$queryRaw`
           INSERT INTO professional_profiles (
             id,
@@ -767,9 +796,9 @@ export class AuthService {
 
       // Send verification email
       const emailResult = await this.sendEmailVerification(registerData.email, userId);
-      
+
       return {
-        message: emailResult.success ? 
+        message: emailResult.success ?
           'Cuenta creada exitosamente. Revisa tu correo electrónico para verificar tu cuenta.' :
           'Cuenta creada exitosamente. Sin embargo, hubo un problema enviando el correo de verificación.',
         success: true,
@@ -778,11 +807,11 @@ export class AuthService {
       };
     } catch (error) {
       this.logger.error(`Emergency SQL registration failed for ${registerData.email}:`, error);
-      
+
       if (error instanceof ConflictException) {
         throw error;
       }
-      
+
       throw new BadRequestException('Error creando cuenta de usuario');
     }
   }

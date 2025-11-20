@@ -1,23 +1,25 @@
-import { 
-  IsEmail, 
-  IsString, 
-  MinLength, 
-  IsEnum, 
+import {
+  IsEmail,
+  IsString,
+  MinLength,
+  IsEnum,
   IsOptional,
   IsDateString,
+  Matches,
+  Length,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { UserType } from '@prisma/client';
 
 export class LoginDto {
-  @ApiProperty({ 
+  @ApiProperty({
     example: 'usuario@fixia.com.ar',
-    description: 'Email del usuario' 
+    description: 'Email del usuario'
   })
   @IsEmail()
   email: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     example: 'miPassword123',
     description: 'Contraseña del usuario',
     minLength: 8
@@ -28,14 +30,14 @@ export class LoginDto {
 }
 
 export class RegisterDto {
-  @ApiProperty({ 
+  @ApiProperty({
     example: 'usuario@fixia.com.ar',
-    description: 'Email del usuario' 
+    description: 'Email del usuario'
   })
   @IsEmail()
   email: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     example: 'miPassword123',
     description: 'Contraseña del usuario',
     minLength: 8
@@ -44,7 +46,7 @@ export class RegisterDto {
   @MinLength(8)
   password: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     example: 'Juan Carlos Pérez',
     description: 'Nombre completo del usuario',
     minLength: 2
@@ -54,7 +56,7 @@ export class RegisterDto {
   name: string;
 
   // Support both name and fullName from frontend
-  @ApiProperty({ 
+  @ApiProperty({
     example: 'Juan Carlos Pérez',
     description: 'Nombre completo del usuario (alias de name)',
     required: false
@@ -63,7 +65,7 @@ export class RegisterDto {
   @IsString()
   fullName?: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     example: 'professional',
     description: 'Tipo de usuario',
     enum: ['client', 'professional']
@@ -71,7 +73,7 @@ export class RegisterDto {
   @IsEnum(['client', 'professional'])
   userType: 'client' | 'professional';
 
-  @ApiProperty({ 
+  @ApiProperty({
     example: 'Rawson',
     description: 'Ubicación del usuario',
     required: false
@@ -80,7 +82,7 @@ export class RegisterDto {
   @IsString()
   location?: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     example: '+542804567890',
     description: 'Número de teléfono',
     required: false
@@ -89,7 +91,7 @@ export class RegisterDto {
   @IsString()
   phone?: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     example: '1990-03-15',
     description: 'Fecha de nacimiento (YYYY-MM-DD)',
     required: false
@@ -98,8 +100,19 @@ export class RegisterDto {
   @IsDateString()
   birthdate?: string;
 
+  @ApiProperty({
+    example: '12345678',
+    description: 'Número de DNI (7-8 dígitos)',
+    required: false
+  })
+  @IsOptional()
+  @IsString()
+  @Length(7, 8, { message: 'El DNI debe tener entre 7 y 8 dígitos' })
+  @Matches(/^\d{7,8}$/, { message: 'El DNI debe contener solo números' })
+  dni?: string;
+
   // Professional-only fields
-  @ApiProperty({ 
+  @ApiProperty({
     example: ['Peluquería', 'Manicura'],
     description: 'Categorías de servicios (solo profesionales)',
     required: false
@@ -107,7 +120,7 @@ export class RegisterDto {
   @IsOptional()
   serviceCategories?: string[];
 
-  @ApiProperty({ 
+  @ApiProperty({
     example: 'Especialista en cortes modernos y tratamientos capilares',
     description: 'Descripción de servicios (solo profesionales)',
     required: false
@@ -116,7 +129,7 @@ export class RegisterDto {
   @IsString()
   description?: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     example: '5-10',
     description: 'Años de experiencia (solo profesionales)',
     required: false
@@ -125,7 +138,7 @@ export class RegisterDto {
   @IsString()
   experience?: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     example: 'intermedio',
     description: 'Rango de precios (solo profesionales)',
     required: false
@@ -134,7 +147,7 @@ export class RegisterDto {
   @IsString()
   pricing?: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     example: 'tiempo-completo',
     description: 'Disponibilidad (solo profesionales)',
     required: false
@@ -143,7 +156,7 @@ export class RegisterDto {
   @IsString()
   availability?: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     example: 'https://mi-portfolio.com',
     description: 'Portfolio o trabajos anteriores (solo profesionales)',
     required: false
@@ -152,7 +165,7 @@ export class RegisterDto {
   @IsString()
   portfolio?: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     example: 'Técnico en Peluquería, Certificado ANMAT',
     description: 'Certificaciones o títulos (solo profesionales)',
     required: false
@@ -163,7 +176,7 @@ export class RegisterDto {
 }
 
 export class RefreshTokenDto {
-  @ApiProperty({ 
+  @ApiProperty({
     example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
     description: 'Refresh token JWT (optional if using httpOnly cookies)',
     required: false
@@ -174,7 +187,7 @@ export class RefreshTokenDto {
 }
 
 export class ForgotPasswordDto {
-  @ApiProperty({ 
+  @ApiProperty({
     example: 'usuario@fixia.com.ar',
     description: 'Email del usuario para recuperación'
   })
@@ -183,14 +196,14 @@ export class ForgotPasswordDto {
 }
 
 export class ResetPasswordDto {
-  @ApiProperty({ 
+  @ApiProperty({
     example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
     description: 'Token de reset de contraseña'
   })
   @IsString()
   token: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     example: 'nuevaPassword123',
     description: 'Nueva contraseña',
     minLength: 8
@@ -201,7 +214,7 @@ export class ResetPasswordDto {
 }
 
 export class VerifyEmailDto {
-  @ApiProperty({ 
+  @ApiProperty({
     example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
     description: 'Token de verificación de email'
   })
@@ -210,7 +223,7 @@ export class VerifyEmailDto {
 }
 
 export class ResendVerificationDto {
-  @ApiProperty({ 
+  @ApiProperty({
     example: 'usuario@fixia.com.ar',
     description: 'Email del usuario para reenvío de verificación'
   })
@@ -219,7 +232,7 @@ export class ResendVerificationDto {
 }
 
 export class ChangePasswordDto {
-  @ApiProperty({ 
+  @ApiProperty({
     example: 'miPasswordActual123',
     description: 'Contraseña actual del usuario',
     minLength: 8
@@ -228,7 +241,7 @@ export class ChangePasswordDto {
   @MinLength(8)
   current_password: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     example: 'miNuevaPassword123',
     description: 'Nueva contraseña del usuario',
     minLength: 8
@@ -239,7 +252,7 @@ export class ChangePasswordDto {
 }
 
 export class DevVerifyUserDto {
-  @ApiProperty({ 
+  @ApiProperty({
     example: 'usuario@fixia.com.ar',
     description: 'Email del usuario a verificar (solo desarrollo)'
   })
