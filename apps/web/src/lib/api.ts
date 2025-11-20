@@ -6,7 +6,7 @@ import { secureTokenManager } from '../utils/secureTokenManager';
 // API Configuration with robust validation
 const getAPIBaseURL = (): string => {
   const envURL = import.meta.env.VITE_API_URL;
-  
+
   // Validate environment URL if provided
   if (envURL) {
     try {
@@ -17,13 +17,13 @@ const getAPIBaseURL = (): string => {
       throw new Error('Invalid API URL configuration');
     }
   }
-  
+
   // Production fallback
   if (import.meta.env.PROD) {
     console.error('😨 VITE_API_URL not configured for production!');
     throw new Error('API URL must be configured for production deployment');
   }
-  
+
   // Development fallback
   const fallbackURL = 'http://localhost:4000';
   console.warn('⚠️ Using fallback API URL for development:', fallbackURL);
@@ -80,16 +80,22 @@ apiClient.interceptors.request.use(
     // SECURITY: Add CSRF token for state-changing requests (POST, PUT, DELETE, PATCH)
     // CSRF protection is implemented on backend (see csrf.guard.ts)
     if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(config.method?.toUpperCase() || '')) {
-      const csrfToken = getCookieValue('csrf-token');
-      // SECURITY FIX: CSRF token is now mandatory for state-changing requests.
-      if (!csrfToken) {
-        const errorMessage = 'CSRF token missing. Request blocked for security reasons. Please refresh the page.';
-        console.error(errorMessage);
-        toast.error('Error de seguridad. Por favor, recarga la página.');
-        return Promise.reject(new Error(errorMessage));
-      }
-      if (config.headers) {
-        config.headers['X-CSRF-Token'] = csrfToken;
+      // Exempt auth endpoints from CSRF validation (they have their own security)
+      const authEndpoints = ['/auth/login', '/auth/register', '/auth/refresh', '/auth/verify', '/auth/logout'];
+      const isAuthEndpoint = authEndpoints.some(endpoint => config.url?.includes(endpoint));
+
+      if (!isAuthEndpoint) {
+        const csrfToken = getCookieValue('csrf-token');
+        // SECURITY FIX: CSRF token is mandatory for state-changing requests (except auth)
+        if (!csrfToken) {
+          const errorMessage = 'CSRF token missing. Request blocked for security reasons. Please refresh the page.';
+          console.error(errorMessage);
+          toast.error('Error de seguridad. Por favor, recarga la página.');
+          return Promise.reject(new Error(errorMessage));
+        }
+        if (config.headers) {
+          config.headers['X-CSRF-Token'] = csrfToken;
+        }
       }
     }
 
@@ -113,7 +119,7 @@ const processQueue = (error: any) => {
       prom.resolve();
     }
   });
-  
+
   failedQueue = [];
 };
 
@@ -125,9 +131,9 @@ apiClient.interceptors.response.use(
     const originalRequest = error.config;
 
     if (error.response?.status === 401 && !originalRequest._retry &&
-        !originalRequest.url?.includes('/auth/login') &&
-        !originalRequest.url?.includes('/auth/refresh') &&
-        !originalRequest.url?.includes('/auth/verify')) {
+      !originalRequest.url?.includes('/auth/login') &&
+      !originalRequest.url?.includes('/auth/refresh') &&
+      !originalRequest.url?.includes('/auth/verify')) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
@@ -161,7 +167,7 @@ apiClient.interceptors.response.use(
         // Check context BEFORE clearing data
         const currentPath = window.location.pathname;
         const isAuthPage = currentPath.includes('/login') || currentPath.includes('/register') ||
-                          currentPath.includes('/verify-email') || currentPath.includes('/forgot-password');
+          currentPath.includes('/verify-email') || currentPath.includes('/forgot-password');
         const isAuthVerification = originalRequest?.url?.includes('/auth/verify');
         const hadUserData = localStorage.getItem('fixia_user_basic');
 
@@ -186,12 +192,12 @@ apiClient.interceptors.response.use(
         isRefreshing = false;
       }
     }
-    
+
     // Enhanced error handling with specific messages
     if (error.response) {
       const status = error.response.status;
       const message = error.response.data?.message || 'Error desconocido';
-      
+
       switch (status) {
         case 400:
           toast.error(message || 'Solicitud inválida. Verifica los datos enviados.');
@@ -199,8 +205,8 @@ apiClient.interceptors.response.use(
         case 401:
           // Silent auth check for public pages - don't show errors
           const isPublicAuthCheck = error.config?.url?.includes('/auth/verify') ||
-                                   (error.config?.url?.includes('/favorites/') && error.config?.url?.includes('/check')) ||
-                                   error.config?.url?.includes('/auth/login');
+            (error.config?.url?.includes('/favorites/') && error.config?.url?.includes('/check')) ||
+            error.config?.url?.includes('/auth/login');
 
           if (!isPublicAuthCheck) {
             console.info('Authentication required - redirecting to login');
@@ -264,7 +270,7 @@ apiClient.interceptors.response.use(
         toast.error('Ocurrió un error inesperado.');
       }
     }
-    
+
     return Promise.reject(error);
   }
 );
