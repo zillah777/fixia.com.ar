@@ -25,6 +25,9 @@ import ContactPage from "./pages/ContactPage";
 import PricingPage from "./pages/PricingPage";
 import SettingsPage from "./pages/SettingsPage";
 import HelpPage from "./pages/HelpPage";
+import HelpArticlePage from "./pages/HelpArticlePage";
+import SystemStatusPage from "./pages/SystemStatusPage";
+import TutorialsPage from "./pages/TutorialsPage";
 import NotificationsPage from "./pages/NotificationsPage";
 import FavoritesPage from "./pages/FavoritesPage";
 import Error404Page from "./pages/Error404Page";
@@ -111,6 +114,9 @@ function AppRoutes() {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/pricing" element={<PricingPage />} />
           <Route path="/help" element={<HelpPage />} />
+          <Route path="/help/article/:id" element={<HelpArticlePage />} />
+          <Route path="/status" element={<SystemStatusPage />} />
+          <Route path="/tutorials" element={<TutorialsPage />} />
 
           {/* Auth Routes */}
           <Route
