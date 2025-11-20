@@ -112,17 +112,11 @@ function Navigation() {
           <Link to="/pricing" className="text-foreground/80 hover:text-foreground transition-colors">
             Planes
           </Link>
-          <Link to="/register?type=professional" className="text-foreground/80 hover:text-foreground transition-colors">
-            Ofrecer Servicios
-          </Link>
-          <Link to="/about" className="text-foreground/80 hover:text-foreground transition-colors">
-            Sobre Nosotros
-          </Link>
           <Link to="/how-it-works" className="text-foreground/80 hover:text-foreground transition-colors">
             Cómo Funciona
           </Link>
-          <Link to="/contact" className="text-foreground/80 hover:text-foreground transition-colors">
-            Contacto
+          <Link to="/about" className="text-foreground/80 hover:text-foreground transition-colors">
+            Sobre Nosotros
           </Link>
         </nav>
 
