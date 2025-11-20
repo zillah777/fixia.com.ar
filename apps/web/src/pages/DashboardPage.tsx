@@ -31,7 +31,7 @@ function Navigation() {
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 400, damping: 10 }}
           >
-            <div className="h-8 w-8 liquid-gradient rounded-lg flex items-center justify-center shadow-lg"><img src="/logo.png" alt="Fixia" className="h-full w-full object-contain p-1" /></div>
+            <div className="h-8 w-8 rounded-lg flex items-center justify-center overflow-hidden"><img src="/logo.png" alt="Fixia" className="h-full w-full object-contain" /></div>
             <div className="absolute -inset-1 liquid-gradient rounded-lg blur opacity-20 animate-pulse-slow"></div>
           </motion.div>
           <span className="font-semibold">Fixia</span>
