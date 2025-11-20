@@ -92,6 +92,8 @@ model User {
   match_reviews_received           MatchReview[]            @relation("MatchReviewsReceived")
   client_service_requests          ServiceRequest[]         @relation("ClientServiceRequests")
   professional_service_requests    ServiceRequest[]         @relation("ProfessionalServiceRequests")
+  client_service_matches           ServiceMatch[]           @relation("ClientServiceMatches")
+  professional_service_matches     ServiceMatch[]           @relation("ProfessionalServiceMatches")
 
   @@index([user_type])
   @@index([location])
@@ -183,6 +185,7 @@ model Service {
   service_views        ServiceView[]
   service_requests     ServiceRequest[]     // NEW: Service requests for this service
   matches              Match[]              @relation("ServiceMatches")  // NEW: Matches for this service
+  service_matches      ServiceMatch[]       @relation("ServiceMatchesRelation")  // NEW: Service-based matches
   category             Category?            @relation(fields: [category_id], references: [id])
   professional         User                 @relation(fields: [professional_id], references: [id], onDelete: Cascade)
 
@@ -284,7 +287,8 @@ model Match {
 
 model MatchReview {
   id                  String          @id @default(uuid())
-  match_id            String
+  match_id            String?         // Optional: for project-based matches
+  service_match_id    String?         // Optional: for service-based matches
   reviewer_id         String          // User leaving the review (client or professional)
   reviewed_user_id    String          // User being reviewed (opposite party)
   overall_rating      Int             // 1-5 stars
@@ -300,12 +304,15 @@ model MatchReview {
   created_at          DateTime        @default(now())
   updated_at          DateTime        @updatedAt
 
-  match               Match           @relation(fields: [match_id], references: [id], onDelete: Cascade)
+  match               Match?          @relation(fields: [match_id], references: [id], onDelete: Cascade)
+  service_match       ServiceMatch?   @relation("ServiceMatchReviews", fields: [service_match_id], references: [id], onDelete: Cascade)
   reviewer            User            @relation("MatchReviewsGiven", fields: [reviewer_id], references: [id], onDelete: Cascade)
   reviewed_user       User            @relation("MatchReviewsReceived", fields: [reviewed_user_id], references: [id], onDelete: Cascade)
 
-  @@unique([match_id, reviewer_id])  // One review per reviewer per match
+  @@unique([match_id, reviewer_id], map: "match_reviews_match_id_reviewer_id_unique")
+  @@unique([service_match_id, reviewer_id], map: "match_reviews_service_match_id_reviewer_id_unique")
   @@index([match_id])
+  @@index([service_match_id])
   @@index([reviewer_id])
   @@index([reviewed_user_id])
   @@index([overall_rating])
@@ -315,23 +322,27 @@ model MatchReview {
 }
 
 model PhoneReveal {
-  id              String    @id @default(uuid())
-  match_id        String
-  user_id         String    // User who requested reveal
-  phone_number    String    // Encrypted phone number (store encrypted)
-  token           String    @unique  // One-time token for reveal endpoint
-  token_hash      String             // Hash of token for secure comparison
-  expires_at      DateTime           // When token expires (24h default)
-  revealed_at     DateTime?          // When actually revealed
-  ip_address      String?            // For audit logging
-  user_agent      String?            // For audit logging
-  created_at      DateTime  @default(now())
+  id                String    @id @default(uuid())
+  match_id          String?   // Optional: for project-based matches
+  service_match_id  String?   // Optional: for service-based matches
+  user_id           String    // User who requested reveal
+  phone_number      String    // Encrypted phone number (store encrypted)
+  token             String    @unique  // One-time token for reveal endpoint
+  token_hash        String             // Hash of token for secure comparison
+  expires_at        DateTime           // When token expires (24h default)
+  revealed_at       DateTime?          // When actually revealed
+  ip_address        String?            // For audit logging
+  user_agent        String?            // For audit logging
+  created_at        DateTime  @default(now())
 
-  match           Match     @relation(fields: [match_id], references: [id], onDelete: Cascade)
-  user            User      @relation("PhoneReveals", fields: [user_id], references: [id], onDelete: Cascade)
+  match             Match?        @relation(fields: [match_id], references: [id], onDelete: Cascade)
+  service_match     ServiceMatch? @relation("ServiceMatchPhoneReveals", fields: [service_match_id], references: [id], onDelete: Cascade)
+  user              User          @relation("PhoneReveals", fields: [user_id], references: [id], onDelete: Cascade)
 
   @@index([match_id])
+  @@index([service_match_id])
   @@index([user_id])
+  @@index([token_hash])
   @@index([expires_at])
   @@map("phone_reveals")
 }
@@ -976,6 +987,7 @@ model ServiceRequest {
   service       Service @relation(fields: [service_id], references: [id], onDelete: Cascade)  // NEW: Service relation
   client        User    @relation("ClientServiceRequests", fields: [client_id], references: [id], onDelete: Cascade)
   professional  User    @relation("ProfessionalServiceRequests", fields: [professional_id], references: [id], onDelete: Cascade)
+  service_match ServiceMatch?  // NEW: Optional service match created when accepted
 
   @@index([service_id])
   @@index([client_id])
@@ -990,4 +1002,34 @@ enum ServiceRequestStatus {
   accepted
   rejected
   cancelled
+}
+
+// ServiceMatch Model - Service-based matching (separate from project-based Match)
+model ServiceMatch {
+  id                  String          @id @default(uuid())
+  service_request_id  String          @unique
+  client_id           String
+  professional_id     String
+  service_id          String
+  status              MatchStatus     @default(active)
+  phone_revealed_at   DateTime?
+  phone_reveal_count  Int             @default(0)
+  created_at          DateTime        @default(now())
+  updated_at          DateTime        @updatedAt
+
+  // Relations
+  service_request     ServiceRequest  @relation(fields: [service_request_id], references: [id], onDelete: Cascade)
+  client              User            @relation("ClientServiceMatches", fields: [client_id], references: [id])
+  professional        User            @relation("ProfessionalServiceMatches", fields: [professional_id], references: [id])
+  service             Service         @relation("ServiceMatchesRelation", fields: [service_id], references: [id])
+  phone_reveals       PhoneReveal[]   @relation("ServiceMatchPhoneReveals")
+  reviews             MatchReview[]   @relation("ServiceMatchReviews")
+
+  @@index([client_id])
+  @@index([professional_id])
+  @@index([service_id])
+  @@index([service_request_id])
+  @@index([status])
+  @@index([created_at])
+  @@map("service_matches")
 }

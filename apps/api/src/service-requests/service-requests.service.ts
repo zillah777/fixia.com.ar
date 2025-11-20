@@ -206,21 +206,41 @@ export class ServiceRequestsService {
             },
         });
 
-        // Create match - Note: Match requires proposal_id, so we skip match creation for now
-        // In a real implementation, you'd either:
-        // 1. Create a proposal first, then create the match
-        // 2. Make proposal_id optional in Match model
-        // 3. Use a different flow for service-based matches
-
-        // For now, we'll comment out match creation to avoid the error
-        // const match = await this.prisma.match.create({
-        //     data: {
-        //         client_id: request.client_id,
-        //         professional_id: request.professional_id,
-        //         service_id: request.service_id,
-        //         status: 'active',
-        //     },
-        // });
+        // Create ServiceMatch for service-based matching
+        const serviceMatch = await this.prisma.serviceMatch.create({
+            data: {
+                service_request_id: requestId,
+                client_id: request.client_id,
+                professional_id: request.professional_id,
+                service_id: request.service_id,
+                status: 'active',
+            },
+            include: {
+                client: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        avatar: true,
+                    },
+                },
+                professional: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        avatar: true,
+                    },
+                },
+                service: {
+                    select: {
+                        id: true,
+                        title: true,
+                        price: true,
+                    },
+                },
+            },
+        });
 
         // Send notification to client
         try {
@@ -228,7 +248,7 @@ export class ServiceRequestsService {
                 userId: request.client_id,
                 type: 'system' as any,
                 title: 'Solicitud de servicio aceptada',
-                message: `${request.professional.name} aceptÃ³ tu solicitud de servicio`,
+                message: `${request.professional.name} aceptó tu solicitud de servicio`,
                 actionUrl: `/services/${request.service_id}`,
             });
         } catch (error) {
@@ -237,7 +257,7 @@ export class ServiceRequestsService {
 
         return {
             request: updatedRequest,
-            // match,  // Commented out until we handle proposal_id
+            serviceMatch,
         };
     }
 
@@ -380,3 +400,4 @@ export class ServiceRequestsService {
         return request;
     }
 }
+
