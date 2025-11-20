@@ -615,7 +615,7 @@ function Footer() {
               <Link to="/contact" className="block text-muted-foreground hover:text-primary transition-colors">
                 Contactar Soporte
               </Link>
-              <a href="https://wa.me/5402804567890" className="block text-muted-foreground hover:text-primary transition-colors" target="_blank" rel="noopener noreferrer">
+              <a href="https://wa.me/5492804874166" className="block text-muted-foreground hover:text-primary transition-colors" target="_blank" rel="noopener noreferrer">
                 WhatsApp
               </a>
               <a href="mailto:soporte@fixia.com.ar" className="block text-muted-foreground hover:text-primary transition-colors">

@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { motion } from "motion/react";
 import { Link } from "react-router-dom";
-import { 
-  ArrowLeft, Search, HelpCircle, MessageSquare, Phone, 
+import {
+  ArrowLeft, Search, HelpCircle, MessageSquare, Phone,
   Mail, FileText, Users, Crown, ChevronDown, ChevronRight,
   ExternalLink, BookOpen, Play, Lightbulb, AlertCircle,
   CheckCircle, Clock, Star, Shield, CreditCard
@@ -42,7 +42,7 @@ const faqData: FAQItem[] = [
   {
     id: "2",
     question: "¿Cuánto cuesta usar Fixia?",
-    answer: "Para clientes es completamente gratis. Los profesionales pagan $4500 ARS/mes para acceder a todas las funciones profesionales. Los primeros 200 profesionales obtienen 2 meses gratis.",
+    answer: "Para clientes es completamente gratis. Los profesionales pagan $3900 ARS/mes para acceder a todas las funciones profesionales. Los primeros 100 profesionales obtienen 1 mes gratis.",
     category: "pricing",
     popular: true
   },
@@ -151,7 +151,7 @@ const helpArticles: HelpArticle[] = [
 
 function Navigation() {
   return (
-    <motion.header 
+    <motion.header
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       className="sticky top-0 z-50 w-full glass border-b border-white/10"
@@ -164,7 +164,7 @@ function Navigation() {
             <span className="text-xs text-muted-foreground -mt-1">Centro de Ayuda</span>
           </div>
         </Link>
-        
+
         <Link to="/">
           <Button variant="ghost" className="hover:glass-medium">
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -195,7 +195,7 @@ function HeroSection() {
           className="max-w-4xl mx-auto text-center"
         >
           <HelpCircle className="h-16 w-16 text-primary mx-auto mb-6" />
-          
+
           <h1 className="text-5xl lg:text-6xl font-bold mb-6 tracking-tight">
             <span className="bg-gradient-to-r from-white via-white to-white/70 bg-clip-text text-transparent">
               ¿En qué podemos
@@ -204,12 +204,12 @@ function HeroSection() {
               ayudarte?
             </span>
           </h1>
-          
+
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
-            Encuentra respuestas rápidas, guías detalladas y soporte personalizado 
+            Encuentra respuestas rápidas, guías detalladas y soporte personalizado
             para sacar el máximo provecho de Fixia.
           </p>
-          
+
           <form onSubmit={handleSearch} className="max-w-2xl mx-auto mb-8">
             <div className="relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
@@ -219,7 +219,7 @@ function HeroSection() {
                 placeholder="Busca tu pregunta... ej: ¿cómo cambio mi plan?"
                 className="pl-12 pr-4 py-6 text-lg glass border-white/20"
               />
-              <Button 
+              <Button
                 type="submit"
                 className="absolute right-2 top-1/2 -translate-y-1/2 liquid-gradient"
               >
@@ -227,7 +227,7 @@ function HeroSection() {
               </Button>
             </div>
           </form>
-          
+
           <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-muted-foreground">
             <span>Búsquedas populares:</span>
             <Button variant="outline" size="sm" className="glass border-white/20 h-8">
@@ -256,7 +256,7 @@ function QuickHelpSection() {
       description: "Habla directamente con nuestro equipo",
       icon: MessageSquare,
       action: "WhatsApp",
-      href: "https://wa.me/5402804567890"
+      href: "https://wa.me/5492804874166"
     },
     {
       title: "Guías de Inicio",
@@ -309,19 +309,21 @@ function QuickHelpSection() {
                 transition={{ duration: 0.6, delay: 0.1 * index }}
                 whileHover={{ y: -4 }}
               >
-                <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 cursor-pointer group h-full">
-                  <CardContent className="p-6 text-center">
-                    <div className="h-16 w-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-primary/20 transition-colors">
-                      <Icon className="h-8 w-8 text-primary" />
-                    </div>
-                    <h3 className="font-semibold mb-2">{action.title}</h3>
-                    <p className="text-sm text-muted-foreground mb-4">{action.description}</p>
-                    <Button variant="outline" size="sm" className="glass border-white/20">
-                      {action.action}
-                      <ChevronRight className="ml-1 h-3 w-3" />
-                    </Button>
-                  </CardContent>
-                </Card>
+                <a href={action.href} className="block">
+                  <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 cursor-pointer group h-full">
+                    <CardContent className="p-6 text-center">
+                      <div className="h-16 w-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-primary/20 transition-colors">
+                        <Icon className="h-8 w-8 text-primary" />
+                      </div>
+                      <h3 className="font-semibold mb-2">{action.title}</h3>
+                      <p className="text-sm text-muted-foreground mb-4">{action.description}</p>
+                      <Button variant="outline" size="sm" className="glass border-white/20">
+                        {action.action}
+                        <ChevronRight className="ml-1 h-3 w-3" />
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </a>
               </motion.div>
             );
           })}
@@ -346,7 +348,7 @@ function FAQSection() {
 
   const filteredFAQs = faqData.filter(faq => {
     const matchesSearch = faq.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         faq.answer.toLowerCase().includes(searchTerm.toLowerCase());
+      faq.answer.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === "all" || faq.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
@@ -495,8 +497,8 @@ function ArticlesSection() {
     { id: "verification", name: "Verificación" }
   ];
 
-  const filteredArticles = selectedCategory === "all" 
-    ? helpArticles 
+  const filteredArticles = selectedCategory === "all"
+    ? helpArticles
     : helpArticles.filter(article => article.category === selectedCategory);
 
   return (
@@ -522,8 +524,8 @@ function ArticlesSection() {
                 key={category.id}
                 onClick={() => setSelectedCategory(category.id)}
                 variant={selectedCategory === category.id ? "default" : "outline"}
-                className={selectedCategory === category.id 
-                  ? "liquid-gradient" 
+                className={selectedCategory === category.id
+                  ? "liquid-gradient"
                   : "glass border-white/20 hover:glass-medium"
                 }
               >
@@ -544,25 +546,27 @@ function ArticlesSection() {
                   transition={{ duration: 0.6, delay: 0.1 * index }}
                   whileHover={{ y: -4 }}
                 >
-                  <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 cursor-pointer group h-full">
-                    <CardContent className="p-6">
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="h-12 w-12 bg-primary/10 rounded-xl flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                          <Icon className="h-6 w-6 text-primary" />
+                  <Link to={`/help/article/${article.id}`}>
+                    <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 cursor-pointer group h-full">
+                      <CardContent className="p-6">
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="h-12 w-12 bg-primary/10 rounded-xl flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                            <Icon className="h-6 w-6 text-primary" />
+                          </div>
+                          <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                            <Clock className="h-3 w-3" />
+                            <span>{article.readTime}</span>
+                          </div>
                         </div>
-                        <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                          <Clock className="h-3 w-3" />
-                          <span>{article.readTime}</span>
-                        </div>
-                      </div>
-                      <h3 className="font-semibold mb-2 line-clamp-2">{article.title}</h3>
-                      <p className="text-sm text-muted-foreground mb-4 line-clamp-3">{article.description}</p>
-                      <Button variant="outline" size="sm" className="glass border-white/20 w-full">
-                        Leer Artículo
-                        <ExternalLink className="ml-2 h-3 w-3" />
-                      </Button>
-                    </CardContent>
-                  </Card>
+                        <h3 className="font-semibold mb-2 line-clamp-2">{article.title}</h3>
+                        <p className="text-sm text-muted-foreground mb-4 line-clamp-3">{article.description}</p>
+                        <Button variant="outline" size="sm" className="glass border-white/20 w-full">
+                          Leer Artículo
+                          <ExternalLink className="ml-2 h-3 w-3" />
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  </Link>
                 </motion.div>
               );
             })}
@@ -582,7 +586,7 @@ function ContactSupportSection() {
       time: "Inmediato",
       availability: "Lun-Vie 9-18hs",
       action: "Abrir WhatsApp",
-      href: "https://wa.me/5402804567890",
+      href: "https://wa.me/5492804874166",
       color: "success"
     },
     {
@@ -637,18 +641,16 @@ function ContactSupportSection() {
               >
                 <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 h-full">
                   <CardContent className="p-6 text-center">
-                    <div className={`h-16 w-16 rounded-2xl flex items-center justify-center mx-auto mb-4 ${
-                      option.color === 'success' ? 'bg-success/20' :
-                      option.color === 'primary' ? 'bg-primary/20' : 'bg-secondary/20'
-                    }`}>
-                      <Icon className={`h-8 w-8 ${
-                        option.color === 'success' ? 'text-success' :
-                        option.color === 'primary' ? 'text-primary' : 'text-foreground'
-                      }`} />
+                    <div className={`h-16 w-16 rounded-2xl flex items-center justify-center mx-auto mb-4 ${option.color === 'success' ? 'bg-success/20' :
+                        option.color === 'primary' ? 'bg-primary/20' : 'bg-secondary/20'
+                      }`}>
+                      <Icon className={`h-8 w-8 ${option.color === 'success' ? 'text-success' :
+                          option.color === 'primary' ? 'text-primary' : 'text-foreground'
+                        }`} />
                     </div>
                     <h3 className="text-xl font-semibold mb-2">{option.title}</h3>
                     <p className="text-muted-foreground mb-4">{option.description}</p>
-                    
+
                     <div className="space-y-2 mb-6 text-sm">
                       <div className="flex items-center justify-between">
                         <span className="text-muted-foreground">Tiempo de respuesta:</span>
@@ -661,8 +663,8 @@ function ContactSupportSection() {
                         <span className="text-sm">{option.availability}</span>
                       </div>
                     </div>
-                    
-                    <Button 
+
+                    <Button
                       className={option.color === 'success' ? 'bg-success hover:bg-success/90 text-white' : 'liquid-gradient'}
                       asChild
                     >
@@ -690,7 +692,7 @@ function ContactSupportSection() {
               <Lightbulb className="h-12 w-12 text-primary mx-auto mb-4" />
               <h3 className="text-xl font-semibold mb-2">¿No encuentras lo que buscas?</h3>
               <p className="text-muted-foreground mb-4">
-                Estamos constantemente mejorando nuestra documentación. 
+                Estamos constantemente mejorando nuestra documentación.
                 Tu feedback nos ayuda a crear mejores recursos.
               </p>
               <Button variant="outline" className="glass border-primary/30 text-primary">
