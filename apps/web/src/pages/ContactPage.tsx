@@ -1,7 +1,7 @@
 import { motion } from "motion/react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import { 
+import {
   ArrowLeft, Phone, Mail, MapPin, Clock, MessageSquare,
   Send, User, FileText, HelpCircle, Zap, Shield,
   CheckCircle, AlertCircle, Info, HeadphonesIcon
@@ -17,7 +17,7 @@ import { Alert, AlertDescription } from "../components/ui/alert";
 
 function Navigation() {
   return (
-    <motion.header 
+    <motion.header
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       className="sticky top-0 z-50 w-full glass border-b border-white/10"
@@ -30,7 +30,7 @@ function Navigation() {
             <span className="text-xs text-muted-foreground -mt-1">Conecta. Confía. Resuelve.</span>
           </div>
         </Link>
-        
+
         <Link to="/">
           <Button variant="ghost" className="hover:glass-medium">
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -56,18 +56,18 @@ function HeroSection() {
             <HeadphonesIcon className="h-4 w-4 mr-2" />
             Soporte 24/7 disponible
           </Badge>
-          
+
           <h1 className="text-5xl lg:text-6xl font-bold mb-6 tracking-tight">
             <span className="bg-gradient-to-r from-white via-white to-white/70 bg-clip-text text-transparent">
               Contáctanos
             </span>
           </h1>
-          
+
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
-            Estamos aquí para ayudarte. Comunícate con nuestro equipo en Chubut 
+            Estamos aquí para ayudarte. Comunícate con nuestro equipo en Chubut
             y te responderemos lo antes posible.
           </p>
-          
+
           <div className="flex items-center justify-center space-x-8 text-sm text-muted-foreground">
             <div className="flex items-center">
               <Clock className="h-4 w-4 mr-2 text-primary" />
@@ -102,11 +102,11 @@ function ContactInfoSection() {
     {
       icon: Phone,
       title: "Teléfono",
-      primary: "+54 280 4567890",
+      primary: "+54 280 4874166",
       secondary: "WhatsApp disponible",
       description: "Atención personalizada de Lun-Vie 9:00-18:00",
       color: "text-success",
-      action: "tel:+542804567890"
+      action: "tel:+542804874166"
     },
     {
       icon: MapPin,
@@ -190,13 +190,13 @@ function ContactFormSection() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     // Simulate form submission
     await new Promise(resolve => setTimeout(resolve, 2000));
-    
+
     setIsSubmitting(false);
     setIsSubmitted(true);
-    
+
     // Reset form after 3 seconds
     setTimeout(() => {
       setIsSubmitted(false);
@@ -227,7 +227,7 @@ function ContactFormSection() {
                 <CheckCircle className="h-16 w-16 text-success mx-auto mb-6" />
                 <h3 className="text-2xl font-bold mb-4">¡Mensaje Enviado!</h3>
                 <p className="text-muted-foreground mb-6">
-                  Gracias por contactarnos. Hemos recibido tu mensaje y te responderemos 
+                  Gracias por contactarnos. Hemos recibido tu mensaje y te responderemos
                   dentro de las próximas 24 horas hábiles.
                 </p>
                 <Badge className="bg-success/20 text-success border-success/30">
@@ -390,7 +390,7 @@ function FAQSection() {
   const faqs = [
     {
       question: "¿Cómo puedo registrarme como profesional?",
-      answer: "Puedes registrarte como profesional haciendo clic en 'Ser Profesional' y completando el proceso de verificación. El plan profesional cuesta $5000 pesos argentinos mensuales."
+      answer: "Puedes registrarte como profesional haciendo clic en 'Ser Profesional' y completando el proceso de verificación. El plan profesional cuesta $3900 pesos argentinos mensuales."
     },
     {
       question: "¿Fixia cobra comisiones por los servicios?",
@@ -410,7 +410,7 @@ function FAQSection() {
     },
     {
       question: "¿Qué incluye la promoción de lanzamiento?",
-      answer: "Los primeros 200 profesionales y 200 clientes obtienen 2 meses gratis de todas las funcionalidades premium de la plataforma."
+      answer: "Los primeros 200 profesionales obtienen 1 mes gratis de todas las funcionalidades premium de la plataforma."
     }
   ];
 
@@ -489,7 +489,7 @@ function SupportHoursSection() {
               <div className="max-w-3xl mx-auto">
                 <Clock className="h-16 w-16 text-primary mx-auto mb-6" />
                 <h2 className="text-3xl font-bold mb-6">Horarios de Atención</h2>
-                
+
                 <div className="grid md:grid-cols-2 gap-8 mb-8">
                   <div>
                     <h4 className="font-semibold mb-4 text-primary">Soporte General</h4>
@@ -512,7 +512,7 @@ function SupportHoursSection() {
                 <Alert className="border-primary/50 bg-primary/10 max-w-2xl mx-auto">
                   <Info className="h-4 w-4" />
                   <AlertDescription>
-                    <strong>Zona Horaria:</strong> Todos los horarios están en GMT-3 (Argentina). 
+                    <strong>Zona Horaria:</strong> Todos los horarios están en GMT-3 (Argentina).
                     Para consultas fuera del horario, usa el formulario de contacto y te responderemos al siguiente día hábil.
                   </AlertDescription>
                 </Alert>
