@@ -22,6 +22,8 @@ interface FormData {
   confirmPassword: string;
   phone: string;
   location: string;
+  dni: string;
+  birthdate: string;
 
   // Professional fields
   businessName: string;
@@ -46,6 +48,8 @@ const initialFormData: FormData = {
   confirmPassword: '',
   phone: '',
   location: '',
+  dni: '',
+  birthdate: '',
   businessName: '',
   serviceCategories: [],
   description: '',
@@ -238,6 +242,40 @@ function ClientRegistrationForm({
             </div>
           </div>
 
+          <div className="grid md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="dni">DNI *</Label>
+              <Input
+                id="dni"
+                type="text"
+                value={formData.dni}
+                onChange={(e) => {
+                  const value = e.target.value.replace(/\D/g, '');
+                  if (value.length <= 8) {
+                    setFormData({ ...formData, dni: value });
+                  }
+                }}
+                placeholder="12345678"
+                required
+                maxLength={8}
+                pattern="\d{7,8}"
+                title="El DNI debe tener 7 u 8 dígitos"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="birthdate">Fecha de Nacimiento *</Label>
+              <Input
+                id="birthdate"
+                type="date"
+                value={formData.birthdate}
+                onChange={(e) => setFormData({ ...formData, birthdate: e.target.value })}
+                required
+                max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split('T')[0]}
+                title="Debes ser mayor de 18 años"
+              />
+            </div>
+          </div>
+
           {/* Terms and Privacy */}
           <div className="space-y-4">
             <div className="flex items-start space-x-3">
@@ -293,7 +331,7 @@ function ClientRegistrationForm({
           <Button
             type="submit"
             className="w-full liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg"
-            disabled={isSubmitting}
+            disabled={isSubmitting || !formData.agreeTerms || !formData.agreePrivacy}
           >
             {isSubmitting ? (
               <>
@@ -307,9 +345,18 @@ function ClientRegistrationForm({
               </>
             )}
           </Button>
+
+          {(!formData.agreeTerms || !formData.agreePrivacy) && (
+            <Alert className="border-warning/50 bg-warning/10">
+              <AlertCircle className="h-4 w-4 text-warning" />
+              <AlertDescription className="text-warning">
+                Debes aceptar los Términos y Condiciones y la Política de Privacidad para registrarte
+              </AlertDescription>
+            </Alert>
+          )}
         </form>
       </CardContent>
-    </Card>
+    </Card >
   );
 }
 
