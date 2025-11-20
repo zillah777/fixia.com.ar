@@ -130,10 +130,17 @@ apiClient.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    // CRITICAL: Prevent infinite loops on auth endpoints
+    const isAuthEndpoint = originalRequest.url?.includes('/auth/');
+
+    // Don't retry auth endpoints or if already retried
     if (error.response?.status === 401 && !originalRequest._retry &&
+      !isAuthEndpoint &&
       !originalRequest.url?.includes('/auth/login') &&
       !originalRequest.url?.includes('/auth/refresh') &&
       !originalRequest.url?.includes('/auth/verify')) {
+
+      // Prevent infinite refresh loops
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
@@ -166,20 +173,35 @@ apiClient.interceptors.response.use(
 
         // Check context BEFORE clearing data
         const currentPath = window.location.pathname;
+        const isPublicPage = currentPath === '/' ||
+          currentPath.startsWith('/services') ||
+          currentPath.startsWith('/profile/') ||
+          currentPath.startsWith('/terms') ||
+          currentPath.startsWith('/privacy') ||
+          currentPath.startsWith('/about') ||
+          currentPath.startsWith('/how-it-works') ||
+          currentPath.startsWith('/contact') ||
+          currentPath.startsWith('/pricing') ||
+          currentPath.startsWith('/help') ||
+          currentPath.startsWith('/status') ||
+          currentPath.startsWith('/tutorials');
         const isAuthPage = currentPath.includes('/login') || currentPath.includes('/register') ||
-          currentPath.includes('/verify-email') || currentPath.includes('/forgot-password');
-        const isAuthVerification = originalRequest?.url?.includes('/auth/verify');
+          currentPath.includes('/verify-email') || currentPath.includes('/forgot-password') ||
+          currentPath.includes('/reset-password');
+        const isAuthVerification = originalRequest?.url?.includes('/auth/verify') ||
+          originalRequest?.url?.includes('/auth/me');
         const hadUserData = localStorage.getItem('fixia_user_basic');
 
         // The secureTokenManager's refreshToken method already handles clearing local data on failure.
         // No need to manually clear localStorage here.
 
         // Only redirect if:
-        // 1. NOT on an auth page already
-        // 2. NOT just checking auth status (expected 401 on /auth/verify)
-        // 3. User HAD data (meaning they were logged in but token expired)
-        if (!isAuthPage && !isAuthVerification && hadUserData) {
-          // Session truly expired
+        // 1. NOT on a public page (allow public pages to work without auth)
+        // 2. NOT on an auth page already
+        // 3. NOT just checking auth status (expected 401 on /auth/verify or /auth/me)
+        // 4. User HAD data (meaning they were logged in but token expired)
+        if (!isPublicPage && !isAuthPage && !isAuthVerification && hadUserData) {
+          // Session truly expired for a logged-in user on a protected page
           console.log('Session expired - redirecting to login');
           toast.error('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
           setTimeout(() => {
