@@ -645,9 +645,10 @@ function Footer() {
         </div>
 
         <div className="border-t border-white/10 mt-12 pt-8 flex flex-col md:flex-row items-center justify-between">
-          <p className="text-muted-foreground text-center md:text-left">
-            &copy; 2024 Fixia. Todos los derechos reservados. Hecho en Chubut, Argentina 🇦🇷
-          </p>
+          <div className="text-muted-foreground text-center md:text-left">
+            <p>&copy; 2025 Fixia. Todos los derechos reservados. Hecho en Chubut, Argentina 🇦🇷</p>
+            <p className="text-sm mt-1">MMATA</p>
+          </div>
           <div className="flex items-center space-x-4 mt-4 md:mt-0">
             <Link to="/privacy" className="text-muted-foreground hover:text-primary transition-colors text-sm">
               Privacidad
