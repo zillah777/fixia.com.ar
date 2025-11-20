@@ -20,7 +20,7 @@ import { Separator } from "../components/ui/separator";
 import { Progress } from "../components/ui/progress";
 import { Alert, AlertDescription } from "../components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
-import { useAuth } from "../context/AuthContext";
+import { useSecureAuth as useAuth } from "../context/SecureAuthContext";
 import { servicesService, ServiceCategory } from "../lib/services/services.service";
 import { toast } from "sonner";
 

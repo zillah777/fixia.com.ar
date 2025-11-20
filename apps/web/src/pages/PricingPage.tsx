@@ -1,8 +1,8 @@
 import { motion } from "motion/react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { 
-  ArrowLeft, Check, X, Crown, Users, Zap, Shield, 
+import {
+  ArrowLeft, Check, X, Crown, Users, Zap, Shield,
   Star, MessageSquare, Bell, Phone, Mail, Gift,
   TrendingUp, Award, Clock, HeadphonesIcon, Search,
   FileText, ChevronRight, AlertCircle, CheckCircle
@@ -11,7 +11,7 @@ import { Button } from "../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Alert, AlertDescription } from "../components/ui/alert";
-import { useAuth } from "../context/AuthContext";
+import { useSecureAuth as useAuth } from "../context/SecureAuthContext";
 import { PublicPageLayout } from "../components/layouts/PublicPageLayout";
 
 interface PlanFeature {
@@ -115,7 +115,7 @@ function HeroSection() {
             <Gift className="h-4 w-4 mr-2" />
             Promoción: 2 meses gratis para primeros 200 profesionales
           </Badge>
-          
+
           <h1 className="text-5xl lg:text-6xl font-bold mb-6 tracking-tight">
             <span className="bg-gradient-to-r from-white via-white to-white/70 bg-clip-text text-transparent">
               Planes que se Adaptan
@@ -124,12 +124,12 @@ function HeroSection() {
               a Ti
             </span>
           </h1>
-          
+
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
-            Comienza gratis como cliente o impulsa tu negocio con nuestro Plan Profesional. 
+            Comienza gratis como cliente o impulsa tu negocio con nuestro Plan Profesional.
             Sin comisiones, sin límites.
           </p>
-          
+
           <div className="flex items-center justify-center space-x-8 text-sm text-muted-foreground">
             <div className="flex items-center">
               <Shield className="h-4 w-4 mr-2 text-success" />
@@ -171,15 +171,15 @@ function PricingCardsSection() {
 
   const handleUpgrade = async () => {
     if (!user) return;
-    
+
     setIsUpgrading(true);
     try {
       // Simular proceso de upgrade
       await new Promise(resolve => setTimeout(resolve, 2000));
-      
+
       // En implementación real, aquí se haría la llamada a la API
       // await updateUserPlan(user.id, 'professional');
-      
+
       navigate('/profile?upgraded=true');
     } catch (error) {
       console.error('Error upgrading plan:', error);
@@ -245,7 +245,7 @@ function PricingCardsSection() {
                   </div>
                 </div>
 
-                <Button 
+                <Button
                   onClick={handleFreePlan}
                   className="w-full bg-success hover:bg-success/90 text-white"
                 >
@@ -256,8 +256,8 @@ function PricingCardsSection() {
                 {user && user.accountType === 'client' && (
                   <div className="text-center">
                     <p className="text-sm text-muted-foreground mb-2">¿Quieres ofrecer servicios?</p>
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       size="sm"
                       onClick={handleProfessionalPlan}
                       className="glass border-primary/30 text-primary hover:bg-primary/10"
@@ -349,7 +349,7 @@ function PricingCardsSection() {
                 </div>
 
                 {user && user.accountType === 'client' ? (
-                  <Button 
+                  <Button
                     onClick={handleUpgrade}
                     disabled={isUpgrading}
                     className="w-full liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg"
@@ -367,7 +367,7 @@ function PricingCardsSection() {
                     )}
                   </Button>
                 ) : (
-                  <Button 
+                  <Button
                     onClick={handleProfessionalPlan}
                     className="w-full liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg"
                   >
@@ -431,8 +431,8 @@ function ComparisonTableSection() {
                   </thead>
                   <tbody>
                     {planFeatures.map((feature, index) => (
-                      <tr 
-                        key={index} 
+                      <tr
+                        key={index}
                         className={`border-b border-white/5 ${feature.highlight ? 'bg-primary/5' : ''}`}
                       >
                         <td className="p-4">
@@ -563,10 +563,10 @@ function CTASection() {
                   ¿Listo para comenzar?
                 </h2>
                 <p className="text-xl text-muted-foreground mb-8">
-                  Únete a cientos de profesionales y clientes que ya confían en Fixia 
+                  Únete a cientos de profesionales y clientes que ya confían en Fixia
                   para conectar y hacer crecer sus negocios.
                 </p>
-                
+
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                   <Link to="/register">
                     <Button size="lg" className="bg-success hover:bg-success/90 text-white px-8">
@@ -581,7 +581,7 @@ function CTASection() {
                     </Button>
                   </Link>
                 </div>
-                
+
                 <div className="flex items-center justify-center space-x-8 mt-8 text-sm text-muted-foreground">
                   <div className="flex items-center">
                     <Shield className="h-4 w-4 mr-2 text-success" />

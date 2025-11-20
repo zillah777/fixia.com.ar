@@ -22,7 +22,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Textarea } from "../components/ui/textarea";
 import { Label } from "../components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
-import { useAuth } from "../context/AuthContext";
+import { useSecureAuth as useAuth } from "../context/SecureAuthContext";
 import { toast } from "sonner";
 import { useOpportunities } from "../hooks/useOpportunities";
 
