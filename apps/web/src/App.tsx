@@ -17,6 +17,7 @@ import PublicProfilePage from "./pages/PublicProfilePage";
 import NewProjectPage from "./pages/NewProjectPage";
 import CreateRequestPage from "./pages/CreateRequestPage";
 import OpportunitiesPage from "./pages/OpportunitiesPage";
+import B2BProjectsFeed from "./pages/B2BProjectsFeed"; // NEW: Professional collaboration feed
 import TermsPage from "./pages/TermsPage";
 import PrivacyPage from "./pages/PrivacyPage";
 import AboutPage from "./pages/AboutPage";
@@ -190,6 +191,22 @@ function AppRoutes() {
             element={
               <ProtectedRoute>
                 <OpportunitiesPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/b2b-projects"
+            element={
+              <ProtectedRoute>
+                <B2BProjectsFeed />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/b2b-projects"
+            element={
+              <ProtectedRoute>
+                <B2BProjectsFeed />
               </ProtectedRoute>
             }
           />

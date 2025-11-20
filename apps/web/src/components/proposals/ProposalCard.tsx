@@ -1,7 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { ChevronDown, Star, MapPin, Clock, DollarSign, CheckCircle, AlertCircle, MessageSquare, Loader2, ClipboardCheck, Phone } from 'lucide-react';
+import {
+  ChevronDown,
+  Star,
+  MapPin,
+  Clock,
+  DollarSign,
+  CheckCircle,
+  AlertCircle,
+  MessageSquare,
+  Loader2,
+  ClipboardCheck,
+  Phone,
+  Users, // NEW: For Pro-to-Pro badge
+} from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
@@ -10,6 +23,10 @@ import { VerificationBadge } from '../verification/VerificationBadge';
 import { toast } from 'sonner';
 import opportunitiesService from '@/lib/services/opportunities.service';
 import { useCurrentUser } from '@/utils/useCurrentUser';
+import { useProposalLimits } from '@/hooks/useProposalLimits';
+import { useMatchCelebration } from '@/hooks/useMatchCelebration';
+import { ProposalLimitBadge } from './ProposalLimitBadge';
+import { MatchSuccessModal } from '../modals/MatchSuccessModal';
 
 interface Professional {
   id: string;
@@ -68,16 +85,46 @@ export function ProposalCard({
   const { data: user } = useCurrentUser();
   const queryClient = useQueryClient();
 
+  /**
+   * B2B Detection Logic
+   * Detects if this is a professional-to-professional collaboration
+   * Uses useMemo for performance optimization (2025 best practice)
+   */
+  const isB2BProposal = useMemo(() => {
+    return user?.userType === 'professional' &&
+      (professional.userType === 'professional' || professional.userType === 'dual');
+  }, [user?.userType, professional.userType]);
+
+  // Proposal limits tracking
+  const { attemptCount, isLocked, canCounterPropose } = useProposalLimits({
+    projectId,
+    professionalId: professional.id,
+    enabled: true,
+  });
+
+  // Match celebration
+  const { showCelebration, matchData, celebrate, dismiss } = useMatchCelebration();
+
   const { mutate: acceptProposal, isPending: isAccepting } = useMutation({
     mutationFn: () => opportunitiesService.acceptProposal(projectId, proposal.id),
-    onSuccess: () => {
-      toast.success('Propuesta aceptada exitosamente. Ya puedes contactar al profesional por WhatsApp.');
+    onSuccess: (matchData) => {
+      // Trigger celebration modal
+      celebrate({
+        professionalName: professional.name,
+        whatsappNumber: professional.whatsapp_number || '',
+        projectTitle,
+        matchId: matchData?.id || '',
+        agreedPrice: proposal.quoted_price,
+        deliveryTimeDays: proposal.delivery_time_days,
+      });
+
       onProposalUpdated?.(proposal.id, 'accepted');
       setShowWhatsApp(true);
-      toast.info('Match creado automáticamente. Refrescando datos...');
       onAfterMatchCreated?.();
-      // Invalidate queries related to proposals or projects to refetch data
+
+      // Invalidate queries
       queryClient.invalidateQueries({ queryKey: ['projectProposals', projectId] });
+      queryClient.invalidateQueries({ queryKey: ['proposalLimits', projectId, professional.id] });
     },
     onError: (error: any) => {
       toast.error(error.message || 'Error al aceptar la propuesta');
@@ -169,6 +216,21 @@ export function ProposalCard({
                         🔄 {duplicateCount}
                       </Badge>
                     )}
+                    {/* Pro-to-Pro Badge - NEW */}
+                    {isB2BProposal && (
+                      <Badge className="bg-purple-500/20 text-purple-300 border-purple-500/30 text-xs px-2 py-0.5 rounded flex items-center gap-1">
+                        <Users className="h-3 w-3" />
+                        Pro-to-Pro
+                      </Badge>
+                    )}
+                    {/* Proposal Limit Badge */}
+                    <ProposalLimitBadge
+                      attemptCount={attemptCount}
+                      isLocked={isLocked}
+                      canCounterPropose={canCounterPropose}
+                      status={proposal.status}
+                      size="sm"
+                    />
                   </div>
 
                   {/* Rating */}
@@ -280,7 +342,7 @@ export function ProposalCard({
                   >
                     <Button
                       onClick={() => rejectProposal()}
-                      disabled={isProcessing}
+                      disabled={isProcessing || isLocked}
                       variant="outline"
                       className="flex-1 border-destructive/30 text-destructive/80 hover:text-destructive hover:bg-destructive/10"
                     >
@@ -288,7 +350,7 @@ export function ProposalCard({
                     </Button>
                     <Button
                       onClick={() => acceptProposal()}
-                      disabled={isProcessing}
+                      disabled={isProcessing || isLocked}
                       className="flex-1 bg-gradient-to-r from-success via-success to-success/80 hover:from-success/90 hover:to-success/70 text-white font-semibold shadow-lg transition-all disabled:opacity-50"
                     >
                       {isProcessing ? (
@@ -303,6 +365,20 @@ export function ProposalCard({
                         </>
                       )}
                     </Button>
+                  </motion.div>
+                )}
+
+                {/* Locked State Message */}
+                {isLocked && proposal.status === 'pending' && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="bg-destructive/10 border border-destructive/30 rounded-lg p-3 mt-2"
+                  >
+                    <p className="text-xs text-destructive text-center">
+                      🔒 Este profesional ha alcanzado el máximo de intentos (2/2) para este proyecto.
+                    </p>
                   </motion.div>
                 )}
                 {/* WhatsApp Contacto: Solo si aceptada */}
@@ -326,7 +402,7 @@ export function ProposalCard({
                         <Button
                           size="sm"
                           className="bg-success/70 hover:bg-success text-white shadow"
-                          onClick={() => window.open(`https://wa.me/${professional.whatsapp_number}?text=${encodeURIComponent(`Hola ${user?.name || ''} (Cliente), vi tu propuesta para mi anuncio "${projectTitle}" en Fixia. Me gustaría conversar contigo.`)}`,'_blank')}
+                          onClick={() => window.open(`https://wa.me/${professional.whatsapp_number}?text=${encodeURIComponent(`Hola ${user?.name || ''} (Cliente), vi tu propuesta para mi anuncio "${projectTitle}" en Fixia. Me gustaría conversar contigo.`)}`, '_blank')}
                         >
                           <Phone className="h-4 w-4 mr-2" /> WhatsApp Directo
                         </Button>
@@ -342,6 +418,13 @@ export function ProposalCard({
           )}
         </AnimatePresence>
       </Card>
+
+      {/* Match Success Modal */}
+      <MatchSuccessModal
+        isOpen={showCelebration}
+        data={matchData}
+        onClose={dismiss}
+      />
     </motion.div>
   );
 }

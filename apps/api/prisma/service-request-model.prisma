@@ -1,0 +1,36 @@
+
+// ServiceRequest Model - Professional Circuit
+model ServiceRequest {
+  id                String                 @id @default(uuid())
+  service_id        String
+  client_id         String
+  professional_id   String
+  message           String                 @db.Text
+  budget            Decimal?               @db.Decimal(12, 2)
+  deadline          DateTime?
+  status            ServiceRequestStatus   @default(pending)
+  response_message  String?                @db.Text
+  accepted_at       DateTime?
+  rejected_at       DateTime?
+  cancelled_at      DateTime?
+  created_at        DateTime               @default(now())
+  updated_at        DateTime               @updatedAt
+
+  // Relations
+  client        User    @relation("ClientServiceRequests", fields: [client_id], references: [id], onDelete: Cascade)
+  professional  User    @relation("ProfessionalServiceRequests", fields: [professional_id], references: [id], onDelete: Cascade)
+
+  @@index([service_id])
+  @@index([client_id])
+  @@index([professional_id])
+  @@index([status])
+  @@index([created_at])
+  @@map("service_requests")
+}
+
+enum ServiceRequestStatus {
+  pending
+  accepted
+  rejected
+  cancelled
+}

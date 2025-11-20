@@ -22,6 +22,8 @@ import { Alert, AlertDescription } from "../components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { useSecureAuth as useAuth } from "../context/SecureAuthContext";
 import { servicesService, ServiceCategory } from "../lib/services/services.service";
+import { useSubscriptionStatus } from "../hooks/useSubscriptionStatus";
+import { SubscriptionPaywall } from "../components/subscription/SubscriptionPaywall";
 import { toast } from "sonner";
 
 // Remove hardcoded categories
@@ -984,6 +986,9 @@ export default function NewProjectPage() {
   const [currentStep, setCurrentStep] = useState(1);
   const totalSteps = 6;
 
+  // Subscription check for service creation
+  const { canPublishServices, hasReachedServiceLimit, maxServices, activeServicesCount } = useSubscriptionStatus();
+
   const [projectData, setProjectData] = useState<ProjectData>({
     title: '',
     description: '',
@@ -991,18 +996,45 @@ export default function NewProjectPage() {
     subcategory: '',
     tags: [],
     packages: {
-      basic: { name: 'Básico', price: 0, description: '', deliveryTime: 7, revisions: 1, features: [] },
-      standard: { name: 'Estándar', price: 0, description: '', deliveryTime: 14, revisions: 2, features: [] },
-      premium: { name: 'Premium', price: 0, description: '', deliveryTime: 21, revisions: 3, features: [] }
+      basic: { name: 'Básico', price: 0, description: '', deliveryTime: 7, revisions: 1, features: [''] },
+      standard: { name: 'Estándar', price: 0, description: '', deliveryTime: 14, revisions: 2, features: [''] },
+      premium: { name: 'Premium', price: 0, description: '', deliveryTime: 21, revisions: 3, features: [''] }
     },
     images: [],
     gallery: [],
-    requirements: [],
-    faqs: [],
-    isActive: false,
+    requirements: [''],
+    faqs: [{ question: '', answer: '' }],
+    isActive: true,
     allowRevisions: true,
     instantDelivery: false
   });
+
+  // Show paywall if user cannot publish services
+  if (!canPublishServices) {
+    if (hasReachedServiceLimit) {
+      return (
+        <div className="min-h-screen bg-background">
+          <Navigation />
+          <main className="container mx-auto px-6 py-12">
+            <SubscriptionPaywall
+              feature="services"
+              title="Límite de Servicios Alcanzado"
+              description={`Has alcanzado el límite de ${maxServices} servicios activos. Actualiza tu plan para publicar más.`}
+            />
+          </main>
+        </div>
+      );
+    }
+
+    return (
+      <div className="min-h-screen bg-background">
+        <Navigation />
+        <main className="container mx-auto px-6 py-12">
+          <SubscriptionPaywall feature="services" />
+        </main>
+      </div>
+    );
+  }
 
   const canProceed = () => {
     switch (currentStep) {

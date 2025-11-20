@@ -23,6 +23,7 @@ import { CategoriesModule } from './categories/categories.module';
 import { FavoritesModule } from './favorites/favorites.module';
 import { SubscriptionModule } from './subscription/subscription.module';
 import { MatchingModule } from './matching/matching.module';
+import { ServiceRequestsModule } from './service-requests/service-requests.module'; // NEW
 
 @Module({
   imports: [
@@ -58,8 +59,9 @@ import { MatchingModule } from './matching/matching.module';
     FavoritesModule,
     SubscriptionModule, // NEW: Subscription and dual roles system
     MatchingModule, // NEW: Matchmaking and phone reveal system
+    ServiceRequestsModule, // NEW: Service requests for Professional Circuit
   ],
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule { }

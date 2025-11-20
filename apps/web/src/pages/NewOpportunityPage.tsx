@@ -15,7 +15,9 @@ import { Badge } from "../components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import { Alert, AlertDescription } from "../components/ui/alert";
 import { UpgradeModal } from "../components/modals/UpgradeModal";
+import { ReviewBlockerModal } from "../components/modals/ReviewBlockerModal";
 import { useSecureAuth } from "../context/SecureAuthContext";
+import { useReviewBlocker } from "../hooks/useReviewBlocker";
 import { toast } from "sonner";
 import { opportunitiesService, CreateOpportunityData } from "../lib/services/opportunities.service";
 import { servicesService, ServiceCategory } from "../lib/services/services.service";
@@ -39,6 +41,9 @@ export default function NewOpportunityPage() {
   const [categoriesError, setCategoriesError] = useState<string | null>(null);
   const [publishing, setPublishing] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+
+  // Review blocker
+  const { hasPendingReview, blocker } = useReviewBlocker();
 
   const [formData, setFormData] = useState<OpportunityFormData>({
     title: '',
@@ -122,27 +127,27 @@ export default function NewOpportunityPage() {
       toast.error('El título del anuncio es obligatorio');
       return false;
     }
-    
+
     if (formData.title.trim().length < 10) {
       toast.error('El título debe tener al menos 10 caracteres');
       return false;
     }
-    
+
     if (formData.title.trim().length > 100) {
       toast.error('El título no puede exceder 100 caracteres');
       return false;
     }
-    
+
     if (!formData.description.trim()) {
       toast.error('La descripción del servicio es obligatoria');
       return false;
     }
-    
+
     if (formData.description.trim().length < 50) {
       toast.error('La descripción debe tener al menos 50 caracteres para dar más detalles a los profesionales');
       return false;
     }
-    
+
     if (formData.description.trim().length > 2000) {
       toast.error('La descripción no puede exceder 2000 caracteres');
       return false;
@@ -173,7 +178,7 @@ export default function NewOpportunityPage() {
       const deadlineDate = new Date(formData.deadline);
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-      
+
       if (deadlineDate < today) {
         toast.error('La fecha límite debe ser posterior a hoy');
         return false;
@@ -184,6 +189,12 @@ export default function NewOpportunityPage() {
   };
 
   const handlePublish = async () => {
+    // Check for pending reviews first
+    if (hasPendingReview) {
+      toast.error('Debes completar las calificaciones pendientes antes de crear un nuevo anuncio');
+      return;
+    }
+
     if (!validateForm()) return;
 
     setPublishing(true);
@@ -196,14 +207,15 @@ export default function NewOpportunityPage() {
         budget_max: formData.budget_max > 0 ? formData.budget_max : undefined,
         deadline: formData.deadline || undefined,
         location: formData.location || undefined,
-        skills_required: formData.skills_required.length > 0 ? formData.skills_required : undefined};
+        skills_required: formData.skills_required.length > 0 ? formData.skills_required : undefined
+      };
 
       await opportunitiesService.createOpportunity(opportunityData);
-      
+
       toast.success('¡Anuncio publicado correctamente!', {
         description: 'Los profesionales podrán ver tu proyecto y contactarte'
       });
-      
+
       navigate('/dashboard');
     } catch (error: any) {
       console.error('Error publishing opportunity:', error);
@@ -214,10 +226,10 @@ export default function NewOpportunityPage() {
       const isLimitError =
         errorStatus === 403 &&
         (errorMessage.toLowerCase().includes('límite') ||
-         errorMessage.toLowerCase().includes('limit') ||
-         errorMessage.toLowerCase().includes('gratuito') ||
-         errorMessage.toLowerCase().includes('free plan') ||
-         errorMessage.toLowerCase().includes('alcanzado'));
+          errorMessage.toLowerCase().includes('limit') ||
+          errorMessage.toLowerCase().includes('gratuito') ||
+          errorMessage.toLowerCase().includes('free plan') ||
+          errorMessage.toLowerCase().includes('alcanzado'));
 
       if (isLimitError) {
         setShowUpgradeModal(true);
@@ -277,7 +289,7 @@ export default function NewOpportunityPage() {
                 Completa los detalles para que los profesionales entiendan tus necesidades
               </CardDescription>
             </CardHeader>
-            
+
             <CardContent className="space-y-6 overflow-visible">
               {/* Title */}
               <div className="space-y-2">
@@ -293,7 +305,7 @@ export default function NewOpportunityPage() {
                   <span>{formData.title.length}/100</span>
                 </div>
               </div>
-              
+
               {/* Description */}
               <div className="space-y-2">
                 <Label>Descripción Detallada *</Label>
@@ -419,17 +431,17 @@ export default function NewOpportunityPage() {
                     onKeyPress={handleSkillKeyPress}
                     className="glass border-white/20 flex-1"
                   />
-                  <Button 
-                    type="button" 
+                  <Button
+                    type="button"
                     onClick={addSkill}
-                    variant="outline" 
+                    variant="outline"
                     className="glass border-white/20 hover:bg-primary/10"
                     disabled={!currentSkill.trim()}
                   >
                     <Tag className="h-4 w-4" />
                   </Button>
                 </div>
-                
+
                 {formData.skills_required.length > 0 && (
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
@@ -454,7 +466,7 @@ export default function NewOpportunityPage() {
                           exit={{ opacity: 0, scale: 0.8 }}
                           transition={{ duration: 0.2, delay: index * 0.05 }}
                         >
-                          <Badge 
+                          <Badge
                             className="bg-gradient-to-r from-primary/20 to-primary/30 text-primary border-primary/40 pr-1 hover:from-primary/30 hover:to-primary/40 transition-all duration-200 cursor-default"
                           >
                             {skill}
@@ -493,8 +505,9 @@ export default function NewOpportunityPage() {
                 </Button>
                 <Button
                   onClick={handlePublish}
-                  disabled={publishing}
-                  className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg px-6"
+                  disabled={publishing || hasPendingReview}
+                  className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg px-6 disabled:opacity-50"
+                  title={hasPendingReview ? 'Completa las calificaciones pendientes primero' : ''}
                 >
                   {publishing ? (
                     <>
@@ -520,6 +533,17 @@ export default function NewOpportunityPage() {
         onClose={() => setShowUpgradeModal(false)}
         limitType="announcements"
         limitReached={3}
+      />
+
+      {/* Review Blocker Modal */}
+      <ReviewBlockerModal
+        blocker={blocker}
+        onReviewClick={() => {
+          if (blocker.matchId) {
+            navigate(`/matches/${blocker.matchId}`);
+          }
+        }}
+        canDismiss={false}
       />
     </div>
   );
