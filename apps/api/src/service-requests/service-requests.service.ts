@@ -216,29 +216,9 @@ export class ServiceRequestsService {
                 status: 'active',
             },
             include: {
-                client: {
-                    select: {
-                        id: true,
-                        name: true,
-                        email: true,
-                        avatar: true,
-                    },
-                },
-                professional: {
-                    select: {
-                        id: true,
-                        name: true,
-                        email: true,
-                        avatar: true,
-                    },
-                },
-                service: {
-                    select: {
-                        id: true,
-                        title: true,
-                        price: true,
-                    },
-                },
+                client: { select: { id: true, name: true, email: true, avatar: true } },
+                professional: { select: { id: true, name: true, email: true, avatar: true } },
+                service: { select: { id: true, title: true, price: true } },
             },
         });
 
@@ -248,7 +228,7 @@ export class ServiceRequestsService {
                 userId: request.client_id,
                 type: 'system' as any,
                 title: 'Solicitud de servicio aceptada',
-                message: `${request.professional.name} acept� tu solicitud de servicio`,
+                message: `${request.professional.name} aceptó tu solicitud de servicio`,
                 actionUrl: `/services/${request.service_id}`,
             });
         } catch (error) {
@@ -259,145 +239,166 @@ export class ServiceRequestsService {
             request: updatedRequest,
             serviceMatch,
         };
+    },
+},
+        });
+
+// Send notification to client
+try {
+    await this.notificationsService.createNotification({
+        userId: request.client_id,
+        type: 'system' as any,
+        title: 'Solicitud de servicio aceptada',
+        message: `${request.professional.name} acept� tu solicitud de servicio`,
+        actionUrl: `/services/${request.service_id}`,
+    });
+} catch (error) {
+    console.error('Failed to send notification:', error);
+}
+
+return {
+    request: updatedRequest,
+    serviceMatch,
+};
     }
 
     /**
      * Reject a service request (professional)
      */
     async reject(requestId: string, professionalId: string, respondDto: RespondServiceRequestDto) {
-        const request = await this.prisma.serviceRequest.findUnique({
-            where: { id: requestId },
-            include: {
-                client: true,
-                professional: true,
-            },
-        });
+    const request = await this.prisma.serviceRequest.findUnique({
+        where: { id: requestId },
+        include: {
+            client: true,
+            professional: true,
+        },
+    });
 
-        if (!request) {
-            throw new NotFoundException('Solicitud no encontrada');
-        }
-
-        if (request.professional_id !== professionalId) {
-            throw new ForbiddenException('No tienes permiso para rechazar esta solicitud');
-        }
-
-        if (request.status !== 'pending') {
-            throw new BadRequestException('Esta solicitud ya fue procesada');
-        }
-
-        const updatedRequest = await this.prisma.serviceRequest.update({
-            where: { id: requestId },
-            data: {
-                status: 'rejected',
-                rejected_at: new Date(),
-                response_message: respondDto.message,
-            },
-            include: {
-                service: true,
-                client: true,
-                professional: true,
-            },
-        });
-
-        // Send notification to client
-        try {
-            await this.notificationsService.createNotification({
-                userId: request.client_id,
-                type: 'system' as any,
-                title: 'Solicitud de servicio rechazada',
-                message: `${request.professional.name} rechazó tu solicitud de servicio`,
-                actionUrl: `/services/${request.service_id}`,
-            });
-        } catch (error) {
-            console.error('Failed to send notification:', error);
-        }
-
-        return updatedRequest;
+    if (!request) {
+        throw new NotFoundException('Solicitud no encontrada');
     }
+
+    if (request.professional_id !== professionalId) {
+        throw new ForbiddenException('No tienes permiso para rechazar esta solicitud');
+    }
+
+    if (request.status !== 'pending') {
+        throw new BadRequestException('Esta solicitud ya fue procesada');
+    }
+
+    const updatedRequest = await this.prisma.serviceRequest.update({
+        where: { id: requestId },
+        data: {
+            status: 'rejected',
+            rejected_at: new Date(),
+            response_message: respondDto.message,
+        },
+        include: {
+            service: true,
+            client: true,
+            professional: true,
+        },
+    });
+
+    // Send notification to client
+    try {
+        await this.notificationsService.createNotification({
+            userId: request.client_id,
+            type: 'system' as any,
+            title: 'Solicitud de servicio rechazada',
+            message: `${request.professional.name} rechazó tu solicitud de servicio`,
+            actionUrl: `/services/${request.service_id}`,
+        });
+    } catch (error) {
+        console.error('Failed to send notification:', error);
+    }
+
+    return updatedRequest;
+}
 
     /**
      * Cancel a service request (client)
      */
     async cancel(requestId: string, clientId: string) {
-        const request = await this.prisma.serviceRequest.findUnique({
-            where: { id: requestId },
-        });
+    const request = await this.prisma.serviceRequest.findUnique({
+        where: { id: requestId },
+    });
 
-        if (!request) {
-            throw new NotFoundException('Solicitud no encontrada');
-        }
-
-        if (request.client_id !== clientId) {
-            throw new ForbiddenException('No tienes permiso para cancelar esta solicitud');
-        }
-
-        if (request.status !== 'pending') {
-            throw new BadRequestException('Solo puedes cancelar solicitudes pendientes');
-        }
-
-        return this.prisma.serviceRequest.update({
-            where: { id: requestId },
-            data: {
-                status: 'cancelled',
-                cancelled_at: new Date(),
-            },
-        });
+    if (!request) {
+        throw new NotFoundException('Solicitud no encontrada');
     }
+
+    if (request.client_id !== clientId) {
+        throw new ForbiddenException('No tienes permiso para cancelar esta solicitud');
+    }
+
+    if (request.status !== 'pending') {
+        throw new BadRequestException('Solo puedes cancelar solicitudes pendientes');
+    }
+
+    return this.prisma.serviceRequest.update({
+        where: { id: requestId },
+        data: {
+            status: 'cancelled',
+            cancelled_at: new Date(),
+        },
+    });
+}
 
     /**
      * Get a single service request by ID
      */
     async findOne(requestId: string, userId: string) {
-        const request = await this.prisma.serviceRequest.findUnique({
-            where: { id: requestId },
-            include: {
-                service: {
-                    include: {
-                        professional: {
-                            select: {
-                                id: true,
-                                name: true,
-                                email: true,
-                                avatar: true,
-                                location: true,
-                                verified: true,
-                            },
+    const request = await this.prisma.serviceRequest.findUnique({
+        where: { id: requestId },
+        include: {
+            service: {
+                include: {
+                    professional: {
+                        select: {
+                            id: true,
+                            name: true,
+                            email: true,
+                            avatar: true,
+                            location: true,
+                            verified: true,
                         },
                     },
                 },
-                client: {
-                    select: {
-                        id: true,
-                        name: true,
-                        email: true,
-                        avatar: true,
-                        location: true,
-                        verified: true,
-                    },
-                },
-                professional: {
-                    select: {
-                        id: true,
-                        name: true,
-                        email: true,
-                        avatar: true,
-                        location: true,
-                        verified: true,
-                    },
+            },
+            client: {
+                select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                    avatar: true,
+                    location: true,
+                    verified: true,
                 },
             },
-        });
+            professional: {
+                select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                    avatar: true,
+                    location: true,
+                    verified: true,
+                },
+            },
+        },
+    });
 
-        if (!request) {
-            throw new NotFoundException('Solicitud no encontrada');
-        }
-
-        // Verify user is part of this request
-        if (request.client_id !== userId && request.professional_id !== userId) {
-            throw new ForbiddenException('No tienes permiso para ver esta solicitud');
-        }
-
-        return request;
+    if (!request) {
+        throw new NotFoundException('Solicitud no encontrada');
     }
+
+    // Verify user is part of this request
+    if (request.client_id !== userId && request.professional_id !== userId) {
+        throw new ForbiddenException('No tienes permiso para ver esta solicitud');
+    }
+
+    return request;
+}
 }
 

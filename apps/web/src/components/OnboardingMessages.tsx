@@ -1,36 +1,12 @@
 import { useState, useEffect, ReactNode } from 'react';
-import { LucideIcon } from 'lucide-react';
-import {
-  X, TrendingUp, Target, Zap, Users,
-  MessageSquare, Heart, Briefcase,
-  CheckCircle, AlertCircle,
-  Clock, DollarSign, Settings, Bell, Search, Plus
-} from 'lucide-react';
+import { X } from 'lucide-react';
 import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { User } from '../context/SecureAuthContext';
 import { DashboardStats } from '../lib/services/dashboard.service';
-
-interface ClientStats {
-  open_announcements?: number;
-  proposals_received?: number;
-  in_progress?: number;
-  client_rating?: number;
-  total_services?: number;
-  total_reviews?: number;
-  has_switched_role?: boolean;
-}
-
-interface OnboardingMessage {
-  id: string;
-  title: string;
-  description: string;
-  icon: LucideIcon;
-  color: string;
-  condition: (user: User | null | undefined, stats: DashboardStats & ClientStats) => boolean;
-  priority: number;
-}
+import { onboardingMessages, ClientStats, OnboardingMessage } from '../config/onboardingMessages.config';
+import { useNavigate } from 'react-router-dom';
 
 interface OnboardingMessagesProps {
   user: User | null | undefined;
@@ -38,239 +14,45 @@ interface OnboardingMessagesProps {
   clientStats?: ClientStats;
 }
 
+/**
+ * Enhanced Onboarding Messages Component
+ * 
+ * Features:
+ * - Session-based persistence (resets on login)
+ * - 40+ contextual messages
+ * - Category-based organization
+ * - Action buttons for quick navigation
+ * - Smooth animations
+ * - Mobile responsive
+ * 
+ * @version 2.0.0 - 2025 Best Practices
+ */
 export function OnboardingMessages({ user, dashboardData, clientStats }: OnboardingMessagesProps): ReactNode {
+  const navigate = useNavigate();
   const [dismissedMessages, setDismissedMessages] = useState<string[]>([]);
+  const [sessionDismissed, setSessionDismissed] = useState<string[]>([]);
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
 
-  // Load dismissed messages from localStorage
+  // Load dismissed messages from storage
   useEffect(() => {
     try {
-      const dismissed = localStorage.getItem('dismissedOnboarding');
-      if (dismissed) {
-        setDismissedMessages(JSON.parse(dismissed));
+      // Session-based dismissals (reset on login)
+      const sessionDismissed = sessionStorage.getItem('onboarding_dismissed_session');
+      if (sessionDismissed) {
+        setSessionDismissed(JSON.parse(sessionDismissed));
+      }
+
+      // Permanent dismissals (never show again)
+      const permanentDismissed = localStorage.getItem('onboarding_never_show');
+      if (permanentDismissed) {
+        setDismissedMessages(JSON.parse(permanentDismissed));
       }
     } catch (error) {
-      console.warn('Failed to load dismissed messages from localStorage:', error);
+      console.warn('Failed to load dismissed messages:', error);
     }
   }, []);
 
-  const messages: OnboardingMessage[] = [
-    // === MENSAJES DE BIENVENIDA ===
-    {
-      id: 'welcome_client',
-      title: '¡Bienvenido a Fixia! 👋',
-      description: 'Conecta con profesionales verificados en toda Argentina. Publica lo que necesitas y recibe propuestas en minutos.',
-      icon: Plus,
-      color: 'from-blue-500 to-purple-500',
-      condition: (user, stats) => user?.userType === 'client' && stats?.open_announcements === 0,
-      priority: 1
-    },
-    {
-      id: 'welcome_professional',
-      title: '¡Bienvenido Profesional! 🚀',
-      description: 'Tu perfil está listo. Crea servicios, responde a oportunidades y construye tu reputación en Fixia.',
-      icon: TrendingUp,
-      color: 'from-green-500 to-emerald-500',
-      condition: (user, stats) => user?.userType === 'professional' && (!stats?.total_services || stats.total_services === 0),
-      priority: 1
-    },
-
-    // === MENSAJES PARA CLIENTES ===
-    {
-      id: 'client_first_announcement',
-      title: 'Publica tu primera solicitud',
-      description: '📢 Los anuncios bien detallados reciben un 300% más propuestas. Incluye fotos, presupuesto y plazo estimado.',
-      icon: Plus,
-      color: 'from-yellow-500 to-orange-500',
-      condition: (user, stats) => user?.userType === 'client' && stats?.open_announcements === 0,
-      priority: 2
-    },
-    {
-      id: 'client_explore_services',
-      title: 'Explora el catálogo de servicios',
-      description: '🔍 Encuentra profesionales verificados navegando por categorías. Revisa calificaciones y portafolios antes de contratar.',
-      icon: Search,
-      color: 'from-cyan-500 to-blue-500',
-      condition: (user, stats) => user?.userType === 'client' && stats?.open_announcements === 0,
-      priority: 3
-    },
-    {
-      id: 'client_pending_proposals',
-      title: '¡Tienes propuestas esperando! 📬',
-      description: 'Revisa las ofertas recibidas. Compara precios, tiempos y perfiles antes de decidir.',
-      icon: MessageSquare,
-      color: 'from-purple-500 to-pink-500',
-      condition: (user, stats) => (stats.proposals_received ?? 0) > 0 && (stats.open_announcements ?? 0) > 0,
-      priority: 1
-    },
-    {
-      id: 'client_leave_review',
-      title: 'Ayuda a la comunidad con tu opinión',
-      description: '⭐ Califica a los profesionales que contrataste. Tu feedback ayuda a otros clientes a decidir mejor.',
-      icon: Heart,
-      color: 'from-amber-500 to-yellow-500',
-      condition: (user, stats) => (stats.in_progress ?? 0) > 0,
-      priority: 4
-    },
-    {
-      id: 'client_announcement_tips',
-      title: 'Mejora tus solicitudes',
-      description: '💡 Tip: Sé específico con fechas, ubicación y presupuesto. Los anuncios claros atraen mejores profesionales.',
-      icon: Target,
-      color: 'from-indigo-500 to-purple-500',
-      condition: (user, stats) => (stats.open_announcements ?? 0) > 0 && (stats.proposals_received ?? 0) < 3,
-      priority: 5
-    },
-    {
-      id: 'client_verify_profile',
-      title: 'Verifica tu cuenta',
-      description: 'Usuarios verificados reciben 2x más respuestas. Agrega tu teléfono y completa tu perfil.',
-      icon: CheckCircle,
-      color: 'from-green-500 to-teal-500',
-      condition: (user, stats) => !user?.isVerified,
-      priority: 3
-    },
-
-    // === MENSAJES PARA PROFESIONALES ===
-    {
-      id: 'pro_create_first_service',
-      title: 'Crea tu primer servicio',
-      description: '🎯 Los profesionales con servicios publicados reciben 5x más contactos que los que solo responden anuncios.',
-      icon: Briefcase,
-      color: 'from-green-500 to-teal-500',
-      condition: (user, stats) => user?.userType === 'professional' && (!stats?.total_services || stats.total_services === 0),
-      priority: 2
-    },
-    {
-      id: 'pro_add_portfolio',
-      title: 'Agrega fotos a tu portafolio',
-      description: '📸 Servicios con 3+ imágenes profesionales tienen 400% más conversión. Muestra tu mejor trabajo.',
-      icon: Briefcase,
-      color: 'from-pink-500 to-rose-500',
-      condition: (user, stats) => user?.userType === 'professional' && stats?.total_services > 0,
-      priority: 3
-    },
-    {
-      id: 'pro_explore_opportunities',
-      title: 'Explora oportunidades activas',
-      description: '💼 Hay clientes buscando tus servicios ahora. Revisa anuncios y envía propuestas personalizadas.',
-      icon: TrendingUp,
-      color: 'from-blue-500 to-cyan-500',
-      condition: (user, stats) => user?.userType === 'professional' && stats?.total_services > 0,
-      priority: 4
-    },
-    {
-      id: 'pro_complete_profile',
-      title: 'Completa tu perfil profesional',
-      description: '📝 Agrega experiencia, certificaciones y especialidades. Perfiles completos tienen 3x más visibilidad.',
-      icon: Users,
-      color: 'from-orange-500 to-amber-500',
-      condition: (user, stats) => user?.userType === 'professional' && !user?.bio,
-      priority: 2
-    },
-    {
-      id: 'pro_response_time',
-      title: 'Responde rápido = Más contratos',
-      description: '⚡ Los profesionales que responden en menos de 2 horas tienen 80% más probabilidad de ser contratados.',
-      icon: Clock,
-      color: 'from-red-500 to-orange-500',
-      condition: (user, stats) => user?.userType === 'professional',
-      priority: 5
-    },
-    {
-      id: 'pro_pricing_strategy',
-      title: 'Optimiza tus precios',
-      description: '💰 Ofrece 3 paquetes (básico, estándar, premium). Los clientes prefieren tener opciones para elegir.',
-      icon: DollarSign,
-      color: 'from-emerald-500 to-green-500',
-      condition: (user, stats) => user?.userType === 'professional' && stats?.total_services > 0,
-      priority: 6
-    },
-    {
-      id: 'pro_get_verified',
-      title: '¡Verifica tu cuenta profesional!',
-      description: '🏆 Profesionales verificados reciben 10x más confianza. Completa el proceso en 5 minutos.',
-      icon: CheckCircle,
-      color: 'from-blue-500 to-indigo-500',
-      condition: (user, stats) => user?.userType === 'professional' && !user?.isVerified,
-      priority: 1
-    },
-    {
-      id: 'pro_build_reputation',
-      title: 'Construye tu reputación',
-      description: '⭐ Cada trabajo completado suma. Pide a tus clientes que te califiquen para destacar en búsquedas.',
-      icon: Heart,
-      color: 'from-purple-500 to-pink-500',
-      condition: (user, stats) => user?.userType === 'professional' && (stats.total_reviews ?? 0) < 5,
-      priority: 7
-    },
-    {
-      id: 'pro_service_visibility',
-      title: 'Mejora la visibilidad de tus servicios',
-      description: '👁️ Usa títulos claros, descripciones detalladas y tags relevantes. El SEO interno te posiciona mejor.',
-      icon: Search,
-      color: 'from-indigo-500 to-purple-500',
-      condition: (user, stats) => user?.userType === 'professional' && stats?.total_services > 0,
-      priority: 8
-    },
-    {
-      id: 'pro_notifications',
-      title: 'Activa las notificaciones',
-      description: '🔔 No pierdas oportunidades. Configura alertas para nuevos anuncios en tus categorías favoritas.',
-      icon: Bell,
-      color: 'from-yellow-500 to-orange-500',
-      condition: (user, stats) => user?.userType === 'professional' && !user?.notifications_projects,
-      priority: 4
-    },
-
-    // === MENSAJES GENERALES Y TIPS ===
-    {
-      id: 'profile_photo_tip',
-      title: 'Agrega una foto de perfil',
-      description: '📷 Perfiles con foto profesional generan 85% más confianza. Usa una imagen clara y amigable.',
-      icon: Users,
-      color: 'from-cyan-500 to-blue-500',
-      condition: (user, stats) => !user?.avatar,
-      priority: 3
-    },
-    {
-      id: 'settings_reminder',
-      title: 'Personaliza tu experiencia',
-      description: '⚙️ Configura tus preferencias, zona horaria y métodos de contacto favoritos en Ajustes.',
-      icon: Settings,
-      color: 'from-gray-500 to-slate-500',
-      condition: (user, stats) => !user?.timezone,
-      priority: 9
-    },
-    {
-      id: 'community_guidelines',
-      title: 'Sé parte de la comunidad',
-      description: '❤️ Respeto, honestidad y profesionalismo. Reporta cualquier conducta inapropiada.',
-      icon: Heart,
-      color: 'from-rose-500 to-pink-500',
-      condition: (user, stats) => true, // Siempre mostrar si no fue cerrado
-      priority: 10
-    },
-    {
-      id: 'whatsapp_contact',
-      title: 'Agrega tu WhatsApp',
-      description: '📱 Clientes prefieren contactar por WhatsApp. Agrégalo en tu perfil para más conversiones.',
-      icon: MessageSquare,
-      color: 'from-green-500 to-emerald-500',
-      condition: (user, stats) => !user?.whatsapp_number,
-      priority: 6
-    },
-    {
-      id: 'dual_role_tip',
-      title: '¿Sabías que puedes ser cliente Y profesional?',
-      description: '🔄 Muchos usuarios publican servicios y también contratan. Aprovecha ambas funcionalidades.',
-      icon: Users,
-      color: 'from-violet-500 to-purple-500',
-      condition: (user, stats) => user?.userType === 'client' && !stats?.has_switched_role,
-      priority: 11
-    }
-  ];
-
+  // Merge stats
   const mergedStats: DashboardStats & ClientStats = {
     total_services: 0,
     active_projects: 0,
@@ -290,59 +72,70 @@ export function OnboardingMessages({ user, dashboardData, clientStats }: Onboard
     ...clientStats
   };
 
-  const activeMessages = messages
-    .filter(msg => !dismissedMessages.includes(msg.id))
+  // Filter active messages
+  const allDismissed = [...dismissedMessages, ...sessionDismissed];
+  const activeMessages = onboardingMessages
+    .filter(msg => !allDismissed.includes(msg.id))
     .filter(msg => msg.condition(user, mergedStats))
     .sort((a, b) => a.priority - b.priority);
 
-  const handleDismiss = (messageId: string) => {
-    // Add the message to the dismissed list
-    const updatedDismissed = [...dismissedMessages, messageId];
-    setDismissedMessages(updatedDismissed);
-    try {
-      localStorage.setItem('dismissedOnboarding', JSON.stringify(updatedDismissed));
-    } catch (storageError) {
-      console.warn('Failed to save dismissed messages to localStorage:', storageError);
+  // Handle dismiss (session-based by default)
+  const handleDismiss = (messageId: string, permanent: boolean = false) => {
+    if (permanent) {
+      // Never show again
+      const updatedPermanent = [...dismissedMessages, messageId];
+      setDismissedMessages(updatedPermanent);
+      try {
+        localStorage.setItem('onboarding_never_show', JSON.stringify(updatedPermanent));
+      } catch (error) {
+        console.warn('Failed to save permanent dismissal:', error);
+      }
+    } else {
+      // Dismiss for this session only
+      const updatedSession = [...sessionDismissed, messageId];
+      setSessionDismissed(updatedSession);
+      try {
+        sessionStorage.setItem('onboarding_dismissed_session', JSON.stringify(updatedSession));
+      } catch (error) {
+        console.warn('Failed to save session dismissal:', error);
+      }
     }
-
-    // If there are more messages, move to the next one.
-    // Otherwise, the component will disappear as activeMessages becomes empty.
-    // We don't need to manage the index, React will re-render with the new filtered list.
-    // The component will always show the first element of the `activeMessages` array.
-    // By updating `dismissedMessages`, we trigger a re-filter and re-render.
   };
 
+  // Handle dismiss all
   const handleDismissAll = () => {
-    // Get all active message IDs and mark them as dismissed
     const allIds = activeMessages.map(m => m.id);
-    const updated = [...dismissedMessages, ...allIds];
+    const updatedSession = [...sessionDismissed, ...allIds];
+    const uniqueIds = Array.from(new Set(updatedSession));
 
-    // Remove duplicates
-    const uniqueIds = Array.from(new Set(updated));
-    setDismissedMessages(uniqueIds);
-
-    // Try to save to localStorage
+    setSessionDismissed(uniqueIds);
     try {
-      localStorage.setItem('dismissedOnboarding', JSON.stringify(uniqueIds));
-    } catch (storageError) {
-      // Silently fail - dismissal in memory is sufficient for this session
-      console.warn('Failed to save dismissed messages to localStorage:', storageError);
+      sessionStorage.setItem('onboarding_dismissed_session', JSON.stringify(uniqueIds));
+    } catch (error) {
+      console.warn('Failed to save session dismissals:', error);
     }
 
-    // Reset message index
     setCurrentMessageIndex(0);
   };
 
-  // No active messages to show
+  // Handle action button click
+  const handleAction = (message: OnboardingMessage) => {
+    if (message.action?.href) {
+      navigate(message.action.href);
+    }
+    // Auto-dismiss after action
+    handleDismiss(message.id, false);
+  };
+
+  // No active messages
   if (activeMessages.length === 0) {
     return null;
   }
 
-  // Ensure currentMessageIndex is within bounds
+  // Ensure index is valid
   const safeIndex = Math.min(Math.max(currentMessageIndex, 0), activeMessages.length - 1);
   const currentMessage = activeMessages[safeIndex];
 
-  // Fallback in case something goes wrong
   if (!currentMessage) {
     return null;
   }
@@ -353,61 +146,123 @@ export function OnboardingMessages({ user, dashboardData, clientStats }: Onboard
     <AnimatePresence mode="wait">
       <motion.div
         key={currentMessage.id}
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -20 }}
-        transition={{ duration: 0.4 }}
+        initial={{ opacity: 0, y: -20, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: -20, scale: 0.95 }}
+        transition={{
+          duration: 0.5,
+          type: "spring",
+          stiffness: 100,
+          damping: 15
+        }}
       >
-        <Card className={`glass border-white/20 bg-gradient-to-r ${currentMessage.color} bg-opacity-10 overflow-hidden`}>
-          <CardContent className="p-5">
+        <Card className={`glass border-white/20 bg-gradient-to-r ${currentMessage.color} bg-opacity-10 overflow-hidden shadow-2xl hover:shadow-3xl transition-shadow duration-300`}>
+          <CardContent className="p-5 sm:p-6">
             <div className="flex items-start gap-4">
-              <div className={`h-12 w-12 rounded-xl bg-gradient-to-br ${currentMessage.color} flex items-center justify-center flex-shrink-0`}>
-                <Icon className="h-6 w-6 text-white" />
-              </div>
-              <div className="flex-1">
-                <h3 className="text-lg font-semibold mb-1 text-white">{currentMessage.title}</h3>
-                <p className="text-sm text-white/80 mb-3">{currentMessage.description}</p>
-                <div className="flex items-center gap-2">
+              {/* Animated Icon */}
+              <motion.div
+                className={`h-12 w-12 sm:h-14 sm:w-14 rounded-xl bg-gradient-to-br ${currentMessage.color} flex items-center justify-center flex-shrink-0 shadow-lg`}
+                animate={{
+                  rotate: [0, 5, -5, 0],
+                  scale: [1, 1.05, 1]
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  repeatDelay: 3
+                }}
+              >
+                <Icon className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
+              </motion.div>
+
+              {/* Content */}
+              <div className="flex-1 min-w-0">
+                <h3 className="text-lg sm:text-xl font-bold mb-1 text-white leading-tight">
+                  {currentMessage.title}
+                </h3>
+                <p className="text-sm sm:text-base text-white/90 mb-4 leading-relaxed">
+                  {currentMessage.description}
+                </p>
+
+                {/* Action Buttons */}
+                <div className="flex flex-wrap items-center gap-2">
+                  {currentMessage.action && (
+                    <Button
+                      size="sm"
+                      onClick={() => handleAction(currentMessage)}
+                      className="bg-white/90 hover:bg-white text-gray-900 font-semibold shadow-md hover:shadow-lg transition-all duration-200"
+                    >
+                      {currentMessage.action.label}
+                    </Button>
+                  )}
+
                   <Button
                     size="sm"
-                    onClick={() => handleDismiss(currentMessage.id)}
-                    className="bg-white/20 hover:bg-white/30 text-white border-white/30"
+                    onClick={() => handleDismiss(currentMessage.id, false)}
+                    className="bg-white/20 hover:bg-white/30 text-white border-white/30 font-medium"
                   >
                     Entendido
                   </Button>
+
                   {activeMessages.length > 1 && (
                     <Button
                       size="sm"
                       variant="ghost"
                       onClick={handleDismissAll}
-                      className="text-white/60 hover:text-white/80 hover:bg-white/10"
+                      className="text-white/70 hover:text-white hover:bg-white/10 text-xs sm:text-sm"
                     >
                       Cerrar todos ({activeMessages.length})
                     </Button>
                   )}
                 </div>
               </div>
+
+              {/* Close Button */}
               <Button
                 size="icon"
                 variant="ghost"
-                onClick={() => handleDismiss(currentMessage.id)}
-                className="h-8 w-8 text-white/60 hover:text-white/80 hover:bg-white/10"
+                onClick={() => handleDismiss(currentMessage.id, false)}
+                className="h-8 w-8 text-white/60 hover:text-white hover:bg-white/10 flex-shrink-0"
               >
                 <X className="h-4 w-4" />
               </Button>
             </div>
+
+            {/* Progress Indicators */}
             {activeMessages.length > 1 && (
-              <div className="flex gap-1 mt-3 justify-center">
-                {activeMessages.map((_, idx) => (
-                  <div
+              <motion.div
+                className="flex gap-1.5 mt-4 justify-center"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 }}
+              >
+                {activeMessages.slice(0, 5).map((_, idx) => (
+                  <motion.div
                     key={idx}
-                    className={`h-1.5 rounded-full transition-all ${
-                      idx === safeIndex ? 'w-8 bg-white' : 'w-1.5 bg-white/40'
-                    }`}
+                    className={`h-1.5 rounded-full transition-all duration-300 ${idx === safeIndex
+                        ? 'w-8 bg-white shadow-md'
+                        : 'w-1.5 bg-white/40'
+                      }`}
+                    whileHover={{ scale: 1.2 }}
                   />
                 ))}
-              </div>
+                {activeMessages.length > 5 && (
+                  <div className="h-1.5 w-1.5 rounded-full bg-white/40" />
+                )}
+              </motion.div>
             )}
+
+            {/* Category Badge */}
+            <motion.div
+              className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-white/20 backdrop-blur-sm"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <span className="text-xs font-medium text-white/80 capitalize">
+                {currentMessage.category}
+              </span>
+            </motion.div>
           </CardContent>
         </Card>
       </motion.div>
