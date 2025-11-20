@@ -217,11 +217,11 @@ function PricingCardsSection() {
                 <div className="space-y-4">
                   <div className="flex items-center space-x-3">
                     <Check className="h-5 w-5 text-success" />
-                    <span>Búsqueda ilimitada de profesionales</span>
+                    <span>Publicar 3 solicitudes de servicios por mes</span>
                   </div>
                   <div className="flex items-center space-x-3">
                     <Check className="h-5 w-5 text-success" />
-                    <span>Ver perfiles y reseñas</span>
+                    <span>Reseñas a profesionales</span>
                   </div>
                   <div className="flex items-center space-x-3">
                     <Check className="h-5 w-5 text-success" />
@@ -229,7 +229,7 @@ function PricingCardsSection() {
                   </div>
                   <div className="flex items-center space-x-3">
                     <Check className="h-5 w-5 text-success" />
-                    <span>1 alerta de servicio activa</span>
+                    <span>Alertas de servicio activa</span>
                   </div>
                   <div className="flex items-center space-x-3">
                     <Check className="h-5 w-5 text-success" />
@@ -237,11 +237,11 @@ function PricingCardsSection() {
                   </div>
                   <div className="flex items-center space-x-3 opacity-50">
                     <X className="h-5 w-5 text-muted-foreground" />
-                    <span>Publicar servicios</span>
+                    <span>Perfil profesional</span>
                   </div>
                   <div className="flex items-center space-x-3 opacity-50">
                     <X className="h-5 w-5 text-muted-foreground" />
-                    <span>Perfil profesional</span>
+                    <span>Publicar servicios</span>
                   </div>
                 </div>
 
@@ -290,7 +290,7 @@ function PricingCardsSection() {
                   <CardTitle className="text-2xl">Plan Profesional</CardTitle>
                 </div>
                 <div className="space-y-2">
-                  <div className="text-4xl font-bold text-primary">$4.500</div>
+                  <div className="text-4xl font-bold text-primary">$3.900</div>
                   <div className="text-muted-foreground">ARS / mes</div>
                 </div>
                 <p className="text-muted-foreground">
@@ -301,7 +301,7 @@ function PricingCardsSection() {
                 <Alert className="border-primary/50 bg-primary/10">
                   <Gift className="h-4 w-4" />
                   <AlertDescription>
-                    <strong>¡Oferta de lanzamiento!</strong> Los primeros 200 profesionales obtienen 2 meses completamente gratis.
+                    <strong>¡Oferta de lanzamiento!</strong> Los primeros 200 profesionales obtienen 1 mes completamente gratis.
                   </AlertDescription>
                 </Alert>
 
@@ -328,11 +328,11 @@ function PricingCardsSection() {
                   </div>
                   <div className="flex items-center space-x-3">
                     <Check className="h-5 w-5 text-success" />
-                    <span>5 alertas de servicios activas</span>
+                    <span>Alertas de servicios activas</span>
                   </div>
                   <div className="flex items-center space-x-3">
                     <Check className="h-5 w-5 text-success" />
-                    <span>Estadísticas y analytics</span>
+                    <span>Estadísticas</span>
                   </div>
                   <div className="flex items-center space-x-3">
                     <Check className="h-5 w-5 text-success" />
@@ -340,7 +340,7 @@ function PricingCardsSection() {
                   </div>
                   <div className="flex items-center space-x-3">
                     <Check className="h-5 w-5 text-success" />
-                    <span className="font-medium">Sin comisiones por servicios</span>
+                    <span className="font-medium">Algoritmo prioritario en búsquedas</span>
                   </div>
                   <div className="flex items-center space-x-3">
                     <Check className="h-5 w-5 text-success" />
