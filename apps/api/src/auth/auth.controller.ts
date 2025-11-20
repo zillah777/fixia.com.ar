@@ -355,6 +355,15 @@ export class AuthController {
     return this.authService.getUserProfile(req.user.sub);
   }
 
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Obtener información del usuario autenticado (alias de /profile)' })
+  @ApiResponse({ status: 200, description: 'Información del usuario' })
+  async getMe(@Request() req) {
+    return this.authService.getUserProfile(req.user.sub);
+  }
+
   @Post('verify-email')
   @Throttle({ default: { limit: 10, ttl: 60000 } }) // 10 attempts per minute to prevent brute force
   @HttpCode(HttpStatus.OK)
