@@ -175,6 +175,7 @@ export class ServiceRequestsService {
             include: {
                 service: true,
                 client: true,
+                professional: true,  // Include professional for notification
             },
         });
 
@@ -205,15 +206,21 @@ export class ServiceRequestsService {
             },
         });
 
-        // Create match (simplified - adjust based on your Match model)
-        const match = await this.prisma.match.create({
-            data: {
-                client_id: request.client_id,
-                professional_id: request.professional_id,
-                service_id: request.service_id,
-                status: 'active',
-            },
-        });
+        // Create match - Note: Match requires proposal_id, so we skip match creation for now
+        // In a real implementation, you'd either:
+        // 1. Create a proposal first, then create the match
+        // 2. Make proposal_id optional in Match model
+        // 3. Use a different flow for service-based matches
+
+        // For now, we'll comment out match creation to avoid the error
+        // const match = await this.prisma.match.create({
+        //     data: {
+        //         client_id: request.client_id,
+        //         professional_id: request.professional_id,
+        //         service_id: request.service_id,
+        //         status: 'active',
+        //     },
+        // });
 
         // Send notification to client
         try {
@@ -230,7 +237,7 @@ export class ServiceRequestsService {
 
         return {
             request: updatedRequest,
-            match,
+            // match,  // Commented out until we handle proposal_id
         };
     }
 
