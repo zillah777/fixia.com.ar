@@ -569,7 +569,14 @@ function Footer() {
             </p>
             <div className="flex items-center space-x-2 text-sm text-muted-foreground">
               <MapPin className="h-4 w-4" />
-              <span>Chubut, Argentina</span>
+              <a
+                href="https://www.google.com/maps/place/Chubut,+Argentina"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-primary transition-colors"
+              >
+                Chubut, Argentina
+              </a>
             </div>
           </div>
 
