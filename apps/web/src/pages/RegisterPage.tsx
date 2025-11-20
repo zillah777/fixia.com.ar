@@ -24,6 +24,7 @@ interface FormData {
   location: string;
   dni: string;
   birthdate: string;
+  gender: string; // NEW: Gender field
 
   // Professional fields
   businessName: string;
@@ -50,6 +51,7 @@ const initialFormData: FormData = {
   location: '',
   dni: '',
   birthdate: '',
+  gender: '', // NEW: Gender field
   businessName: '',
   serviceCategories: [],
   description: '',
@@ -274,6 +276,24 @@ function ClientRegistrationForm({
                 title="Debes ser mayor de 18 años"
               />
             </div>
+          </div>
+
+          {/* Gender Field */}
+          <div className="space-y-2">
+            <Label htmlFor="gender">Género *</Label>
+            <Select
+              value={formData.gender}
+              onValueChange={(value) => setFormData({ ...formData, gender: value })}
+            >
+              <SelectTrigger id="gender">
+                <SelectValue placeholder="Selecciona tu género" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="masculino">Masculino</SelectItem>
+                <SelectItem value="femenino">Femenino</SelectItem>
+                <SelectItem value="prefiero_no_decirlo">Prefiero no decirlo</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Terms and Privacy */}
@@ -680,6 +700,58 @@ function ProfessionalRegistrationForm({
                   </SelectContent>
                 </Select>
               </div>
+            </div>
+
+            {/* DNI, Birthdate, and Gender */}
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="prof-dni">DNI *</Label>
+                <Input
+                  id="prof-dni"
+                  type="text"
+                  value={formData.dni}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/\D/g, '');
+                    if (value.length <= 8) {
+                      setFormData({ ...formData, dni: value });
+                    }
+                  }}
+                  placeholder="12345678"
+                  required
+                  maxLength={8}
+                  pattern="\d{7,8}"
+                  title="El DNI debe tener 7 u 8 dígitos"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="prof-birthdate">Fecha de Nacimiento *</Label>
+                <Input
+                  id="prof-birthdate"
+                  type="date"
+                  value={formData.birthdate}
+                  onChange={(e) => setFormData({ ...formData, birthdate: e.target.value })}
+                  required
+                  max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split('T')[0]}
+                  title="Debes ser mayor de 18 años"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="prof-gender">Género *</Label>
+              <Select
+                value={formData.gender}
+                onValueChange={(value) => setFormData({ ...formData, gender: value })}
+              >
+                <SelectTrigger id="prof-gender">
+                  <SelectValue placeholder="Selecciona tu género" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="masculino">Masculino</SelectItem>
+                  <SelectItem value="femenino">Femenino</SelectItem>
+                  <SelectItem value="prefiero_no_decirlo">Prefiero no decirlo</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
 

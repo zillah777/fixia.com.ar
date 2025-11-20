@@ -25,6 +25,8 @@ model User {
   updated_at                       DateTime                 @updatedAt
   deleted_at                       DateTime?
   birthdate                        DateTime?
+  dni                              String?                  @unique
+  gender                           Gender?
   failed_login_attempts            Int                      @default(0)
   locked_until                     DateTime?
   bio                              String?
@@ -938,3 +940,10 @@ enum NotificationType {
   phone_revealed
   review_requested
 }
+
+enum Gender {
+  masculino
+  femenino
+  prefiero_no_decirlo
+}
+

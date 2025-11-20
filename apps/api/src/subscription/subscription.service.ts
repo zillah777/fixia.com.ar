@@ -195,12 +195,18 @@ export class SubscriptionService {
     const expiryDate = new Date();
     expiryDate.setMonth(expiryDate.getMonth() + 1); // 1 month subscription
 
-    // Update user with subscription details
-    // Use 'dual' type to maintain client capabilities while adding professional features
+    // SECURITY FIX #6: Simplified user type logic (eliminate dual)
+    // - If user is 'client' → upgrade to 'professional'
+    // - If user is already 'professional' → keep as 'professional' (renewal)
+    // - Professional includes ALL client features
+    const newUserType = user.user_type === 'client' ? 'professional' : user.user_type;
+
+    this.logger.log(`Subscription activation: ${user.user_type} → ${newUserType}`);
+
     await this.prisma.user.update({
       where: { id: userId },
       data: {
-        user_type: 'dual', // DUAL account: can act as both client and professional
+        user_type: newUserType, // client→professional, professional→professional
         is_professional_active: true,
         professional_since: user.professional_since || startDate,
         subscription_type: subscriptionType,

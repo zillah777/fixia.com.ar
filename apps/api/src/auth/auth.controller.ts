@@ -79,6 +79,63 @@ export class AuthController {
         throw new BadRequestException('Nombre es requerido');
       }
 
+      // SECURITY FIX #1: User Type Validation (Prevent privilege escalation)
+      const ALLOWED_REGISTRATION_TYPES = ['client', 'professional'] as const;
+      const requestedType = registerDto.userType || registerDto.user_type || 'client';
+
+      if (!ALLOWED_REGISTRATION_TYPES.includes(requestedType as any)) {
+        throw new BadRequestException('Tipo de usuario inválido');
+      }
+
+      // CRITICAL: Never allow admin or dual during registration
+      if (requestedType === 'admin' || requestedType === 'dual') {
+        throw new BadRequestException('Tipo de usuario no permitido para registro');
+      }
+
+      // SECURITY FIX #2: DNI Validation
+      if (!registerDto.dni) {
+        throw new BadRequestException('DNI es requerido');
+      }
+
+      if (!/^\d{7,8}$/.test(registerDto.dni)) {
+        throw new BadRequestException('DNI debe tener 7 u 8 dígitos');
+      }
+
+      // Check DNI uniqueness
+      const existingDNI = await this.authService['prisma'].user.findUnique({
+        where: { dni: registerDto.dni },
+      });
+
+      if (existingDNI) {
+        throw new ConflictException('El DNI ya está registrado en Fixia');
+      }
+
+      // SECURITY FIX #3: Age Validation (18+)
+      if (!registerDto.birthdate) {
+        throw new BadRequestException('Fecha de nacimiento es requerida');
+      }
+
+      const birthDate = new Date(registerDto.birthdate);
+      const today = new Date();
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const monthDiff = today.getMonth() - birthDate.getMonth();
+
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+      }
+
+      if (age < 18) {
+        throw new BadRequestException('Debes ser mayor de 18 años para registrarte en Fixia');
+      }
+
+      // SECURITY FIX #4: Gender Validation (optional but validate if provided)
+      if (registerDto.gender) {
+        const VALID_GENDERS = ['masculino', 'femenino', 'prefiero_no_decirlo'];
+        if (!VALID_GENDERS.includes(registerDto.gender)) {
+          throw new BadRequestException('Género inválido');
+        }
+      }
+
       // Check if user already exists FIRST
       const existingUser = await this.authService['prisma'].user.findUnique({
         where: { email: registerDto.email },
@@ -94,11 +151,13 @@ export class AuthController {
         email: registerDto.email,
         password_hash: await require('bcryptjs').hash(registerDto.password, 12),
         name: registerDto.fullName || registerDto.name,
-        user_type: registerDto.userType || registerDto.user_type || 'client',
+        user_type: requestedType, // Now validated
         location: registerDto.location || null,
         phone: registerDto.phone || null,
         whatsapp_number: registerDto.phone || null,
         birthdate: registerDto.birthdate ? new Date(registerDto.birthdate) : null,
+        dni: registerDto.dni, // Now required and validated
+        gender: registerDto.gender || null, // NEW: Gender field
         verified: false,
         email_verified: false,
         failed_login_attempts: 0,
@@ -208,6 +267,22 @@ export class AuthController {
             email: user.email,
           };
         }
+      } else if (userData.user_type === 'professional' && !requirePayment) {
+        // SECURITY FIX #5: DEV MODE - Auto-activate professional
+        this.logger.log(`🔧 DEV MODE: Auto-activating professional: ${user.email}`);
+
+        await this.authService['prisma'].user.update({
+          where: { id: user.id },
+          data: {
+            is_professional_active: true,
+            professional_since: new Date(),
+            subscription_status: 'active',
+            subscription_started_at: new Date(),
+            subscription_expires_at: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year for dev
+          },
+        });
+
+        this.logger.log(`✅ Professional auto-activated (DEV MODE): ${user.email}`);
       }
 
       return {

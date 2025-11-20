@@ -111,6 +111,16 @@ export class RegisterDto {
   @Matches(/^\d{7,8}$/, { message: 'El DNI debe contener solo números' })
   dni?: string;
 
+  @ApiProperty({
+    example: 'masculino',
+    description: 'Género del usuario',
+    enum: ['masculino', 'femenino', 'prefiero_no_decirlo'],
+    required: false
+  })
+  @IsOptional()
+  @IsString()
+  gender?: string;
+
   // Professional-only fields
   @ApiProperty({
     example: ['Peluquería', 'Manicura'],
