@@ -88,9 +88,7 @@ function Navigation() {
         </button>
 
         <Link to="/dashboard" className="flex items-center space-x-3">
-          <div className="h-8 w-8 liquid-gradient rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold">F</span>
-          </div>
+          <div className="h-8 w-8 liquid-gradient rounded-lg flex items-center justify-center"><img src="/logo.png" alt="Fixia" className="h-full w-full object-contain p-1" /></div>
           <span className="font-semibold">Fixia</span>
         </Link>
 

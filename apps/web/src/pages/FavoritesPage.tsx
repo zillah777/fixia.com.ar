@@ -159,9 +159,7 @@ function Navigation() {
     >
       <div className="container mx-auto flex h-16 items-center justify-between px-6">
         <Link to="/dashboard" className="flex items-center space-x-3">
-          <div className="h-8 w-8 liquid-gradient rounded-lg flex items-center justify-center shadow-lg">
-            <span className="text-white font-bold">F</span>
-          </div>
+          <div className="h-8 w-8 liquid-gradient rounded-lg flex items-center justify-center shadow-lg"><img src="/logo.png" alt="Fixia" className="h-full w-full object-contain p-1" /></div>
           <div className="flex flex-col">
             <span className="text-lg font-semibold">Fixia</span>
             <span className="text-xs text-muted-foreground -mt-1">Favoritos</span>

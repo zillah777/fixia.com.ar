@@ -73,9 +73,7 @@ export default function ForgotPasswordPage() {
         >
           <Link to="/" className="inline-flex items-center space-x-3 mb-6">
             <div className="relative">
-              <div className="h-12 w-12 liquid-gradient rounded-2xl flex items-center justify-center shadow-lg">
-                <span className="text-white font-bold text-xl">F</span>
-              </div>
+              <div className="h-12 w-12 liquid-gradient rounded-2xl flex items-center justify-center shadow-lg"><img src="/logo.png" alt="Fixia" className="h-full w-full object-contain" /></div>
               <div className="absolute -inset-1 liquid-gradient rounded-2xl blur opacity-30"></div>
             </div>
             <div className="text-left">
