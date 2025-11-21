@@ -1,12 +1,14 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { ServicesModule } from './services/services.module';
 import { ProjectsModule } from './projects/projects.module';
 import { ContactModule } from './contact/contact.module';
 import { CommonModule } from './common/common.module';
+import { RedisModule } from './common/redis/redis.module';
 import { EmailModule } from './modules/email/email.module';
 import { AdminModule } from './admin/admin.module';
 import { JobsModule } from './jobs/jobs.module';
@@ -32,14 +34,27 @@ import { PortfolioModule } from './portfolio/portfolio.module';
       isGlobal: true,
       envFilePath: '.env',
     }),
+    // Global rate limiting - production-ready configuration
     ThrottlerModule.forRoot({
       throttlers: [
         {
-          ttl: 60000, // 1 minuto
-          limit: 100, // 100 requests por minuto (general)
+          name: 'short',
+          ttl: 1000, // 1 second
+          limit: 3,  // 3 requests per second (burst protection)
+        },
+        {
+          name: 'medium',
+          ttl: 60000, // 1 minute
+          limit: 20,  // 20 requests per minute (general API)
+        },
+        {
+          name: 'long',
+          ttl: 900000, // 15 minutes
+          limit: 100, // 100 requests per 15 minutes (sustained usage)
         },
       ],
     }),
+    RedisModule, // Redis for distributed rate limiting and caching
     CommonModule,
     AuthModule,
     UsersModule,
@@ -62,8 +77,6 @@ import { PortfolioModule } from './portfolio/portfolio.module';
     CategoriesModule,
     FavoritesModule,
     SubscriptionModule, // NEW: Subscription and dual roles system
-    MatchingModule, // NEW: Matchmaking and phone reveal system
-    ServiceRequestsModule, // NEW: Service requests for Professional Circuit
   ],
   controllers: [],
   providers: [],
