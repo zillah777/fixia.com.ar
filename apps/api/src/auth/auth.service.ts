@@ -6,10 +6,12 @@ import { PrismaService } from '../common/prisma.service';
 import { EmailService } from '../modules/email/email.service';
 import { LoginCredentials, RegisterData, AuthResponse } from '@fixia/types';
 import { ERROR_CODES, createSecureError } from '../common/constants/error-codes';
+import { PasswordValidator } from '../common/validators/password.validator';
 
 @Injectable()
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
+  private readonly passwordValidator = new PasswordValidator();
 
   constructor(
     private prisma: PrismaService,
@@ -339,6 +341,10 @@ export class AuthService {
       throw new BadRequestException('Token inválido o expirado');
     }
 
+    // SECURITY: Validate new password strength
+    this.logger.log('🔒 Validating new password strength...');
+    this.passwordValidator.validate(newPassword);
+
     // Hash new password
     const hashedPassword = await bcrypt.hash(newPassword, 12);
 
@@ -557,6 +563,10 @@ export class AuthService {
     if (!isCurrentPasswordValid) {
       throw new UnauthorizedException('La contraseña actual es incorrecta');
     }
+
+    // SECURITY: Validate new password strength
+    this.logger.log('🔒 Validating new password strength...');
+    this.passwordValidator.validate(newPassword);
 
     // Check if new password is same as current
     const isSameAsCurrent = await bcrypt.compare(newPassword, user.password_hash);

@@ -23,11 +23,13 @@ import { LoginDto, RegisterDto, RefreshTokenDto, ForgotPasswordDto, ResetPasswor
 import { AuthResponse } from '@fixia/types';
 import { SubscriptionService } from '../subscription/subscription.service';
 import { ConfigService } from '@nestjs/config';
+import { PasswordValidator } from '../common/validators/password.validator';
 
 @ApiTags('Autenticación')
 @Controller('auth')
 export class AuthController {
   private readonly logger = new Logger(AuthController.name);
+  private readonly passwordValidator = new PasswordValidator();
 
   constructor(
     private readonly authService: AuthService,
@@ -98,7 +100,19 @@ export class AuthController {
       }
 
       if (!/^\d{7,8}$/.test(registerDto.dni)) {
-        throw new BadRequestException('DNI debe tener 7 u 8 dígitos');
+        throw new BadRequestException('DNI debe tener entre 7 y 8 dígitos numéricos');
+      }
+
+      // SECURITY FIX #3: Password Strength Validation (CVSS 7.3 mitigation)
+      this.logger.log('🔒 Validating password strength...');
+      try {
+        this.passwordValidator.validate(registerDto.password);
+        const strength = this.passwordValidator.getStrengthScore(registerDto.password);
+        const label = this.passwordValidator.getStrengthLabel(strength);
+        this.logger.log(`✅ Password strength: ${label} (${strength}/100)`);
+      } catch (error) {
+        this.logger.warn(`❌ Password validation failed: ${error.message}`);
+        throw error; // Re-throw to send to client
       }
 
       // Check DNI uniqueness

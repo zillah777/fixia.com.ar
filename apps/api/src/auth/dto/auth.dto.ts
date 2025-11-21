@@ -20,12 +20,12 @@ export class LoginDto {
   email: string;
 
   @ApiProperty({
-    example: 'miPassword123',
-    description: 'Contraseña del usuario',
-    minLength: 8
+    example: 'MySecureP@ssw0rd2024',
+    description: 'Contraseña del usuario (mínimo 12 caracteres, debe incluir mayúsculas, minúsculas, números y caracteres especiales)',
+    minLength: 12
   })
   @IsString()
-  @MinLength(8)
+  @MinLength(12, { message: 'La contraseña debe tener al menos 12 caracteres' })
   password: string;
 }
 
@@ -38,12 +38,12 @@ export class RegisterDto {
   email: string;
 
   @ApiProperty({
-    example: 'miPassword123',
-    description: 'Contraseña del usuario',
-    minLength: 8
+    example: 'MySecureP@ssw0rd2024',
+    description: 'Contraseña del usuario (mínimo 12 caracteres, debe incluir mayúsculas, minúsculas, números y caracteres especiales)',
+    minLength: 12
   })
   @IsString()
-  @MinLength(8)
+  @MinLength(12, { message: 'La contraseña debe tener al menos 12 caracteres' })
   password: string;
 
   @ApiProperty({
@@ -214,12 +214,12 @@ export class ResetPasswordDto {
   token: string;
 
   @ApiProperty({
-    example: 'nuevaPassword123',
-    description: 'Nueva contraseña',
-    minLength: 8
+    example: 'MyNewSecureP@ssw0rd2024',
+    description: 'Nueva contraseña (mínimo 12 caracteres, debe incluir mayúsculas, minúsculas, números y caracteres especiales)',
+    minLength: 12
   })
   @IsString()
-  @MinLength(8)
+  @MinLength(12, { message: 'La contraseña debe tener al menos 12 caracteres' })
   new_password: string;
 }
 
@@ -252,12 +252,12 @@ export class ChangePasswordDto {
   current_password: string;
 
   @ApiProperty({
-    example: 'miNuevaPassword123',
-    description: 'Nueva contraseña del usuario',
-    minLength: 8
+    example: 'MyNewSecureP@ssw0rd2024',
+    description: 'Nueva contraseña del usuario (mínimo 12 caracteres, debe incluir mayúsculas, minúsculas, números y caracteres especiales)',
+    minLength: 12
   })
   @IsString()
-  @MinLength(8)
+  @MinLength(12, { message: 'La contraseña debe tener al menos 12 caracteres' })
   new_password: string;
 }
 
