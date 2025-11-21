@@ -94,6 +94,7 @@ model User {
   professional_service_requests    ServiceRequest[]         @relation("ProfessionalServiceRequests")
   client_service_matches           ServiceMatch[]           @relation("ClientServiceMatches")
   professional_service_matches     ServiceMatch[]           @relation("ProfessionalServiceMatches")
+  portfolio_items                  PortfolioItem[]
 
   @@index([user_type])
   @@index([location])
@@ -345,6 +346,31 @@ model PhoneReveal {
   @@index([token_hash])
   @@index([expires_at])
   @@map("phone_reveals")
+}
+
+model PortfolioItem {
+  id             String   @id @default(uuid())
+  user_id        String
+  title          String   @db.VarChar(200)
+  description    String?  @db.Text
+  image_url      String   @db.VarChar(500)
+  project_url    String?  @db.VarChar(500)
+  category       String?  @db.VarChar(100)
+  tags           String[] // Array of tags
+  featured       Boolean  @default(false)
+  display_order  Int      @default(0)
+  likes_count    Int      @default(0)
+  views_count    Int      @default(0)
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+
+  // Relations
+  user           User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([featured])
+  @@index([display_order])
+  @@map("portfolio_items")
 }
 
 model Review {

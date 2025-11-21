@@ -24,6 +24,7 @@ import { FavoritesModule } from './favorites/favorites.module';
 import { SubscriptionModule } from './subscription/subscription.module';
 import { MatchingModule } from './matching/matching.module';
 import { ServiceRequestsModule } from './service-requests/service-requests.module'; // NEW
+import { PortfolioModule } from './portfolio/portfolio.module';
 
 @Module({
   imports: [
@@ -43,6 +44,9 @@ import { ServiceRequestsModule } from './service-requests/service-requests.modul
     AuthModule,
     UsersModule,
     ServicesModule,
+    MatchingModule, // NEW: Matchmaking and phone reveal system
+    ServiceRequestsModule, // NEW: Service requests for Professional Circuit
+    PortfolioModule,
     ProjectsModule,
     ContactModule,
     EmailModule,
