@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ForbiddenException, BadRequestException, ConflictException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException, BadRequestException, ConflictException, Logger } from '@nestjs/common';
 import { PrismaService } from '../common/prisma.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { UpgradeToProfessionalDto } from './dto/upgrade-to-professional.dto';
@@ -6,6 +6,7 @@ import { DashboardStats } from '@fixia/types';
 
 @Injectable()
 export class UsersService {
+  private readonly logger = new Logger(UsersService.name);
   constructor(private prisma: PrismaService) { }
 
   async getUserProfile(userId: string) {
@@ -119,7 +120,7 @@ export class UsersService {
     }
 
     // Log update attempt
-    console.log(`[updateProfile] Updating profile for user: ${userId}`, {
+    this.logger.debug(`[updateProfile] Updating profile for user: ${userId}`, {
       fieldsToUpdate: Object.keys(updateData).filter(k => updateData[k] !== undefined)
     });
 
@@ -215,13 +216,12 @@ export class UsersService {
 
   private async getProfessionalDashboard(userId: string): Promise<DashboardStats> {
     // Get services stats
-    console.log('[DEBUG] Getting services for userId:', userId);
+    this.logger.debug('[DEBUG] Getting services for userId:', userId);
     const servicesStats = await this.prisma.service.aggregate({
       where: { professional_id: userId },
       _count: { id: true },
     });
-    console.log('[DEBUG] Services found:', servicesStats._count.id);
-
+    this.logger.debug('[DEBUG] Services found:', servicesStats._count.id);
     const activeServicesStats = await this.prisma.service.aggregate({
       where: {
         professional_id: userId,
