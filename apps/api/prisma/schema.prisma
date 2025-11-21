@@ -1059,3 +1059,29 @@ model ServiceMatch {
   @@index([created_at])
   @@map("service_matches")
 }
+
+// Contact Messages - For contact form submissions
+model ContactMessage {
+  id            String        @id @default(uuid())
+  name          String
+  email         String
+  subject       String
+  message       String        @db.Text
+  status        ContactStatus @default(pending)
+  responded_at  DateTime?
+  admin_notes   String?       @db.Text
+  created_at    DateTime      @default(now())
+  updated_at    DateTime      @updatedAt
+
+  @@index([status])
+  @@index([created_at])
+  @@index([email])
+  @@map("contact_messages")
+}
+
+enum ContactStatus {
+  pending
+  in_progress
+  responded
+  archived
+}
