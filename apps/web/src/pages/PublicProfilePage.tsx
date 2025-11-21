@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { motion } from "motion/react";
-import { 
-  Star, Award, MapPin, Calendar, Globe, MessageSquare, Heart, 
+import { useQuery } from "@tanstack/react-query";
+import {
+  Star, Award, MapPin, Calendar, Globe, MessageSquare, Heart,
   Share2, CheckCircle, Eye, ExternalLink, ArrowLeft, Flag,
   Clock, Users, TrendingUp, Shield, Briefcase, Mail, Phone,
   Linkedin, Twitter, Github, Instagram, ThumbsUp
@@ -14,6 +15,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { Separator } from "../components/ui/separator";
 import { Progress } from "../components/ui/progress";
+import { fetchPublicProfile, fetchUserStats } from "../lib/services/public-profile.service";
 
 // Mock data for public profile
 const publicProfile = {
@@ -153,7 +155,7 @@ const activeServices = [
 
 function Navigation() {
   return (
-    <motion.header 
+    <motion.header
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       className="sticky top-0 z-50 w-full glass border-b border-white/10"
@@ -163,12 +165,12 @@ function Navigation() {
           <ArrowLeft className="h-4 w-4" />
           Volver a servicios
         </Link>
-        
+
         <Link to="/" className="flex items-center space-x-3">
           <div className="h-8 w-8 rounded-lg flex items-center justify-center overflow-hidden"><img src="/logo.png" alt="Fixia" className="h-full w-full object-contain" /></div>
           <span className="font-semibold">Fixia</span>
         </Link>
-        
+
         <div className="flex items-center space-x-2">
           <Button variant="ghost" size="sm">
             <Share2 className="h-4 w-4 mr-2" />
@@ -196,7 +198,7 @@ function ProfileHeader() {
               <AvatarImage src={publicProfile.avatar} alt={publicProfile.name} />
               <AvatarFallback className="text-2xl">{publicProfile.name.charAt(0)}</AvatarFallback>
             </Avatar>
-            
+
             {publicProfile.verified && (
               <div className="absolute -top-2 -right-2">
                 <Badge className="bg-success/20 text-success border-success/30 text-xs px-2">
@@ -206,13 +208,13 @@ function ProfileHeader() {
               </div>
             )}
           </div>
-          
+
           {/* Profile Info */}
           <div className="flex-1 space-y-4">
             <div className="flex items-start justify-between">
               <div>
                 <h1 className="text-3xl font-bold">{publicProfile.name}</h1>
-                
+
                 <div className="flex items-center space-x-3 mt-2">
                   <Badge className="bg-primary/20 text-primary border-primary/30">
                     {publicProfile.level}
@@ -224,9 +226,9 @@ function ProfileHeader() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="flex items-center space-x-2">
-                <Button 
+                <Button
                   onClick={() => setIsFollowing(!isFollowing)}
                   variant={isFollowing ? "outline" : "default"}
                   className={isFollowing ? "glass border-white/20" : "liquid-gradient"}
@@ -240,12 +242,12 @@ function ProfileHeader() {
                 </Button>
               </div>
             </div>
-            
+
             {/* Bio */}
             <p className="text-muted-foreground leading-relaxed max-w-3xl">
               {publicProfile.bio}
             </p>
-            
+
             {/* Contact Info */}
             <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
               <div className="flex items-center space-x-1">
@@ -267,7 +269,7 @@ function ProfileHeader() {
                 </a>
               </div>
             </div>
-            
+
             {/* Skills */}
             <div className="flex flex-wrap gap-2">
               {publicProfile.skills.map((skill) => (
@@ -276,7 +278,7 @@ function ProfileHeader() {
                 </Badge>
               ))}
             </div>
-            
+
             {/* Social Links */}
             <div className="flex space-x-3">
               {publicProfile.socialLinks.linkedin && (
@@ -301,7 +303,7 @@ function ProfileHeader() {
                 </a>
               )}
             </div>
-            
+
             {/* Stats */}
             <div className="flex space-x-8 pt-4 border-t border-white/10">
               <div className="text-center">
@@ -335,7 +337,7 @@ function ServicesSection() {
         <CardTitle>Servicios Activos</CardTitle>
         <CardDescription>Servicios disponibles de este profesional</CardDescription>
       </CardHeader>
-      
+
       <CardContent>
         <div className="grid md:grid-cols-2 gap-6">
           {activeServices.map((service) => (
@@ -346,7 +348,7 @@ function ServicesSection() {
             >
               <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 overflow-hidden group">
                 <div className="relative aspect-video overflow-hidden">
-                  <img 
+                  <img
                     src={service.image}
                     alt={service.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
@@ -358,10 +360,10 @@ function ServicesSection() {
                     </Badge>
                   )}
                 </div>
-                
+
                 <CardContent className="p-4 space-y-3">
                   <h3 className="font-semibold line-clamp-2">{service.title}</h3>
-                  
+
                   <div className="flex items-center justify-between text-sm">
                     <div className="flex items-center space-x-1">
                       <Star className="h-4 w-4 text-warning fill-current" />
@@ -370,7 +372,7 @@ function ServicesSection() {
                     </div>
                     <span className="text-xl font-bold text-primary">${service.price}</span>
                   </div>
-                  
+
                   <Link to={`/services/${service.id}`}>
                     <Button className="w-full liquid-gradient hover:opacity-90 transition-all duration-300">
                       Ver Servicio
@@ -381,7 +383,7 @@ function ServicesSection() {
             </motion.div>
           ))}
         </div>
-        
+
         <div className="mt-6 text-center">
           <Link to="/services">
             <Button variant="outline" className="glass border-white/20 hover:glass-medium">
@@ -401,7 +403,7 @@ function PortfolioSection() {
         <CardTitle>Portafolio</CardTitle>
         <CardDescription>Trabajos destacados y proyectos realizados</CardDescription>
       </CardHeader>
-      
+
       <CardContent>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {publicPortfolio.map((item) => (
@@ -412,7 +414,7 @@ function PortfolioSection() {
             >
               <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 overflow-hidden group">
                 <div className="relative aspect-video overflow-hidden">
-                  <img 
+                  <img
                     src={item.image}
                     alt={item.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
@@ -437,7 +439,7 @@ function PortfolioSection() {
                     </div>
                   </div>
                 </div>
-                
+
                 <CardContent className="p-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <Badge variant="outline" className="glass border-white/20 text-xs">
@@ -445,10 +447,10 @@ function PortfolioSection() {
                     </Badge>
                     <span className="text-xs text-muted-foreground">{item.date}</span>
                   </div>
-                  
+
                   <h3 className="font-semibold line-clamp-1">{item.title}</h3>
                   <p className="text-sm text-muted-foreground line-clamp-2">{item.description}</p>
-                  
+
                   <div className="flex flex-wrap gap-1">
                     {item.technologies.slice(0, 3).map((tech) => (
                       <Badge key={tech} variant="outline" className="glass border-white/20 text-xs">
@@ -456,7 +458,7 @@ function PortfolioSection() {
                       </Badge>
                     ))}
                   </div>
-                  
+
                   <div className="flex items-center justify-between pt-2 border-t border-white/10 text-xs text-muted-foreground">
                     <div className="flex items-center space-x-3">
                       <span className="flex items-center">
@@ -497,22 +499,22 @@ function ReviewsSection() {
           </div>
         </div>
       </CardHeader>
-      
+
       <CardContent className="space-y-6">
         {/* Rating Overview */}
         <div className="flex items-center space-x-8 p-4 glass-medium rounded-lg">
           <div className="text-center">
             <div className="text-3xl font-bold">{publicProfile.rating}</div>
             <div className="flex items-center justify-center mt-1">
-              {[1,2,3,4,5].map((star) => (
+              {[1, 2, 3, 4, 5].map((star) => (
                 <Star key={star} className="h-4 w-4 text-warning fill-current" />
               ))}
             </div>
             <div className="text-sm text-muted-foreground mt-1">{publicProfile.reviews} reseñas</div>
           </div>
-          
+
           <div className="flex-1 space-y-2">
-            {[5,4,3,2,1].map((stars) => (
+            {[5, 4, 3, 2, 1].map((stars) => (
               <div key={stars} className="flex items-center space-x-3">
                 <span className="text-sm w-8">{stars}★</span>
                 <Progress value={stars === 5 ? 85 : stars === 4 ? 15 : 0} className="flex-1" />
@@ -523,7 +525,7 @@ function ReviewsSection() {
             ))}
           </div>
         </div>
-        
+
         {/* Reviews List */}
         <div className="space-y-4">
           {publicReviews.map((review) => (
@@ -533,7 +535,7 @@ function ReviewsSection() {
                   <AvatarImage src={review.client.avatar} />
                   <AvatarFallback>{review.client.name.charAt(0)}</AvatarFallback>
                 </Avatar>
-                
+
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-2">
                     <div>
@@ -543,30 +545,29 @@ function ReviewsSection() {
                     </div>
                     <div className="text-right">
                       <div className="flex items-center space-x-1">
-                        {[1,2,3,4,5].map((star) => (
-                          <Star 
-                            key={star} 
-                            className={`h-4 w-4 ${
-                              star <= review.rating 
-                                ? 'text-warning fill-current' 
-                                : 'text-muted-foreground'
-                            }`} 
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <Star
+                            key={star}
+                            className={`h-4 w-4 ${star <= review.rating
+                              ? 'text-warning fill-current'
+                              : 'text-muted-foreground'
+                              }`}
                           />
                         ))}
                       </div>
                       <div className="text-sm text-muted-foreground mt-1">{review.date}</div>
                     </div>
                   </div>
-                  
+
                   <p className="text-muted-foreground mb-3">{review.comment}</p>
-                  
+
                   {review.response && (
                     <div className="bg-primary/10 border-l-4 border-primary pl-4 py-2 mt-3">
                       <div className="font-medium text-sm text-primary mb-1">Respuesta del profesional:</div>
                       <p className="text-sm">{review.response}</p>
                     </div>
                   )}
-                  
+
                   <div className="flex items-center space-x-4 text-sm mt-3">
                     <Button variant="ghost" size="sm" className="p-0 h-auto">
                       <ThumbsUp className="h-4 w-4 mr-1" />
@@ -578,7 +579,7 @@ function ReviewsSection() {
             </div>
           ))}
         </div>
-        
+
         <div className="text-center">
           <Button variant="outline" className="glass border-white/20 hover:glass-medium">
             Ver Todas las Reseñas
@@ -598,7 +599,7 @@ function StatsSection() {
           <span>Estadísticas del Profesional</span>
         </CardTitle>
       </CardHeader>
-      
+
       <CardContent>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="text-center glass-medium rounded-lg p-4">
@@ -606,19 +607,19 @@ function StatsSection() {
             <div className="text-2xl font-bold">{publicProfile.stats.completionRate}%</div>
             <div className="text-sm text-muted-foreground">Tasa de finalización</div>
           </div>
-          
+
           <div className="text-center glass-medium rounded-lg p-4">
             <Clock className="h-8 w-8 text-primary mx-auto mb-2" />
             <div className="text-2xl font-bold">{publicProfile.stats.onTimeDelivery}%</div>
             <div className="text-sm text-muted-foreground">Entregas a tiempo</div>
           </div>
-          
+
           <div className="text-center glass-medium rounded-lg p-4">
             <Users className="h-8 w-8 text-warning mx-auto mb-2" />
             <div className="text-2xl font-bold">{publicProfile.stats.repeatClients}%</div>
             <div className="text-sm text-muted-foreground">Clientes recurrentes</div>
           </div>
-          
+
           <div className="text-center glass-medium rounded-lg p-4">
             <Briefcase className="h-8 w-8 text-blue-400 mx-auto mb-2" />
             <div className="text-2xl font-bold">${publicProfile.stats.avgProjectValue}</div>
@@ -633,10 +634,73 @@ function StatsSection() {
 export default function PublicProfilePage() {
   const { userId } = useParams();
 
+  // Fetch public profile data
+  const { data: profileData, isLoading: profileLoading, error: profileError } = useQuery({
+    queryKey: ['publicProfile', userId],
+    queryFn: () => fetchPublicProfile(userId!),
+    enabled: !!userId,
+  });
+
+  // Fetch user stats
+  const { data: statsData, isLoading: statsLoading } = useQuery({
+    queryKey: ['userStats', userId],
+    queryFn: () => fetchUserStats(userId!),
+    enabled: !!userId && profileData?.user_type === 'professional',
+  });
+
+  // Use real data or fallback to mock for now
+  const profile = profileData || publicProfile;
+  const stats = statsData || publicProfile.stats;
+
+  // Loading state
+  if (profileLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navigation />
+        <main className="container mx-auto px-6 py-8">
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+              <p className="text-muted-foreground">Cargando perfil...</p>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  // Error state
+  if (profileError) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navigation />
+        <main className="container mx-auto px-6 py-8">
+          <Card className="glass border-white/10 max-w-2xl mx-auto">
+            <CardContent className="p-8 text-center">
+              <div className="text-destructive mb-4">
+                <Flag className="h-12 w-12 mx-auto" />
+              </div>
+              <h2 className="text-2xl font-bold mb-2">Usuario no encontrado</h2>
+              <p className="text-muted-foreground mb-6">
+                El perfil que buscas no existe o ha sido eliminado.
+              </p>
+              <Button asChild>
+                <Link to="/services">
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  Volver a servicios
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      
+
       <main className="container mx-auto px-6 py-8">
         <div className="space-y-8">
           {/* Profile Header */}
@@ -665,15 +729,15 @@ export default function PublicProfilePage() {
               <TabsContent value="services" className="mt-6">
                 <ServicesSection />
               </TabsContent>
-              
+
               <TabsContent value="portfolio" className="mt-6">
                 <PortfolioSection />
               </TabsContent>
-              
+
               <TabsContent value="reviews" className="mt-6">
                 <ReviewsSection />
               </TabsContent>
-              
+
               <TabsContent value="stats" className="mt-6">
                 <StatsSection />
               </TabsContent>
