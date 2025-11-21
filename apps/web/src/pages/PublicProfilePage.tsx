@@ -185,7 +185,7 @@ function Navigation() {
   );
 }
 
-function ProfileHeader() {
+function ProfileHeader({ profile }: { profile: any }) {
   const [isFollowing, setIsFollowing] = useState(false);
 
   return (
@@ -195,11 +195,11 @@ function ProfileHeader() {
           {/* Avatar */}
           <div className="relative">
             <Avatar className="h-32 w-32 ring-4 ring-primary/20 ring-offset-4 ring-offset-background">
-              <AvatarImage src={publicProfile.avatar} alt={publicProfile.name} />
-              <AvatarFallback className="text-2xl">{publicProfile.name.charAt(0)}</AvatarFallback>
+              <AvatarImage src={profile.avatar || ''} alt={profile.name} />
+              <AvatarFallback className="text-2xl">{profile.name?.charAt(0)}</AvatarFallback>
             </Avatar>
 
-            {publicProfile.verified && (
+            {profile.verified && (
               <div className="absolute -top-2 -right-2">
                 <Badge className="bg-success/20 text-success border-success/30 text-xs px-2">
                   <CheckCircle className="h-3 w-3 mr-1" />
@@ -213,17 +213,21 @@ function ProfileHeader() {
           <div className="flex-1 space-y-4">
             <div className="flex items-start justify-between">
               <div>
-                <h1 className="text-3xl font-bold">{publicProfile.name}</h1>
+                <h1 className="text-3xl font-bold">{profile.name}</h1>
 
                 <div className="flex items-center space-x-3 mt-2">
-                  <Badge className="bg-primary/20 text-primary border-primary/30">
-                    {publicProfile.level}
-                  </Badge>
-                  <div className="flex items-center space-x-1">
-                    <Star className="h-4 w-4 text-warning fill-current" />
-                    <span className="font-medium">{publicProfile.rating}</span>
-                    <span className="text-muted-foreground">({publicProfile.reviews} reseñas)</span>
-                  </div>
+                  {profile.professional_profile && (
+                    <Badge className="bg-primary/20 text-primary border-primary/30">
+                      {profile.professional_profile.level}
+                    </Badge>
+                  )}
+                  {profile.professional_profile && (
+                    <div className="flex items-center space-x-1">
+                      <Star className="h-4 w-4 text-warning fill-current" />
+                      <span className="font-medium">{profile.professional_profile.rating}</span>
+                      <span className="text-muted-foreground">({profile.professional_profile.review_count} reseñas)</span>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -244,61 +248,65 @@ function ProfileHeader() {
             </div>
 
             {/* Bio */}
-            <p className="text-muted-foreground leading-relaxed max-w-3xl">
-              {publicProfile.bio}
-            </p>
+            {(profile.bio || profile.professional_profile?.bio) && (
+              <p className="text-muted-foreground leading-relaxed max-w-3xl">
+                {profile.bio || profile.professional_profile?.bio}
+              </p>
+            )}
 
             {/* Contact Info */}
             <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-              <div className="flex items-center space-x-1">
-                <MapPin className="h-4 w-4" />
-                <span>{publicProfile.location}</span>
-              </div>
-              <div className="flex items-center space-x-1">
-                <Calendar className="h-4 w-4" />
-                <span>Miembro desde {publicProfile.memberSince}</span>
-              </div>
-              <div className="flex items-center space-x-1">
-                <Clock className="h-4 w-4" />
-                <span>Responde en {publicProfile.responseTime}</span>
-              </div>
-              <div className="flex items-center space-x-1">
-                <Globe className="h-4 w-4" />
-                <a href={publicProfile.website} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
-                  {publicProfile.website}
-                </a>
-              </div>
+              {profile.location && (
+                <div className="flex items-center space-x-1">
+                  <MapPin className="h-4 w-4" />
+                  <span>{profile.location}</span>
+                </div>
+              )}
+              {profile.created_at && (
+                <div className="flex items-center space-x-1">
+                  <Calendar className="h-4 w-4" />
+                  <span>Miembro desde {new Date(profile.created_at).getFullYear()}</span>
+                </div>
+              )}
+              {profile.professional_profile?.response_time_hours && (
+                <div className="flex items-center space-x-1">
+                  <Clock className="h-4 w-4" />
+                  <span>Responde en {profile.professional_profile.response_time_hours}h</span>
+                </div>
+              )}
             </div>
 
             {/* Skills */}
-            <div className="flex flex-wrap gap-2">
-              {publicProfile.skills.map((skill) => (
-                <Badge key={skill} variant="outline" className="glass border-white/20 text-xs">
-                  {skill}
-                </Badge>
-              ))}
-            </div>
+            {profile.professional_profile?.specialties && profile.professional_profile.specialties.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {profile.professional_profile.specialties.map((skill: string) => (
+                  <Badge key={skill} variant="outline" className="glass border-white/20 text-xs">
+                    {skill}
+                  </Badge>
+                ))}
+              </div>
+            )}
 
             {/* Social Links */}
             <div className="flex space-x-3">
-              {publicProfile.socialLinks.linkedin && (
-                <a href={publicProfile.socialLinks.linkedin} target="_blank" rel="noopener noreferrer">
+              {profile.social_linkedin && (
+                <a href={profile.social_linkedin} target="_blank" rel="noopener noreferrer">
                   <Button variant="ghost" size="icon" className="h-8 w-8">
                     <Linkedin className="h-4 w-4 text-blue-500" />
                   </Button>
                 </a>
               )}
-              {publicProfile.socialLinks.github && (
-                <a href={publicProfile.socialLinks.github} target="_blank" rel="noopener noreferrer">
+              {profile.social_twitter && (
+                <a href={profile.social_twitter} target="_blank" rel="noopener noreferrer">
                   <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <Github className="h-4 w-4" />
+                    <Twitter className="h-4 w-4" />
                   </Button>
                 </a>
               )}
-              {publicProfile.socialLinks.twitter && (
-                <a href={publicProfile.socialLinks.twitter} target="_blank" rel="noopener noreferrer">
+              {profile.social_instagram && (
+                <a href={profile.social_instagram} target="_blank" rel="noopener noreferrer">
                   <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <Twitter className="h-4 w-4 text-blue-400" />
+                    <Instagram className="h-4 w-4" />
                   </Button>
                 </a>
               )}
@@ -330,7 +338,17 @@ function ProfileHeader() {
   );
 }
 
-function ServicesSection() {
+function ServicesSection({ services }: { services: any[] }) {
+  if (!services || services.length === 0) {
+    return (
+      <Card className="glass border-white/10">
+        <CardContent className="p-8 text-center text-muted-foreground">
+          Este profesional aún no tiene servicios activos.
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card className="glass border-white/10">
       <CardHeader>
@@ -340,7 +358,7 @@ function ServicesSection() {
 
       <CardContent>
         <div className="grid md:grid-cols-2 gap-6">
-          {activeServices.map((service) => (
+          {services.slice(0, 6).map((service) => (
             <motion.div
               key={service.id}
               whileHover={{ y: -4 }}
@@ -348,11 +366,17 @@ function ServicesSection() {
             >
               <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 overflow-hidden group">
                 <div className="relative aspect-video overflow-hidden">
-                  <img
-                    src={service.image}
-                    alt={service.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
+                  {service.main_image ? (
+                    <img
+                      src={service.main_image}
+                      alt={service.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-muted flex items-center justify-center">
+                      <Briefcase className="h-12 w-12 text-muted-foreground" />
+                    </div>
+                  )}
                   {service.featured && (
                     <Badge className="absolute top-3 left-3 bg-warning/20 text-warning border-warning/30">
                       <Award className="h-3 w-3 mr-1" />
@@ -365,11 +389,6 @@ function ServicesSection() {
                   <h3 className="font-semibold line-clamp-2">{service.title}</h3>
 
                   <div className="flex items-center justify-between text-sm">
-                    <div className="flex items-center space-x-1">
-                      <Star className="h-4 w-4 text-warning fill-current" />
-                      <span className="font-medium">{service.rating}</span>
-                      <span className="text-muted-foreground">({service.orders})</span>
-                    </div>
                     <span className="text-xl font-bold text-primary">${service.price}</span>
                   </div>
 
@@ -481,7 +500,20 @@ function PortfolioSection() {
   );
 }
 
-function ReviewsSection() {
+function ReviewsSection({ reviews, profile }: { reviews: any[]; profile: any }) {
+  if (!reviews || reviews.length === 0) {
+    return (
+      <Card className="glass border-white/10">
+        <CardContent className="p-8 text-center text-muted-foreground">
+          Este profesional aún no tiene reseñas.
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const rating = profile.professional_profile?.rating || 0;
+  const reviewCount = profile.professional_profile?.review_count || 0;
+
   return (
     <Card className="glass border-white/10">
       <CardHeader>
@@ -494,8 +526,8 @@ function ReviewsSection() {
             <CardDescription>Lo que dicen los clientes</CardDescription>
           </div>
           <div className="text-right">
-            <div className="text-2xl font-bold">{publicProfile.rating}</div>
-            <div className="text-sm text-muted-foreground">{publicProfile.reviews} reseñas</div>
+            <div className="text-2xl font-bold">{rating}</div>
+            <div className="text-sm text-muted-foreground">{reviewCount} reseñas</div>
           </div>
         </div>
       </CardHeader>
@@ -504,13 +536,13 @@ function ReviewsSection() {
         {/* Rating Overview */}
         <div className="flex items-center space-x-8 p-4 glass-medium rounded-lg">
           <div className="text-center">
-            <div className="text-3xl font-bold">{publicProfile.rating}</div>
+            <div className="text-3xl font-bold">{rating}</div>
             <div className="flex items-center justify-center mt-1">
               {[1, 2, 3, 4, 5].map((star) => (
                 <Star key={star} className="h-4 w-4 text-warning fill-current" />
               ))}
             </div>
-            <div className="text-sm text-muted-foreground mt-1">{publicProfile.reviews} reseñas</div>
+            <div className="text-sm text-muted-foreground mt-1">{reviewCount} reseñas</div>
           </div>
 
           <div className="flex-1 space-y-2">
@@ -528,20 +560,21 @@ function ReviewsSection() {
 
         {/* Reviews List */}
         <div className="space-y-4">
-          {publicReviews.map((review) => (
+          {reviews.slice(0, 10).map((review) => (
             <div key={review.id} className="glass-medium rounded-lg p-4">
               <div className="flex items-start space-x-4">
                 <Avatar>
-                  <AvatarImage src={review.client.avatar} />
-                  <AvatarFallback>{review.client.name.charAt(0)}</AvatarFallback>
+                  <AvatarImage src={review.reviewer?.avatar || ''} />
+                  <AvatarFallback>{review.reviewer?.name?.charAt(0) || 'U'}</AvatarFallback>
                 </Avatar>
 
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-2">
                     <div>
-                      <div className="font-medium">{review.client.name}</div>
-                      <div className="text-sm text-muted-foreground">{review.client.company}</div>
-                      <div className="text-sm text-muted-foreground">{review.serviceTitle}</div>
+                      <div className="font-medium">{review.reviewer?.name || 'Usuario'}</div>
+                      {review.service?.title && (
+                        <div className="text-sm text-muted-foreground">{review.service.title}</div>
+                      )}
                     </div>
                     <div className="text-right">
                       <div className="flex items-center space-x-1">
@@ -555,11 +588,15 @@ function ReviewsSection() {
                           />
                         ))}
                       </div>
-                      <div className="text-sm text-muted-foreground mt-1">{review.date}</div>
+                      <div className="text-sm text-muted-foreground mt-1">
+                        {new Date(review.created_at).toLocaleDateString()}
+                      </div>
                     </div>
                   </div>
 
-                  <p className="text-muted-foreground mb-3">{review.comment}</p>
+                  {review.comment && (
+                    <p className="text-muted-foreground mb-3">{review.comment}</p>
+                  )}
 
                   {review.response && (
                     <div className="bg-primary/10 border-l-4 border-primary pl-4 py-2 mt-3">
@@ -568,12 +605,7 @@ function ReviewsSection() {
                     </div>
                   )}
 
-                  <div className="flex items-center space-x-4 text-sm mt-3">
-                    <Button variant="ghost" size="sm" className="p-0 h-auto">
-                      <ThumbsUp className="h-4 w-4 mr-1" />
-                      Útil ({review.helpful})
-                    </Button>
-                  </div>
+
                 </div>
               </div>
             </div>
@@ -659,9 +691,10 @@ export default function PublicProfilePage() {
     enabled: !!userId && profileData?.user_type === 'professional',
   });
 
-  // Use real data or fallback to mock for now
-  const profile = profileData || publicProfile;
-  const stats = statsData || publicProfile.stats;
+  // Don't render until we have data
+  if (!profileData) {
+    return null;
+  }
 
   // Loading state
   if (profileLoading) {
@@ -720,7 +753,7 @@ export default function PublicProfilePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <ProfileHeader />
+            <ProfileHeader profile={profileData} />
           </motion.div>
 
           {/* Profile Content */}
@@ -738,7 +771,7 @@ export default function PublicProfilePage() {
               </TabsList>
 
               <TabsContent value="services" className="mt-6">
-                <ServicesSection />
+                <ServicesSection services={profileData.services || []} />
               </TabsContent>
 
               <TabsContent value="portfolio" className="mt-6">
@@ -746,11 +779,11 @@ export default function PublicProfilePage() {
               </TabsContent>
 
               <TabsContent value="reviews" className="mt-6">
-                <ReviewsSection />
+                <ReviewsSection reviews={profileData.reviews_received || []} profile={profileData} />
               </TabsContent>
 
               <TabsContent value="stats" className="mt-6">
-                <StatsSection stats={stats} />
+                <StatsSection stats={statsData} />
               </TabsContent>
             </Tabs>
           </motion.div>
