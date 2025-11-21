@@ -46,8 +46,15 @@
     @apply border-border;
   }
 
+  html {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+
   body {
     @apply bg-background text-foreground;
+    overflow-x: hidden;
+    max-width: 100vw;
     /* Typography Enhancements */
     font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
     -webkit-font-smoothing: antialiased;

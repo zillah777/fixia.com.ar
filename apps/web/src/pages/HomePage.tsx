@@ -13,8 +13,11 @@ import {
 import { OpportunitiesTicker } from "../components/OpportunitiesTicker";
 import { FeaturedServicesSection } from "../components/FeaturedServicesSection";
 import { TopProfessionalCard } from "../components/TopProfessionalCard";
-import { getProfessionalsByCategory } from "../data/simulatedProfessionals";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { professionalsService } from "../lib/services";
+import { Skeleton } from "../components/ui/skeleton";
+import { AlertCircle, RefreshCw } from "lucide-react";
 
 const categories = [
     { name: "Desarrollo Web", icon: Globe, count: "120+ servicios", popular: true },
@@ -180,7 +183,14 @@ function HeroSection() {
 
 function CategoriesSection() {
     const [selectedCategory, setSelectedCategory] = useState(categories[0].name);
-    const categoryProfessionals = getProfessionalsByCategory(selectedCategory);
+
+    // Fetch real professionals data from API
+    const { data: categoryProfessionals, isLoading, isError, refetch } = useQuery({
+        queryKey: ['professionals-by-category', selectedCategory],
+        queryFn: () => professionalsService.getProfessionalsByCategory(selectedCategory, 3),
+        staleTime: 5 * 60 * 1000, // 5 minutes
+        retry: 2,
+    });
 
     return (
         <section className="py-20">
@@ -249,10 +259,10 @@ function CategoriesSection() {
                     <div className="flex items-center justify-between mb-8">
                         <div>
                             <h3 className="text-2xl font-bold mb-2">
-                                Top Profesionales en {selectedCategory}
+                                Top de Profesionales mejor valorados por los usuarios
                             </h3>
                             <p className="text-muted-foreground">
-                                Los mejor valorados y más confiables de Chubut
+                                {selectedCategory} - Los más confiables de Chubut
                             </p>
                         </div>
                         <Link to={`/services?category=${encodeURIComponent(selectedCategory)}`}>
@@ -263,7 +273,35 @@ function CategoriesSection() {
                         </Link>
                     </div>
 
-                    {categoryProfessionals.length > 0 ? (
+                    {isLoading ? (
+                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {[1, 2, 3].map((i) => (
+                                <Card key={i} className="glass border-white/10 p-6">
+                                    <div className="flex items-center space-x-4 mb-4">
+                                        <Skeleton className="h-16 w-16 rounded-full" />
+                                        <div className="space-y-2 flex-1">
+                                            <Skeleton className="h-4 w-3/4" />
+                                            <Skeleton className="h-3 w-1/2" />
+                                        </div>
+                                    </div>
+                                    <Skeleton className="h-20 w-full mb-4" />
+                                    <Skeleton className="h-4 w-full" />
+                                </Card>
+                            ))}
+                        </div>
+                    ) : isError ? (
+                        <Card className="glass border-white/10 p-12 text-center">
+                            <AlertCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
+                            <h3 className="text-lg font-semibold mb-2">Error al cargar profesionales</h3>
+                            <p className="text-muted-foreground mb-4">
+                                No pudimos cargar los profesionales. Por favor, intenta nuevamente.
+                            </p>
+                            <Button onClick={() => refetch()} variant="outline" className="glass border-white/20">
+                                <RefreshCw className="h-4 w-4 mr-2" />
+                                Reintentar
+                            </Button>
+                        </Card>
+                    ) : categoryProfessionals && categoryProfessionals.length > 0 ? (
                         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {categoryProfessionals.map((professional, index) => (
                                 <TopProfessionalCard

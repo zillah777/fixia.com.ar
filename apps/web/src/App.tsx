@@ -280,7 +280,7 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <SecureAuthProvider>
         <NotificationProvider>
-          <div className="min-h-screen bg-background">
+          <div className="min-h-screen bg-background overflow-x-hidden">
             <AppRoutes />
 
             {/* Background decorative elements */}
