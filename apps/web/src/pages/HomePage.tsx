@@ -12,6 +12,9 @@ import {
 } from "lucide-react";
 import { OpportunitiesTicker } from "../components/OpportunitiesTicker";
 import { FeaturedServicesSection } from "../components/FeaturedServicesSection";
+import { TopProfessionalCard } from "../components/TopProfessionalCard";
+import { getProfessionalsByCategory } from "../data/simulatedProfessionals";
+import { useState } from "react";
 
 const categories = [
     { name: "Desarrollo Web", icon: Globe, count: "120+ servicios", popular: true },
@@ -176,6 +179,9 @@ function HeroSection() {
 }
 
 function CategoriesSection() {
+    const [selectedCategory, setSelectedCategory] = useState(categories[0].name);
+    const categoryProfessionals = getProfessionalsByCategory(selectedCategory);
+
     return (
         <section className="py-20">
             <div className="container mx-auto px-6">
@@ -192,9 +198,11 @@ function CategoriesSection() {
                     </p>
                 </motion.div>
 
-                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {/* Category Grid */}
+                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
                     {categories.map((category, index) => {
                         const Icon = category.icon;
+                        const isSelected = selectedCategory === category.name;
                         return (
                             <motion.div
                                 key={category.name}
@@ -204,37 +212,86 @@ function CategoriesSection() {
                                 transition={{ duration: 0.6, delay: 0.1 * index }}
                                 whileHover={{ y: -4 }}
                             >
-                                <Link to={`/services?category=${encodeURIComponent(category.name)}`}>
-                                    <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 cursor-pointer group h-full relative">
+                                <button
+                                    onClick={() => setSelectedCategory(category.name)}
+                                    className="w-full text-left"
+                                    aria-label={`Ver profesionales de ${category.name}`}
+                                >
+                                    <Card className={`glass hover:glass-medium transition-all duration-300 cursor-pointer group h-full relative ${isSelected ? 'border-primary/50 bg-primary/5' : 'border-white/10'
+                                        }`}>
                                         {category.popular && (
                                             <Badge className="absolute top-3 right-3 bg-primary/20 text-primary border-primary/30 text-xs">
                                                 Popular
                                             </Badge>
                                         )}
                                         <CardContent className="p-6 text-center">
-                                            <div className="h-16 w-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-primary/20 transition-colors">
+                                            <div className={`h-16 w-16 rounded-2xl flex items-center justify-center mx-auto mb-4 transition-colors ${isSelected ? 'bg-primary/20' : 'bg-primary/10 group-hover:bg-primary/20'
+                                                }`}>
                                                 <Icon className="h-8 w-8 text-primary" />
                                             </div>
                                             <h3 className="font-semibold mb-2">{category.name}</h3>
                                             <p className="text-sm text-muted-foreground">{category.count}</p>
                                         </CardContent>
                                     </Card>
-                                </Link>
+                                </button>
                             </motion.div>
                         );
                     })}
                 </div>
 
+                {/* Top Professionals Showcase */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className="mb-12"
+                >
+                    <div className="flex items-center justify-between mb-8">
+                        <div>
+                            <h3 className="text-2xl font-bold mb-2">
+                                Top Profesionales en {selectedCategory}
+                            </h3>
+                            <p className="text-muted-foreground">
+                                Los mejor valorados y más confiables de Chubut
+                            </p>
+                        </div>
+                        <Link to={`/services?category=${encodeURIComponent(selectedCategory)}`}>
+                            <Button variant="outline" className="glass border-white/20 hover:glass-medium">
+                                Ver Todos
+                                <ArrowRight className="ml-2 h-4 w-4" />
+                            </Button>
+                        </Link>
+                    </div>
+
+                    {categoryProfessionals.length > 0 ? (
+                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {categoryProfessionals.map((professional, index) => (
+                                <TopProfessionalCard
+                                    key={professional.id}
+                                    professional={professional}
+                                    index={index}
+                                />
+                            ))}
+                        </div>
+                    ) : (
+                        <Card className="glass border-white/10 p-12 text-center">
+                            <p className="text-muted-foreground">
+                                No hay profesionales destacados en esta categoría aún.
+                            </p>
+                        </Card>
+                    )}
+                </motion.div>
+
                 <motion.div
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
                     viewport={{ once: true }}
-                    transition={{ duration: 0.6, delay: 0.8 }}
-                    className="text-center mt-12"
+                    transition={{ duration: 0.6, delay: 0.4 }}
+                    className="text-center"
                 >
                     <Link to="/services">
                         <Button variant="outline" className="glass border-white/20 hover:glass-medium px-8">
-                            Ver Todas las Categorías
+                            Explorar Todas las Categorías
                             <ChevronRight className="ml-2 h-4 w-4" />
                         </Button>
                     </Link>
