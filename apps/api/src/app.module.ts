@@ -1,7 +1,8 @@
-import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import { PrismaService } from './common/prisma.service';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { ServicesModule } from './services/services.module';
@@ -27,13 +28,19 @@ import { SubscriptionModule } from './subscription/subscription.module';
 import { MatchingModule } from './matching/matching.module';
 import { ServiceRequestsModule } from './service-requests/service-requests.module'; // NEW
 import { PortfolioModule } from './portfolio/portfolio.module';
+import { LoggerModule } from './common/logger/logger.module';
+import { HealthModule } from './health/health.module';
+import { RequestLoggerMiddleware } from './common/middleware/request-logger.middleware';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '.env',
+      // envFilePath: '.env', // Removed as per instruction
     }),
+    LoggerModule,
+    HealthModule,
+    RedisModule, // Redis for distributed rate limiting and caching
     // Global rate limiting - production-ready configuration
     ThrottlerModule.forRoot({
       throttlers: [
@@ -54,7 +61,6 @@ import { PortfolioModule } from './portfolio/portfolio.module';
         },
       ],
     }),
-    RedisModule, // Redis for distributed rate limiting and caching
     CommonModule,
     AuthModule,
     UsersModule,
@@ -81,4 +87,10 @@ import { PortfolioModule } from './portfolio/portfolio.module';
   controllers: [],
   providers: [],
 })
-export class AppModule { }
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(RequestLoggerMiddleware)
+      .forRoutes('*');
+  }
+}
