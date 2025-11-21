@@ -16,6 +16,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs"
 import { Separator } from "../components/ui/separator";
 import { Progress } from "../components/ui/progress";
 import { fetchPublicProfile, fetchUserStats } from "../lib/services/public-profile.service";
+import { portfolioService } from "../lib/services/portfolio.service";
 
 // Mock data for public profile
 const publicProfile = {
@@ -415,7 +416,17 @@ function ServicesSection({ services }: { services: any[] }) {
   );
 }
 
-function PortfolioSection() {
+function PortfolioSection({ portfolio }: { portfolio: any[] }) {
+  if (!portfolio || portfolio.length === 0) {
+    return (
+      <Card className="glass border-white/10">
+        <CardContent className="p-8 text-center text-muted-foreground">
+          Este profesional aún no tiene proyectos en su portafolio.
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card className="glass border-white/10">
       <CardHeader>
@@ -425,7 +436,7 @@ function PortfolioSection() {
 
       <CardContent>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {publicPortfolio.map((item) => (
+          {portfolio.map((item) => (
             <motion.div
               key={item.id}
               whileHover={{ y: -4 }}
@@ -434,7 +445,7 @@ function PortfolioSection() {
               <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 overflow-hidden group">
                 <div className="relative aspect-video overflow-hidden">
                   <img
-                    src={item.image}
+                    src={item.image_url}
                     alt={item.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
@@ -450,8 +461,13 @@ function PortfolioSection() {
                         <Eye className="h-4 w-4 mr-1" />
                         Ver
                       </Button>
-                      {item.url && (
-                        <Button size="sm" variant="outline" className="glass border-white/20">
+                      {item.project_url && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="glass border-white/20"
+                          onClick={() => window.open(item.project_url, '_blank')}
+                        >
                           <ExternalLink className="h-4 w-4" />
                         </Button>
                       )}
@@ -460,33 +476,41 @@ function PortfolioSection() {
                 </div>
 
                 <CardContent className="p-4 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <Badge variant="outline" className="glass border-white/20 text-xs">
-                      {item.category}
-                    </Badge>
-                    <span className="text-xs text-muted-foreground">{item.date}</span>
-                  </div>
+                  {item.category && (
+                    <div className="flex items-center justify-between">
+                      <Badge variant="outline" className="glass border-white/20 text-xs">
+                        {item.category}
+                      </Badge>
+                      <span className="text-xs text-muted-foreground">
+                        {new Date(item.created_at).toLocaleDateString('es-AR', { month: 'short', year: 'numeric' })}
+                      </span>
+                    </div>
+                  )}
 
                   <h3 className="font-semibold line-clamp-1">{item.title}</h3>
-                  <p className="text-sm text-muted-foreground line-clamp-2">{item.description}</p>
+                  {item.description && (
+                    <p className="text-sm text-muted-foreground line-clamp-2">{item.description}</p>
+                  )}
 
-                  <div className="flex flex-wrap gap-1">
-                    {item.technologies.slice(0, 3).map((tech) => (
-                      <Badge key={tech} variant="outline" className="glass border-white/20 text-xs">
-                        {tech}
-                      </Badge>
-                    ))}
-                  </div>
+                  {item.tags && item.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1">
+                      {item.tags.slice(0, 3).map((tag: string) => (
+                        <Badge key={tag} variant="outline" className="glass border-white/20 text-xs">
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
 
                   <div className="flex items-center justify-between pt-2 border-t border-white/10 text-xs text-muted-foreground">
                     <div className="flex items-center space-x-3">
                       <span className="flex items-center">
                         <Heart className="h-3 w-3 mr-1" />
-                        {item.likes}
+                        {item.likes_count || 0}
                       </span>
                       <span className="flex items-center">
                         <Eye className="h-3 w-3 mr-1" />
-                        {item.views}
+                        {item.views_count || 0}
                       </span>
                     </div>
                   </div>
@@ -691,6 +715,13 @@ export default function PublicProfilePage() {
     enabled: !!userId && profileData?.user_type === 'professional',
   });
 
+  // Fetch portfolio items
+  const { data: portfolioData } = useQuery({
+    queryKey: ['portfolio', userId],
+    queryFn: () => portfolioService.getUserPortfolio(userId!),
+    enabled: !!userId,
+  });
+
   // Don't render until we have data
   if (!profileData) {
     return null;
@@ -775,7 +806,7 @@ export default function PublicProfilePage() {
               </TabsContent>
 
               <TabsContent value="portfolio" className="mt-6">
-                <PortfolioSection />
+                <PortfolioSection portfolio={portfolioData || []} />
               </TabsContent>
 
               <TabsContent value="reviews" className="mt-6">
