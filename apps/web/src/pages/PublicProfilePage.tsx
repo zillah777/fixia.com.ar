@@ -590,13 +590,24 @@ function ReviewsSection() {
   );
 }
 
-function StatsSection() {
+function StatsSection({ stats }: { stats: any }) {
+  // Don't show stats for non-professionals
+  if (!stats) {
+    return (
+      <Card className="glass border-white/10">
+        <CardContent className="p-8 text-center text-muted-foreground">
+          Las estadísticas solo están disponibles para profesionales.
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card className="glass border-white/10">
       <CardHeader>
         <CardTitle className="flex items-center space-x-2">
-          <TrendingUp className="h-5 w-5" />
-          <span>Estadísticas del Profesional</span>
+          <TrendingUp className="h-5 w-5 text-primary" />
+          <span>Estadísticas de Desempeño</span>
         </CardTitle>
       </CardHeader>
 
@@ -604,25 +615,25 @@ function StatsSection() {
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="text-center glass-medium rounded-lg p-4">
             <Shield className="h-8 w-8 text-success mx-auto mb-2" />
-            <div className="text-2xl font-bold">{publicProfile.stats.completionRate}%</div>
+            <div className="text-2xl font-bold">{stats.completionRate}%</div>
             <div className="text-sm text-muted-foreground">Tasa de finalización</div>
           </div>
 
           <div className="text-center glass-medium rounded-lg p-4">
             <Clock className="h-8 w-8 text-primary mx-auto mb-2" />
-            <div className="text-2xl font-bold">{publicProfile.stats.onTimeDelivery}%</div>
+            <div className="text-2xl font-bold">{stats.onTimeDelivery}%</div>
             <div className="text-sm text-muted-foreground">Entregas a tiempo</div>
           </div>
 
           <div className="text-center glass-medium rounded-lg p-4">
             <Users className="h-8 w-8 text-warning mx-auto mb-2" />
-            <div className="text-2xl font-bold">{publicProfile.stats.repeatClients}%</div>
+            <div className="text-2xl font-bold">{stats.repeatClients}%</div>
             <div className="text-sm text-muted-foreground">Clientes recurrentes</div>
           </div>
 
           <div className="text-center glass-medium rounded-lg p-4">
             <Briefcase className="h-8 w-8 text-blue-400 mx-auto mb-2" />
-            <div className="text-2xl font-bold">${publicProfile.stats.avgProjectValue}</div>
+            <div className="text-2xl font-bold">${stats.avgProjectValue}</div>
             <div className="text-sm text-muted-foreground">Valor promedio proyecto</div>
           </div>
         </div>
@@ -739,7 +750,7 @@ export default function PublicProfilePage() {
               </TabsContent>
 
               <TabsContent value="stats" className="mt-6">
-                <StatsSection />
+                <StatsSection stats={stats} />
               </TabsContent>
             </Tabs>
           </motion.div>
