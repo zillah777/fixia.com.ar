@@ -14,6 +14,7 @@ import ServicesPage from "./pages/ServicesPage";
 import ServiceDetailPage from "./pages/ServiceDetailPage";
 import ProfilePage from "./pages/ProfilePage";
 import PublicProfilePage from "./pages/PublicProfilePage";
+import PortfolioManagementPage from "./pages/PortfolioManagementPage";
 import NewProjectPage from "./pages/NewProjectPage";
 import CreateRequestPage from "./pages/CreateRequestPage";
 import OpportunitiesPage from "./pages/OpportunitiesPage";
@@ -231,6 +232,14 @@ function AppRoutes() {
             element={
               <ProtectedRoute>
                 <FavoritesPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/portfolio/manage"
+            element={
+              <ProtectedRoute>
+                <PortfolioManagementPage />
               </ProtectedRoute>
             }
           />
