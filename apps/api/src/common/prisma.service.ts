@@ -4,6 +4,7 @@ import { PrismaClient } from '@prisma/client';
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(PrismaService.name);
+
   constructor() {
     // Validate DATABASE_URL before creating PrismaClient
     const databaseUrl = process.env.DATABASE_URL;
@@ -21,19 +22,25 @@ Current environment: ${process.env.NODE_ENV || 'unknown'}
 Available env vars: ${Object.keys(process.env).filter(key => key.includes('DATA')).join(', ') || 'none related to DATABASE'}
       `.trim();
 
-      this.logger.error(errorMessage);
+      // Use console.error before super() is called
+      console.error(errorMessage);
       throw new Error('DATABASE_URL is required but not provided');
     }
 
-    this.logger.log(`🗄️ Initializing Prisma with DATABASE_URL: ${databaseUrl.substring(0, 20)}...`);
-
+    // Call super() FIRST before using 'this'
     super({
       datasources: {
         db: {
           url: databaseUrl,
         },
       },
+      log: process.env.NODE_ENV === 'development'
+        ? ['query', 'info', 'warn', 'error']
+        : ['warn', 'error'],
     });
+
+    // Now we can safely use this.logger
+    this.logger.log(`🗄️ Prisma initialized with DATABASE_URL: ${databaseUrl.substring(0, 20)}...`);
   }
 
   async onModuleInit() {

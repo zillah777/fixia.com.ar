@@ -26,7 +26,7 @@ const getAPIBaseURL = (): string => {
   }
 
   // Development fallback
-  const fallbackURL = 'http://localhost:3001/api';
+  const fallbackURL = 'http://localhost:4000';
   logger.warn('⚠️ Using fallback API URL for development:', fallbackURL);
   return fallbackURL;
 };

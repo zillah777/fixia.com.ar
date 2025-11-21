@@ -16,7 +16,7 @@ async function bootstrap() {
   const logger = new Logger('Bootstrap');
 
   // Server port configuration
-  const port = parseInt(process.env.PORT) || 3001;
+  const port = parseInt(process.env.PORT) || 4000;
   const host = '0.0.0.0';
 
   logger.log(`🚀 Starting Fixia API on ${host}:${port}`);
@@ -109,7 +109,7 @@ async function bootstrap() {
         'https://fixia-api.onrender.com',
         /https:\/\/.*\.vercel\.app$/
       ]
-      : process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000', 'http://localhost:5173', 'http://localhost:4000'];
+      : process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim()) : ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:4000'];
 
     logger.log(`🌐 Environment: ${process.env.NODE_ENV || 'development'} (isProduction: ${isProduction})`);
     logger.log(`🌐 CORS enabled for origins: ${JSON.stringify(allowedOrigins)}`);
