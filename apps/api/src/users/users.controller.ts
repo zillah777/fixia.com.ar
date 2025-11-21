@@ -86,6 +86,21 @@ export class UsersController {
     return this.usersService.getPublicStats();
   }
 
+  @Get('professionals/count')
+  @Public()
+  @ApiOperation({ summary: 'Obtener número de profesionales activos' })
+  @ApiResponse({
+    status: 200,
+    description: 'Número de profesionales activos en la plataforma',
+    schema: {
+      example: { count: 42 }
+    }
+  })
+  async getActiveProfessionalsCount() {
+    return this.usersService.getActiveProfessionalsCount();
+  }
+
+
   @Get('users/:userId')
   @Public()
   @ApiOperation({ summary: 'Obtener perfil público de un usuario' })

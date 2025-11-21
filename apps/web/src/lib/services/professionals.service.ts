@@ -37,6 +37,7 @@ export interface CategoryStats {
     category: string;
     count: number;
     icon?: string;
+    popular?: boolean;
 }
 
 export const professionalsService = {

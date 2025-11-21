@@ -27,7 +27,7 @@ import { Public } from '../auth/decorators/public.decorator';
 @ApiTags('Servicios')
 @Controller('services')
 export class ServicesController {
-  constructor(private readonly servicesService: ServicesService) {}
+  constructor(private readonly servicesService: ServicesService) { }
 
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -65,6 +65,24 @@ export class ServicesController {
   getCategories() {
     return this.servicesService.getCategories();
   }
+
+  @Get('categories/stats')
+  @Public()
+  @ApiOperation({ summary: 'Obtener estadísticas de servicios por categoría' })
+  @ApiResponse({
+    status: 200,
+    description: 'Estadísticas de categorías con conteo de servicios activos',
+    schema: {
+      example: [
+        { category: 'Reparaciones', count: 15, icon: 'Wrench', popular: true },
+        { category: 'Limpieza', count: 8, icon: 'Sparkles', popular: false }
+      ]
+    }
+  })
+  getCategoryStats() {
+    return this.servicesService.getCategoryStats();
+  }
+
 
   @Get('my')
   @UseGuards(JwtAuthGuard)

@@ -82,7 +82,7 @@ export const userService = {
   async uploadAvatar(file: File): Promise<{ avatarUrl: string }> {
     const formData = new FormData();
     formData.append('avatar', file);
-    
+
     return api.post<{ avatarUrl: string }>('/user/avatar', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
@@ -98,6 +98,10 @@ export const userService = {
     return api.get('/user/export-data', {
       responseType: 'blob',
     });
+  },
+
+  async getActiveProfessionalsCount(): Promise<{ count: number }> {
+    return api.get<{ count: number }>('/professionals/count');
   },
 
   async getPublicProfile(userId: string): Promise<User> {

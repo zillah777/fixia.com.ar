@@ -15,20 +15,11 @@ import { FeaturedServicesSection } from "../components/FeaturedServicesSection";
 import { TopProfessionalCard } from "../components/TopProfessionalCard";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { professionalsService } from "../lib/services";
+import { professionalsService, userService } from "../lib/services";
 import { Skeleton } from "../components/ui/skeleton";
 import { AlertCircle, RefreshCw } from "lucide-react";
 
-const categories = [
-    { name: "Desarrollo Web", icon: Globe, count: "120+ servicios", popular: true },
-    { name: "Diseño Gráfico", icon: Palette, count: "95+ servicios", popular: true },
-    { name: "Reparaciones", icon: Briefcase, count: "180+ servicios", popular: true },
-    { name: "Marketing Digital", icon: TrendingUp, count: "75+ servicios", popular: false },
-    { name: "Consultoría", icon: HeadphonesIcon, count: "65+ servicios", popular: false },
-    { name: "Limpieza", icon: Users, count: "210+ servicios", popular: true },
-    { name: "Jardinería", icon: Camera, count: "85+ servicios", popular: false },
-    { name: "Educación", icon: PenTool, count: "45+ servicios", popular: false }
-];
+// Removed hardcoded categories - now fetched from API
 
 function Navigation() {
     return (
@@ -92,6 +83,15 @@ function Navigation() {
 }
 
 function HeroSection() {
+    // Fetch real professional count
+    const { data: professionalsCount, isLoading: loadingCount } = useQuery({
+        queryKey: ['professionals-count'],
+        queryFn: () => userService.getActiveProfessionalsCount(),
+        staleTime: 5 * 60 * 1000, // 5 minutes
+    });
+
+    const displayCount = professionalsCount?.count || 0;
+
     return (
         <section className="relative py-24 lg:py-32 overflow-hidden">
             <div className="container mx-auto px-6">
@@ -103,7 +103,11 @@ function HeroSection() {
                     >
                         <Badge className="mb-6 bg-success/20 text-success border-success/30 px-4 py-2">
                             <MapPin className="h-4 w-4 mr-2" />
-                            Chubut, Argentina • +500 profesionales activos
+                            {loadingCount ? (
+                                "Chubut, Argentina • Cargando..."
+                            ) : (
+                                `Chubut, Argentina • ${displayCount} profesionales activos`
+                            )}
                         </Badge>
 
                         <h1 className="text-5xl lg:text-7xl font-bold mb-6 tracking-tight">
@@ -182,14 +186,27 @@ function HeroSection() {
 }
 
 function CategoriesSection() {
-    const [selectedCategory, setSelectedCategory] = useState(categories[0].name);
+    // Fetch real category stats from API
+    const { data: categories, isLoading: loadingCategories } = useQuery({
+        queryKey: ['category-stats'],
+        queryFn: () => professionalsService.getCategoryStats(),
+        staleTime: 5 * 60 * 1000, // 5 minutes
+    });
+
+    const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+    // Set first category as selected when categories load
+    if (categories && categories.length > 0 && !selectedCategory) {
+        setSelectedCategory(categories[0].category);
+    }
 
     // Fetch real professionals data from API
     const { data: categoryProfessionals, isLoading, isError, refetch } = useQuery({
         queryKey: ['professionals-by-category', selectedCategory],
-        queryFn: () => professionalsService.getProfessionalsByCategory(selectedCategory, 3),
+        queryFn: () => professionalsService.getProfessionalsByCategory(selectedCategory!, 3),
         staleTime: 5 * 60 * 1000, // 5 minutes
         retry: 2,
+        enabled: !!selectedCategory, // Only run query when category is selected
     });
 
     return (
@@ -210,43 +227,54 @@ function CategoriesSection() {
 
                 {/* Category Grid */}
                 <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-                    {categories.map((category, index) => {
-                        const Icon = category.icon;
-                        const isSelected = selectedCategory === category.name;
-                        return (
-                            <motion.div
-                                key={category.name}
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.6, delay: 0.1 * index }}
-                                whileHover={{ y: -4 }}
-                            >
-                                <button
-                                    onClick={() => setSelectedCategory(category.name)}
-                                    className="w-full text-left"
-                                    aria-label={`Ver profesionales de ${category.name}`}
+                    {loadingCategories ? (
+                        [1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+                            <Card key={i} className="glass border-white/10 p-6">
+                                <Skeleton className="h-16 w-16 rounded-full mx-auto mb-4" />
+                                <Skeleton className="h-4 w-24 mx-auto mb-2" />
+                                <Skeleton className="h-3 w-20 mx-auto" />
+                            </Card>
+                        ))
+                    ) : categories && categories.length > 0 ? (
+                        categories.map((category, index) => {
+                            const isSelected = selectedCategory === category.category;
+                            return (
+                                <motion.div
+                                    key={category.category}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ duration: 0.6, delay: 0.1 * index }}
+                                    whileHover={{ y: -4 }}
                                 >
-                                    <Card className={`glass hover:glass-medium transition-all duration-300 cursor-pointer group h-full relative ${isSelected ? 'border-primary/50 bg-primary/5' : 'border-white/10'
-                                        }`}>
-                                        {category.popular && (
-                                            <Badge className="absolute top-3 right-3 bg-primary/20 text-primary border-primary/30 text-xs">
-                                                Popular
-                                            </Badge>
-                                        )}
-                                        <CardContent className="p-6 text-center">
-                                            <div className={`h-16 w-16 rounded-2xl flex items-center justify-center mx-auto mb-4 transition-colors ${isSelected ? 'bg-primary/20' : 'bg-primary/10 group-hover:bg-primary/20'
-                                                }`}>
-                                                <Icon className="h-8 w-8 text-primary" />
-                                            </div>
-                                            <h3 className="font-semibold mb-2">{category.name}</h3>
-                                            <p className="text-sm text-muted-foreground">{category.count}</p>
-                                        </CardContent>
-                                    </Card>
-                                </button>
-                            </motion.div>
-                        );
-                    })}
+                                    <Link to="/services" className="block w-full">
+                                        <Card className={`glass hover:glass-medium transition-all duration-300 cursor-pointer group h-full relative ${isSelected ? 'border-primary/50 bg-primary/5' : 'border-white/10'
+                                            }`}>
+                                            {category.popular && (
+                                                <Badge className="absolute top-3 right-3 bg-primary/20 text-primary border-primary/30 text-xs">
+                                                    Popular
+                                                </Badge>
+                                            )}
+                                            <CardContent className="p-6 text-center">
+                                                <div className={`h-16 w-16 rounded-2xl flex items-center justify-center mx-auto mb-4 transition-colors ${isSelected ? 'bg-primary/20' : 'bg-primary/10 group-hover:bg-primary/20'
+                                                    }`}>
+                                                    <Briefcase className="h-8 w-8 text-primary" />
+                                                </div>
+                                                <h3 className="font-semibold mb-2">{category.category}</h3>
+                                                <p className="text-sm text-muted-foreground">{category.count} servicios</p>
+                                            </CardContent>
+                                        </Card>
+                                    </Link>
+                                </motion.div>
+                            );
+                        })
+                    ) : (
+                        <Card className="glass border-white/10 p-12 text-center col-span-full">
+                            <p className="text-muted-foreground">
+                                No hay categorías disponibles en este momento.
+                            </p>
+                        </Card>
+                    )}
                 </div>
 
                 {/* Top Professionals Showcase */}
@@ -265,7 +293,7 @@ function CategoriesSection() {
                                 {selectedCategory} - Los más confiables de Chubut
                             </p>
                         </div>
-                        <Link to={`/services?category=${encodeURIComponent(selectedCategory)}`}>
+                        <Link to={`/services?category=${selectedCategory ? encodeURIComponent(selectedCategory) : ''}`}>
                             <Button variant="outline" className="glass border-white/20 hover:glass-medium">
                                 Ver Todos
                                 <ArrowRight className="ml-2 h-4 w-4" />

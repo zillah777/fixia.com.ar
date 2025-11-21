@@ -384,6 +384,26 @@ export class UsersService {
     };
   }
 
+  async getActiveProfessionalsCount() {
+    const count = await this.prisma.user.count({
+      where: {
+        deleted_at: null,
+        OR: [
+          {
+            user_type: 'professional',
+          },
+          {
+            user_type: 'dual',
+            is_professional_active: true,
+          },
+        ],
+      },
+    });
+
+    return { count };
+  }
+
+
   async upgradeToProfessional(userId: string, upgradeDto: UpgradeToProfessionalDto) {
     // Get current user with subscription info
     const user = await this.prisma.user.findUnique({
