@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { servicesService } from '../lib/services';
 
 interface UseServicesParams {
   searchQuery: string;
@@ -11,52 +12,38 @@ export function useServices(params: UseServicesParams) {
   return useQuery({
     queryKey: ['services', params],
     queryFn: async () => {
-      // Mock implementation - in real app this would call an API
-      const { mockServices } = await import('../pages/ServicesPage');
+      // Build API filters
+      const apiFilters: any = {
+        page: 1,
+        limit: 50,
+        sortBy: params.sortBy === 'relevance' ? 'popular' : params.sortBy,
+        sortOrder: params.sortBy.includes('_desc') ? 'desc' : 'asc'
+      };
 
-      let filtered = mockServices;
+      // Category filter
+      if (params.selectedCategory !== "Todos") {
+        apiFilters.category = params.selectedCategory;
+      }
 
-      // Apply filters
+      // Search query
       if (params.searchQuery) {
-        filtered = filtered.filter(service =>
-          service.title.toLowerCase().includes(params.searchQuery.toLowerCase()) ||
-          service.description.toLowerCase().includes(params.searchQuery.toLowerCase()) ||
-          service.tags.some(tag => tag.toLowerCase().includes(params.searchQuery.toLowerCase()))
-        );
+        apiFilters.search = params.searchQuery;
       }
 
-      if (params.selectedCategory !== 'Todos') {
-        filtered = filtered.filter(service => service.category === params.selectedCategory);
+      // Price range
+      if (params.priceRange[0] > 0 || params.priceRange[1] < 3000) {
+        apiFilters.minPrice = params.priceRange[0];
+        apiFilters.maxPrice = params.priceRange[1];
       }
 
-      filtered = filtered.filter(service =>
-        service.price >= params.priceRange[0] && service.price <= params.priceRange[1]
-      );
+      // Fetch from API
+      const response = await servicesService.getServices(apiFilters);
 
-      // Apply sorting
-      switch (params.sortBy) {
-        case 'price_asc':
-          filtered.sort((a, b) => a.price - b.price);
-          break;
-        case 'price_desc':
-          filtered.sort((a, b) => b.price - a.price);
-          break;
-        case 'rating':
-          filtered.sort((a, b) => b.rating - a.rating);
-          break;
-        case 'popular':
-          filtered.sort((a, b) => b.reviews - a.reviews);
-          break;
-        case 'newest':
-          // Mock sorting by id
-          filtered.sort((a, b) => b.id.localeCompare(a.id));
-          break;
-        default: // relevance
-          filtered.sort((a, b) => b.rating - a.rating);
-      }
-
-      return filtered;
+      // Return the data array from paginated response
+      return response.data || [];
     },
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    // Keep previous data while fetching next set
+    placeholderData: (previousData) => previousData,
+    staleTime: 2 * 60 * 1000, // 2 minutes
   });
 }
