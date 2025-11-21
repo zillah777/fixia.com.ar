@@ -15,6 +15,7 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { UsersService } from './users.service';
+import { UserStatsService } from './user-stats.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { UpgradeToProfessionalDto } from './dto/upgrade-to-professional.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -24,7 +25,10 @@ import { Public } from '../auth/decorators/public.decorator';
 @ApiTags('Usuario')
 @Controller()
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly userStatsService: UserStatsService,
+  ) { }
 
   @Get('user/profile')
   @UseGuards(JwtAuthGuard)
@@ -90,6 +94,29 @@ export class UsersController {
   @ApiResponse({ status: 404, description: 'Usuario no encontrado' })
   async getPublicProfile(@Param('userId', ParseUUIDPipe) userId: string) {
     return this.usersService.getPublicProfile(userId);
+  }
+
+  @Get('users/:userId/stats')
+  @Public()
+  @ApiOperation({ summary: 'Obtener estadísticas calculadas de un profesional' })
+  @ApiParam({ name: 'userId', description: 'ID del usuario', type: 'string' })
+  @ApiResponse({
+    status: 200,
+    description: 'Estadísticas del profesional',
+    schema: {
+      example: {
+        completionRate: 98,
+        onTimeDelivery: 95,
+        repeatClients: 75,
+        avgProjectValue: 1250,
+        completedProjects: 156,
+        totalProjects: 159,
+      }
+    }
+  })
+  @ApiResponse({ status: 404, description: 'Usuario no encontrado' })
+  async getUserStats(@Param('userId', ParseUUIDPipe) userId: string) {
+    return this.userStatsService.calculateProfessionalStats(userId);
   }
 
   @Delete('user/profile')
