@@ -20,9 +20,11 @@ import {
 import { SubscriptionService } from './subscription.service';
 import { CreateSubscriptionDto, MercadoPagoWebhookDto } from './dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { CsrfGuard } from '../common/guards/csrf.guard';
 
 @ApiTags('Subscriptions')
 @Controller('subscription')
+@UseGuards(CsrfGuard) // SECURITY: Protect subscription operations from CSRF attacks
 export class SubscriptionController {
   private readonly logger = new Logger(SubscriptionController.name);
 

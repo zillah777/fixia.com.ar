@@ -15,10 +15,12 @@ import {
 import { PaymentsService } from './payments.service';
 import { CreatePaymentDto, CreatePreferenceDto, WebhookDto } from './dto/payment.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { CsrfGuard } from '../common/guards/csrf.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { Public } from '../auth/decorators/public.decorator';
 
 @Controller('payments')
+@UseGuards(CsrfGuard) // SECURITY: Protect all payment endpoints from CSRF attacks
 export class PaymentsController {
   private readonly logger = new Logger(PaymentsController.name);
 

@@ -15,7 +15,7 @@ export const CsrfExempt = () => Reflector.createDecorator();
 export class CsrfGuard implements CanActivate {
   private readonly logger = new Logger(CsrfGuard.name);
 
-  constructor(private reflector: Reflector) {}
+  constructor(private reflector: Reflector) { }
 
   canActivate(context: ExecutionContext): boolean {
     // Check if route is exempt from CSRF protection
@@ -49,41 +49,59 @@ export class CsrfGuard implements CanActivate {
 
     if (!request.session.csrfToken) {
       request.session.csrfToken = crypto.randomBytes(32).toString('hex');
-      
+
       // Set CSRF token in cookie for frontend access
       response.cookie('csrf-token', request.session.csrfToken, {
         httpOnly: false, // Frontend needs to read this
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
+        sameSite: 'strict', // SECURITY: Changed from 'lax' to 'strict' for better protection
         maxAge: 24 * 60 * 60 * 1000, // 24 hours
       });
 
-      this.logger.debug(`Generated CSRF token: ${request.session.csrfToken.substring(0, 8)}...`);
+      this.logger.debug(`✅ Generated CSRF token: ${request.session.csrfToken.substring(0, 8)}...`);
     }
   }
 
   private validateCsrfToken(request: any): boolean {
     const sessionToken = request.session?.csrfToken;
-    const headerToken = request.headers['x-csrf-token'] || 
-                       request.headers['x-xsrf-token'] ||
-                       request.body?._csrf;
+    const headerToken = request.headers['x-csrf-token'] ||
+      request.headers['x-xsrf-token'] ||
+      request.body?._csrf;
 
     if (!sessionToken) {
-      this.logger.warn('CSRF validation failed: No session token');
+      this.logger.warn('🚨 CSRF validation failed: No session token', {
+        ip: request.ip || request.connection?.remoteAddress,
+        path: request.url,
+        method: request.method,
+        userAgent: request.headers['user-agent']?.substring(0, 50),
+      });
       throw new BadRequestException('CSRF token required');
     }
 
     if (!headerToken) {
-      this.logger.warn('CSRF validation failed: No header token provided');
+      this.logger.warn('🚨 CSRF validation failed: No header token provided', {
+        ip: request.ip || request.connection?.remoteAddress,
+        path: request.url,
+        method: request.method,
+        userAgent: request.headers['user-agent']?.substring(0, 50),
+      });
       throw new BadRequestException('CSRF token missing in request');
     }
 
     if (!this.constantTimeCompare(sessionToken, headerToken)) {
-      this.logger.warn('CSRF validation failed: Token mismatch');
+      this.logger.warn('🚨 CSRF validation failed: Token mismatch', {
+        ip: request.ip || request.connection?.remoteAddress,
+        path: request.url,
+        method: request.method,
+        userAgent: request.headers['user-agent']?.substring(0, 50),
+      });
       throw new BadRequestException('CSRF token invalid');
     }
 
-    this.logger.debug('CSRF token validated successfully');
+    this.logger.debug('✅ CSRF token validated successfully', {
+      path: request.url,
+      method: request.method,
+    });
     return true;
   }
 

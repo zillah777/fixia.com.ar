@@ -14,11 +14,13 @@ import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { CsrfGuard } from '../common/guards/csrf.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 
 @ApiTags('Proyectos')
 @Controller('projects')
 @UseGuards(JwtAuthGuard)
+@UseGuards(CsrfGuard) // SECURITY: Protect project operations from CSRF attacks
 @ApiBearerAuth()
 export class ProjectsController {
   constructor(private readonly projectsService: ProjectsService) { }
