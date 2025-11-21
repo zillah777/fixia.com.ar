@@ -20,4 +20,4 @@ export { paymentsService } from './payments.service';
 
 // Export professionals service and types separately to avoid conflicts
 export { default as professionalsService } from './professionals.service';
-export type { Professional, ProfessionalProfile as ProfessionalProfileAPI, ProfessionalService } from './professionals.service';
+export type { Professional, ProfessionalProfile as ProfessionalProfileAPI, CategoryStats } from './professionals.service';
