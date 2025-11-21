@@ -156,6 +156,87 @@ export const motionVariants: Record<string, Variants> = {
       opacity: 0,
       transition: { duration: 0.2 }
     }
+  },
+
+  // Spring bounce - realistic physics animation
+  springBounce: {
+    initial: { opacity: 0, scale: 0.8 },
+    animate: {
+      opacity: 1,
+      scale: 1,
+      transition: {
+        type: 'spring',
+        stiffness: 260,
+        damping: 20
+      }
+    },
+    exit: {
+      opacity: 0,
+      scale: 0.8,
+      transition: { duration: 0.2 }
+    }
+  },
+
+  // Fast stagger for large lists
+  staggerFast: {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.03,
+        delayChildren: 0.05
+      }
+    }
+  },
+
+  // Morph scale - smooth transformation for modals
+  morphScale: {
+    hidden: { opacity: 0, scale: 0.9, y: 10 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      y: 0,
+      transition: {
+        type: 'spring',
+        stiffness: 300,
+        damping: 25
+      }
+    },
+    exit: {
+      opacity: 0,
+      scale: 0.95,
+      transition: { duration: 0.15, ease: 'easeIn' }
+    }
+  },
+
+  // Slide with spring
+  slideSpring: {
+    initial: { opacity: 0, x: -30 },
+    animate: {
+      opacity: 1,
+      x: 0,
+      transition: {
+        type: 'spring',
+        stiffness: 200,
+        damping: 20
+      }
+    },
+    exit: {
+      opacity: 0,
+      x: 30,
+      transition: { duration: 0.2 }
+    }
+  },
+
+  // Glow effect for interactive elements
+  glow: {
+    rest: {
+      boxShadow: '0 0 0 rgba(102, 126, 234, 0)'
+    },
+    hover: {
+      boxShadow: '0 0 20px rgba(102, 126, 234, 0.5)',
+      transition: { duration: 0.3 }
+    }
   }
 };
 

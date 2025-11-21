@@ -32,6 +32,7 @@ import SystemStatusPage from "./pages/SystemStatusPage";
 import TutorialsPage from "./pages/TutorialsPage";
 import NotificationsPage from "./pages/NotificationsPage";
 import FavoritesPage from "./pages/FavoritesPage";
+import UIShowcasePage from "./pages/UIShowcasePage";
 import Error404Page from "./pages/Error404Page";
 
 // Context
@@ -119,6 +120,7 @@ function AppRoutes() {
           <Route path="/help/article/:id" element={<HelpArticlePage />} />
           <Route path="/status" element={<SystemStatusPage />} />
           <Route path="/tutorials" element={<TutorialsPage />} />
+          <Route path="/ui-showcase" element={<UIShowcasePage />} />
 
           {/* Auth Routes */}
           <Route
