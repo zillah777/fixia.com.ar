@@ -1,4 +1,5 @@
-import { api } from '../lib/api';
+import api from '../lib/api';
+import { logger } from './logger';
 import React from 'react';
 
 interface TokenInfo {
@@ -42,7 +43,7 @@ class SecureTokenManager {
           expiresAt: response.data.expiresAt,
           lastRefresh: Date.now(),
         };
-        console.log('✅ Authentication verified successfully');
+        logger.success('Authentication verified successfully');
         return true;
       } else {
         this.currentUser = null;
@@ -76,7 +77,7 @@ class SecureTokenManager {
       const data = await api.post('/auth/login', credentials);
 
       // Debug: Log the actual response structure
-      console.log('🔍 Login response data:', {
+      logger.debug('🔍 Login response data:', {
         hasUser: !!data?.user,
         hasAccessToken: !!data?.access_token,
         hasRefreshToken: !!data?.refresh_token,
@@ -117,7 +118,7 @@ class SecureTokenManager {
       // Store user data internally for consistency
       this.currentUser = userData;
 
-      console.log('✅ Authentication successful - tokens storage attempted');
+      logger.success('Authentication successful - tokens storage attempted');
 
       this.tokenInfo = {
         isAuthenticated: true,
@@ -301,7 +302,7 @@ class SecureTokenManager {
   setupAxiosInterceptor() {
     // Los interceptores de axios no están disponibles en nuestro api wrapper personalizado
     // La autenticación se maneja automáticamente via httpOnly cookies
-    console.log('SecureTokenManager initialized for httpOnly cookie authentication');
+    logger.info('SecureTokenManager initialized for httpOnly cookie authentication');
   }
 
   /**

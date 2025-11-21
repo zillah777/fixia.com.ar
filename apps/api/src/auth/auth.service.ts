@@ -310,8 +310,8 @@ export class AuthService {
       } catch (error) {
         this.logger.error(`Failed to send password reset email to ${email}: ${error.message}`);
         // For development/testing fallback
-        console.log(`Reset token for ${email}: ${token}`);
-        console.log(`Reset URL: ${resetUrl}`);
+        this.logger.debug(`Reset token for ${email}: ${token}`);
+        this.logger.debug(`Reset URL: ${resetUrl}`);
       }
     }
 
@@ -460,8 +460,8 @@ export class AuthService {
     } catch (error) {
       this.logger.error(`❌ Failed to send verification email to ${email}:`, error);
       // Still log for development/testing fallback
-      console.log(`🔍 DEBUG - Verification token for ${email}: ${token}`);
-      console.log(`🔍 DEBUG - Verification URL: ${verificationUrl}`);
+      this.logger.debug(`🔍 DEBUG - Verification token for ${email}: ${token}`);
+      this.logger.debug(`🔍 DEBUG - Verification URL: ${verificationUrl}`);
     }
 
     return {

@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { mockServices } from "../pages/ServicesPage";
+import { logger } from "../utils/logger";
 
 interface Filters {
   searchQuery: string;
@@ -14,7 +15,7 @@ interface Filters {
  * pasando los filtros como query params.
  */
 const fetchServices = async (filters: Filters) => {
-  console.log("Fetching services with filters:", filters);
+  logger.debug("Fetching services with filters:", filters);
   // Simula la latencia de la red
   await new Promise(resolve => setTimeout(resolve, 500));
 

@@ -21,6 +21,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { ProposalDetailsModal } from "../components/proposals/ProposalDetailsModal";
 import { ProposalCard } from "../components/proposals/ProposalCard";
 import { formatCurrency, formatDate } from "../lib/utils"; // Importar utilidades
+import { logger } from "../utils/logger";
 
 // Temporary types until backend types are aligned
 type Project = any;
@@ -70,7 +71,7 @@ export default function MyAnnouncementsPage() {
 
       // DEBUG: Log first project structure
       if (data && data.length > 0) {
-        console.log('🔍 First project structure:', {
+        logger.debug('First project structure:', {
           budgetMin: data[0].budgetMin,
           budgetMinType: typeof data[0].budgetMin,
           budgetMax: data[0].budgetMax,

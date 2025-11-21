@@ -1,7 +1,8 @@
 /// <reference types="vite/client" />
-import axios, { AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
+import axios, { AxiosInstance, AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import { toast } from 'sonner';
 import { secureTokenManager } from '../utils/secureTokenManager';
+import { logger } from '../utils/logger';
 
 // API Configuration with robust validation
 const getAPIBaseURL = (): string => {
@@ -25,17 +26,15 @@ const getAPIBaseURL = (): string => {
   }
 
   // Development fallback
-  const fallbackURL = 'http://localhost:4000';
-  console.warn('⚠️ Using fallback API URL for development:', fallbackURL);
+  const fallbackURL = 'http://localhost:3001/api';
+  logger.warn('⚠️ Using fallback API URL for development:', fallbackURL);
   return fallbackURL;
 };
 
 const API_BASE_URL = getAPIBaseURL();
 
 // Debug: Log the API base URL (only in development)
-if (import.meta.env.DEV) {
-  console.log('🔗 API Base URL:', API_BASE_URL);
-}
+logger.debug('🔗 API Base URL:', API_BASE_URL);
 
 // Create axios instance with secure httpOnly cookie configuration
 export const apiClient: AxiosInstance = axios.create({
@@ -161,11 +160,11 @@ apiClient.interceptors.response.use(
         const refreshed = await secureTokenManager.refreshToken();
 
         if (refreshed) {
-          console.log('✅ Token refreshed successfully via secure manager.');
+          logger.success('Token refreshed successfully via secure manager.');
           processQueue(null);
           return apiClient(originalRequest);
         } else {
-          console.error('Token refresh failed via secure manager.');
+          logger.error('Token refresh failed via secure manager.');
           throw new Error('Token refresh failed.');
         }
       } catch (refreshError) {
@@ -202,7 +201,7 @@ apiClient.interceptors.response.use(
         // 4. User HAD data (meaning they were logged in but token expired)
         if (!isPublicPage && !isAuthPage && !isAuthVerification && hadUserData) {
           // Session truly expired for a logged-in user on a protected page
-          console.log('Session expired - redirecting to login');
+          logger.info('Session expired - redirecting to login');
           toast.error('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
           setTimeout(() => {
             window.location.href = '/login';
@@ -328,7 +327,7 @@ export const api = {
     return apiClient.post(url, data, config).then(response => {
       // Debug logging for /auth/login endpoint
       if (url.includes('/auth/login')) {
-        console.log('🔍 RAW response from /auth/login:', {
+        logger.debug('🔍 RAW response from /auth/login:', {
           hasResponseData: !!response.data,
           responseDataKeys: response.data ? Object.keys(response.data) : [],
           hasSuccess: 'success' in (response.data || {}),
@@ -340,13 +339,13 @@ export const api = {
       // Handle backend's TransformInterceptor wrapper format
       if (response.data && typeof response.data === 'object' && 'data' in response.data && 'success' in response.data) {
         if (url.includes('/auth/login')) {
-          console.log('✅ Extracting response.data.data:', response.data.data);
+          logger.debug('✅ Extracting response.data.data:', response.data.data);
         }
         return response.data.data;
       }
 
       if (url.includes('/auth/login')) {
-        console.log('⚠️ Returning response.data directly (no wrapper):', response.data);
+        logger.debug('⚠️ Returning response.data directly (no wrapper):', response.data);
       }
       return response.data;
     });

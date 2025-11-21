@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException, BadRequestException, Logger } from '@nestjs/common';
 import { PrismaService } from '../common/prisma.service';
 import { CreateServiceDto } from './dto/create-service.dto';
 import { UpdateServiceDto } from './dto/update-service.dto';
@@ -7,7 +7,9 @@ import { PaginatedResponse } from '@fixia/types';
 
 @Injectable()
 export class ServicesService {
-  constructor(private prisma: PrismaService) {}
+  private readonly logger = new Logger(ServicesService.name);
+
+  constructor(private prisma: PrismaService) { }
 
   async create(userId: string, createServiceDto: CreateServiceDto) {
     // Verify user is professional or dual role (with active subscription)
@@ -59,7 +61,7 @@ export class ServicesService {
       throw new NotFoundException('Category not found');
     }
 
-    console.log('[DEBUG] Creating service with data:', {
+    this.logger.debug('[DEBUG] Creating service with data:', {
       title: createServiceDto.title,
       main_image: createServiceDto.main_image,
       gallery: createServiceDto.gallery,
@@ -164,7 +166,7 @@ export class ServicesService {
     // Handle price filtering - support both formats
     const minPrice = filters.min_price || filters.minPrice;
     const maxPrice = filters.max_price || filters.maxPrice;
-    
+
     if (minPrice || maxPrice) {
       where.price = {};
       if (minPrice) where.price.gte = minPrice;
@@ -230,7 +232,7 @@ export class ServicesService {
     let orderBy: any = {};
     const sortBy = filters.sort_by || filters.sortBy;
     const sortOrder = filters.sort_order || filters.sortOrder || 'desc';
-    
+
     switch (sortBy) {
       case 'price':
         orderBy.price = sortOrder;

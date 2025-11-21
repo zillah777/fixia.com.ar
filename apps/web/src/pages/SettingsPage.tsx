@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { motion } from "motion/react";
 import { Link, useNavigate } from "react-router-dom";
-import { 
-  ArrowLeft, User, Lock, Bell, CreditCard, Shield, 
-  Eye, EyeOff, Check, X, AlertCircle, Crown, 
+import {
+  ArrowLeft, User, Lock, Bell, CreditCard, Shield,
+  Eye, EyeOff, Check, X, AlertCircle, Crown,
   Mail, Phone, MapPin, Save, Trash2, LogOut,
   Settings, Smartphone, Globe, Calendar
 } from "lucide-react";
@@ -18,10 +18,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Alert, AlertDescription } from "../components/ui/alert";
 import { Separator } from "../components/ui/separator";
 import { useSecureAuth as useAuth } from "../context/SecureAuthContext";
+import { logger } from "../utils/logger";
 
 function Navigation() {
   return (
-    <motion.header 
+    <motion.header
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       className="sticky top-0 z-50 w-full glass border-b border-white/10"
@@ -34,7 +35,7 @@ function Navigation() {
             <span className="text-xs text-muted-foreground -mt-1">Configuración</span>
           </div>
         </Link>
-        
+
         <Link to="/dashboard">
           <Button variant="ghost" className="hover:glass-medium">
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -60,7 +61,7 @@ function ProfileTab() {
   });
 
   const locations = [
-    "Rawson", "Puerto Madryn", "Comodoro Rivadavia", "Trelew", 
+    "Rawson", "Puerto Madryn", "Comodoro Rivadavia", "Trelew",
     "Esquel", "Gaiman", "Puerto Deseado", "Caleta Olivia",
     "Río Gallegos", "El Calafate", "Ushuaia", "Otra ubicación"
   ];
@@ -223,7 +224,7 @@ function SecurityTab() {
 
   const handle2FAToggle = (enabled: boolean) => {
     // Implementar activación/desactivación de 2FA
-    console.log('2FA:', enabled);
+    logger.debug('2FA toggle:', enabled);
   };
 
   const handlePasswordChange = async () => {
@@ -330,7 +331,7 @@ function SecurityTab() {
             </div>
           </div>
 
-          <Button 
+          <Button
             onClick={handlePasswordChange}
             disabled={isChangingPassword || !passwordData.currentPassword || !passwordData.newPassword}
             className="liquid-gradient"
@@ -643,7 +644,7 @@ function SubscriptionTab() {
                   {isProfessional ? 'Plan Profesional' : 'Plan Gratuito'}
                 </CardTitle>
                 <CardDescription>
-                  {isProfessional 
+                  {isProfessional
                     ? '$4500 ARS/mes • Sin comisiones por servicios'
                     : 'Acceso gratuito para buscar profesionales'
                   }
@@ -678,7 +679,7 @@ function SubscriptionTab() {
                   <p className="text-sm text-muted-foreground">Comisiones</p>
                 </div>
               </div>
-              
+
               <Alert className="border-warning/50 bg-warning/10">
                 <Calendar className="h-4 w-4" />
                 <AlertDescription>
@@ -687,7 +688,7 @@ function SubscriptionTab() {
               </Alert>
 
               <div className="flex space-x-2">
-                <Button 
+                <Button
                   onClick={handleCancelSubscription}
                   disabled={isCanceling}
                   variant="outline"
@@ -735,7 +736,7 @@ function SubscriptionTab() {
                 </AlertDescription>
               </Alert>
 
-              <Button 
+              <Button
                 onClick={handleUpgrade}
                 disabled={isUpgrading}
                 className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg w-full"
@@ -782,7 +783,7 @@ function SubscriptionTab() {
                 Cambiar
               </Button>
             </div>
-            
+
             <Button variant="outline" className="glass border-white/20 w-full">
               <CreditCard className="h-4 w-4 mr-2" />
               Agregar Método de Pago
@@ -808,7 +809,7 @@ function AccountTab() {
     const confirmed = confirm(
       '¿Estás seguro de que quieres eliminar tu cuenta? Esta acción no se puede deshacer.'
     );
-    
+
     if (!confirmed) return;
 
     const doubleConfirm = prompt(
@@ -884,8 +885,8 @@ function AccountTab() {
               </ul>
             </AlertDescription>
           </Alert>
-          
-          <Button 
+
+          <Button
             onClick={handleDeleteAccount}
             disabled={isDeleting}
             variant="outline"
@@ -915,7 +916,7 @@ export default function SettingsPage() {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      
+
       <div className="py-8 px-6">
         <div className="container mx-auto max-w-6xl">
           <motion.div

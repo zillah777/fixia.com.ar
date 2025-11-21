@@ -58,12 +58,12 @@ export class SubscriptionController {
     @Req() req: any,
     @Body() dto: any, // Temporarily use any to bypass validation
   ) {
-    console.log('📦 Received subscription request:', JSON.stringify(dto));
-    console.log('📦 Data types:', {
+    this.logger.debug('📦 Received subscription request:', JSON.stringify(dto));
+    this.logger.debug('📦 Data types:', {
       subscriptionType: typeof dto.subscriptionType,
       price: typeof dto.price,
     });
-    console.log('📦 Raw DTO:', dto);
+    this.logger.debug('📦 Raw DTO:', dto);
 
     // SECURITY: Server-side validation to prevent amount tampering (CVSS 8.6 mitigation)
     if (!dto.subscriptionType || dto.subscriptionType !== 'basic') {

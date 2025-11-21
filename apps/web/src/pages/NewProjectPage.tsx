@@ -25,6 +25,7 @@ import { servicesService, ServiceCategory } from "../lib/services/services.servi
 import { useSubscriptionStatus } from "../hooks/useSubscriptionStatus";
 import { SubscriptionPaywall } from "../components/subscription/SubscriptionPaywall";
 import { toast } from "sonner";
+import { logger } from "../utils/logger";
 
 // Remove hardcoded categories
 // const categories = [ ... ];
@@ -1082,7 +1083,7 @@ export default function NewProjectPage() {
         // Map other fields as needed
       };
 
-      console.log('Publishing service:', servicePayload);
+      logger.debug('Publishing service:', servicePayload);
 
       await servicesService.createService(servicePayload);
 
