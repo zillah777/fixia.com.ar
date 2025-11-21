@@ -17,11 +17,11 @@ interface ModalProps {
 }
 
 const sizeClasses = {
-  sm: "max-w-sm",
-  md: "max-w-md",
-  lg: "max-w-lg",
-  xl: "max-w-2xl",
-  full: "max-w-6xl"
+  sm: "w-full h-full sm:h-auto sm:max-w-sm sm:rounded-xl",
+  md: "w-full h-full sm:h-auto sm:max-w-md sm:rounded-xl",
+  lg: "w-full h-full sm:h-auto sm:max-w-lg sm:rounded-xl",
+  xl: "w-full h-full sm:h-auto sm:max-w-2xl sm:rounded-xl",
+  full: "w-full h-full sm:h-auto sm:max-w-6xl sm:rounded-xl"
 };
 
 export function Modal({
@@ -106,72 +106,74 @@ export function Modal({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
-            className="fixed inset-0 z-modal-backdrop bg-black/60 backdrop-blur-sm modal-overlay"
+            transition={{ duration: 0.2 }}
             onClick={closeOnOverlayClick ? onClose : undefined}
+            className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm"
           />
 
-          {/* Content */}
-          <motion.div
-            ref={contentRef}
-            initial={{ opacity: 0, scale: 0.95, y: -8 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: -8 }}
-            transition={{
-              duration: 0.2,
-              ease: "easeOut",
-              type: "spring",
-              stiffness: 400,
-              damping: 30
-            }}
-            className={cn(
-              "fixed left-[50%] top-[50%] z-modal-content w-full translate-x-[-50%] translate-y-[-50%]",
-              "glass-strong rounded-2xl shadow-2xl border border-white/10",
-              "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-              "w-[95vw] sm:w-full",
-              sizeClasses[size],
-              className
-            )}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby={title ? "modal-title" : undefined}
-            aria-describedby={description ? "modal-description" : undefined}
-          >
-            <div className="p-6 sm:p-8">
+          {/* Modal Content */}
+          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4">
+            <motion.div
+              ref={contentRef}
+              initial={{ opacity: 0, y: "100%" }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: "100%" }}
+              transition={{
+                type: "spring",
+                stiffness: 400,
+                damping: 30
+              }}
+              className={cn(
+                "relative bg-background shadow-2xl",
+                "glass-strong border-0 sm:border border-white/10",
+                "max-h-screen sm:max-h-[90vh] overflow-hidden flex flex-col",
+                "rounded-t-2xl sm:rounded-xl",
+                sizeClasses[size],
+                className
+              )}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby={title ? "modal-title" : undefined}
+              aria-describedby={description ? "modal-description" : undefined}
+            >
+              {/* Mobile drag indicator */}
+              <div className="sm:hidden flex justify-center pt-3 pb-2">
+                <div className="w-12 h-1 rounded-full bg-white/20" />
+              </div>
+
               {/* Header */}
-              {(title || description || showCloseButton) && (
-                <div className="flex items-start justify-between mb-6">
+              {(title || showCloseButton) && (
+                <div className="flex items-start justify-between px-4 sm:px-6 py-4 sm:py-6 border-b border-white/10">
                   <div className="flex-1">
                     {title && (
-                      <h2 id="modal-title" className="text-lg font-semibold leading-none tracking-tight">
+                      <h2 className="text-lg sm:text-xl font-semibold text-foreground">
                         {title}
                       </h2>
                     )}
                     {description && (
-                      <p id="modal-description" className="text-sm text-muted-foreground mt-2">
+                      <p className="mt-1 text-sm text-muted-foreground">
                         {description}
                       </p>
                     )}
                   </div>
-
                   {showCloseButton && (
                     <button
                       onClick={onClose}
-                      className="rounded-xl glass-medium hover:glass-strong opacity-70 hover:opacity-100 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 p-2 ml-4"
+                      className="ml-4 rounded-lg p-2 text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors min-h-11 min-w-11 sm:min-h-0 sm:min-w-0"
+                      aria-label="Close modal"
                     >
-                      <X className="h-4 w-4" />
-                      <span className="sr-only">Close</span>
+                      <X className="h-5 w-5" />
                     </button>
                   )}
                 </div>
               )}
 
-              {/* Content */}
-              <div className="relative">
+              {/* Body */}
+              <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 sm:py-6">
                 {children}
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </div>
         </>
       )}
     </AnimatePresence>,

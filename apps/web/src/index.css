@@ -473,3 +473,54 @@
     @apply px-4;
   }
 }
+
+/* ========================================
+   RESPONSIVE IMAGES
+   ======================================== */
+.img-responsive {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.img-cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.img-contain {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* ========================================
+   MOBILE NAVIGATION
+   ======================================== */
+@media (max-width: 640px) {
+
+  /* Bottom navigation safe area */
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  /* Fixed bottom navigation */
+  .nav-bottom {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 40;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  /* Sticky header */
+  .header-sticky {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+}
