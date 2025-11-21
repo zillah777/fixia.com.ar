@@ -55,6 +55,34 @@
     text-rendering: optimizeLegibility;
   }
 
+  /* Mobile-First Responsive Typography */
+  h1 {
+    @apply text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold;
+    line-height: 1.2;
+  }
+
+  h2 {
+    @apply text-xl sm:text-2xl md:text-3xl font-bold;
+    line-height: 1.3;
+  }
+
+  h3 {
+    @apply text-lg sm:text-xl md:text-2xl font-semibold;
+    line-height: 1.4;
+  }
+
+  h4 {
+    @apply text-base sm:text-lg font-semibold;
+    line-height: 1.5;
+  }
+
+  /* Better mobile readability */
+  @media (max-width: 640px) {
+    body {
+      line-height: 1.6;
+    }
+  }
+
   ::selection {
     background-color: hsl(var(--primary) / 0.3);
     color: hsl(var(--primary-foreground));
@@ -354,12 +382,73 @@
     font-size: 16px;
   }
 
-  /* Optimize glassmorphism for mobile performance */
+  /* Stronger glass effects for better mobile visibility */
+  .glass {
+    background: rgba(0, 0, 0, 0.5);
+    -webkit-backdrop-filter: blur(24px) saturate(150%);
+    backdrop-filter: blur(24px) saturate(150%);
+  }
+
+  .glass-medium {
+    background: rgba(0, 0, 0, 0.65);
+    -webkit-backdrop-filter: blur(40px) saturate(160%);
+    backdrop-filter: blur(40px) saturate(160%);
+  }
+
+  .glass-strong {
+    background: rgba(0, 0, 0, 0.75);
+    -webkit-backdrop-filter: blur(64px) saturate(170%);
+    backdrop-filter: blur(64px) saturate(170%);
+  }
+
+  .glass-ultra {
+    background: rgba(255, 255, 255, 0.12);
+    -webkit-backdrop-filter: blur(40px) saturate(180%);
+    backdrop-filter: blur(40px) saturate(180%);
+  }
+
+  /* Optimize performance */
   .glass,
   .glass-medium,
   .glass-strong,
   .glass-ultra {
     will-change: transform;
+    contain: layout style paint;
+  }
+
+  /* Simplify hover effects to active states */
+  .hover-lift {
+    transform: none;
+    transition: transform 150ms ease-out;
+  }
+
+  .hover-lift:active {
+    transform: scale(0.98);
+  }
+
+  /* Faster transitions for snappier feel */
+  * {
+    transition-duration: 150ms !important;
+  }
+
+  /* Better shadows for depth on small screens */
+  .shadow-lg {
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.2);
+  }
+
+  .shadow-2xl {
+    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4), 0 15px 20px -12px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Optimize ripple for mobile */
+  .ripple {
+    animation-duration: 400ms !important;
+  }
+
+  /* Better spacing for mobile */
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
   }
 }
 
