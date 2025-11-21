@@ -562,11 +562,6 @@ export class ServicesService {
 
   async getCategoryStats() {
     const categories = await this.prisma.category.findMany({
-      where: {
-        service_count: {
-          gt: 0, // Only return categories with at least one service
-        },
-      },
       orderBy: [
         { popular: 'desc' },
         { service_count: 'desc' },
