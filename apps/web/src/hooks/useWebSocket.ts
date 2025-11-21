@@ -54,28 +54,18 @@ export function useWebSocket(options: UseWebSocketOptions = {}): WebSocketStatus
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   /**
-   * Verify authentication by checking if user is authenticated
-   * Uses Authorization header as fallback for cross-domain scenarios
+   * Verify authentication using httpOnly cookies
+   * SECURITY: No localStorage tokens - only httpOnly cookies
    */
   const isUserAuthenticated = useCallback(async (): Promise<boolean> => {
     try {
-      // Get token from localStorage (set after login)
-      const accessToken = localStorage.getItem('fixia_access_token');
-
-      if (!accessToken) {
-        console.warn('⚠️ No access token found in localStorage');
-        return false;
-      }
-
-      // Check if user is authenticated by calling the backend
-      // Uses Authorization header for cross-domain cookie support
+      // SECURITY: httpOnly cookies sent automatically via credentials: 'include'
       const response = await fetch(`${import.meta.env.VITE_API_URL || 'https://api.fixia.app'}/auth/verify`, {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${accessToken}`,
           'Content-Type': 'application/json',
         },
-        credentials: 'include', // Also include cookies as primary method
+        credentials: 'include', // Send httpOnly cookies
       });
       return response.ok;
     } catch (error) {
@@ -110,13 +100,10 @@ export function useWebSocket(options: UseWebSocketOptions = {}): WebSocketStatus
 
     try {
       const apiUrl = import.meta.env.VITE_API_URL || 'https://api.fixia.app';
-      const accessToken = localStorage.getItem('fixia_access_token');
 
       const newSocket = io(`${apiUrl}/notifications`, {
-        // Primary: httpOnly cookies automatically sent by browser
-        // Fallback: Pass token in auth object for cross-domain scenarios
+        // SECURITY: httpOnly cookies automatically sent by browser
         withCredentials: true,
-        auth: accessToken ? { token: accessToken } : undefined,
         reconnection: true,
         reconnectionDelay: Math.min(
           reconnectionDelay * Math.pow(2, reconnectAttemptsRef.current),

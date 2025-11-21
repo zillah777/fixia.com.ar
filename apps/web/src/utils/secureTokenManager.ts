@@ -65,7 +65,7 @@ class SecureTokenManager {
 
   /**
    * Realizar login y establecer cookies httpOnly en el servidor
-   * FALLBACK: También almacena tokens en localStorage para cross-domain compatibility
+   * SECURITY: Tokens SOLO en httpOnly cookies (NO localStorage) - XSS protection
    */
   async login(credentials: { email: string; password: string }): Promise<{
     success: boolean;
@@ -110,9 +110,9 @@ class SecureTokenManager {
         };
       }
 
-      // The server is now responsible for setting the httpOnly cookies.
-      // The client no longer needs to store tokens in localStorage.
-      // We will still clear any old data from localStorage on logout.
+      // SECURITY: Server sets httpOnly cookies automatically.
+      // Client NEVER stores tokens (XSS protection).
+      // Only non-sensitive user data stored in localStorage for UX.
 
       // Store user data internally for consistency
       this.currentUser = userData;
@@ -201,7 +201,7 @@ class SecureTokenManager {
     }
 
     this.refreshPromise = this._performRefresh();
-    
+
     try {
       await this.refreshPromise;
       return this.tokenInfo.isAuthenticated;
@@ -251,7 +251,7 @@ class SecureTokenManager {
     // Refrescar si falta menos de 5 minutos para que expire
     const fiveMinutesInMs = 5 * 60 * 1000;
     const now = Date.now();
-    
+
     if (this.tokenInfo.expiresAt - now < fiveMinutesInMs) {
       return await this.refreshToken();
     }
@@ -261,11 +261,14 @@ class SecureTokenManager {
 
   /**
    * Limpiar datos locales (pero no las cookies httpOnly, eso lo hace el servidor)
+   * SECURITY: Solo limpiamos datos no sensibles. Los tokens están en httpOnly cookies.
    */
   private clearLocalData(): void {
-    // Limpiar cualquier dato sensible del localStorage/sessionStorage
+    // Limpiar datos de usuario (no sensibles, solo para UX)
     localStorage.removeItem('fixia_user');
     localStorage.removeItem('fixia_preferences');
+    // SECURITY FIX: NO almacenamos tokens en localStorage (solo httpOnly cookies)
+    // Las siguientes líneas son para limpiar datos legacy si existieran
     localStorage.removeItem('fixia_access_token');
     localStorage.removeItem('fixia_refresh_token');
     sessionStorage.clear();
@@ -327,10 +330,10 @@ export const useSecureAuth = () => {
       // Get current auth state without triggering verification on first load
       const currentState = secureTokenManager.getAuthState();
       setAuthState(currentState);
-      
+
       // Only verify if we think we should be authenticated but haven't verified recently
-      if (currentState.isAuthenticated && 
-          (!currentState.lastRefresh || Date.now() - currentState.lastRefresh > 10 * 60 * 1000)) {
+      if (currentState.isAuthenticated &&
+        (!currentState.lastRefresh || Date.now() - currentState.lastRefresh > 10 * 60 * 1000)) {
         const isAuth = await secureTokenManager.isAuthenticated();
         setAuthState(secureTokenManager.getAuthState());
       }
