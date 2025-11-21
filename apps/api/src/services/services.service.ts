@@ -572,6 +572,7 @@ export class ServicesService {
         { service_count: 'desc' },
         { name: 'asc' },
       ],
+      take: 6, // Limit to 6 categories for homepage
     });
 
     return categories.map(cat => ({

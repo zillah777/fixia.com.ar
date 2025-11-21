@@ -226,9 +226,9 @@ function CategoriesSection() {
                 </motion.div>
 
                 {/* Category Grid */}
-                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
                     {loadingCategories ? (
-                        [1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+                        [1, 2, 3, 4, 5, 6].map((i) => (
                             <Card key={i} className="glass border-white/10 p-6">
                                 <Skeleton className="h-16 w-16 rounded-full mx-auto mb-4" />
                                 <Skeleton className="h-4 w-24 mx-auto mb-2" />
