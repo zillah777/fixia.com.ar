@@ -70,15 +70,21 @@
 
   /* Glassmorphism Utilities */
   .glass {
-    @apply bg-black/40 backdrop-blur-xl border border-white/10;
+    @apply bg-black/40 border border-white/10;
+    -webkit-backdrop-filter: blur(24px);
+    backdrop-filter: blur(24px);
   }
 
   .glass-medium {
-    @apply bg-black/60 backdrop-blur-2xl border border-white/15;
+    @apply bg-black/60 border border-white/15;
+    -webkit-backdrop-filter: blur(40px);
+    backdrop-filter: blur(40px);
   }
 
   .glass-strong {
-    @apply bg-black/80 backdrop-blur-3xl border border-white/20;
+    @apply bg-black/80 border border-white/20;
+    -webkit-backdrop-filter: blur(64px);
+    backdrop-filter: blur(64px);
   }
 
   /* Liquid Gradient Animation */
@@ -249,7 +255,7 @@
   overflow: hidden;
 }
 
-.shimmer::after {
+.shimmer::before {
   content: '';
   position: absolute;
   top: 0;
@@ -257,13 +263,15 @@
   width: 100%;
   height: 100%;
   background: linear-gradient(90deg,
-      transparent 0%,
-      rgba(255, 255, 255, 0.1) 50%,
-      transparent 100%);
-  animation: shimmer 1.5s infinite;
+      transparent,
+      rgba(255, 255, 255, 0.1),
+      transparent);
+  animation: shimmer-slide 2s infinite;
+  -webkit-mask: linear-gradient(90deg, transparent, white, transparent);
+  mask: linear-gradient(90deg, transparent, white, transparent);
 }
 
-@keyframes shimmer {
+@keyframes shimmer-slide {
   to {
     left: 100%;
   }
@@ -312,6 +320,63 @@
 .animate-float {
   animation: float 6s ease-in-out infinite;
 }
+
+.animate-pulse-slow {
+  animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Mobile-Specific Optimizations */
+@media (max-width: 768px) {
+
+  /* Improve touch targets */
+  button,
+  a,
+  [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Optimize animations for mobile */
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Better text rendering on mobile */
+  body {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  /* Prevent zoom on input focus */
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+
+  /* Optimize glassmorphism for mobile performance */
+  .glass,
+  .glass-medium,
+  .glass-strong,
+  .glass-ultra {
+    will-change: transform;
+  }
+}
+
+/* iOS-Specific Fixes */
+@supports (-webkit-touch-callout: none) {
+
+  /* Fix iOS Safari bounce effect */
+  body {
+    overscroll-behavior-y: none;
+  }
+
+  /* Improve iOS scrolling performance */
+  * {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
 
 /* Mobile Optimizations */
 @media (max-width: 640px) {
