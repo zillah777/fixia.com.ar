@@ -247,7 +247,10 @@ function CategoriesSection() {
                                     transition={{ duration: 0.6, delay: 0.1 * index }}
                                     whileHover={{ y: -4 }}
                                 >
-                                    <Link to="/services" className="block w-full">
+                                    <button
+                                        onClick={() => setSelectedCategory(category.category)}
+                                        className="block w-full text-left"
+                                    >
                                         <Card className={`glass hover:glass-medium transition-all duration-300 cursor-pointer group h-full relative ${isSelected ? 'border-primary/50 bg-primary/5' : 'border-white/10'
                                             }`}>
                                             {category.popular && (
@@ -264,7 +267,7 @@ function CategoriesSection() {
                                                 <p className="text-sm text-muted-foreground">{category.count} servicios</p>
                                             </CardContent>
                                         </Card>
-                                    </Link>
+                                    </button>
                                 </motion.div>
                             );
                         })
