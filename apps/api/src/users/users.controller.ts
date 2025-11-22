@@ -99,7 +99,24 @@ export class UsersController {
   async getActiveProfessionalsCount() {
     return this.usersService.getActiveProfessionalsCount();
   }
-
+  @Get('professionals/by-category/:category')
+  @Public()
+  @ApiOperation({ summary: 'Obtener profesionales por categoría' })
+  @ApiParam({ name: 'category', description: 'Nombre de la categoría' })
+  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Límite de resultados (default: 3)' })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de profesionales en la categoría especificada',
+  })
+  async getProfessionalsByCategory(
+    @Param('category') category: string,
+    @Query('limit') limit?: number,
+  ) {
+    return this.usersService.getProfessionalsByCategory(
+      decodeURIComponent(category),
+      limit ? parseInt(limit.toString(), 10) : 3,
+    );
+  }
 
   @Get('users/:userId')
   @Public()
