@@ -92,9 +92,9 @@ export default function LoginPage() {
             </motion.div>
             <div className="text-left">
               <motion.div
-                className="text-lg sm:text-xl font-semibold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent"
-                animate={{ backgroundPosition: ['0%', '100%', '0%'] }}
-                transition={{ duration: 8, repeat: Infinity }}
+                className="text-lg sm:text-xl font-semibold text-white"
+                animate={{ opacity: [0.9, 1, 0.9] }}
+                transition={{ duration: 4, repeat: Infinity }}
               >
                 Fixia
               </motion.div>
@@ -166,14 +166,9 @@ export default function LoginPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.5 }}
                 >
-                  <Label htmlFor="password" className="text-xs sm:text-sm font-medium">Contraseña</Label>
+                  <Label htmlFor="password" className="text-xs sm:text-sm font-medium">Tu contraseña</Label>
                   <div className="relative group">
-                    <motion.div
-                      animate={{ x: password ? [0, 4, 0] : 0 }}
-                      transition={{ duration: 0.5 }}
-                    >
-                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
-                    </motion.div>
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors z-10" />
                     <Input
                       id="password"
                       type={showPassword ? "text" : "password"}

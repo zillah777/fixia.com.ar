@@ -116,7 +116,7 @@ const PremiumNavbar = React.forwardRef<HTMLElement, PremiumNavbarProps>(
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+              <h1 className="text-2xl font-bold text-white">
                 Fixia
               </h1>
               <p className="text-xs text-muted-foreground">

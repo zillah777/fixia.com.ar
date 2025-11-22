@@ -62,7 +62,7 @@ function LoadingScreen() {
           <div className="absolute -inset-2 liquid-gradient rounded-2xl blur opacity-30 animate-pulse-slow"></div>
         </div>
         <div className="text-center">
-          <div className="text-xl font-semibold">Fixia</div>
+          <div className="text-xl font-semibold text-white">Fixia</div>
           <div className="text-sm text-muted-foreground">Conecta. Confía. Resuelve.</div>
         </div>
       </motion.div>
