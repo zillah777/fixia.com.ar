@@ -410,3 +410,221 @@ html {
   background: rgba(102, 126, 234, 0.3);
   color: inherit;
 }
+
+/* ============================================
+   ELITE RESPONSIVE UTILITIES (2025)
+   ============================================ */
+@layer utilities {
+  /* Scrollbar hiding for horizontal scrolls */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Safe area padding for notched devices */
+  .safe-area-top {
+    padding-top: max(1rem, env(safe-area-inset-top));
+  }
+
+  .safe-area-bottom {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+
+  .safe-area-left {
+    padding-left: max(1rem, env(safe-area-inset-left));
+  }
+
+  .safe-area-right {
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
+
+  /* Line clamp utilities - responsive text truncation */
+  .line-clamp-1 {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* GPU-accelerated animations - Performance optimized */
+  .will-change-transform {
+    will-change: transform;
+  }
+
+  .will-change-opacity {
+    will-change: opacity;
+  }
+
+  .gpu-accelerate {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+  }
+
+  /* Responsive container utilities */
+  .container-mobile {
+    width: 100%;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  .container-tablet {
+    width: 100%;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+
+  .container-desktop {
+    width: 100%;
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+
+  /* Aspect ratio utilities */
+  .aspect-video {
+    aspect-ratio: 16 / 9;
+  }
+
+  .aspect-square {
+    aspect-ratio: 1 / 1;
+  }
+
+  .aspect-portrait {
+    aspect-ratio: 3 / 4;
+  }
+
+  /* Improved hover utilities - No-hover for touch devices */
+  @media (hover: hover) {
+    .hover-lift {
+      transition: transform 0.3s ease;
+    }
+
+    .hover-lift:hover {
+      transform: translateY(-4px);
+    }
+
+    .hover-lift-subtle {
+      transition: transform 0.2s ease;
+    }
+
+    .hover-lift-subtle:hover {
+      transform: translateY(-2px);
+    }
+
+    .hover-scale {
+      transition: transform 0.3s ease;
+    }
+
+    .hover-scale:hover {
+      transform: scale(1.05);
+    }
+
+    .hover-glow {
+      transition: box-shadow 0.3s ease;
+    }
+
+    .hover-glow:hover {
+      box-shadow: 0 0 20px rgba(102, 126, 234, 0.4);
+    }
+  }
+
+  /* Responsive text utilities */
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .text-pretty {
+    text-wrap: pretty;
+  }
+
+  /* Breakpoint-specific visibility */
+  @media (max-width: 640px) {
+    .sm\:hidden {
+      display: none !important;
+    }
+
+    .sm\:block {
+      display: block !important;
+    }
+
+    .sm\:inline {
+      display: inline !important;
+    }
+
+    .sm\:flex {
+      display: flex !important;
+    }
+  }
+
+  /* Responsive grid auto-fit */
+  .grid-auto-fit {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+
+  /* Flex centering shorthand */
+  .flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .flex-center-vertical {
+    display: flex;
+    align-items: center;
+  }
+
+  .flex-center-horizontal {
+    display: flex;
+    justify-content: center;
+  }
+
+  /* Gradient overlays */
+  .gradient-to-bottom {
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.5) 100%);
+  }
+
+  .gradient-to-top {
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.5) 100%);
+  }
+
+  /* Backdrop blur utilities */
+  .backdrop-blur-sm {
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  .backdrop-blur-md {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .backdrop-blur-lg {
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+
+  .backdrop-blur-xl {
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+  }
+}
