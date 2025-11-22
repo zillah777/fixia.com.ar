@@ -42,13 +42,18 @@ const EmptyState = React.forwardRef<HTMLDivElement, EmptyStateProps>(
             transition={animated ? { duration: 0.3 } : undefined}
             className="h-14 w-14 rounded-xl glass-medium flex items-center justify-center mx-auto mb-4"
           >
-            {React.isValidElement(Icon) ? (
-              Icon
-            ) : typeof Icon === 'function' ? (
-              <Icon className="h-7 w-7 text-muted-foreground" />
-            ) : (
-              Icon
-            )}
+            <motion.div
+              animate={animated ? { y: [0, -10, 0] } : false}
+              transition={animated ? { duration: 3, repeat: Infinity } : undefined}
+            >
+              {React.isValidElement(Icon) ? (
+                Icon
+              ) : typeof Icon === 'function' ? (
+                <Icon className="h-7 w-7 text-muted-foreground" />
+              ) : (
+                Icon
+              )}
+            </motion.div>
           </motion.div>
         )}
         <motion.h3
