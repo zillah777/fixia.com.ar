@@ -12,7 +12,7 @@ import { toast } from 'sonner';
  */
 export default function RegisterPage() {
   const navigate = useNavigate();
-  const { register: authRegister } = useAuth();
+  const { register: authRegister } = useSecureAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { isOpen, config, show, close } = useSuccessModal();
@@ -82,41 +82,88 @@ export default function RegisterPage() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex flex-col"
+      className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex flex-col overflow-hidden"
     >
-      {/* Header */}
+      {/* Premium Animated Background */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <motion.div
+          className="absolute top-0 -left-40 w-80 h-80 liquid-gradient rounded-full blur-3xl opacity-15"
+          animate={{ x: [0, 60, 0], y: [0, -40, 0] }}
+          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="absolute bottom-0 -right-40 w-80 h-80 bg-purple-500/15 rounded-full blur-3xl"
+          animate={{ x: [0, -60, 0], y: [0, 40, 0] }}
+          transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
+        />
+      </div>
+
+      {/* Header - Enhanced */}
       <motion.header
         initial={{ y: -100 }}
         animate={{ y: 0 }}
+        transition={{ duration: 0.7 }}
         className="sticky top-0 z-50 w-full glass border-b border-white/10 backdrop-blur-md"
       >
-        <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6">
-          {/* Logo */}
+        <div className="container mx-auto flex h-16 items-center justify-between px-3 sm:px-6 lg:px-8 relative z-10">
+          {/* Logo - Enhanced */}
           <motion.div
-            whileHover={{ scale: 1.05 }}
+            whileHover={{ scale: 1.08 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => navigate('/')}
-            className="flex items-center space-x-3 cursor-pointer"
+            className="flex items-center gap-2 sm:gap-3 cursor-pointer group"
           >
-            <div className="relative">
-              <div className="h-8 w-8 rounded-lg flex items-center justify-center overflow-hidden bg-primary/20">
-                <span className="font-bold text-primary">F</span>
-              </div>
-              <div className="absolute -inset-1 liquid-gradient rounded-lg blur opacity-30"></div>
-            </div>
-            <div className="flex flex-col">
-              <span className="text-lg font-semibold">Fixia</span>
-              <span className="text-xs text-muted-foreground -mt-1">Conecta. Confía. Resuelve.</span>
+            <motion.div
+              className="relative"
+              animate={{ rotateZ: [0, 360, 0] }}
+              transition={{ duration: 30, repeat: Infinity }}
+            >
+              <motion.div
+                className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg flex items-center justify-center overflow-hidden bg-primary/20 shadow-lg shadow-primary/20"
+                animate={{
+                  boxShadow: [
+                    "0 0 15px rgba(var(--primary), 0.3)",
+                    "0 0 30px rgba(var(--primary), 0.5)",
+                    "0 0 15px rgba(var(--primary), 0.3)"
+                  ]
+                }}
+                transition={{ duration: 3, repeat: Infinity }}
+              >
+                <span className="font-bold text-primary text-sm">F</span>
+              </motion.div>
+              <motion.div
+                className="absolute -inset-1 liquid-gradient rounded-lg blur opacity-30 group-hover:opacity-50"
+                transition={{ duration: 0.3 }}
+              />
+            </motion.div>
+            <div className="flex flex-col min-w-0">
+              <motion.span
+                className="text-base sm:text-lg font-semibold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent"
+                animate={{ backgroundPosition: ['0%', '100%', '0%'] }}
+                transition={{ duration: 8, repeat: Infinity }}
+              >
+                Fixia
+              </motion.span>
+              <span className="text-xs text-muted-foreground -mt-0.5 group-hover:text-foreground/70 transition-colors">Conecta. Confía. Resuelve.</span>
             </div>
           </motion.div>
 
-          {/* Login Link */}
+          {/* Login Link - Enhanced */}
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             <button
               onClick={() => navigate('/login')}
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="relative text-xs sm:text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               ¿Ya tienes cuenta?{' '}
-              <span className="text-primary font-semibold hover:underline">Inicia sesión</span>
+              <span className="text-primary font-semibold group relative inline-block">
+                Inicia sesión
+                <motion.span
+                  className="absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-primary to-accent rounded-full"
+                  initial={{ width: 0 }}
+                  whileHover={{ width: "100%" }}
+                  transition={{ duration: 0.3 }}
+                />
+              </span>
             </button>
           </motion.div>
         </div>
@@ -127,7 +174,7 @@ export default function RegisterPage() {
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.1 }}
-        className="flex-1 w-full max-w-6xl mx-auto"
+        className="flex-1 w-full max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 relative z-10"
       >
         <RegistrationWizard
           onSubmit={handleSubmit}
@@ -141,10 +188,10 @@ export default function RegisterPage() {
         initial={{ y: 100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.5, delay: 0.2 }}
-        className="border-t border-border/40 bg-background/50 backdrop-blur-sm mt-12"
+        className="border-t border-border/40 bg-background/50 backdrop-blur-sm mt-8 sm:mt-12 relative z-10"
       >
-        <div className="container mx-auto px-4 md:px-6 py-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+        <div className="container mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-6 sm:mb-8">
             {/* About */}
             <div className="space-y-2">
               <h4 className="font-semibold">Sobre Fixia</h4>
