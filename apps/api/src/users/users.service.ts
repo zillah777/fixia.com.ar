@@ -1,20 +1,52 @@
-import { Injectable, NotFoundException, ForbiddenException, BadRequestException, ConflictException, Logger } from '@nestjs/common';
-import { PrismaService } from '../common/prisma.service';
-import { UpdateProfileDto } from './dto/update-profile.dto';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+  BadRequestException,
+  ForbiddenException,
+  Logger,
+} from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { UpgradeToProfessionalDto } from './dto/upgrade-to-professional.dto';
-import { DashboardStats } from '@fixia/types';
+
+export interface DashboardStats {
+  total_services: number;
+  active_projects: number;
+  total_earnings: number;
+  average_rating: number;
+  review_count: number;
+  profile_views: number;
+  messages_count: number;
+  pending_proposals: number;
+}
 
 @Injectable()
 export class UsersService {
   private readonly logger = new Logger(UsersService.name);
+
   constructor(private prisma: PrismaService) { }
 
-  async getUserProfile(userId: string) {
-    const user = await this.prisma.user.findUnique({
-      where: {
-        id: userId,
-        deleted_at: null
+  async findAll() {
+    return this.prisma.user.findMany({
+      where: { deleted_at: null },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        lastName: true,
+        phone: true,
+        avatar: true,
+        user_type: true,
+        created_at: true,
+        updated_at: true,
       },
+    });
+  }
+
+  async findOne(id: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id, deleted_at: null },
       include: {
         professional_profile: true,
       },
@@ -24,79 +56,32 @@ export class UsersService {
       throw new NotFoundException('User not found');
     }
 
-    // Remove sensitive data
-    const { password_hash, ...userProfile } = user;
-    return userProfile;
+    return user;
   }
 
   async getPublicProfile(userId: string) {
     const user = await this.prisma.user.findUnique({
-      where: {
-        id: userId,
-        deleted_at: null
-      },
+      where: { id: userId, deleted_at: null },
       select: {
         id: true,
         name: true,
+        lastName: true,
         avatar: true,
-        location: true,
-        verified: true,
         user_type: true,
-        created_at: true,
         professional_profile: {
           select: {
             bio: true,
             specialties: true,
+            years_experience: true,
+            level: true,
             rating: true,
             review_count: true,
-            level: true,
-            years_experience: true,
             availability_status: true,
             response_time_hours: true,
+            verified: true,
+            province: true,
+            city: true,
           },
-        },
-        services: {
-          where: { active: true },
-          select: {
-            id: true,
-            title: true,
-            description: true,
-            price: true,
-            main_image: true,
-            view_count: true,
-            created_at: true,
-            category: {
-              select: {
-                name: true,
-                slug: true,
-                icon: true,
-              },
-            },
-          },
-          orderBy: { created_at: 'desc' },
-          take: 6,
-        },
-        reviews_received: {
-          select: {
-            id: true,
-            rating: true,
-            comment: true,
-            created_at: true,
-            reviewer: {
-              select: {
-                name: true,
-                avatar: true,
-                verified: true,
-              },
-            },
-            service: {
-              select: {
-                title: true,
-              },
-            },
-          },
-          orderBy: { created_at: 'desc' },
-          take: 10,
         },
       },
     });
@@ -108,93 +93,138 @@ export class UsersService {
     return user;
   }
 
-  async updateProfile(userId: string, updateData: UpdateProfileDto) {
-    // First check user exists
-    const existingUser = await this.prisma.user.findUnique({
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    // Check if user exists
+    const user = await this.prisma.user.findUnique({
+      where: { id, deleted_at: null },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    // Update user
+    return this.prisma.user.update({
+      where: { id },
+      data: updateUserDto,
+    });
+  }
+
+  async updateProfile(userId: string, updateData: any) {
+    const user = await this.prisma.user.findUnique({
       where: { id: userId },
       include: { professional_profile: true },
     });
 
-    if (!existingUser) {
+    if (!user) {
       throw new NotFoundException('User not found');
     }
 
-    // Log update attempt
-    this.logger.debug(`[updateProfile] Updating profile for user: ${userId}`, {
-      fieldsToUpdate: Object.keys(updateData).filter(k => updateData[k] !== undefined)
+    // Separate professional profile fields from user fields
+    const {
+      dni,
+      matricula,
+      cuitCuil,
+      serviceCategories,
+      availability,
+      province,
+      city,
+      isMonotributista,
+      ...userFields
+    } = updateData;
+
+    // Update user fields
+    const updatedUser = await this.prisma.user.update({
+      where: { id: userId },
+      data: userFields,
+      include: { professional_profile: true },
     });
 
-    // Build complete user update data with all supported fields
-    const userUpdateData: any = {
-      // Basic fields
-      name: updateData.name,
-      avatar: updateData.avatar,
-      location: updateData.location,
-      bio: updateData.bio,
-      phone: updateData.phone,
-      whatsapp_number: updateData.whatsapp_number,
+    // If user is a professional and has professional fields to update
+    if (user.user_type === 'professional' || user.user_type === 'dual') {
+      if (user.professional_profile) {
+        // Update existing professional profile
+        const professionalData: any = {};
+        if (dni !== undefined) professionalData.dni = dni;
+        if (matricula !== undefined) professionalData.matricula = matricula;
+        if (cuitCuil !== undefined) professionalData.cuit_cuil = cuitCuil;
+        if (serviceCategories !== undefined)
+          professionalData.specialties = serviceCategories;
+        if (availability !== undefined)
+          professionalData.availability_status = availability;
+        if (province !== undefined) professionalData.province = province;
+        if (city !== undefined) professionalData.city = city;
+        if (isMonotributista !== undefined)
+          professionalData.is_monotributista = isMonotributista;
 
-      // Social networks
-      social_linkedin: updateData.social_linkedin,
-      social_twitter: updateData.social_twitter,
-      social_facebook: updateData.social_facebook,
-      social_instagram: updateData.social_instagram,
-
-      // Notification preferences
-      notifications_messages: updateData.notifications_messages,
-      notifications_orders: updateData.notifications_orders,
-      notifications_projects: updateData.notifications_projects,
-      notifications_newsletter: updateData.notifications_newsletter,
-
-      // Settings
-      timezone: updateData.timezone,
-    };
-
-    // Remove undefined values to only update provided fields
-    Object.keys(userUpdateData).forEach(key =>
-      userUpdateData[key] === undefined && delete userUpdateData[key]
-    );
-
-    // ATOMIC TRANSACTION: Update user and professional profile together
-    // If either fails, both rollback. Prevents data inconsistency.
-    const result = await this.prisma.$transaction(async (tx) => {
-      // Update user record with all provided fields
-      const updatedUser = await tx.user.update({
-        where: { id: userId },
-        data: userUpdateData,
-        include: {
-          professional_profile: true,
-        },
-      });
-
-      // Update professional profile if user is professional/dual and specialties provided
-      if ((existingUser.user_type === 'professional' || existingUser.user_type === 'dual') && updateData.specialties !== undefined) {
-        const professionalUpdateData = {
-          specialties: updateData.specialties,
-        };
-
-        if (existingUser.professional_profile) {
-          await tx.professionalProfile.update({
+        if (Object.keys(professionalData).length > 0) {
+          await this.prisma.professionalProfile.update({
             where: { user_id: userId },
-            data: professionalUpdateData,
-          });
-        } else {
-          await tx.professionalProfile.create({
-            data: {
-              user_id: userId,
-              ...professionalUpdateData,
-            },
+            data: professionalData,
           });
         }
       }
+    }
 
-      return updatedUser;
+    // Return updated user with professional profile
+    return this.prisma.user.findUnique({
+      where: { id: userId },
+      include: { professional_profile: true },
+    });
+  }
+
+  async getUserStats(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        professional_profile: true,
+      },
     });
 
-    console.log(`[updateProfile] Profile updated successfully for user: ${userId}`);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
 
-    const { password_hash, ...userProfile } = result;
-    return userProfile;
+    // Get service stats
+    const serviceStats = await this.prisma.service.aggregate({
+      where: { professional_id: userId },
+      _count: { id: true },
+      _avg: { price: true },
+    });
+
+    // Get review stats
+    const reviewStats = await this.prisma.review.aggregate({
+      where: { professional_id: userId },
+      _count: { id: true },
+      _avg: { rating: true },
+    });
+
+    return {
+      total_services: serviceStats._count.id,
+      average_price: serviceStats._avg.price || 0,
+      total_reviews: reviewStats._count.id,
+      average_rating: reviewStats._avg.rating || 0,
+      profile_completeness: this.calculateProfileCompleteness(user),
+    };
+  }
+
+  private calculateProfileCompleteness(user: any): number {
+    let score = 0;
+    const fields = [
+      user.name,
+      user.lastName,
+      user.phone,
+      user.avatar,
+      user.professional_profile?.bio,
+      user.professional_profile?.specialties?.length > 0,
+      user.professional_profile?.years_experience,
+    ];
+
+    fields.forEach((field) => {
+      if (field) score += 1;
+    });
+
+    return Math.round((score / fields.length) * 100);
   }
 
   async getDashboard(userId: string): Promise<DashboardStats> {
@@ -494,5 +524,58 @@ export class UsersService {
       },
       professional_profile: upgradedUser.professional_profile,
     };
+  }
+
+  async getProfessionalsByCategory(categoryName: string, limit: number = 3) {
+    // Find professionals who have services in the specified category
+    const services = await this.prisma.service.findMany({
+      where: {
+        active: true,
+        category: {
+          name: categoryName,
+        },
+      },
+      include: {
+        professional: {
+          include: {
+            professional_profile: true,
+          },
+        },
+        category: true,
+      },
+      orderBy: {
+        created_at: 'desc',
+      },
+      take: limit * 3, // Get more to ensure we have enough unique professionals
+    });
+
+    // Extract unique professionals with their best service in this category
+    const professionalsMap = new Map();
+
+    services.forEach(service => {
+      const professionalId = service.professional.id;
+
+      if (!professionalsMap.has(professionalId) && professionalsMap.size < limit) {
+        professionalsMap.set(professionalId, {
+          id: service.professional.id,
+          name: service.professional.name,
+          lastName: service.professional.lastName,
+          email: service.professional.email,
+          avatar: service.professional.avatar,
+          professional_profile: service.professional.professional_profile,
+          service: {
+            id: service.id,
+            title: service.title,
+            description: service.description,
+            price_min: service.price,
+            currency: 'ARS',
+            delivery_time_days: service.delivery_time_days,
+            category: service.category.name,
+          },
+        });
+      }
+    });
+
+    return Array.from(professionalsMap.values());
   }
 }
