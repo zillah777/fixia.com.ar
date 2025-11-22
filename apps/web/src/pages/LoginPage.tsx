@@ -181,7 +181,7 @@ export default function LoginPage() {
                     <motion.div
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.95 }}
-                      className="absolute right-0 top-1/2 -translate-y-1/2"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 z-20"
                     >
                       <Button
                         type="button"

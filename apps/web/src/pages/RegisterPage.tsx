@@ -139,10 +139,10 @@ export default function RegisterPage() {
                 }}
                 transition={{ duration: 3, repeat: Infinity }}
               >
-                <img 
-                  src="/logo.png" 
-                  alt="Fixia Logo" 
-                  className="h-full w-full object-contain p-1"
+                <img
+                  src="/fixia-logo.png"
+                  alt="Fixia Logo"
+                  className="h-full w-full object-contain"
                 />
               </motion.div>
               <motion.div
