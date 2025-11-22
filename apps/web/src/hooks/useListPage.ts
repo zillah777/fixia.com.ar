@@ -19,25 +19,13 @@ import { usePaginatedData } from './usePaginatedData';
  * @returns Complete list page data and controls
  *
  * @example
- * ```tsx
- * const { items, state, page, nextPage, prevPage, refetch } = useListPage(
- *   () => api.getItems(),
- *   [filters],
- *   12
- * );
- *
- * return (
- *   <>
- *     {state === 'loading' && <SkeletonLoader />}
- *     {state === 'empty' && <EmptyState />}
- *     {state === 'ready' && (
- *       <>
- *         {items.map(item => <ItemCard key={item.id} item={item} />)}
- *       </>
- *     )}
- *   </>
- * );
- * ```
+ * // const { items, state, page, nextPage, prevPage, refetch } = useListPage(
+ * //   () => api.getItems(),
+ * //   [filters],
+ * //   12
+ * // );
+ * //
+ * // Provides complete list page data and controls with pagination
  */
 export function useListPage<T extends any>(
   fetchFn: () => Promise<T[]>,
