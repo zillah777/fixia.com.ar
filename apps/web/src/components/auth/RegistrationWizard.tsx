@@ -22,6 +22,7 @@ export interface RegistrationFormData {
   confirmPassword: string;
   birthdate: string;
   dni: string;
+  gender: 'masculino' | 'femenino' | 'prefiero_no_decirlo' | '';
 
   // Professional fields
   businessName: string;
@@ -78,6 +79,7 @@ export function RegistrationWizard({
     confirmPassword: '',
     birthdate: '',
     dni: '',
+    gender: '',
     businessName: '',
     serviceCategories: [],
     description: '',
@@ -167,6 +169,34 @@ export function RegistrationWizard({
 
       if (!formData.phone.trim()) {
         newErrors.phone = 'El teléfono es requerido';
+      }
+
+      // DNI validation
+      if (!formData.dni.trim()) {
+        newErrors.dni = 'El DNI es requerido';
+      } else if (!/^\d{7,8}$/.test(formData.dni.replace(/\./g, ''))) {
+        newErrors.dni = 'El DNI debe tener 7-8 dígitos numéricos';
+      }
+
+      // Birthdate validation
+      if (!formData.birthdate) {
+        newErrors.birthdate = 'La fecha de nacimiento es requerida';
+      } else {
+        const birthDate = new Date(formData.birthdate);
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+          age--;
+        }
+        if (age < 18) {
+          newErrors.birthdate = 'Debes ser mayor de 18 años';
+        }
+      }
+
+      // Gender validation
+      if (!formData.gender) {
+        newErrors.gender = 'El género es requerido';
       }
 
       const passwordError = validatePassword(formData.password);
@@ -383,6 +413,57 @@ export function RegistrationWizard({
                       )}
                     </div>
 
+                    {/* DNI */}
+                    <div className="space-y-2">
+                      <Label htmlFor="dni">DNI / Cédula de Identidad</Label>
+                      <Input
+                        id="dni"
+                        type="text"
+                        placeholder="12.345.678"
+                        value={formData.dni}
+                        onChange={(e) => handleChange('dni', e.target.value)}
+                        aria-invalid={!!errors.dni}
+                        aria-describedby={errors.dni ? 'dni-error' : undefined}
+                      />
+                      {errors.dni && (
+                        <FormFieldError error={errors.dni} id="dni" />
+                      )}
+                    </div>
+
+                    {/* Birthdate */}
+                    <div className="space-y-2">
+                      <Label htmlFor="birthdate">Fecha de Nacimiento</Label>
+                      <Input
+                        id="birthdate"
+                        type="date"
+                        value={formData.birthdate}
+                        onChange={(e) => handleChange('birthdate', e.target.value)}
+                        aria-invalid={!!errors.birthdate}
+                        aria-describedby={errors.birthdate ? 'birthdate-error' : undefined}
+                      />
+                      {errors.birthdate && (
+                        <FormFieldError error={errors.birthdate} id="birthdate" />
+                      )}
+                    </div>
+
+                    {/* Gender */}
+                    <div className="space-y-2">
+                      <Label htmlFor="gender">Género</Label>
+                      <Select value={formData.gender} onValueChange={(value) => handleChange('gender', value)}>
+                        <SelectTrigger id="gender" aria-invalid={!!errors.gender}>
+                          <SelectValue placeholder="Selecciona tu género" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="masculino">Masculino</SelectItem>
+                          <SelectItem value="femenino">Femenino</SelectItem>
+                          <SelectItem value="prefiero_no_decirlo">Prefiero no decir</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      {errors.gender && (
+                        <FormFieldError error={errors.gender} id="gender" />
+                      )}
+                    </div>
+
                     {/* Password */}
                     <div className="space-y-2">
                       <Label htmlFor="password">Contraseña</Label>
@@ -474,6 +555,26 @@ export function RegistrationWizard({
                       />
                       {errors.businessName && (
                         <FormFieldError error={errors.businessName} id="businessName" />
+                      )}
+                    </div>
+
+                    {/* Experience */}
+                    <div className="space-y-2">
+                      <Label htmlFor="experience">Años de Experiencia</Label>
+                      <Select value={formData.experience} onValueChange={(value) => handleChange('experience', value)}>
+                        <SelectTrigger id="experience" aria-invalid={!!errors.experience}>
+                          <SelectValue placeholder="Selecciona tu experiencia" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="menos-1">Menos de 1 año</SelectItem>
+                          <SelectItem value="1-3">1-3 años</SelectItem>
+                          <SelectItem value="3-5">3-5 años</SelectItem>
+                          <SelectItem value="5-10">5-10 años</SelectItem>
+                          <SelectItem value="mas-10">Más de 10 años</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      {errors.experience && (
+                        <FormFieldError error={errors.experience} id="experience" />
                       )}
                     </div>
 

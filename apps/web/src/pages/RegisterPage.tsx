@@ -36,6 +36,9 @@ export default function RegisterPage() {
         phone: formData.phone,
         password: formData.password,
         userType: formData.userType as 'professional' | 'client',
+        birthdate: formData.birthdate,
+        dni: formData.dni,
+        gender: formData.gender as 'masculino' | 'femenino' | 'prefiero_no_decirlo',
         ...(formData.userType === 'professional' && {
           businessName: formData.businessName,
           serviceCategories: formData.serviceCategories,
