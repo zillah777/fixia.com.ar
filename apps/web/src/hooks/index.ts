@@ -14,6 +14,11 @@
  *
  * LEVEL 3 - Ultra-high-level convenience:
  * - useListPage: Complete list page (fetch + pagination + state) in ONE hook
+ *
+ * FASE 3 - Animation & Visual Enhancement Hooks:
+ * - useCardParallax: 3D parallax effects on card hover/scroll
+ * - useAdvancedEntrance: Advanced entrance animations (fade, slide, zoom, etc)
+ * - useScrollAnimation: Scroll-triggered animations with Intersection Observer
  */
 
 export { useLoadingState } from './useLoadingState';
@@ -21,3 +26,6 @@ export { usePaginatedData } from './usePaginatedData';
 export { useDataFetch } from './useDataFetch';
 export { useDataWithState } from './useDataWithState';
 export { useListPage } from './useListPage';
+export { useCardParallax } from './useCardParallax';
+export { useAdvancedEntrance } from './useAdvancedEntrance';
+export { useScrollAnimation } from './useScrollAnimation';
