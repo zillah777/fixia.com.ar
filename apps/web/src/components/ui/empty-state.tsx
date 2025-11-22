@@ -1,21 +1,30 @@
 import * as React from "react";
+import { motion } from "motion/react";
 import { LucideIcon } from "lucide-react";
 import { cn } from "./utils";
 import { Button } from "./button";
 
 export interface EmptyStateProps extends React.HTMLAttributes<HTMLDivElement> {
-  icon?: LucideIcon;
+  icon?: LucideIcon | React.ReactNode;
   title: string;
   description?: string;
   action?: {
     label: string;
     onClick: () => void;
-  };
+    variant?: 'default' | 'outline' | 'ghost';
+  } | {
+    label: string;
+    onClick: () => void;
+    variant?: 'default' | 'outline' | 'ghost';
+  }[];
+  animated?: boolean;
 }
 
 const EmptyState = React.forwardRef<HTMLDivElement, EmptyStateProps>(
-  ({ className, icon: Icon, title, description, action, ...props }, ref) => {
-    return (
+  ({ className, icon: Icon, title, description, action, animated = true, ...props }, ref) => {
+    const actions = Array.isArray(action) ? action : action ? [action] : [];
+
+    const content = (
       <div
         ref={ref}
         className={cn(
@@ -23,24 +32,75 @@ const EmptyState = React.forwardRef<HTMLDivElement, EmptyStateProps>(
           className
         )}
         {...props}
+        role="status"
+        aria-label={`Empty state: ${title}`}
       >
         {Icon && (
-          <div className="h-12 w-12 rounded-xl glass-medium flex items-center justify-center mx-auto mb-4">
-            <Icon className="h-6 w-6 text-muted-foreground" />
-          </div>
+          <motion.div
+            initial={animated ? { scale: 0 } : false}
+            animate={animated ? { scale: 1 } : false}
+            transition={animated ? { duration: 0.3 } : undefined}
+            className="h-14 w-14 rounded-xl glass-medium flex items-center justify-center mx-auto mb-4"
+          >
+            {React.isValidElement(Icon) ? (
+              Icon
+            ) : typeof Icon === 'function' ? (
+              <Icon className="h-7 w-7 text-muted-foreground" />
+            ) : (
+              Icon
+            )}
+          </motion.div>
         )}
-        <h3 className="text-lg font-semibold mb-2">{title}</h3>
+        <motion.h3
+          initial={animated ? { opacity: 0, y: 10 } : false}
+          animate={animated ? { opacity: 1, y: 0 } : false}
+          transition={animated ? { duration: 0.3, delay: 0.1 } : undefined}
+          className="text-lg font-semibold mb-2"
+        >
+          {title}
+        </motion.h3>
         {description && (
-          <p className="text-sm text-muted-foreground max-w-md mb-6">
+          <motion.p
+            initial={animated ? { opacity: 0, y: 10 } : false}
+            animate={animated ? { opacity: 1, y: 0 } : false}
+            transition={animated ? { duration: 0.3, delay: 0.2 } : undefined}
+            className="text-sm text-muted-foreground max-w-md mb-6"
+          >
             {description}
-          </p>
+          </motion.p>
         )}
-        {action && (
-          <Button onClick={action.onClick} size="sm">
-            {action.label}
-          </Button>
+        {actions.length > 0 && (
+          <motion.div
+            initial={animated ? { opacity: 0, y: 10 } : false}
+            animate={animated ? { opacity: 1, y: 0 } : false}
+            transition={animated ? { duration: 0.3, delay: 0.3 } : undefined}
+            className="flex gap-3 flex-wrap justify-center"
+          >
+            {actions.map((btn, idx) => (
+              <Button
+                key={idx}
+                onClick={btn.onClick}
+                variant={btn.variant || 'default'}
+                size="sm"
+              >
+                {btn.label}
+              </Button>
+            ))}
+          </motion.div>
         )}
       </div>
+    );
+
+    return animated ? (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.4 }}
+      >
+        {content}
+      </motion.div>
+    ) : (
+      content
     );
   }
 );
