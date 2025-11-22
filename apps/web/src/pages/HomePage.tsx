@@ -104,7 +104,27 @@ function HeroSection() {
 
     return (
         <section className="relative py-12 sm:py-20 lg:py-32 overflow-hidden">
-            <div className="container mx-auto px-3 sm:px-6 lg:px-8">
+            {/* Premium animated background */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                {/* Animated gradient orbs */}
+                <motion.div
+                    className="absolute top-0 -left-40 w-80 h-80 bg-primary/10 rounded-full blur-3xl"
+                    animate={{ x: [0, 50, 0], y: [0, 30, 0] }}
+                    transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+                />
+                <motion.div
+                    className="absolute -bottom-40 right-0 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"
+                    animate={{ x: [0, -50, 0], y: [0, -30, 0] }}
+                    transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+                />
+                <motion.div
+                    className="absolute top-1/2 right-1/4 w-72 h-72 bg-accent/10 rounded-full blur-3xl"
+                    animate={{ x: [0, 30, 0], y: [0, -50, 0] }}
+                    transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+                />
+            </div>
+
+            <div className="container mx-auto px-3 sm:px-6 lg:px-8 relative z-10">
                 <div className="max-w-4xl mx-auto text-center">
                     <motion.div
                         initial={{ opacity: 0, y: 30 }}
@@ -112,28 +132,49 @@ function HeroSection() {
                         transition={{ duration: 1 }}
                         className="space-y-4 sm:space-y-6 lg:space-y-8"
                     >
-                        {/* Badge - Responsive */}
-                        <Badge className="mb-4 sm:mb-6 inline-flex bg-success/20 text-success border-success/30 px-2 sm:px-4 py-1 sm:py-2 text-xs sm:text-sm">
-                            <MapPin className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 flex-shrink-0" />
-                            {loadingCount ? (
-                                "Chubut, Argentina • Cargando..."
-                            ) : (
-                                `Chubut, Argentina • ${displayCount} profesionales activos`
-                            )}
-                        </Badge>
+                        {/* Premium Badge - Enhanced styling */}
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 0.8, delay: 0.1 }}
+                        >
+                            <Badge className="mb-4 sm:mb-6 inline-flex bg-gradient-to-r from-success/20 to-success/10 text-success border border-success/40 px-3 sm:px-5 py-1.5 sm:py-2 text-xs sm:text-sm font-medium shadow-lg shadow-success/10">
+                                <motion.div
+                                    animate={{ rotate: [0, 10, -10, 0] }}
+                                    transition={{ duration: 4, repeat: Infinity }}
+                                    className="inline-block"
+                                >
+                                    <MapPin className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 flex-shrink-0" />
+                                </motion.div>
+                                {loadingCount ? (
+                                    "Chubut, Argentina • Cargando..."
+                                ) : (
+                                    `Chubut, Argentina • ${displayCount} profesionales activos`
+                                )}
+                            </Badge>
+                        </motion.div>
 
-                        {/* Hero Title - Fluid typography scaling */}
-                        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold tracking-tight">
-                            <span className="bg-gradient-to-r from-white via-white to-white/70 bg-clip-text text-transparent block sm:inline">
+                        {/* Hero Title - Premium gradient with animation */}
+                        <motion.h1
+                            className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold tracking-tight leading-tight"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 1.2, delay: 0.2 }}
+                        >
+                            <span className="inline-block bg-gradient-to-r from-white via-white to-white/80 bg-clip-text text-transparent">
                                 Conecta.{" "}
                             </span>
-                            <span className="bg-gradient-to-r from-primary-solid to-purple-400 bg-clip-text text-transparent block sm:inline">
+                            <motion.span
+                                className="inline-block bg-gradient-to-r from-primary via-purple-400 to-accent bg-clip-text text-transparent bg-size-200 animate-gradient"
+                                animate={{ backgroundPosition: ['0%', '100%', '0%'] }}
+                                transition={{ duration: 8, repeat: Infinity }}
+                            >
                                 Confía.{" "}
-                            </span>
-                            <span className="bg-gradient-to-r from-white via-white to-white/70 bg-clip-text text-transparent block sm:inline">
+                            </motion.span>
+                            <span className="inline-block bg-gradient-to-r from-white/90 via-white to-white/70 bg-clip-text text-transparent">
                                 Resuelve.
                             </span>
-                        </h1>
+                        </motion.h1>
 
                         {/* Subtitle - Responsive text sizing */}
                         <p className="text-sm sm:text-base md:text-lg lg:text-xl text-muted-foreground mb-4 sm:mb-8 max-w-2xl mx-auto leading-relaxed px-2">
@@ -154,50 +195,143 @@ function HeroSection() {
                             </CardContent>
                         </Card>
 
-                        {/* CTA Buttons - Responsive stacking and sizing */}
-                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-2 sm:gap-4 mb-8 sm:mb-12">
+                        {/* CTA Buttons - Enhanced with animations */}
+                        <motion.div
+                            className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-2 sm:gap-4 mb-8 sm:mb-12"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.8, delay: 0.4 }}
+                        >
                             <Link to="/services" className="flex-1 sm:flex-none">
-                                <ResponsiveButton size="lg" className="w-full sm:w-auto liquid-gradient hover:opacity-90 transition-all duration-300 shadow-xl">
-                                    <Search className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-                                    <span className="hidden sm:inline">Buscar Profesionales</span>
-                                    <span className="sm:hidden">Buscar</span>
-                                    <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 ml-2" />
-                                </ResponsiveButton>
+                                <motion.div
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                                >
+                                    <ResponsiveButton
+                                        size="lg"
+                                        className="w-full sm:w-auto liquid-gradient hover:opacity-90 transition-all duration-300 shadow-xl hover:shadow-2xl hover:shadow-primary/30"
+                                    >
+                                        <motion.span
+                                            animate={{ x: [0, 2, 0] }}
+                                            transition={{ duration: 2, repeat: Infinity }}
+                                        >
+                                            <Search className="h-4 w-4 sm:h-5 sm:w-5 mr-2 inline" />
+                                        </motion.span>
+                                        <span className="hidden sm:inline">Buscar Profesionales</span>
+                                        <span className="sm:hidden">Buscar</span>
+                                        <motion.span
+                                            animate={{ x: [0, 3, 0] }}
+                                            transition={{ duration: 2, repeat: Infinity, delay: 0.2 }}
+                                            className="inline-block ml-2"
+                                        >
+                                            <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 inline" />
+                                        </motion.span>
+                                    </ResponsiveButton>
+                                </motion.div>
                             </Link>
                             <Link to="/register?type=professional" className="flex-1 sm:flex-none">
-                                <Button size="lg" variant="outline" className="w-full sm:w-auto glass border-white/20 hover:glass-medium">
-                                    <Crown className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-                                    <span className="hidden sm:inline">Ser Profesional</span>
-                                    <span className="sm:hidden">Profesional</span>
-                                </Button>
+                                <motion.div
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                                >
+                                    <Button
+                                        size="lg"
+                                        variant="outline"
+                                        className="w-full sm:w-auto glass border-white/30 hover:glass-medium hover:border-white/50 transition-all duration-300 shadow-lg hover:shadow-lg hover:shadow-primary/10"
+                                    >
+                                        <motion.span
+                                            animate={{ rotate: [0, 5, 0, -5, 0] }}
+                                            transition={{ duration: 3, repeat: Infinity }}
+                                            className="inline-block"
+                                        >
+                                            <Crown className="h-4 w-4 sm:h-5 sm:w-5 mr-2 inline" />
+                                        </motion.span>
+                                        <span className="hidden sm:inline">Ser Profesional</span>
+                                        <span className="sm:hidden">Profesional</span>
+                                    </Button>
+                                </motion.div>
                             </Link>
-                        </div>
+                        </motion.div>
 
-                        {/* Features - Responsive grid */}
-                        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 lg:gap-8 text-xs sm:text-sm text-muted-foreground mb-6 px-2 flex-wrap">
-                            <div className="flex items-center gap-1 sm:gap-2 whitespace-nowrap">
-                                <Shield className="h-3 w-3 sm:h-4 sm:w-4 text-success flex-shrink-0" />
-                                <span>Sin comisiones</span>
-                            </div>
-                            <div className="flex items-center gap-1 sm:gap-2 whitespace-nowrap">
-                                <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-success flex-shrink-0" />
-                                <span>Verificados</span>
-                            </div>
-                            <div className="flex items-center gap-1 sm:gap-2 whitespace-nowrap">
-                                <Phone className="h-3 w-3 sm:h-4 sm:w-4 text-success flex-shrink-0" />
-                                <span>WhatsApp directo</span>
-                            </div>
-                        </div>
+                        {/* Features - Animated badges */}
+                        <motion.div
+                            className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 lg:gap-8 text-xs sm:text-sm text-muted-foreground mb-6 px-2 flex-wrap"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.8, delay: 0.6 }}
+                        >
+                            {[
+                                { icon: Shield, text: "Sin comisiones", delay: 0 },
+                                { icon: CheckCircle, text: "Verificados", delay: 0.1 },
+                                { icon: Phone, text: "WhatsApp directo", delay: 0.2 }
+                            ].map((feature, i) => (
+                                <motion.div
+                                    key={feature.text}
+                                    className="flex items-center gap-1 sm:gap-2 whitespace-nowrap glass rounded-full px-3 py-1.5 border border-success/20 cursor-default"
+                                    initial={{ opacity: 0, y: 20, scale: 0.9 }}
+                                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                                    transition={{
+                                        duration: 0.5,
+                                        delay: 0.7 + feature.delay
+                                    }}
+                                    whileHover={{
+                                        scale: 1.08,
+                                        borderColor: "rgba(74, 222, 128, 0.5)",
+                                        backgroundColor: "rgba(74, 222, 128, 0.1)"
+                                    }}
+                                >
+                                    <motion.div
+                                        animate={{
+                                            scale: [1, 1.2, 1],
+                                            rotate: i === 1 ? [0, 10, 0] : 0
+                                        }}
+                                        transition={{
+                                            duration: 2,
+                                            repeat: Infinity,
+                                            delay: i * 0.5
+                                        }}
+                                    >
+                                        <feature.icon className="h-3 w-3 sm:h-4 sm:w-4 text-success flex-shrink-0" />
+                                    </motion.div>
+                                    <span className="font-medium">{feature.text}</span>
+                                </motion.div>
+                            ))}
+                        </motion.div>
 
-                        {/* Pricing Link */}
-                        <Link to="/pricing">
-                            <Button variant="outline" size="sm" className="glass border-white/20 hover:glass-medium">
-                                <CreditCard className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                                <span className="hidden sm:inline">Ver Planes y Precios</span>
-                                <span className="sm:hidden">Planes</span>
-                                <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4 ml-1 sm:ml-2" />
-                            </Button>
-                        </Link>
+                        {/* Pricing Link - Animated */}
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 0.6, delay: 0.9 }}
+                        >
+                            <Link to="/pricing">
+                                <motion.div
+                                    whileHover={{ scale: 1.08 }}
+                                    whileTap={{ scale: 0.95 }}
+                                >
+                                    <Button variant="outline" size="sm" className="glass border-white/30 hover:glass-medium hover:border-primary/50 transition-all duration-300 shadow-md hover:shadow-lg hover:shadow-primary/10">
+                                        <motion.span
+                                            animate={{ rotate: [0, 10, 0] }}
+                                            transition={{ duration: 3, repeat: Infinity }}
+                                            className="inline-block"
+                                        >
+                                            <CreditCard className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                                        </motion.span>
+                                        <span className="hidden sm:inline">Ver Planes y Precios</span>
+                                        <span className="sm:hidden">Planes</span>
+                                        <motion.span
+                                            animate={{ x: [0, 3, 0] }}
+                                            transition={{ duration: 1.5, repeat: Infinity }}
+                                            className="inline-block ml-1 sm:ml-2"
+                                        >
+                                            <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4 inline" />
+                                        </motion.span>
+                                    </Button>
+                                </motion.div>
+                            </Link>
+                        </motion.div>
                     </motion.div>
                 </div>
             </div>
@@ -271,22 +405,54 @@ function CategoriesSection() {
                                         onClick={() => setSelectedCategory(category.category)}
                                         className="block w-full text-left"
                                     >
-                                        <Card className={`glass hover:glass-medium transition-all duration-300 cursor-pointer group h-full relative ${isSelected ? 'border-primary/50 bg-primary/5' : 'border-white/10'
-                                            }`}>
-                                            {category.popular && (
-                                                <Badge className="absolute top-2 right-2 sm:top-3 sm:right-3 bg-primary/20 text-primary border-primary/30 text-xs px-2 py-1">
-                                                    Popular
-                                                </Badge>
-                                            )}
-                                            <CardContent className="p-3 sm:p-4 lg:p-6 text-center">
-                                                <div className={`h-12 w-12 sm:h-16 sm:w-16 lg:h-20 lg:w-20 rounded-lg sm:rounded-xl lg:rounded-2xl flex items-center justify-center mx-auto mb-2 sm:mb-3 lg:mb-4 transition-colors ${isSelected ? 'bg-primary/20' : 'bg-primary/10 group-hover:bg-primary/20'
-                                                    }`}>
-                                                    <Briefcase className="h-6 w-6 sm:h-8 sm:w-8 lg:h-10 lg:w-10 text-primary" />
-                                                </div>
-                                                <h3 className="font-semibold mb-1 sm:mb-2 text-sm sm:text-base">{category.category}</h3>
-                                                <p className="text-xs sm:text-sm text-muted-foreground">{category.count} servicios</p>
-                                            </CardContent>
-                                        </Card>
+                                        <motion.div
+                                            whileHover={{ y: -8, scale: 1.02 }}
+                                            whileTap={{ scale: 0.98 }}
+                                            transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                                        >
+                                            <Card
+                                                className={`glass hover:glass-medium transition-all duration-300 cursor-pointer group h-full relative overflow-hidden ${
+                                                    isSelected
+                                                        ? 'border-primary/60 bg-gradient-to-br from-primary/15 to-purple-500/10 shadow-lg shadow-primary/20'
+                                                        : 'border-white/15 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10'
+                                                }`}
+                                            >
+                                                {/* Animated background gradient on hover */}
+                                                <motion.div
+                                                    className="absolute inset-0 bg-gradient-to-br from-primary/0 to-accent/0 group-hover:from-primary/10 group-hover:to-accent/10"
+                                                    initial={false}
+                                                    animate={isSelected ? { from: 'primary/20', to: 'accent/15' } : {}}
+                                                />
+
+                                                {category.popular && (
+                                                    <motion.div
+                                                        initial={{ scale: 0, rotate: -180 }}
+                                                        animate={{ scale: 1, rotate: 0 }}
+                                                        transition={{ duration: 0.5 }}
+                                                    >
+                                                        <Badge className="absolute top-2 right-2 sm:top-3 sm:right-3 bg-gradient-to-r from-primary/30 to-accent/30 text-primary border border-primary/50 text-xs px-2 py-1 font-medium shadow-lg shadow-primary/20">
+                                                            ⭐ Popular
+                                                        </Badge>
+                                                    </motion.div>
+                                                )}
+
+                                                <CardContent className="p-3 sm:p-4 lg:p-6 text-center relative z-10">
+                                                    <motion.div
+                                                        className={`h-12 w-12 sm:h-16 sm:w-16 lg:h-20 lg:w-20 rounded-lg sm:rounded-xl lg:rounded-2xl flex items-center justify-center mx-auto mb-2 sm:mb-3 lg:mb-4 transition-all ${
+                                                            isSelected
+                                                                ? 'bg-gradient-to-br from-primary/30 to-accent/20 shadow-lg shadow-primary/20'
+                                                                : 'bg-primary/10 group-hover:bg-primary/25 shadow-md shadow-primary/10'
+                                                        }`}
+                                                        animate={isSelected ? { scale: [1, 1.1, 1] } : {}}
+                                                        transition={{ duration: 0.6, repeat: Infinity }}
+                                                    >
+                                                        <Briefcase className="h-6 w-6 sm:h-8 sm:w-8 lg:h-10 lg:w-10 text-primary group-hover:text-accent transition-colors" />
+                                                    </motion.div>
+                                                    <h3 className="font-semibold mb-1 sm:mb-2 text-sm sm:text-base group-hover:text-primary transition-colors">{category.category}</h3>
+                                                    <p className="text-xs sm:text-sm text-muted-foreground group-hover:text-foreground/70 transition-colors">{category.count} servicios</p>
+                                                </CardContent>
+                                            </Card>
+                                        </motion.div>
                                     </button>
                                 </motion.div>
                             );
@@ -434,25 +600,106 @@ function HowItWorksSection() {
                         return (
                             <motion.div
                                 key={step.number}
-                                initial={{ opacity: 0, y: 20 }}
+                                initial={{ opacity: 0, y: 30 }}
                                 whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.6, delay: 0.1 * index }}
+                                viewport={{ once: true, margin: "-100px" }}
+                                transition={{ duration: 0.6, delay: 0.15 * index, ease: "easeOut" }}
                             >
-                                <Card className="glass border-white/10 text-center h-full">
-                                    <CardContent className="p-4 sm:p-6 lg:p-8">
-                                        <div className="relative mb-4 sm:mb-6">
-                                            <div className="h-16 w-16 sm:h-20 sm:w-20 liquid-gradient rounded-lg sm:rounded-2xl flex items-center justify-center mx-auto flex-shrink-0">
-                                                <Icon className="h-8 w-8 sm:h-10 sm:w-10 text-white" />
+                                <motion.div
+                                    whileHover={{ y: -12, transition: { duration: 0.3 } }}
+                                    className="group h-full"
+                                >
+                                    <Card className="glass hover:glass-strong border-white/15 hover:border-primary/40 transition-all duration-300 text-center h-full relative overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-primary/15">
+                                        {/* Animated gradient overlay on hover */}
+                                        <motion.div
+                                            className="absolute inset-0 bg-gradient-to-br from-primary/0 via-transparent to-accent/0 opacity-0 group-hover:opacity-100 pointer-events-none"
+                                            animate={{ opacity: [0, 1, 0] }}
+                                            transition={{
+                                                duration: 2,
+                                                repeat: Infinity,
+                                                repeatType: "reverse"
+                                            }}
+                                            style={{
+                                                backgroundImage: "radial-gradient(circle at 30% 50%, primary 0%, transparent 50%)"
+                                            }}
+                                        />
+
+                                        <CardContent className="p-4 sm:p-6 lg:p-8 relative z-10">
+                                            <div className="relative mb-4 sm:mb-6">
+                                                <motion.div
+                                                    className="h-16 w-16 sm:h-20 sm:w-20 liquid-gradient rounded-lg sm:rounded-2xl flex items-center justify-center mx-auto flex-shrink-0 shadow-lg shadow-primary/30"
+                                                    animate={{
+                                                        boxShadow: [
+                                                            "0 0 20px rgba(var(--primary), 0.2)",
+                                                            "0 0 40px rgba(var(--primary), 0.4)",
+                                                            "0 0 20px rgba(var(--primary), 0.2)"
+                                                        ]
+                                                    }}
+                                                    transition={{ duration: 2, repeat: Infinity }}
+                                                    whileHover={{ scale: 1.15, rotate: 5 }}
+                                                >
+                                                    <motion.div
+                                                        animate={{ y: [0, -3, 0] }}
+                                                        transition={{ duration: 2.5, repeat: Infinity }}
+                                                    >
+                                                        <Icon className="h-8 w-8 sm:h-10 sm:w-10 text-white" />
+                                                    </motion.div>
+                                                </motion.div>
+
+                                                {/* Animated step number badge */}
+                                                <motion.div
+                                                    className="absolute -top-2 -right-2 h-7 w-7 sm:h-8 sm:w-8 bg-gradient-to-br from-primary to-accent rounded-full border-2 border-white/20 flex items-center justify-center flex-shrink-0 shadow-lg shadow-primary/30"
+                                                    animate={{
+                                                        scale: [1, 1.2, 1],
+                                                        rotate: [0, 10, 0]
+                                                    }}
+                                                    transition={{
+                                                        duration: 2,
+                                                        repeat: Infinity,
+                                                        delay: index * 0.3
+                                                    }}
+                                                >
+                                                    <motion.span
+                                                        className="text-xs sm:text-sm font-bold text-white"
+                                                        animate={{ scale: [1, 1.1, 1] }}
+                                                        transition={{ duration: 2, repeat: Infinity }}
+                                                    >
+                                                        {step.number}
+                                                    </motion.span>
+                                                </motion.div>
+
+                                                {/* Decorative animated circle on hover */}
+                                                <motion.div
+                                                    className="absolute inset-0 rounded-full border border-primary/30 opacity-0 group-hover:opacity-100"
+                                                    animate={{
+                                                        scale: [1, 1.4],
+                                                        opacity: [1, 0]
+                                                    }}
+                                                    transition={{
+                                                        duration: 1.5,
+                                                        repeat: Infinity,
+                                                        ease: "easeOut"
+                                                    }}
+                                                />
                                             </div>
-                                            <div className="absolute -top-2 -right-2 h-7 w-7 sm:h-8 sm:w-8 bg-background rounded-full border-2 border-primary/30 flex items-center justify-center flex-shrink-0">
-                                                <span className="text-xs sm:text-sm font-bold text-primary">{step.number}</span>
-                                            </div>
-                                        </div>
-                                        <h3 className="text-base sm:text-lg lg:text-xl font-semibold mb-2 sm:mb-4">{step.title}</h3>
-                                        <p className="text-xs sm:text-sm lg:text-base text-muted-foreground leading-relaxed">{step.description}</p>
-                                    </CardContent>
-                                </Card>
+
+                                            <motion.h3
+                                                className="text-base sm:text-lg lg:text-xl font-semibold mb-2 sm:mb-4 group-hover:text-primary transition-colors"
+                                                animate={{ y: 0 }}
+                                                whileHover={{ y: -2 }}
+                                            >
+                                                {step.title}
+                                            </motion.h3>
+                                            <motion.p
+                                                className="text-xs sm:text-sm lg:text-base text-muted-foreground leading-relaxed group-hover:text-foreground/70 transition-colors"
+                                                animate={{ opacity: 0.7 }}
+                                                whileHover={{ opacity: 1 }}
+                                            >
+                                                {step.description}
+                                            </motion.p>
+                                        </CardContent>
+                                    </Card>
+                                </motion.div>
                             </motion.div>
                         );
                     })}
