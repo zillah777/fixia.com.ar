@@ -175,18 +175,19 @@ export default function LoginPage() {
                       placeholder="Tu contraseña"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="pl-10 pr-10 glass border-white/20 hover:border-white/30 focus:border-primary/50 focus:ring-primary/30 focus:ring-2 transition-all"
+                      className="pl-10 pr-12 glass border-white/20 hover:border-white/30 focus:border-primary/50 focus:ring-primary/30 focus:ring-2 transition-all"
                       required
                     />
                     <motion.div
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.95 }}
+                      className="absolute right-0 top-1/2 -translate-y-1/2"
                     >
                       <Button
                         type="button"
                         variant="ghost"
                         size="icon"
-                        className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 hover:bg-primary/10 hover:text-primary transition-all"
+                        className="h-10 w-10 hover:bg-primary/10 hover:text-primary transition-all"
                         onClick={() => setShowPassword(!showPassword)}
                       >
                         <motion.div
