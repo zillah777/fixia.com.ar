@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { LogoDisplay } from './LogoDisplay';
+import { MobileMenu } from './MobileMenu';
 import { cn } from '../ui/utils';
 
 interface NavItem {
@@ -172,26 +173,16 @@ const PremiumNavbar = React.forwardRef<HTMLNavElement, PremiumNavbarProps>(
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
           >
-            {/* Mobile menu button placeholder */}
-            <motion.button
-              className="lg:hidden p-2 hover:bg-white/5 rounded-lg transition-colors"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
-              </svg>
-            </motion.button>
+            {/* Mobile Menu - Same nav items as desktop */}
+            {navItems.length > 0 && (
+              <MobileMenu
+                items={navItems}
+                onItemClick={(href) => {
+                  // Navigate to the href - can be integrated with router
+                  window.location.href = href;
+                }}
+              />
+            )}
           </motion.div>
         </div>
 
