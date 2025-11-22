@@ -122,14 +122,30 @@
     backdrop-filter: blur(64px);
   }
 
-  /* Liquid Gradient Animation */
+  /* Liquid Gradient Animation - Premium Modern Colors */
   .liquid-gradient {
-    background: linear-gradient(45deg,
-        var(--primary-solid),
-        oklch(0.707 0.165 254.624),
-        var(--primary-solid));
-    background-size: 200% 200%;
-    animation: liquid 4s ease infinite;
+    background: linear-gradient(
+      135deg,
+      #a855f7 0%,        /* Purple */
+      #ec4899 25%,       /* Pink */
+      #3b82f6 50%,       /* Blue */
+      #6366f1 75%,       /* Indigo */
+      #a855f7 100%       /* Back to Purple */
+    );
+    background-size: 300% 300%;
+    animation: liquid-premium 6s ease-in-out infinite;
+    position: relative;
+  }
+
+  .liquid-gradient::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: inherit;
+    filter: blur(60px);
+    opacity: 0.5;
+    z-index: -1;
+    animation: liquid-blur 6s ease-in-out infinite reverse;
   }
 
   @keyframes liquid {
@@ -143,6 +159,45 @@
 
     100% {
       background-position: 0% 50%;
+    }
+  }
+
+  @keyframes liquid-premium {
+    0% {
+      background-position: 0% 50%;
+    }
+
+    25% {
+      background-position: 50% 0%;
+    }
+
+    50% {
+      background-position: 100% 50%;
+    }
+
+    75% {
+      background-position: 50% 100%;
+    }
+
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  @keyframes liquid-blur {
+    0% {
+      background-position: 0% 50%;
+      filter: blur(20px);
+    }
+
+    50% {
+      background-position: 100% 50%;
+      filter: blur(60px);
+    }
+
+    100% {
+      background-position: 0% 50%;
+      filter: blur(20px);
     }
   }
 
