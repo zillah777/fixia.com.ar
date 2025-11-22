@@ -24,7 +24,7 @@ function Navigation() {
       animate={{ y: 0 }}
       className="sticky top-0 z-50 w-full glass border-b border-white/10"
     >
-      <div className="container mx-auto flex h-16 items-center justify-between px-6">
+      <div className="container mx-auto flex h-16 items-center justify-between px-3 sm:px-6 lg:px-8">
         <Link to="/" className="flex items-center space-x-3">
           <motion.div
             className="relative"
@@ -81,20 +81,20 @@ function Navigation() {
 
 function QuickActions() {
   return (
-    <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-4">
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3 lg:gap-4">
       <motion.div
         whileHover={{ y: -2 }}
         transition={{ duration: 0.2 }}
       >
         <Link to="/create-request">
-          <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 cursor-pointer group">
-            <CardContent className="p-6 text-center">
-              <div className="h-12 w-12 liquid-gradient rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                <Plus className="h-6 w-6 text-white" />
+          <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 cursor-pointer group h-full">
+            <CardContent className="p-3 sm:p-4 lg:p-6 text-center flex flex-col h-full">
+              <div className="h-10 w-10 sm:h-12 sm:w-12 liquid-gradient rounded-lg sm:rounded-xl flex items-center justify-center mx-auto mb-2 sm:mb-4 group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
+                <Plus className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
               </div>
-              <h3 className="font-semibold mb-2">Publicar Solicitud</h3>
-              <p className="text-sm text-muted-foreground">
-                Describe tu proyecto y recibe propuestas de expertos
+              <h3 className="font-semibold mb-1 sm:mb-2 text-xs sm:text-sm lg:text-base line-clamp-1">Publicar</h3>
+              <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 hidden sm:block flex-1">
+                Describe tu proyecto
               </p>
             </CardContent>
           </Card>
@@ -106,14 +106,14 @@ function QuickActions() {
         transition={{ duration: 0.2 }}
       >
         <Link to="/new-project">
-          <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 cursor-pointer group">
-            <CardContent className="p-6 text-center">
-              <div className="h-12 w-12 bg-purple-500/20 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                <Briefcase className="h-6 w-6 text-purple-400" />
+          <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 cursor-pointer group h-full">
+            <CardContent className="p-3 sm:p-4 lg:p-6 text-center flex flex-col h-full">
+              <div className="h-10 w-10 sm:h-12 sm:w-12 bg-purple-500/20 rounded-lg sm:rounded-xl flex items-center justify-center mx-auto mb-2 sm:mb-4 group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
+                <Briefcase className="h-5 w-5 sm:h-6 sm:w-6 text-purple-400" />
               </div>
-              <h3 className="font-semibold mb-2">Crear Servicio</h3>
-              <p className="text-sm text-muted-foreground">
-                Publica un nuevo servicio y empieza a generar ingresos
+              <h3 className="font-semibold mb-1 sm:mb-2 text-xs sm:text-sm lg:text-base line-clamp-1">Crear</h3>
+              <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 hidden sm:block flex-1">
+                Nuevo servicio
               </p>
             </CardContent>
           </Card>
@@ -125,14 +125,14 @@ function QuickActions() {
         transition={{ duration: 0.2 }}
       >
         <Link to="/opportunities">
-          <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 cursor-pointer group">
-            <CardContent className="p-6 text-center">
-              <div className="h-12 w-12 bg-success/20 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                <Target className="h-6 w-6 text-success" />
+          <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 cursor-pointer group h-full">
+            <CardContent className="p-3 sm:p-4 lg:p-6 text-center flex flex-col h-full">
+              <div className="h-10 w-10 sm:h-12 sm:w-12 bg-success/20 rounded-lg sm:rounded-xl flex items-center justify-center mx-auto mb-2 sm:mb-4 group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
+                <Target className="h-5 w-5 sm:h-6 sm:w-6 text-success" />
               </div>
-              <h3 className="font-semibold mb-2">Ver Oportunidades</h3>
-              <p className="text-sm text-muted-foreground">
-                Encuentra proyectos que se ajusten a tus habilidades
+              <h3 className="font-semibold mb-1 sm:mb-2 text-xs sm:text-sm lg:text-base line-clamp-1">Oportunidades</h3>
+              <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 hidden sm:block flex-1">
+                Proyectos
               </p>
             </CardContent>
           </Card>
@@ -144,14 +144,14 @@ function QuickActions() {
         transition={{ duration: 0.2 }}
       >
         <Link to="/services">
-          <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 cursor-pointer group">
-            <CardContent className="p-6 text-center">
-              <div className="h-12 w-12 bg-warning/20 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                <Search className="h-6 w-6 text-warning" />
+          <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 cursor-pointer group h-full">
+            <CardContent className="p-3 sm:p-4 lg:p-6 text-center flex flex-col h-full">
+              <div className="h-10 w-10 sm:h-12 sm:w-12 bg-warning/20 rounded-lg sm:rounded-xl flex items-center justify-center mx-auto mb-2 sm:mb-4 group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
+                <Search className="h-5 w-5 sm:h-6 sm:w-6 text-warning" />
               </div>
-              <h3 className="font-semibold mb-2">Explorar</h3>
-              <p className="text-sm text-muted-foreground">
-                Descubre servicios y profesionales destacados
+              <h3 className="font-semibold mb-1 sm:mb-2 text-xs sm:text-sm lg:text-base line-clamp-1">Explorar</h3>
+              <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 hidden sm:block flex-1">
+                Servicios
               </p>
             </CardContent>
           </Card>
@@ -163,14 +163,14 @@ function QuickActions() {
         transition={{ duration: 0.2 }}
       >
         <Link to="/profile">
-          <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 cursor-pointer group">
-            <CardContent className="p-6 text-center">
-              <div className="h-12 w-12 bg-blue-500/20 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                <Settings className="h-6 w-6 text-blue-400" />
+          <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 cursor-pointer group h-full">
+            <CardContent className="p-3 sm:p-4 lg:p-6 text-center flex flex-col h-full">
+              <div className="h-10 w-10 sm:h-12 sm:w-12 bg-blue-500/20 rounded-lg sm:rounded-xl flex items-center justify-center mx-auto mb-2 sm:mb-4 group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
+                <Settings className="h-5 w-5 sm:h-6 sm:w-6 text-blue-400" />
               </div>
-              <h3 className="font-semibold mb-2">Mi Perfil</h3>
-              <p className="text-sm text-muted-foreground">
-                Gestiona tu información y configuración
+              <h3 className="font-semibold mb-1 sm:mb-2 text-xs sm:text-sm lg:text-base line-clamp-1">Perfil</h3>
+              <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 hidden sm:block flex-1">
+                Tu perfil
               </p>
             </CardContent>
           </Card>
@@ -217,7 +217,7 @@ function StatCards() {
   ];
 
   return (
-    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 lg:gap-6">
       {stats.map((stat, index) => {
         const Icon = stat.icon;
         return (
@@ -228,17 +228,17 @@ function StatCards() {
             transition={{ duration: 0.5, delay: index * 0.1 }}
           >
             <Card className="glass border-white/10">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className={`h-12 w-12 rounded-xl ${stat.bgColor} flex items-center justify-center`}>
-                    <Icon className={`h-6 w-6 ${stat.color}`} />
+              <CardContent className="p-3 sm:p-4 lg:p-6">
+                <div className="flex items-center justify-between mb-2 sm:mb-4">
+                  <div className={`h-10 w-10 sm:h-12 sm:w-12 rounded-lg sm:rounded-xl ${stat.bgColor} flex items-center justify-center flex-shrink-0`}>
+                    <Icon className={`h-5 w-5 sm:h-6 sm:w-6 ${stat.color}`} />
                   </div>
-                  <Badge className="bg-success/20 text-success border-success/30">
+                  <Badge className="bg-success/20 text-success border-success/30 text-xs sm:text-sm">
                     {stat.change}
                   </Badge>
                 </div>
-                <h3 className="text-2xl font-bold mb-1">{stat.value}</h3>
-                <p className="text-sm text-muted-foreground">{stat.title}</p>
+                <h3 className="text-lg sm:text-xl lg:text-2xl font-bold mb-1 truncate">{stat.value}</h3>
+                <p className="text-xs sm:text-sm text-muted-foreground truncate">{stat.title}</p>
               </CardContent>
             </Card>
           </motion.div>
@@ -387,7 +387,7 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-background">
       <Navigation />
 
-      <main className="container mx-auto px-6 py-8">
+      <main className="container mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
         {isLoading ? (
           <motion.div
             initial={{ opacity: 0 }}
@@ -402,12 +402,12 @@ export default function DashboardPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="mb-8"
+            className="mb-6 sm:mb-8"
           >
-            <h1 className="text-3xl font-bold mb-2">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2">
               Bienvenido de vuelta, {user?.name} 👋
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-xs sm:text-sm md:text-base text-muted-foreground">
               Gestiona tus servicios, proyectos y aprovecha nuevas oportunidades en Fixia
             </p>
           </motion.div>
@@ -440,7 +440,7 @@ export default function DashboardPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.4 }}
-          className="grid lg:grid-cols-3 gap-8"
+          className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8"
         >
           {/* Current Projects */}
           <div className="lg:col-span-2">
@@ -448,7 +448,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Recent Activity */}
-          <div>
+          <div className="lg:col-span-1">
             <RecentActivity />
           </div>
         </motion.div>
@@ -458,30 +458,32 @@ export default function DashboardPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.5 }}
-          className="mt-12"
+          className="mt-8 sm:mt-12"
         >
           <Card className="glass border-white/10 text-center">
-            <CardContent className="p-8">
+            <CardContent className="p-4 sm:p-6 lg:p-8">
               <div className="max-w-2xl mx-auto">
-                <h3 className="text-2xl font-bold mb-4">
+                <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-3 sm:mb-4">
                   ¿Listo para crecer en Fixia?
                 </h3>
-                <p className="text-muted-foreground mb-6">
+                <p className="text-xs sm:text-sm md:text-base text-muted-foreground mb-4 sm:mb-6">
                   Crea nuevos servicios, explora oportunidades y conecta con más clientes.
                   Tu próximo proyecto te está esperando.
                 </p>
-                <div className="flex items-center justify-center space-x-4">
-                  <Link to="/new-project">
-                    <Button className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg">
-                      <Plus className="h-4 w-4 mr-2" />
-                      Crear Nuevo Servicio
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-2 sm:gap-4">
+                  <Link to="/new-project" className="flex-1 sm:flex-none">
+                    <Button className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg w-full sm:w-auto text-sm sm:text-base">
+                      <Plus className="h-4 w-4 mr-2 flex-shrink-0" />
+                      <span className="hidden sm:inline">Crear Nuevo Servicio</span>
+                      <span className="sm:hidden">Crear</span>
                     </Button>
                   </Link>
-                  <Link to="/opportunities">
-                    <Button variant="outline" className="glass border-white/20 hover:glass-medium">
-                      <Target className="h-4 w-4 mr-2" />
-                      Ver Oportunidades
-                      <ArrowRight className="h-4 w-4 ml-2" />
+                  <Link to="/opportunities" className="flex-1 sm:flex-none">
+                    <Button variant="outline" className="glass border-white/20 hover:glass-medium w-full sm:w-auto text-sm sm:text-base">
+                      <Target className="h-4 w-4 mr-2 flex-shrink-0" />
+                      <span className="hidden sm:inline">Ver Oportunidades</span>
+                      <span className="sm:hidden">Oportunidades</span>
+                      <ArrowRight className="h-4 w-4 ml-2 hidden sm:inline flex-shrink-0" />
                     </Button>
                   </Link>
                 </div>
