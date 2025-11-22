@@ -100,7 +100,7 @@ function Navigation() {
       animate={{ y: 0 }}
       className="sticky top-0 z-50 w-full glass border-b border-white/10"
     >
-      <div className="container mx-auto flex h-16 items-center justify-between px-6">
+      <div className="container mx-auto flex h-16 items-center justify-between px-3 sm:px-6 lg:px-8">
         <Link to="/dashboard" className="flex items-center space-x-3">
           <div className="h-8 w-8 rounded-lg flex items-center justify-center overflow-hidden"><img src="/logo.png" alt="Fixia" className="h-full w-full object-contain" /></div>
           <span className="font-semibold">Fixia</span>
@@ -155,11 +155,11 @@ function ProfileHeader({ user, isEditing, setIsEditing }: any) {
 
   return (
     <Card className="glass border-white/10">
-      <CardContent className="p-8">
-        <div className="flex flex-col lg:flex-row items-start lg:items-center space-y-6 lg:space-y-0 lg:space-x-8">
-          {/* Avatar */}
-          <div className="relative">
-            <Avatar className="h-32 w-32 ring-4 ring-primary/20 ring-offset-4 ring-offset-background">
+      <CardContent className="p-4 sm:p-6 lg:p-8">
+        <div className="flex flex-col lg:flex-row items-start lg:items-center gap-4 sm:gap-6 lg:gap-8">
+          {/* Avatar - Responsive sizing */}
+          <div className="relative flex-shrink-0">
+            <Avatar className="h-20 w-20 sm:h-28 sm:w-28 lg:h-32 lg:w-32 ring-4 ring-primary/20 ring-offset-2 sm:ring-offset-4 ring-offset-background">
               <AvatarImage src={user.avatar} alt={user.name} />
               <AvatarFallback className="text-2xl">{user.name.charAt(0)}</AvatarFallback>
             </Avatar>
@@ -211,36 +211,37 @@ function ProfileHeader({ user, isEditing, setIsEditing }: any) {
           </div>
 
           {/* Profile Info */}
-          <div className="flex-1 space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
+          <div className="flex-1 min-w-0 space-y-3 sm:space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
+              <div className="min-w-0">
                 {isEditing ? (
                   <div className="space-y-2">
                     <Input
                       value={profileData.name}
                       onChange={(e) => setProfileData({ ...profileData, name: e.target.value })}
-                      className="text-2xl font-bold glass border-white/20"
+                      className="text-xl sm:text-2xl font-bold glass border-white/20"
                     />
                   </div>
                 ) : (
-                  <h1 className="text-3xl font-bold">{profileData.name}</h1>
+                  <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold truncate">{profileData.name}</h1>
                 )}
 
-                <div className="flex items-center space-x-3 mt-2">
-                  <Badge className="bg-primary/20 text-primary border-primary/30">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 mt-2">
+                  <Badge className="bg-primary/20 text-primary border-primary/30 text-xs sm:text-sm">
                     {user.role === 'professional' ? 'Top Rated Plus' : 'Cliente Premium'}
                   </Badge>
                   {user.role === 'professional' && (
-                    <div className="flex items-center space-x-1">
-                      <Star className="h-4 w-4 text-warning fill-current" />
+                    <div className="flex items-center gap-1 sm:gap-1 text-xs sm:text-sm">
+                      <Star className="h-3 w-3 sm:h-4 sm:w-4 text-warning fill-current flex-shrink-0" />
                       <span className="font-medium">{user.rating}</span>
-                      <span className="text-muted-foreground">({user.totalServices} servicios)</span>
+                      <span className="text-muted-foreground hidden sm:inline">({user.totalServices} servicios)</span>
+                      <span className="text-muted-foreground sm:hidden">({user.totalServices})</span>
                     </div>
                   )}
                 </div>
               </div>
 
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center gap-2 flex-shrink-0">
                 {isEditing ? (
                   <>
                     <Button onClick={handleSave} className="liquid-gradient">
@@ -362,7 +363,7 @@ function ProfessionalPortfolio() {
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4">
                   <div className="space-y-2">
                     <Label>Título del Proyecto</Label>
                     <Input className="glass border-white/20" placeholder="Ej: App Móvil Innovadora" />
@@ -419,7 +420,7 @@ function ProfessionalPortfolio() {
         </div>
 
         {/* Portfolio Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
           {portfolioItems.map((item) => (
             <motion.div
               key={item.id}
@@ -602,8 +603,8 @@ function SettingsSection() {
           </CardTitle>
         </CardHeader>
 
-        <CardContent className="space-y-6">
-          <div className="grid md:grid-cols-2 gap-6">
+        <CardContent className="space-y-4 sm:space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 lg:gap-6">
             <div className="space-y-2">
               <Label>Email</Label>
               <Input defaultValue="ana@ejemplo.com" className="glass border-white/20" />
@@ -628,9 +629,9 @@ function SettingsSection() {
             </Select>
           </div>
 
-          <div className="space-y-4">
-            <h4 className="font-medium">Redes Sociales</h4>
-            <div className="grid md:grid-cols-2 gap-4">
+          <div className="space-y-3 sm:space-y-4">
+            <h4 className="font-medium text-sm sm:text-base">Redes Sociales</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-3 lg:gap-4">
               <div className="flex items-center space-x-3">
                 <Linkedin className="h-5 w-5 text-blue-500" />
                 <Input placeholder="LinkedIn URL" className="glass border-white/20" />
@@ -753,7 +754,7 @@ export default function ProfilePage() {
     <div className="min-h-screen bg-background">
       <Navigation />
 
-      <main className="container mx-auto px-6 py-8">
+      <main className="container mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
         <div className="space-y-8">
           {/* Profile Header */}
           <motion.div
