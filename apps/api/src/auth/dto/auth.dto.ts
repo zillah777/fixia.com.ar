@@ -7,9 +7,18 @@ import {
   IsDateString,
   Matches,
   Length,
+  IsIn,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { UserType } from '@prisma/client';
+
+/**
+ * Allowed user types for registration
+ * SECURITY: Only 'client' and 'professional' are allowed during registration
+ * 'admin' and 'dual' can only be assigned by administrators through internal processes
+ */
+export const ALLOWED_REGISTRATION_USER_TYPES = ['client', 'professional'] as const;
+export type RegistrationUserType = (typeof ALLOWED_REGISTRATION_USER_TYPES)[number];
 
 export class LoginDto {
   @ApiProperty({
@@ -67,11 +76,27 @@ export class RegisterDto {
 
   @ApiProperty({
     example: 'professional',
-    description: 'Tipo de usuario',
-    enum: ['client', 'professional']
+    description: 'Tipo de usuario (solo client o professional permitidos en registro)',
+    enum: ALLOWED_REGISTRATION_USER_TYPES
   })
-  @IsEnum(['client', 'professional'])
-  userType: 'client' | 'professional';
+  @IsOptional()
+  @IsIn(ALLOWED_REGISTRATION_USER_TYPES, {
+    message: 'userType must be either "client" or "professional". Values like "admin" or "dual" are not allowed during registration.'
+  })
+  userType?: RegistrationUserType;
+
+  // Support snake_case user_type from frontend (alias of userType)
+  @ApiProperty({
+    example: 'professional',
+    description: 'Tipo de usuario - snake_case alias (solo client o professional permitidos)',
+    enum: ALLOWED_REGISTRATION_USER_TYPES,
+    required: false
+  })
+  @IsOptional()
+  @IsIn(ALLOWED_REGISTRATION_USER_TYPES, {
+    message: 'user_type must be either "client" or "professional". Values like "admin" or "dual" are not allowed during registration.'
+  })
+  user_type?: RegistrationUserType;
 
   @ApiProperty({
     example: 'Rawson',

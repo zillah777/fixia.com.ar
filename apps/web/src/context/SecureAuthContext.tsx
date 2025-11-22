@@ -328,8 +328,8 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
 
     try {
       const response = await api.post('/auth/change-password', {
-        currentPassword: sanitizeInput(currentPassword, 'plainText'),
-        newPassword: sanitizeInput(newPassword, 'plainText'),
+        current_password: sanitizeInput(currentPassword, 'plainText'),
+        new_password: sanitizeInput(newPassword, 'plainText'),
       });
 
       toast.success('Contraseña actualizada correctamente');
@@ -344,12 +344,14 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   // Actualizar perfil con sanitización
+  // Only sends fields supported by backend UpdateProfileDto
   const updateProfile = async (userData: Partial<User>) => {
     if (!user) throw new Error('Usuario no autenticado');
 
     try {
-      const sanitizedData: any = {};
+      const sanitizedData: Record<string, any> = {};
 
+      // Basic profile fields
       if (userData.name) {
         sanitizedData.name = sanitizeInput(userData.name, 'plainText');
       }
@@ -359,6 +361,54 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
       if (userData.phone) {
         sanitizedData.phone = sanitizeInput(userData.phone, 'phone');
       }
+      if (userData.avatar) {
+        sanitizedData.avatar = sanitizeInput(userData.avatar, 'url');
+      }
+      if (userData.bio) {
+        sanitizedData.bio = sanitizeInput(userData.bio, 'basicHTML');
+      }
+
+      // Contact information
+      if (userData.whatsapp_number) {
+        sanitizedData.whatsapp_number = sanitizeInput(userData.whatsapp_number, 'phone');
+      }
+
+      // Social networks
+      if (userData.social_linkedin) {
+        sanitizedData.social_linkedin = sanitizeInput(userData.social_linkedin, 'url');
+      }
+      if (userData.social_twitter) {
+        sanitizedData.social_twitter = sanitizeInput(userData.social_twitter, 'url');
+      }
+      if (userData.social_facebook) {
+        sanitizedData.social_facebook = sanitizeInput(userData.social_facebook, 'url');
+      }
+      if (userData.social_instagram) {
+        sanitizedData.social_instagram = sanitizeInput(userData.social_instagram, 'url');
+      }
+
+      // Notification preferences (boolean values, no sanitization needed)
+      if (typeof userData.notifications_messages === 'boolean') {
+        sanitizedData.notifications_messages = userData.notifications_messages;
+      }
+      if (typeof userData.notifications_orders === 'boolean') {
+        sanitizedData.notifications_orders = userData.notifications_orders;
+      }
+      if (typeof userData.notifications_projects === 'boolean') {
+        sanitizedData.notifications_projects = userData.notifications_projects;
+      }
+      if (typeof userData.notifications_newsletter === 'boolean') {
+        sanitizedData.notifications_newsletter = userData.notifications_newsletter;
+      }
+
+      // Timezone
+      if (userData.timezone) {
+        sanitizedData.timezone = sanitizeInput(userData.timezone, 'plainText');
+      }
+
+      // NOTE: The following fields are NOT supported by backend UpdateProfileDto:
+      // - lastName, province, city, birthDate (use registration or combined 'location' field)
+      // - dni, matricula, cuitCuil (only set during registration)
 
       await api.put('/user/profile', sanitizedData);
       await queryClient.invalidateQueries({ queryKey: ['currentUser'] });
@@ -372,13 +422,15 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   // Eliminar cuenta del usuario
-  const deleteAccount = async (password: string) => {
+  // NOTE: Backend uses DELETE /user/profile and does not require password verification
+  // The user is authenticated via JWT token which is sufficient for account deletion
+  const deleteAccount = async (_password: string) => {
     if (!user) throw new Error('Usuario no autenticado');
 
     try {
-      await api.delete('/user/account', {
-        data: { password: sanitizeInput(password, 'plainText') }
-      });
+      // Backend endpoint: DELETE /user/profile (soft delete)
+      // No password body required - authentication is via JWT
+      await api.delete('/user/profile');
 
       await queryClient.invalidateQueries({ queryKey: ['currentUser'] });
 
@@ -386,9 +438,6 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
       return true;
     } catch (error: any) {
       console.error('Error eliminando cuenta:', error);
-      if (error.response?.status === 401) {
-        throw new Error('Contraseña incorrecta');
-      }
       throw new Error(error.message || 'Error al eliminar la cuenta');
     }
   };

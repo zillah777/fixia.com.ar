@@ -54,29 +54,43 @@ export interface PaymentMethod {
 }
 
 class PaymentsService {
+  /**
+   * Create a direct payment
+   * Note: api.post already unwraps the TransformInterceptor response format
+   * Backend returns { success, message, data } and api.post extracts 'data'
+   */
   async createPayment(paymentData: CreatePaymentDto): Promise<PaymentResult> {
-    const response = await api.post('/payments/create-payment', paymentData);
-    return response.data;
+    // api.post returns response.data.data (already unwrapped)
+    return api.post<PaymentResult>('/payments/create-payment', paymentData);
   }
 
+  /**
+   * Create a payment preference for Checkout Pro
+   */
   async createPreference(preferenceData: CreatePreferenceDto): Promise<PreferenceResult> {
-    const response = await api.post('/payments/create-preference', preferenceData);
-    return response.data;
+    // api.post returns response.data.data (already unwrapped)
+    return api.post<PreferenceResult>('/payments/create-preference', preferenceData);
   }
 
+  /**
+   * Get payment status by ID
+   */
   async getPaymentStatus(paymentId: string): Promise<PaymentResult | null> {
     try {
-      const response = await api.get(`/payments/status/${paymentId}`);
-      return response.data;
+      // api.get returns response.data.data (already unwrapped)
+      return api.get<PaymentResult>(`/payments/status/${paymentId}`);
     } catch (error) {
       console.error('Error getting payment status:', error);
       return null;
     }
   }
 
+  /**
+   * Get available payment methods
+   */
   async getPaymentMethods(): Promise<PaymentMethod[]> {
-    const response = await api.get('/payments/payment-methods');
-    return response.data;
+    // api.get returns response.data.data (already unwrapped)
+    return api.get<PaymentMethod[]>('/payments/payment-methods');
   }
 
   // Helper methods for frontend integration
