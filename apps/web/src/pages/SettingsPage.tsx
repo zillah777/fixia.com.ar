@@ -27,7 +27,7 @@ function Navigation() {
       animate={{ y: 0 }}
       className="sticky top-0 z-50 w-full glass border-b border-white/10"
     >
-      <div className="container mx-auto flex h-16 items-center justify-between px-6">
+      <div className="container mx-auto flex h-16 items-center justify-between px-3 sm:px-6 lg:px-8">
         <Link to="/dashboard" className="flex items-center space-x-3">
           <div className="h-8 w-8 rounded-lg flex items-center justify-center overflow-hidden"><img src="/logo.png" alt="Fixia" className="h-full w-full object-contain" /></div>
           <div className="flex flex-col">
@@ -116,7 +116,7 @@ function ProfileTab() {
 
       <Card className="glass border-white/10">
         <CardContent className="p-6 space-y-6">
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 lg:gap-6">
             <div className="space-y-2">
               <Label htmlFor="fullName">Nombre Completo</Label>
               <Input
@@ -143,7 +143,7 @@ function ProfileTab() {
             </div>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 lg:gap-6">
             <div className="space-y-2">
               <Label htmlFor="phone">Teléfono (WhatsApp)</Label>
               <Input
@@ -286,7 +286,7 @@ function SecurityTab() {
             </div>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-3 lg:gap-4">
             <div className="space-y-2">
               <Label htmlFor="newPassword">Nueva Contraseña</Label>
               <div className="relative">
@@ -665,7 +665,7 @@ function SubscriptionTab() {
         <CardContent className="space-y-4">
           {isProfessional ? (
             <>
-              <div className="grid md:grid-cols-3 gap-4 text-center">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-3 lg:gap-4 text-center">
                 <div className="p-4 glass rounded-lg">
                   <p className="text-2xl font-bold text-success">∞</p>
                   <p className="text-sm text-muted-foreground">Contactos por mes</p>
@@ -714,7 +714,7 @@ function SubscriptionTab() {
             </>
           ) : (
             <>
-              <div className="grid md:grid-cols-3 gap-4 text-center">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-3 lg:gap-4 text-center">
                 <div className="p-4 glass rounded-lg">
                   <p className="text-2xl font-bold text-primary">3</p>
                   <p className="text-sm text-muted-foreground">Contactos por mes</p>
@@ -917,7 +917,7 @@ export default function SettingsPage() {
     <div className="min-h-screen bg-background">
       <Navigation />
 
-      <div className="py-8 px-6">
+      <div className="px-3 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
         <div className="container mx-auto max-w-6xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -925,7 +925,7 @@ export default function SettingsPage() {
             transition={{ duration: 0.8 }}
           >
             <div className="mb-8">
-              <h1 className="text-3xl font-bold mb-2">Configuración</h1>
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2">Configuración</h1>
               <p className="text-muted-foreground">
                 Administra tu cuenta, preferencias y configuración de seguridad
               </p>
