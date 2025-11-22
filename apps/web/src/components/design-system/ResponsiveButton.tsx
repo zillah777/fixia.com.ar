@@ -309,7 +309,7 @@ const ResponsiveButton = React.forwardRef<HTMLButtonElement, ResponsiveButtonPro
             type: 'spring',
             stiffness: 400,
             damping: 20,
-          },
+          } as any,
         }
       : {};
 

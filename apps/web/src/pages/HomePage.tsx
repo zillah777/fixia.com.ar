@@ -421,7 +421,7 @@ function CategoriesSection() {
                                                 <motion.div
                                                     className="absolute inset-0 bg-gradient-to-br from-primary/0 to-accent/0 group-hover:from-primary/10 group-hover:to-accent/10"
                                                     initial={false}
-                                                    animate={isSelected ? { from: 'primary/20', to: 'accent/15' } : {}}
+                                                    animate={isSelected ? { opacity: 1 } : { opacity: 0 } as any}
                                                 />
 
                                                 {category.popular && (

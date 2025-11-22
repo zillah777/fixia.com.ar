@@ -102,12 +102,12 @@ const PremiumTicker: React.FC<PremiumTickerProps> = ({
           repeat: Infinity,
           ease: 'linear',
         }}
-        onHoverStart={pauseOnHover ? (controls) => {
-          controls.stop?.();
-        } : undefined}
-        onHoverEnd={pauseOnHover ? (controls) => {
-          controls.start?.('animate');
-        } : undefined}
+        onHoverStart={pauseOnHover ? ((controls: any) => {
+          (controls as any).stop?.();
+        }) : undefined}
+        onHoverEnd={pauseOnHover ? ((controls: any) => {
+          (controls as any).start?.('animate');
+        }) : undefined}
       >
         {/* Render items multiple times for seamless loop */}
         {Array.from({ length: repeat }).map((_, repeatIndex) => (

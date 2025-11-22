@@ -253,13 +253,13 @@ const ResponsiveModalContent = React.forwardRef<HTMLDivElement, ModalContentProp
       window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     // Mobile: Bottom sheet
-    const mobileProps = {
+    const mobileProps: any = {
       initial: { y: '100%' },
       animate: { y: 0 },
       exit: { y: '100%' },
       transition: prefersReducedMotion
         ? { duration: 0 }
-        : { type: 'spring', damping: 25, stiffness: 300 },
+        : { type: 'spring', damping: 25, stiffness: 300 } as any,
       drag: swipeToClose ? ('y' as const) : false,
       dragControls,
       dragConstraints: { top: 0 },
@@ -268,13 +268,13 @@ const ResponsiveModalContent = React.forwardRef<HTMLDivElement, ModalContentProp
     };
 
     // Desktop: Centered modal
-    const desktopProps = {
+    const desktopProps: any = {
       initial: { opacity: 0, scale: 0.95, y: -20 },
       animate: { opacity: 1, scale: 1, y: 0 },
       exit: { opacity: 0, scale: 0.95, y: -20 },
       transition: prefersReducedMotion
         ? { duration: 0 }
-        : { type: 'spring', damping: 25, stiffness: 300 },
+        : { type: 'spring', damping: 25, stiffness: 300 } as any,
     };
 
     const motionProps = isMobile ? mobileProps : desktopProps;

@@ -22,13 +22,20 @@ export default function RegisterPage() {
       setIsLoading(true);
       setError(null);
 
+      // Validate userType is selected
+      if (!formData.userType) {
+        setError('Por favor selecciona un tipo de cuenta');
+        setIsLoading(false);
+        return;
+      }
+
       // Format data for API
       const registrationData = {
         fullName: formData.fullName,
         email: formData.email,
         phone: formData.phone,
         password: formData.password,
-        userType: formData.userType,
+        userType: formData.userType as 'professional' | 'client',
         ...(formData.userType === 'professional' && {
           businessName: formData.businessName,
           serviceCategories: formData.serviceCategories,

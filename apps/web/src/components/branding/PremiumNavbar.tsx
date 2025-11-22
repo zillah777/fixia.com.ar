@@ -38,7 +38,7 @@ interface PremiumNavbarProps {
  * />
  * ```
  */
-const PremiumNavbar = React.forwardRef<HTMLNavElement, PremiumNavbarProps>(
+const PremiumNavbar = React.forwardRef<HTMLElement, PremiumNavbarProps>(
   ({
     logoSrc,
     logoAlt = 'Fixia',

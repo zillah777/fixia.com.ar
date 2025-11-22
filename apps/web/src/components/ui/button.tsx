@@ -96,14 +96,14 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         }}
         whileTap={{
           scale: 0.95,
-          boxShadow: 'none',
+          boxShadow: 'none' as any,
         }}
         transition={{
           type: 'spring',
           stiffness: 400,
           damping: 17,
         }}
-        {...props}
+        {...(props as any)}
       >
         {children}
         {!disableRipple && variant !== 'link' && ripples.map((ripple) => (

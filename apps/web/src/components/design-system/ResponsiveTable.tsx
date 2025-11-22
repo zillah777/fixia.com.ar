@@ -92,7 +92,7 @@ const ResponsiveTable = React.forwardRef<HTMLDivElement, ResponsiveTableProps>(
       return () => window.removeEventListener('resize', checkMobile);
     }, [mobileBreakpoint]);
 
-    const displayMode = mobileCards && isMobile ? 'cards' : 'table';
+    const displayMode: 'table' | 'cards' = mobileCards && isMobile ? 'cards' : 'table';
 
     const contextValue = React.useMemo(
       () => ({
@@ -100,7 +100,7 @@ const ResponsiveTable = React.forwardRef<HTMLDivElement, ResponsiveTableProps>(
         displayMode,
         stickyHeader,
         stickyFirstColumn,
-      }),
+      } as TableContextValue),
       [isMobile, displayMode, stickyHeader, stickyFirstColumn]
     );
 

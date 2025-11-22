@@ -97,12 +97,12 @@ const ResponsiveGrid = React.forwardRef<HTMLDivElement, ResponsiveGridProps>(
     ref
   ) => (
     <Component
-      ref={ref}
+      ref={ref as any}
       className={cn(
         responsiveGridVariants({ cols, gap, alignItems, justifyItems }),
         className
       )}
-      {...props}
+      {...(props as any)}
     >
       {children}
     </Component>

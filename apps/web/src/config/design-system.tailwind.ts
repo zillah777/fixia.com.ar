@@ -42,17 +42,17 @@ export const breakpoints = {
 export const typography = {
   fontSize: {
     // Fluid typography using clamp()
-    'fluid-xs': ['clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem)', { lineHeight: '1.5' }],
-    'fluid-sm': ['clamp(0.875rem, 0.85rem + 0.125vw, 0.9375rem)', { lineHeight: '1.5' }],
-    'fluid-base': ['clamp(1rem, 0.95rem + 0.25vw, 1.125rem)', { lineHeight: '1.6' }],
-    'fluid-md': ['clamp(1.125rem, 1.075rem + 0.25vw, 1.25rem)', { lineHeight: '1.5' }],
-    'fluid-lg': ['clamp(1.25rem, 1.15rem + 0.5vw, 1.5rem)', { lineHeight: '1.4' }],
-    'fluid-xl': ['clamp(1.5rem, 1.35rem + 0.75vw, 1.875rem)', { lineHeight: '1.3' }],
-    'fluid-2xl': ['clamp(1.875rem, 1.7rem + 0.875vw, 2.25rem)', { lineHeight: '1.25' }],
-    'fluid-3xl': ['clamp(2.25rem, 1.95rem + 1.5vw, 3rem)', { lineHeight: '1.2' }],
-    'fluid-4xl': ['clamp(3rem, 2.6rem + 2vw, 3.75rem)', { lineHeight: '1.1' }],
-    'fluid-5xl': ['clamp(3.75rem, 3.25rem + 2.5vw, 4.5rem)', { lineHeight: '1.1' }],
-    'fluid-display': ['clamp(4.5rem, 3.75rem + 3.75vw, 6rem)', { lineHeight: '1' }],
+    'fluid-xs': ['clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem)', { lineHeight: '1.5' }] as any,
+    'fluid-sm': ['clamp(0.875rem, 0.85rem + 0.125vw, 0.9375rem)', { lineHeight: '1.5' }] as any,
+    'fluid-base': ['clamp(1rem, 0.95rem + 0.25vw, 1.125rem)', { lineHeight: '1.6' }] as any,
+    'fluid-md': ['clamp(1.125rem, 1.075rem + 0.25vw, 1.25rem)', { lineHeight: '1.5' }] as any,
+    'fluid-lg': ['clamp(1.25rem, 1.15rem + 0.5vw, 1.5rem)', { lineHeight: '1.4' }] as any,
+    'fluid-xl': ['clamp(1.5rem, 1.35rem + 0.75vw, 1.875rem)', { lineHeight: '1.3' }] as any,
+    'fluid-2xl': ['clamp(1.875rem, 1.7rem + 0.875vw, 2.25rem)', { lineHeight: '1.25' }] as any,
+    'fluid-3xl': ['clamp(2.25rem, 1.95rem + 1.5vw, 3rem)', { lineHeight: '1.2' }] as any,
+    'fluid-4xl': ['clamp(3rem, 2.6rem + 2vw, 3.75rem)', { lineHeight: '1.1' }] as any,
+    'fluid-5xl': ['clamp(3.75rem, 3.25rem + 2.5vw, 4.5rem)', { lineHeight: '1.1' }] as any,
+    'fluid-display': ['clamp(4.5rem, 3.75rem + 3.75vw, 6rem)', { lineHeight: '1' }] as any,
   },
   letterSpacing: {
     tighter: '-0.05em',

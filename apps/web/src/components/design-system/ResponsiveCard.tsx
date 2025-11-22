@@ -125,7 +125,7 @@ const ResponsiveCard = React.forwardRef<HTMLDivElement, ResponsiveCardProps>(
             type: 'spring',
             stiffness: 400,
             damping: 25,
-          },
+          } as any,
         }
       : {};
 
