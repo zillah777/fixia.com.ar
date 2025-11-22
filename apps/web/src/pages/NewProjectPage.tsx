@@ -81,7 +81,7 @@ function Navigation() {
       animate={{ y: 0 }}
       className="sticky top-0 z-50 w-full glass border-b border-white/10"
     >
-      <div className="container mx-auto flex h-16 items-center justify-between px-6">
+      <div className="container mx-auto flex h-16 items-center justify-between px-3 sm:px-6 lg:px-8">
         <button
           onClick={() => navigate(-1)}
           className="flex items-center space-x-2 text-muted-foreground hover:text-primary transition-colors"
@@ -121,42 +121,98 @@ function StepProgress({ currentStep, totalSteps }: { currentStep: number; totalS
   ];
 
   return (
-    <Card className="glass border-white/10 mb-8">
-      <CardContent className="p-6">
-        <div className="mb-4">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium">Paso {currentStep} de {totalSteps}</span>
-            <span className="text-sm text-muted-foreground">{Math.round((currentStep / totalSteps) * 100)}% completado</span>
-          </div>
-          <Progress value={(currentStep / totalSteps) * 100} className="h-2" />
-        </div>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <Card className="glass border-white/10 mb-6 sm:mb-8 relative overflow-hidden">
+        {/* Animated gradient border overlay */}
+        <motion.div
+          className="absolute inset-0 rounded-lg pointer-events-none"
+          style={{
+            background: 'linear-gradient(45deg, transparent, rgba(var(--primary), 0.1), transparent)',
+            backgroundSize: '200% 200%'
+          }}
+          animate={{
+            backgroundPosition: ['0% 0%', '100% 100%', '0% 0%']
+          }}
+          transition={{ duration: 4, repeat: Infinity }}
+        />
 
-        <div className="grid grid-cols-2 lg:grid-cols-6 gap-4">
-          {steps.map((step) => (
-            <div
-              key={step.id}
-              className={`text-center p-3 rounded-lg transition-all ${step.id === currentStep
-                ? 'glass-medium border border-primary/20'
-                : step.id < currentStep
-                  ? 'glass-light border border-success/20'
-                  : 'glass border border-white/10'
-                }`}
+        <CardContent className="p-3 sm:p-4 lg:p-6 relative z-10">
+          <div className="mb-3 sm:mb-4">
+            <motion.div
+              className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 mb-2"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
             >
-              <div className={`w-8 h-8 rounded-full mx-auto mb-2 flex items-center justify-center ${step.id === currentStep
-                ? 'liquid-gradient text-white'
-                : step.id < currentStep
-                  ? 'bg-success/20 text-success'
-                  : 'bg-muted text-muted-foreground'
-                }`}>
-                {step.id < currentStep ? <Check className="h-4 w-4" /> : step.id}
-              </div>
-              <div className="text-xs font-medium mb-1">{step.title}</div>
-              <div className="text-xs text-muted-foreground">{step.description}</div>
-            </div>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+              <span className="text-xs sm:text-sm font-medium">Paso {currentStep} de {totalSteps}</span>
+              <motion.span
+                className="text-xs sm:text-sm text-muted-foreground"
+                animate={{ color: ['rgb(107, 114, 128)', 'rgb(59, 130, 246)', 'rgb(107, 114, 128)'] }}
+                transition={{ duration: 3, repeat: Infinity }}
+              >
+                {Math.round((currentStep / totalSteps) * 100)}% completado
+              </motion.span>
+            </motion.div>
+            <motion.div
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ duration: 0.7, delay: 0.2 }}
+              style={{ originX: 0 }}
+            >
+              <Progress value={(currentStep / totalSteps) * 100} className="h-2" />
+            </motion.div>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3 lg:gap-4">
+            {steps.map((step) => (
+              <motion.div
+                key={step.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: step.id * 0.05 }}
+                whileHover={{ scale: 1.05, y: -2 }}
+                className={`text-center p-3 rounded-lg transition-all cursor-pointer ${step.id === currentStep
+                  ? 'glass-medium border border-primary/20'
+                  : step.id < currentStep
+                    ? 'glass-light border border-success/20'
+                    : 'glass border border-white/10'
+                  }`}
+              >
+                <motion.div
+                  className={`w-8 h-8 rounded-full mx-auto mb-2 flex items-center justify-center relative ${step.id === currentStep
+                    ? 'liquid-gradient text-white'
+                    : step.id < currentStep
+                      ? 'bg-success/20 text-success'
+                      : 'bg-muted text-muted-foreground'
+                    }`}
+                  animate={step.id === currentStep ? {
+                    boxShadow: [
+                      '0 0 15px rgba(var(--primary), 0.4)',
+                      '0 0 30px rgba(var(--primary), 0.6)',
+                      '0 0 15px rgba(var(--primary), 0.4)'
+                    ]
+                  } : {}}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  <motion.div
+                    animate={step.id === currentStep ? { rotate: [0, 360] } : {}}
+                    transition={{ duration: 4, repeat: Infinity }}
+                  >
+                    {step.id < currentStep ? <Check className="h-4 w-4" /> : step.id}
+                  </motion.div>
+                </motion.div>
+                <div className="text-xs font-medium mb-1">{step.title}</div>
+                <div className="text-xs text-muted-foreground">{step.description}</div>
+              </motion.div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 }
 
@@ -169,16 +225,42 @@ function BasicInfoStep({ data, setData }: { data: ProjectData; setData: (data: P
       transition={{ duration: 0.3 }}
       className="space-y-6"
     >
-      <Card className="glass border-white/10">
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <FileText className="h-5 w-5" />
-            <span>Información Básica del Servicio</span>
-          </CardTitle>
-          <CardDescription>
-            Define el título y descripción que verán los clientes potenciales
-          </CardDescription>
-        </CardHeader>
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        whileHover={{ y: -2 }}
+      >
+        <Card className="glass border-white/10 relative overflow-hidden">
+          {/* Animated gradient border */}
+          <motion.div
+            className="absolute inset-0 pointer-events-none rounded-lg"
+            animate={{
+              boxShadow: [
+                'inset 0 0 10px rgba(var(--primary), 0.1)',
+                'inset 0 0 20px rgba(var(--primary), 0.15)',
+                'inset 0 0 10px rgba(var(--primary), 0.1)'
+              ]
+            }}
+            transition={{ duration: 3, repeat: Infinity }}
+          />
+
+          <CardHeader className="relative z-10">
+            <motion.div
+              className="flex items-center space-x-2"
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+            >
+              <motion.div animate={{ rotate: [0, 360] }} transition={{ duration: 4, repeat: Infinity }}>
+                <FileText className="h-5 w-5" />
+              </motion.div>
+              <span>Información Básica del Servicio</span>
+            </motion.div>
+            <CardDescription>
+              Define el título y descripción que verán los clientes potenciales
+            </CardDescription>
+          </CardHeader>
 
         <CardContent className="space-y-6">
           {/* Title */}
@@ -227,6 +309,7 @@ function BasicInfoStep({ data, setData }: { data: ProjectData; setData: (data: P
           </Alert>
         </CardContent>
       </Card>
+        </motion.div>
     </motion.div>
   );
 }
@@ -267,42 +350,101 @@ function CategoryStep({ data, setData }: { data: ProjectData; setData: (data: Pr
       transition={{ duration: 0.3 }}
       className="space-y-6"
     >
-      <Card className="glass border-white/10">
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Tag className="h-5 w-5" />
-            <span>Categoría y Especialización</span>
-          </CardTitle>
-          <CardDescription>
-            Ayuda a los clientes a encontrar tu servicio más fácilmente
-          </CardDescription>
-        </CardHeader>
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        whileHover={{ y: -2 }}
+      >
+        <Card className="glass border-white/10 relative overflow-hidden">
+          {/* Animated gradient border */}
+          <motion.div
+            className="absolute inset-0 pointer-events-none rounded-lg"
+            animate={{
+              boxShadow: [
+                'inset 0 0 10px rgba(var(--primary), 0.1)',
+                'inset 0 0 20px rgba(var(--primary), 0.15)',
+                'inset 0 0 10px rgba(var(--primary), 0.1)'
+              ]
+            }}
+            transition={{ duration: 3, repeat: Infinity }}
+          />
 
-        <CardContent className="space-y-6">
+          <CardHeader className="relative z-10">
+            <motion.div
+              className="flex items-center space-x-2"
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+            >
+              <motion.div animate={{ rotate: [0, 360] }} transition={{ duration: 4, repeat: Infinity }}>
+                <Tag className="h-5 w-5" />
+              </motion.div>
+              <span>Categoría y Especialización</span>
+            </motion.div>
+            <CardDescription>
+              Ayuda a los clientes a encontrar tu servicio más fácilmente
+            </CardDescription>
+          </CardHeader>
+
+        <CardContent className="space-y-6 relative z-10">
           {/* Category Selection */}
           <div className="space-y-4">
             <Label>Categoría Principal *</Label>
             {loading ? (
-              <div className="text-center py-4">Cargando categorías...</div>
+              <motion.div
+                className="text-center py-4"
+                animate={{ opacity: [0.5, 1, 0.5] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                Cargando categorías...
+              </motion.div>
             ) : (
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {categories.map((category) => {
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {categories.map((category, index) => {
                   // Use a default icon if dynamic icon mapping is complex or missing
                   const Icon = Globe;
                   return (
-                    <Card
+                    <motion.div
                       key={category.id}
-                      className={`cursor-pointer transition-all ${data.category === category.id
-                        ? 'ring-2 ring-primary glass-medium'
-                        : 'glass hover:glass-medium border-white/10'
-                        }`}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.4, delay: index * 0.05 }}
+                      whileHover={{ y: -8, scale: 1.02 }}
                       onClick={() => setData({ ...data, category: category.id })}
                     >
-                      <CardContent className="p-4 text-center">
-                        <Icon className="h-8 w-8 mx-auto mb-2 text-primary" />
-                        <div className="font-medium text-sm">{category.name}</div>
-                      </CardContent>
-                    </Card>
+                      <Card
+                        className={`cursor-pointer transition-all relative overflow-hidden ${data.category === category.id
+                          ? 'ring-2 ring-primary glass-medium'
+                          : 'glass hover:glass-medium border-white/10'
+                          }`}
+                      >
+                        {/* Animated glow on selection */}
+                        {data.category === category.id && (
+                          <motion.div
+                            className="absolute inset-0 pointer-events-none"
+                            animate={{
+                              boxShadow: [
+                                'inset 0 0 15px rgba(var(--primary), 0.2)',
+                                'inset 0 0 30px rgba(var(--primary), 0.3)',
+                                'inset 0 0 15px rgba(var(--primary), 0.2)'
+                              ]
+                            }}
+                            transition={{ duration: 2, repeat: Infinity }}
+                          />
+                        )}
+
+                        <CardContent className="p-4 text-center relative z-10">
+                          <motion.div
+                            animate={data.category === category.id ? { rotate: [0, 360] } : {}}
+                            transition={{ duration: 3, repeat: Infinity }}
+                          >
+                            <Icon className="h-8 w-8 mx-auto mb-2 text-primary" />
+                          </motion.div>
+                          <div className="font-medium text-sm">{category.name}</div>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
                   );
                 })}
               </div>
@@ -320,24 +462,42 @@ function CategoryStep({ data, setData }: { data: ProjectData; setData: (data: Pr
               </div>
 
               <div className="space-y-4">
-                <div className="flex flex-wrap gap-2">
-                  {skillSuggestions[data.category as keyof typeof skillSuggestions]?.map((skill) => (
-                    <Button
+                <motion.div
+                  className="flex flex-wrap gap-2"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.4 }}
+                >
+                  {skillSuggestions[data.category as keyof typeof skillSuggestions]?.map((skill, index) => (
+                    <motion.div
                       key={skill}
-                      variant={selectedSkills.includes(skill) ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => handleSkillToggle(skill)}
-                      className={selectedSkills.includes(skill)
-                        ? "liquid-gradient hover:opacity-90"
-                        : "glass border-white/20 hover:glass-medium"
-                      }
-                      disabled={selectedSkills.length >= 8 && !selectedSkills.includes(skill)}
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.3, delay: index * 0.03 }}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                     >
-                      {selectedSkills.includes(skill) && <Check className="h-3 w-3 mr-1" />}
-                      {skill}
-                    </Button>
+                      <Button
+                        variant={selectedSkills.includes(skill) ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => handleSkillToggle(skill)}
+                        className={selectedSkills.includes(skill)
+                          ? "liquid-gradient hover:opacity-90 relative overflow-hidden"
+                          : "glass border-white/20 hover:glass-medium"
+                        }
+                        disabled={selectedSkills.length >= 8 && !selectedSkills.includes(skill)}
+                      >
+                        <motion.span
+                          animate={selectedSkills.includes(skill) ? { x: [0, 2, 0] } : {}}
+                          transition={{ duration: 1.5, repeat: Infinity }}
+                        >
+                          {selectedSkills.includes(skill) && <Check className="h-3 w-3 mr-1" />}
+                          {skill}
+                        </motion.span>
+                      </Button>
+                    </motion.div>
                   ))}
-                </div>
+                </motion.div>
 
                 <div className="flex items-center space-x-2">
                   <Input
@@ -385,6 +545,7 @@ function CategoryStep({ data, setData }: { data: ProjectData; setData: (data: Pr
           )}
         </CardContent>
       </Card>
+        </motion.div>
     </motion.div>
   );
 }
@@ -427,37 +588,94 @@ function PricingStep({ data, setData }: { data: ProjectData; setData: (data: Pro
       transition={{ duration: 0.3 }}
       className="space-y-6"
     >
-      <Card className="glass border-white/10">
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <DollarSign className="h-5 w-5" />
-            <span>Paquetes y Precios</span>
-          </CardTitle>
-          <CardDescription>
-            Crea diferentes opciones de servicio para atraer más clientes
-          </CardDescription>
-        </CardHeader>
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        whileHover={{ y: -2 }}
+      >
+        <Card className="glass border-white/10 relative overflow-hidden">
+          {/* Animated gradient border */}
+          <motion.div
+            className="absolute inset-0 pointer-events-none rounded-lg"
+            animate={{
+              boxShadow: [
+                'inset 0 0 10px rgba(var(--primary), 0.1)',
+                'inset 0 0 20px rgba(var(--primary), 0.15)',
+                'inset 0 0 10px rgba(var(--primary), 0.1)'
+              ]
+            }}
+            transition={{ duration: 3, repeat: Infinity }}
+          />
 
-        <CardContent>
-          <div className="grid lg:grid-cols-3 gap-6">
+          <CardHeader className="relative z-10">
+            <motion.div
+              className="flex items-center space-x-2"
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+            >
+              <motion.div animate={{ rotate: [0, 360] }} transition={{ duration: 4, repeat: Infinity }}>
+                <DollarSign className="h-5 w-5" />
+              </motion.div>
+              <span>Paquetes y Precios</span>
+            </motion.div>
+            <CardDescription>
+              Crea diferentes opciones de servicio para atraer más clientes
+            </CardDescription>
+          </CardHeader>
+
+        <CardContent className="relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {(['basic', 'standard', 'premium'] as const).map((packageType, index) => (
-              <Card
+              <motion.div
                 key={packageType}
-                className={`glass border-white/10 ${packageType === 'standard' ? 'ring-2 ring-primary/30' : ''
-                  }`}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                whileHover={{ y: -8, scale: 1.02 }}
               >
-                <CardHeader className="text-center">
-                  <div className="flex items-center justify-center space-x-2">
-                    <CardTitle className="capitalize">
-                      {packageType === 'basic' ? 'Básico' : packageType === 'standard' ? 'Estándar' : 'Premium'}
-                    </CardTitle>
-                    {packageType === 'standard' && (
-                      <Badge className="bg-primary/20 text-primary border-primary/30">
-                        Recomendado
-                      </Badge>
-                    )}
-                  </div>
-                </CardHeader>
+                <Card
+                  className={`glass border-white/10 relative overflow-hidden transition-all ${packageType === 'standard' ? 'ring-2 ring-primary/30' : ''
+                    }`}
+                >
+                  {/* Animated gradient overlay on standard package */}
+                  {packageType === 'standard' && (
+                    <motion.div
+                      className="absolute inset-0 pointer-events-none"
+                      animate={{
+                        boxShadow: [
+                          'inset 0 0 20px rgba(var(--primary), 0.1)',
+                          'inset 0 0 40px rgba(var(--primary), 0.2)',
+                          'inset 0 0 20px rgba(var(--primary), 0.1)'
+                        ]
+                      }}
+                      transition={{ duration: 3, repeat: Infinity }}
+                    />
+                  )}
+
+                  <CardHeader className="text-center relative z-10">
+                    <div className="flex items-center justify-center space-x-2">
+                      <motion.div
+                        animate={packageType === 'standard' ? { scale: [1, 1.05, 1] } : {}}
+                        transition={{ duration: 2, repeat: Infinity }}
+                      >
+                        <CardTitle className="capitalize">
+                          {packageType === 'basic' ? 'Básico' : packageType === 'standard' ? 'Estándar' : 'Premium'}
+                        </CardTitle>
+                      </motion.div>
+                      {packageType === 'standard' && (
+                        <motion.div
+                          animate={{ scale: [1, 1.1, 1], rotate: [0, 5, -5, 0] }}
+                          transition={{ duration: 1.5, repeat: Infinity }}
+                        >
+                          <Badge className="bg-primary/20 text-primary border-primary/30">
+                            Recomendado
+                          </Badge>
+                        </motion.div>
+                      )}
+                    </div>
+                  </CardHeader>
 
                 <CardContent className="space-y-4">
                   {/* Package Name */}
@@ -561,6 +779,7 @@ function PricingStep({ data, setData }: { data: ProjectData; setData: (data: Pro
                   </div>
                 </CardContent>
               </Card>
+              </motion.div>
             ))}
           </div>
 
@@ -573,6 +792,7 @@ function PricingStep({ data, setData }: { data: ProjectData; setData: (data: Pro
           </Alert>
         </CardContent>
       </Card>
+        </motion.div>
     </motion.div>
   );
 }
@@ -1016,7 +1236,7 @@ export default function NewProjectPage() {
       return (
         <div className="min-h-screen bg-background">
           <Navigation />
-          <main className="container mx-auto px-6 py-12">
+          <main className="container mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 lg:py-12">
             <SubscriptionPaywall
               feature="services"
               title="Límite de Servicios Alcanzado"
@@ -1030,7 +1250,7 @@ export default function NewProjectPage() {
     return (
       <div className="min-h-screen bg-background">
         <Navigation />
-        <main className="container mx-auto px-6 py-12">
+        <main className="container mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 lg:py-12">
           <SubscriptionPaywall feature="services" />
         </main>
       </div>
@@ -1120,7 +1340,7 @@ export default function NewProjectPage() {
     <div className="min-h-screen bg-background">
       <Navigation />
 
-      <main className="container mx-auto px-6 py-8 max-w-6xl">
+      <main className="container mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 max-w-6xl">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -1128,13 +1348,24 @@ export default function NewProjectPage() {
           transition={{ duration: 0.6 }}
           className="text-center mb-8"
         >
-          <h1 className="text-3xl lg:text-4xl font-bold mb-4">
+          <motion.h1
+            className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent"
+            animate={{ backgroundPosition: ['0%', '100%', '0%'] }}
+            transition={{ duration: 8, repeat: Infinity }}
+            style={{ backgroundSize: '200% 200%' }}
+          >
             Crear Nuevo Servicio
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          </motion.h1>
+          <motion.p
+            className="text-sm sm:text-base lg:text-lg text-muted-foreground max-w-2xl mx-auto"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
             Comparte tu expertise con miles de clientes.
+            <br />
             Configura tu servicio paso a paso y comienza a generar ingresos.
-          </p>
+          </motion.p>
         </motion.div>
 
         {/* Progress */}
@@ -1156,41 +1387,70 @@ export default function NewProjectPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="flex items-center justify-between mt-8"
+          className="flex items-center justify-between mt-8 gap-4"
         >
-          <Button
-            variant="outline"
-            onClick={handlePrevious}
-            disabled={currentStep === 1}
-            className="glass border-white/20 hover:glass-medium"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Anterior
-          </Button>
-
-          <div className="flex items-center space-x-4">
-            <Button variant="ghost" className="text-muted-foreground">
-              Guardar Borrador
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <Button
+              variant="outline"
+              onClick={handlePrevious}
+              disabled={currentStep === 1}
+              className="glass border-white/20 hover:glass-medium"
+            >
+              <motion.div animate={{ x: [0, -2, 0] }} transition={{ duration: 1.5, repeat: Infinity }}>
+                <ArrowLeft className="h-4 w-4 mr-2" />
+              </motion.div>
+              Anterior
             </Button>
+          </motion.div>
+
+          <div className="flex items-center gap-4">
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              animate={{ opacity: [0.7, 1, 0.7] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
+              <Button variant="ghost" className="text-muted-foreground">
+                Guardar Borrador
+              </Button>
+            </motion.div>
 
             {currentStep === totalSteps ? (
-              <Button
-                onClick={handlePublish}
-                className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg px-8"
-                disabled={!canProceed()}
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
-                <Zap className="h-4 w-4 mr-2" />
-                Publicar Servicio
-              </Button>
+                <Button
+                  onClick={handlePublish}
+                  className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg px-8 relative overflow-hidden"
+                  disabled={!canProceed()}
+                >
+                  <motion.div animate={{ rotate: [0, 360] }} transition={{ duration: 2, repeat: Infinity }}>
+                    <Zap className="h-4 w-4 mr-2" />
+                  </motion.div>
+                  <motion.span animate={{ x: [0, 2, 0] }} transition={{ duration: 1.5, repeat: Infinity }}>
+                    Publicar Servicio
+                  </motion.span>
+                </Button>
+              </motion.div>
             ) : (
-              <Button
-                onClick={handleNext}
-                disabled={!canProceed()}
-                className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg"
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
-                Siguiente
-                <ArrowRight className="h-4 w-4 ml-2" />
-              </Button>
+                <Button
+                  onClick={handleNext}
+                  disabled={!canProceed()}
+                  className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg relative overflow-hidden"
+                >
+                  <motion.span animate={{ x: [0, 2, 0] }} transition={{ duration: 1.5, repeat: Infinity }}>
+                    Siguiente
+                  </motion.span>
+                  <motion.div animate={{ x: [0, 2, 0] }} transition={{ duration: 1.5, repeat: Infinity }}>
+                    <ArrowRight className="h-4 w-4 ml-2" />
+                  </motion.div>
+                </Button>
+              </motion.div>
             )}
           </div>
         </motion.div>
