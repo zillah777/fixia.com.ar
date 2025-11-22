@@ -163,14 +163,14 @@ export default function UIShowcasePage() {
                                 </div>
 
                                 <div className="flex flex-col items-center justify-center gap-2">
-                                    <div className="text-4xl font-bold">
+                                    <div className="text-2xl sm:text-3xl lg:text-4xl font-bold">
                                         <CountUp value={1234} prefix="$" duration={2} />
                                     </div>
                                     <p className="text-sm text-muted-foreground">Total Revenue</p>
                                 </div>
 
                                 <div className="flex flex-col items-center justify-center gap-2">
-                                    <div className="text-4xl font-bold">
+                                    <div className="text-2xl sm:text-3xl lg:text-4xl font-bold">
                                         <CountUp value={98.5} decimals={1} suffix="%" duration={2} />
                                     </div>
                                     <p className="text-sm text-muted-foreground">Success Rate</p>

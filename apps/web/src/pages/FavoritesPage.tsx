@@ -157,7 +157,7 @@ function Navigation() {
       animate={{ y: 0 }}
       className="sticky top-0 z-50 w-full glass border-b border-white/10"
     >
-      <div className="container mx-auto flex h-16 items-center justify-between px-6">
+      <div className="container mx-auto flex h-16 items-center justify-between px-3 sm:px-6 lg:px-8">
         <Link to="/dashboard" className="flex items-center space-x-3">
           <div className="h-8 w-8 rounded-lg flex items-center justify-center overflow-hidden"><img src="/logo.png" alt="Fixia" className="h-full w-full object-contain" /></div>
           <div className="flex flex-col">
@@ -343,7 +343,7 @@ export default function FavoritesPage() {
     <div className="min-h-screen bg-background">
       <Navigation />
 
-      <div className="py-8 px-6">
+      <div className="px-3 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
         <div className="container mx-auto max-w-7xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -352,7 +352,7 @@ export default function FavoritesPage() {
           >
             <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 mb-8">
               <div>
-                <h1 className="text-3xl font-bold mb-2">Mis Favoritos</h1>
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2">Mis Favoritos</h1>
                 <p className="text-muted-foreground">
                   Servicios y profesionales que has guardado para consultar más tarde
                 </p>

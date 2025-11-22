@@ -142,7 +142,7 @@ function Navigation() {
 function HeroSection() {
   return (
     <section className="relative py-24 lg:py-32 overflow-hidden">
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-3 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -232,7 +232,7 @@ function HeroSection() {
 function CategoriesSection() {
   return (
     <section className="py-20">
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-3 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -301,7 +301,7 @@ function CategoriesSection() {
 function FeaturedServicesSection() {
   return (
     <section className="py-20">
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-3 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -429,7 +429,7 @@ function HowItWorksSection() {
 
   return (
     <section id="como-funciona" className="py-20">
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-3 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -501,7 +501,7 @@ function HowItWorksSection() {
 function CTASection() {
   return (
     <section className="py-20">
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-3 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -551,7 +551,7 @@ function CTASection() {
 function Footer() {
   return (
     <footer className="py-16 border-t border-white/10">
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-3 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-4 gap-8">
           {/* Logo and Description */}
           <div className="space-y-4">

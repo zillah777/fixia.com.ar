@@ -16,7 +16,7 @@ function Navigation() {
       animate={{ y: 0 }}
       className="sticky top-0 z-50 w-full glass border-b border-white/10"
     >
-      <div className="container mx-auto flex h-16 items-center justify-between px-6">
+      <div className="container mx-auto flex h-16 items-center justify-between px-3 sm:px-6 lg:px-8">
         <Link to="/" className="flex items-center space-x-3">
           <div className="h-8 w-8 rounded-lg flex items-center justify-center overflow-hidden"><img src="/logo.png" alt="Fixia" className="h-full w-full object-contain" /></div>
           <div className="flex flex-col">
@@ -39,7 +39,7 @@ function Navigation() {
 function HeroSection() {
   return (
     <section className="py-20 lg:py-28">
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-3 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -99,7 +99,7 @@ function ClientProcessSection() {
 
   return (
     <section className="py-20">
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-3 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -109,7 +109,7 @@ function ClientProcessSection() {
         >
           <div className="flex items-center justify-center space-x-3 mb-6">
             <UserPlus className="h-8 w-8 text-success" />
-            <h2 className="text-4xl font-bold">Para Clientes</h2>
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold">Para Clientes</h2>
           </div>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Encuentra y contrata profesionales verificados en 4 pasos simples
@@ -202,7 +202,7 @@ function ProfessionalProcessSection() {
 
   return (
     <section className="py-20 bg-gradient-to-b from-transparent to-primary/5">
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-3 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -212,7 +212,7 @@ function ProfessionalProcessSection() {
         >
           <div className="flex items-center justify-center space-x-3 mb-6">
             <Crown className="h-8 w-8 text-primary" />
-            <h2 className="text-4xl font-bold">Para Profesionales</h2>
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold">Para Profesionales</h2>
           </div>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Únete como Profesional y haz crecer tu negocio
@@ -295,7 +295,7 @@ function WhyChooseFixiaSection() {
 
   return (
     <section className="py-20">
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-3 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -342,7 +342,7 @@ function WhyChooseFixiaSection() {
 function CTASection() {
   return (
     <section className="py-20">
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-3 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -402,7 +402,7 @@ function CTASection() {
 function ContactSection() {
   return (
     <section className="py-16">
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-3 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}

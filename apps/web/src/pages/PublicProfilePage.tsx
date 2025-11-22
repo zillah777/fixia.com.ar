@@ -161,7 +161,7 @@ function Navigation() {
       animate={{ y: 0 }}
       className="sticky top-0 z-50 w-full glass border-b border-white/10"
     >
-      <div className="container mx-auto flex h-16 items-center justify-between px-6">
+      <div className="container mx-auto flex h-16 items-center justify-between px-3 sm:px-6 lg:px-8">
         <Link to="/services" className="flex items-center space-x-2 text-muted-foreground hover:text-primary transition-colors">
           <ArrowLeft className="h-4 w-4" />
           Volver a servicios
@@ -214,7 +214,7 @@ function ProfileHeader({ profile }: { profile: any }) {
           <div className="flex-1 space-y-4">
             <div className="flex items-start justify-between">
               <div>
-                <h1 className="text-3xl font-bold">{profile.name}</h1>
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold">{profile.name}</h1>
 
                 <div className="flex items-center space-x-3 mt-2">
                   {profile.professional_profile && (
@@ -560,7 +560,7 @@ function ReviewsSection({ reviews, profile }: { reviews: any[]; profile: any }) 
         {/* Rating Overview */}
         <div className="flex items-center space-x-8 p-4 glass-medium rounded-lg">
           <div className="text-center">
-            <div className="text-3xl font-bold">{rating}</div>
+            <div className="text-xl sm:text-2xl lg:text-3xl font-bold">{rating}</div>
             <div className="flex items-center justify-center mt-1">
               {[1, 2, 3, 4, 5].map((star) => (
                 <Star key={star} className="h-4 w-4 text-warning fill-current" />

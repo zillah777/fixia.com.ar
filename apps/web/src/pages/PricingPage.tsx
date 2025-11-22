@@ -104,7 +104,7 @@ const planFeatures: PlanFeature[] = [
 function HeroSection() {
   return (
     <section className="py-20 lg:py-28">
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-3 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -190,7 +190,7 @@ function PricingCardsSection() {
 
   return (
     <section className="py-20">
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-3 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
           {/* Plan Gratis */}
           <motion.div
@@ -206,7 +206,7 @@ function PricingCardsSection() {
                   <CardTitle className="text-2xl">Plan Gratis</CardTitle>
                 </div>
                 <div className="space-y-2">
-                  <div className="text-4xl font-bold">$0</div>
+                  <div className="text-2xl sm:text-3xl lg:text-4xl font-bold">$0</div>
                   <div className="text-muted-foreground">Para siempre</div>
                 </div>
                 <p className="text-muted-foreground">
@@ -387,7 +387,7 @@ function PricingCardsSection() {
 function ComparisonTableSection() {
   return (
     <section className="py-20">
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-3 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -508,7 +508,7 @@ function FAQSection() {
 
   return (
     <section className="py-20">
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-3 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -548,7 +548,7 @@ function FAQSection() {
 function CTASection() {
   return (
     <section className="py-20">
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-3 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}

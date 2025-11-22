@@ -217,7 +217,7 @@ function Navigation() {
       animate={{ y: 0 }}
       className="sticky top-0 z-50 w-full glass border-b border-white/10"
     >
-      <div className="container mx-auto flex h-16 items-center justify-between px-6">
+      <div className="container mx-auto flex h-16 items-center justify-between px-3 sm:px-6 lg:px-8">
         <Link to="/services" className="flex items-center space-x-2 text-muted-foreground hover:text-primary transition-colors">
           <ArrowLeft className="h-4 w-4" />
           Volver a servicios
@@ -252,7 +252,7 @@ export default function ServiceDetailPage() {
       <Navigation />
       
       <main className="container mx-auto px-6 py-8">
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
             {/* Image Gallery */}
@@ -312,7 +312,7 @@ export default function ServiceDetailPage() {
                       </Badge>
                     </div>
                     
-                    <h1 className="text-3xl font-bold mb-4">{serviceDetail.title}</h1>
+                    <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4">{serviceDetail.title}</h1>
                     
                     <div className="flex items-center space-x-6 text-sm text-muted-foreground">
                       <div className="flex items-center space-x-1">
@@ -380,7 +380,7 @@ export default function ServiceDetailPage() {
                                 ${pkg.originalPrice}
                               </span>
                             )}
-                            <span className="text-2xl font-bold text-primary">
+                            <span className="text-xl sm:text-2xl lg:text-3xl font-bold text-primary">
                               ${pkg.price}
                             </span>
                           </div>
@@ -434,7 +434,7 @@ export default function ServiceDetailPage() {
                       {/* Rating Overview */}
                       <div className="flex items-center space-x-8">
                         <div className="text-center">
-                          <div className="text-3xl font-bold">{serviceDetail.professional.rating}</div>
+                          <div className="text-2xl sm:text-3xl lg:text-4xl font-bold">{serviceDetail.professional.rating}</div>
                           <div className="flex items-center justify-center mt-1">
                             {[1,2,3,4,5].map((star) => (
                               <Star 
@@ -563,7 +563,7 @@ export default function ServiceDetailPage() {
                           ${serviceDetail.packages[selectedPackage].originalPrice}
                         </span>
                       )}
-                      <span className="text-3xl font-bold text-primary">
+                      <span className="text-2xl sm:text-3xl lg:text-4xl font-bold text-primary">
                         ${serviceDetail.packages[selectedPackage].price}
                       </span>
                     </div>

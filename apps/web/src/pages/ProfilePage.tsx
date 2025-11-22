@@ -512,7 +512,7 @@ function ReviewsSection() {
         {/* Rating Overview */}
         <div className="flex items-center space-x-8 p-4 glass-medium rounded-lg">
           <div className="text-center">
-            <div className="text-3xl font-bold">4.9</div>
+            <div className="text-xl sm:text-2xl lg:text-3xl font-bold">4.9</div>
             <div className="flex items-center justify-center mt-1">
               {[1, 2, 3, 4, 5].map((star) => (
                 <Star key={star} className="h-4 w-4 text-warning fill-current" />

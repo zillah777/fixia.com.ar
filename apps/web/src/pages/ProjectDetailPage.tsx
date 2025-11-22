@@ -229,7 +229,7 @@ export default function ProjectDetailPage() {
               <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-2 break-words">
                 {project.title}
               </h1>
-              <p className="text-sm sm:text-base text-muted-foreground">
+              <p className="text-xs sm:text-sm md:text-base text-muted-foreground">
                 Detalle de Oportunidad
               </p>
             </div>
@@ -258,7 +258,7 @@ export default function ProjectDetailPage() {
                   {/* Description */}
                   <div>
                     <h3 className="font-semibold text-foreground mb-2">Descripción</h3>
-                    <p className="text-sm sm:text-base text-muted-foreground leading-relaxed whitespace-pre-wrap">
+                    <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed whitespace-pre-wrap">
                       {project.description}
                     </p>
                   </div>
