@@ -1,0 +1,1214 @@
+/**
+ * FIXIA ENTERPRISE RESPONSIVE UTILITIES
+ * Version: 2.0.0
+ *
+ * Responsive utility classes for mobile-first development
+ * Compatible with Tailwind CSS
+ */
+
+/* ============================================
+   RESPONSIVE TYPOGRAPHY UTILITIES
+   ============================================ */
+
+@layer utilities {
+  /* Fluid Typography Classes */
+  .text-fluid-xs {
+    font-size: var(--font-size-xs);
+  }
+  .text-fluid-sm {
+    font-size: var(--font-size-sm);
+  }
+  .text-fluid-base {
+    font-size: var(--font-size-base);
+  }
+  .text-fluid-md {
+    font-size: var(--font-size-md);
+  }
+  .text-fluid-lg {
+    font-size: var(--font-size-lg);
+  }
+  .text-fluid-xl {
+    font-size: var(--font-size-xl);
+  }
+  .text-fluid-2xl {
+    font-size: var(--font-size-2xl);
+  }
+  .text-fluid-3xl {
+    font-size: var(--font-size-3xl);
+  }
+  .text-fluid-4xl {
+    font-size: var(--font-size-4xl);
+  }
+  .text-fluid-5xl {
+    font-size: var(--font-size-5xl);
+  }
+  .text-fluid-display {
+    font-size: var(--font-size-display);
+  }
+
+  /* Heading Classes with Responsive Sizing */
+  .heading-display {
+    font-size: var(--font-size-display);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--leading-heading-tight);
+    letter-spacing: var(--tracking-tight);
+  }
+
+  .heading-h1 {
+    font-size: var(--heading-h1);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--leading-heading);
+    letter-spacing: var(--tracking-tight);
+  }
+
+  .heading-h2 {
+    font-size: var(--heading-h2);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--leading-heading);
+    letter-spacing: var(--tracking-tight);
+  }
+
+  .heading-h3 {
+    font-size: var(--heading-h3);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--leading-snug);
+    letter-spacing: var(--tracking-tight);
+  }
+
+  .heading-h4 {
+    font-size: var(--heading-h4);
+    font-weight: var(--font-weight-medium);
+    line-height: var(--leading-snug);
+  }
+
+  .heading-h5 {
+    font-size: var(--heading-h5);
+    font-weight: var(--font-weight-medium);
+    line-height: var(--leading-normal);
+  }
+
+  .heading-h6 {
+    font-size: var(--heading-h6);
+    font-weight: var(--font-weight-medium);
+    line-height: var(--leading-normal);
+  }
+
+  /* Body Text Classes */
+  .body-lg {
+    font-size: var(--text-body-lg);
+    line-height: var(--leading-relaxed);
+  }
+
+  .body-base {
+    font-size: var(--text-body);
+    line-height: var(--leading-normal);
+  }
+
+  .body-sm {
+    font-size: var(--text-body-sm);
+    line-height: var(--leading-normal);
+  }
+
+  /* UI Text Classes */
+  .text-caption {
+    font-size: var(--text-caption);
+    line-height: var(--leading-normal);
+  }
+
+  .text-label {
+    font-size: var(--text-label);
+    font-weight: var(--font-weight-medium);
+    line-height: var(--leading-normal);
+  }
+
+  /* Prose Container */
+  .prose-container {
+    max-width: var(--content-width-prose);
+    font-size: var(--text-body);
+    line-height: var(--leading-relaxed);
+  }
+}
+
+/* ============================================
+   RESPONSIVE SPACING UTILITIES
+   ============================================ */
+
+@layer utilities {
+  /* Responsive Padding */
+  .p-responsive {
+    padding: var(--padding-component-y) var(--padding-component-x);
+  }
+
+  .px-responsive {
+    padding-left: var(--padding-component-x);
+    padding-right: var(--padding-component-x);
+  }
+
+  .py-responsive {
+    padding-top: var(--padding-component-y);
+    padding-bottom: var(--padding-component-y);
+  }
+
+  /* Section Padding */
+  .p-section {
+    padding: var(--padding-section-y) var(--padding-section-x);
+  }
+
+  .px-section {
+    padding-left: var(--padding-section-x);
+    padding-right: var(--padding-section-x);
+  }
+
+  .py-section {
+    padding-top: var(--padding-section-y);
+    padding-bottom: var(--padding-section-y);
+  }
+
+  /* Page Padding */
+  .p-page {
+    padding: var(--padding-page-y) var(--padding-page-x);
+  }
+
+  .px-page {
+    padding-left: var(--padding-page-x);
+    padding-right: var(--padding-page-x);
+  }
+
+  .py-page {
+    padding-top: var(--padding-page-y);
+    padding-bottom: var(--padding-page-y);
+  }
+
+  /* Responsive Gap */
+  .gap-responsive {
+    gap: var(--grid-gap-responsive);
+  }
+
+  /* Card Padding */
+  .p-card {
+    padding: var(--card-padding-responsive);
+  }
+}
+
+/* ============================================
+   RESPONSIVE LAYOUT UTILITIES
+   ============================================ */
+
+@layer utilities {
+  /* Container Classes */
+  .container-responsive {
+    width: 100%;
+    max-width: var(--container-responsive);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--padding-page-x);
+    padding-right: var(--padding-page-x);
+  }
+
+  .container-prose {
+    width: 100%;
+    max-width: var(--content-width-prose);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--padding-page-x);
+    padding-right: var(--padding-page-x);
+  }
+
+  .container-narrow {
+    width: 100%;
+    max-width: var(--content-width-narrow);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--padding-page-x);
+    padding-right: var(--padding-page-x);
+  }
+
+  .container-wide {
+    width: 100%;
+    max-width: var(--content-width-wide);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--padding-page-x);
+    padding-right: var(--padding-page-x);
+  }
+
+  /* Responsive Grid System */
+  .grid-responsive {
+    display: grid;
+    gap: var(--grid-gap-responsive);
+  }
+
+  /* Auto-fit Grid (min 280px columns) */
+  .grid-auto-fit {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+    gap: var(--grid-gap-responsive);
+  }
+
+  /* Auto-fill Grid */
+  .grid-auto-fill {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+    gap: var(--grid-gap-responsive);
+  }
+
+  /* Card Grid (min 300px columns) */
+  .grid-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+    gap: var(--grid-gap-responsive);
+  }
+
+  /* Service Cards Grid (min 320px columns) */
+  .grid-services {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+    gap: var(--grid-gap-responsive);
+  }
+
+  /* Form Grid - 2 columns on md+ */
+  .grid-form {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+
+  @media (min-width: 768px) {
+    .grid-form {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  /* Full-width on mobile */
+  .grid-form-full {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ============================================
+   SAFE AREA UTILITIES
+   ============================================ */
+
+@layer utilities {
+  /* Safe Area Padding */
+  .pt-safe {
+    padding-top: var(--safe-area-inset-top);
+  }
+
+  .pb-safe {
+    padding-bottom: var(--safe-area-inset-bottom);
+  }
+
+  .pl-safe {
+    padding-left: var(--safe-area-inset-left);
+  }
+
+  .pr-safe {
+    padding-right: var(--safe-area-inset-right);
+  }
+
+  .px-safe {
+    padding-left: var(--safe-area-inset-left);
+    padding-right: var(--safe-area-inset-right);
+  }
+
+  .py-safe {
+    padding-top: var(--safe-area-inset-top);
+    padding-bottom: var(--safe-area-inset-bottom);
+  }
+
+  .p-safe {
+    padding: var(--safe-area-inset-top) var(--safe-area-inset-right) var(--safe-area-inset-bottom) var(--safe-area-inset-left);
+  }
+
+  /* Safe Area Margin */
+  .mt-safe {
+    margin-top: var(--safe-area-inset-top);
+  }
+
+  .mb-safe {
+    margin-bottom: var(--safe-area-inset-bottom);
+  }
+
+  /* Header with Safe Area */
+  .header-safe {
+    padding-top: calc(var(--space-3) + var(--safe-area-inset-top));
+    height: var(--header-height);
+  }
+
+  /* Bottom Navigation with Safe Area */
+  .bottom-nav-safe {
+    padding-bottom: var(--safe-area-inset-bottom);
+    height: var(--bottom-nav-height);
+  }
+
+  /* Full Height with Safe Areas */
+  .min-h-screen-safe {
+    min-height: calc(100vh - var(--safe-area-inset-top) - var(--safe-area-inset-bottom));
+  }
+
+  .h-screen-safe {
+    height: calc(100vh - var(--safe-area-inset-top) - var(--safe-area-inset-bottom));
+  }
+
+  /* Dynamic Viewport Height */
+  .min-h-dvh {
+    min-height: 100dvh;
+  }
+
+  .h-dvh {
+    height: 100dvh;
+  }
+}
+
+/* ============================================
+   TOUCH TARGET UTILITIES
+   ============================================ */
+
+@layer utilities {
+  /* Minimum Touch Target (44x44) */
+  .touch-target {
+    min-width: var(--touch-target-min);
+    min-height: var(--touch-target-min);
+  }
+
+  /* Comfortable Touch Target (48x48) */
+  .touch-target-lg {
+    min-width: var(--touch-target-comfortable);
+    min-height: var(--touch-target-comfortable);
+  }
+
+  /* Expand Touch Area */
+  .touch-expand {
+    position: relative;
+  }
+
+  .touch-expand::before {
+    content: '';
+    position: absolute;
+    inset: calc(var(--space-2) * -1);
+  }
+}
+
+/* ============================================
+   RESPONSIVE COMPONENT HELPERS
+   ============================================ */
+
+@layer utilities {
+  /* Stack on Mobile, Row on Desktop */
+  .stack-to-row {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  @media (min-width: 768px) {
+    .stack-to-row {
+      flex-direction: row;
+      align-items: center;
+    }
+  }
+
+  /* Row on Mobile, Stack on Desktop */
+  .row-to-stack {
+    display: flex;
+    flex-direction: row;
+    gap: var(--space-4);
+  }
+
+  @media (min-width: 768px) {
+    .row-to-stack {
+      flex-direction: column;
+    }
+  }
+
+  /* Hide on Mobile */
+  .hide-mobile {
+    display: none;
+  }
+
+  @media (min-width: 640px) {
+    .hide-mobile {
+      display: block;
+    }
+  }
+
+  /* Hide on Desktop */
+  .hide-desktop {
+    display: block;
+  }
+
+  @media (min-width: 1024px) {
+    .hide-desktop {
+      display: none;
+    }
+  }
+
+  /* Show only on Mobile */
+  .mobile-only {
+    display: block;
+  }
+
+  @media (min-width: 768px) {
+    .mobile-only {
+      display: none;
+    }
+  }
+
+  /* Show only on Tablet */
+  .tablet-only {
+    display: none;
+  }
+
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .tablet-only {
+      display: block;
+    }
+  }
+
+  /* Show only on Desktop */
+  .desktop-only {
+    display: none;
+  }
+
+  @media (min-width: 1024px) {
+    .desktop-only {
+      display: block;
+    }
+  }
+}
+
+/* ============================================
+   GLASS MORPHISM RESPONSIVE VARIANTS
+   ============================================ */
+
+@layer utilities {
+  /* Base Glass */
+  .glass-responsive {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  /* Stronger glass on desktop (more blur) */
+  @media (min-width: 1024px) {
+    .glass-responsive {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+  }
+
+  /* Light mode glass */
+  .light .glass-responsive {
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  @media (min-width: 1024px) {
+    .light .glass-responsive {
+      background: rgba(255, 255, 255, 0.8);
+    }
+  }
+
+  /* Glass Card */
+  .glass-card {
+    background: var(--glass-light);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: var(--card-padding-responsive);
+  }
+
+  /* Glass Panel */
+  .glass-panel {
+    background: var(--glass-medium);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-2xl);
+  }
+}
+
+/* ============================================
+   ANIMATION RESPONSIVE UTILITIES
+   ============================================ */
+
+@layer utilities {
+  /* Hover lift effect - disabled on touch */
+  .hover-lift {
+    transition: transform var(--motion-standard), box-shadow var(--motion-standard);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .hover-lift:hover {
+      transform: translateY(calc(var(--translate-normal) * -1));
+      box-shadow: var(--shadow-lg);
+    }
+  }
+
+  /* Subtle hover lift */
+  .hover-lift-subtle {
+    transition: transform var(--motion-standard), box-shadow var(--motion-standard);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .hover-lift-subtle:hover {
+      transform: translateY(calc(var(--translate-subtle) * -1));
+      box-shadow: var(--shadow-md);
+    }
+  }
+
+  /* Press scale */
+  .press-scale:active {
+    transform: scale(var(--scale-press));
+  }
+
+  /* Hover scale */
+  @media (hover: hover) and (pointer: fine) {
+    .hover-scale:hover {
+      transform: scale(var(--scale-hover));
+    }
+
+    .hover-scale-subtle:hover {
+      transform: scale(var(--scale-hover-subtle));
+    }
+  }
+
+  /* Focus ring */
+  .focus-ring {
+    outline: none;
+  }
+
+  .focus-ring:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  /* Glow effects */
+  .glow-primary {
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.4), 0 0 40px rgba(168, 85, 247, 0.2);
+  }
+
+  .glow-accent {
+    box-shadow: 0 0 20px rgba(236, 72, 153, 0.4), 0 0 40px rgba(236, 72, 153, 0.2);
+  }
+
+  .glow-success {
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.4), 0 0 40px rgba(34, 197, 94, 0.2);
+  }
+
+  /* Glow border animation */
+  .glow-border {
+    position: relative;
+  }
+
+  .glow-border::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    background: linear-gradient(
+      135deg,
+      rgba(168, 85, 247, 0.5),
+      rgba(236, 72, 153, 0.5),
+      rgba(168, 85, 247, 0.5)
+    );
+    background-size: 200% 200%;
+    animation: glow-rotate 3s linear infinite;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity var(--motion-standard);
+  }
+
+  @media (hover: hover) {
+    .glow-border:hover::before {
+      opacity: 1;
+    }
+  }
+
+  @keyframes glow-rotate {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* Gradient shift animation */
+  .gradient-shift {
+    background: linear-gradient(
+      135deg,
+      var(--primary-solid),
+      #764ba2,
+      #ec4899,
+      var(--primary-solid)
+    );
+    background-size: 300% 300%;
+    animation: gradient-shift 8s ease infinite;
+  }
+
+  @keyframes gradient-shift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* Reduced motion respects */
+  @media (prefers-reduced-motion: reduce) {
+    .glow-border::before {
+      animation: none;
+    }
+
+    .gradient-shift {
+      animation: none;
+      background-size: 100% 100%;
+    }
+
+    .hover-lift,
+    .hover-lift-subtle,
+    .press-scale,
+    .hover-scale,
+    .hover-scale-subtle {
+      transition: none;
+    }
+  }
+}
+
+/* ============================================
+   RESPONSIVE TABLE UTILITIES
+   ============================================ */
+
+@layer utilities {
+  /* Responsive Table Container */
+  .table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Minimum table width for horizontal scroll */
+  .table-responsive > table {
+    min-width: 600px;
+  }
+
+  @media (min-width: 768px) {
+    .table-responsive > table {
+      min-width: auto;
+      width: 100%;
+    }
+  }
+
+  /* Sticky Header */
+  .table-sticky-header thead {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-sticky);
+    background: var(--background);
+  }
+
+  /* Card-style table on mobile */
+  .table-card-mobile {
+    display: block;
+  }
+
+  .table-card-mobile thead {
+    display: none;
+  }
+
+  .table-card-mobile tbody,
+  .table-card-mobile tr {
+    display: block;
+  }
+
+  .table-card-mobile tr {
+    margin-bottom: var(--space-4);
+    padding: var(--card-padding-responsive);
+    background: var(--glass-light);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border);
+  }
+
+  .table-card-mobile td {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--space-2) 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .table-card-mobile td:last-child {
+    border-bottom: none;
+  }
+
+  .table-card-mobile td::before {
+    content: attr(data-label);
+    font-weight: var(--font-weight-medium);
+    color: var(--muted-foreground);
+  }
+
+  @media (min-width: 768px) {
+    .table-card-mobile {
+      display: table;
+    }
+
+    .table-card-mobile thead {
+      display: table-header-group;
+    }
+
+    .table-card-mobile tbody {
+      display: table-row-group;
+    }
+
+    .table-card-mobile tr {
+      display: table-row;
+      margin-bottom: 0;
+      padding: 0;
+      background: transparent;
+      border-radius: 0;
+      border: none;
+    }
+
+    .table-card-mobile td {
+      display: table-cell;
+      padding: var(--space-3) var(--space-4);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .table-card-mobile td::before {
+      display: none;
+    }
+  }
+}
+
+/* ============================================
+   MODAL RESPONSIVE UTILITIES
+   ============================================ */
+
+@layer utilities {
+  /* Modal Overlay */
+  .modal-overlay-responsive {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: var(--z-modal-backdrop);
+  }
+
+  /* Modal Content - Full screen on mobile, centered on desktop */
+  .modal-responsive {
+    position: fixed;
+    z-index: var(--z-modal);
+    background: var(--card);
+    border: 1px solid var(--border);
+    overflow-y: auto;
+    max-height: var(--modal-max-height-mobile);
+
+    /* Mobile: Full width bottom sheet */
+    inset: auto 0 0 0;
+    border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+    padding: var(--space-4);
+    padding-bottom: calc(var(--space-4) + var(--safe-area-inset-bottom));
+    animation: slide-up var(--motion-enter);
+  }
+
+  @media (min-width: 640px) {
+    .modal-responsive {
+      /* Desktop: Centered modal */
+      inset: 50% auto auto 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      max-width: var(--modal-width-md);
+      max-height: var(--modal-max-height);
+      border-radius: var(--radius-2xl);
+      padding: var(--space-6);
+      animation: modal-enter var(--motion-enter);
+    }
+  }
+
+  @keyframes slide-up {
+    from {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes modal-enter {
+    from {
+      transform: translate(-50%, -48%) scale(0.95);
+      opacity: 0;
+    }
+    to {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 1;
+    }
+  }
+
+  /* Modal Sizes */
+  @media (min-width: 640px) {
+    .modal-sm {
+      max-width: var(--modal-width-sm);
+    }
+
+    .modal-md {
+      max-width: var(--modal-width-md);
+    }
+
+    .modal-lg {
+      max-width: var(--modal-width-lg);
+    }
+
+    .modal-xl {
+      max-width: var(--modal-width-xl);
+    }
+
+    .modal-2xl {
+      max-width: var(--modal-width-2xl);
+    }
+  }
+}
+
+/* ============================================
+   FORM RESPONSIVE UTILITIES
+   ============================================ */
+
+@layer utilities {
+  /* Form Container */
+  .form-responsive {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  /* Form Row - 2 columns on md+ */
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+
+  @media (min-width: 768px) {
+    .form-row {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  /* Form Row - 3 columns on lg+ */
+  .form-row-3 {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+
+  @media (min-width: 768px) {
+    .form-row-3 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .form-row-3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  /* Full width field in form grid */
+  .form-field-full {
+    grid-column: 1 / -1;
+  }
+
+  /* Input Responsive */
+  .input-responsive {
+    width: 100%;
+    height: var(--input-height-default);
+    padding: var(--input-padding-y) var(--input-padding-x);
+    font-size: var(--text-input);
+    background: var(--input-background);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    transition: border-color var(--motion-standard), box-shadow var(--motion-standard);
+  }
+
+  .input-responsive:focus {
+    outline: none;
+    border-color: var(--primary-solid);
+    box-shadow: 0 0 0 3px var(--ring);
+  }
+
+  @media (min-width: 768px) {
+    .input-responsive {
+      height: var(--input-height-md);
+    }
+  }
+}
+
+/* ============================================
+   HERO SECTION UTILITIES
+   ============================================ */
+
+@layer utilities {
+  /* Hero Container */
+  .hero-responsive {
+    position: relative;
+    width: 100%;
+    min-height: calc(100vh - var(--header-height));
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: var(--space-8) var(--padding-page-x);
+    padding-top: calc(var(--space-8) + var(--safe-area-inset-top));
+  }
+
+  @media (min-width: 768px) {
+    .hero-responsive {
+      min-height: calc(80vh - var(--header-height-md));
+      padding: var(--space-16) var(--padding-page-x);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .hero-responsive {
+      min-height: calc(90vh - var(--header-height-md));
+      padding: var(--space-20) var(--padding-page-x);
+    }
+  }
+
+  /* Hero Title */
+  .hero-title {
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--leading-heading-tight);
+    letter-spacing: var(--tracking-tight);
+    margin-bottom: var(--space-4);
+  }
+
+  @media (min-width: 640px) {
+    .hero-title {
+      font-size: var(--font-size-4xl);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .hero-title {
+      font-size: var(--font-size-5xl);
+      margin-bottom: var(--space-6);
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .hero-title {
+      font-size: var(--font-size-display);
+    }
+  }
+
+  /* Hero Subtitle */
+  .hero-subtitle {
+    font-size: var(--font-size-md);
+    color: var(--muted-foreground);
+    line-height: var(--leading-relaxed);
+    max-width: var(--container-3xl);
+    margin-bottom: var(--space-6);
+  }
+
+  @media (min-width: 640px) {
+    .hero-subtitle {
+      font-size: var(--font-size-lg);
+      margin-bottom: var(--space-8);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .hero-subtitle {
+      font-size: var(--font-size-xl);
+    }
+  }
+
+  /* Hero Actions */
+  .hero-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    width: 100%;
+    max-width: var(--container-sm);
+  }
+
+  @media (min-width: 640px) {
+    .hero-actions {
+      flex-direction: row;
+      justify-content: center;
+      gap: var(--space-4);
+      max-width: none;
+    }
+  }
+}
+
+/* ============================================
+   NAVIGATION RESPONSIVE UTILITIES
+   ============================================ */
+
+@layer utilities {
+  /* Navigation Container */
+  .nav-responsive {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: var(--header-height);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 var(--padding-page-x);
+    padding-top: var(--safe-area-inset-top);
+    background: var(--glass-light);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    z-index: var(--z-fixed);
+  }
+
+  @media (min-width: 768px) {
+    .nav-responsive {
+      height: var(--header-height-md);
+    }
+  }
+
+  /* Desktop Navigation Links */
+  .nav-links-desktop {
+    display: none;
+    align-items: center;
+    gap: var(--space-6);
+  }
+
+  @media (min-width: 1024px) {
+    .nav-links-desktop {
+      display: flex;
+    }
+  }
+
+  /* Mobile Menu Button */
+  .nav-menu-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--touch-target-min);
+    height: var(--touch-target-min);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+  }
+
+  @media (min-width: 1024px) {
+    .nav-menu-button {
+      display: none;
+    }
+  }
+
+  /* Mobile Navigation Menu */
+  .nav-mobile-menu {
+    position: fixed;
+    inset: var(--header-height) 0 0 0;
+    background: var(--background);
+    padding: var(--space-4) var(--padding-page-x);
+    padding-bottom: var(--safe-area-inset-bottom);
+    overflow-y: auto;
+    z-index: var(--z-fixed);
+    transform: translateX(100%);
+    transition: transform var(--motion-standard);
+  }
+
+  .nav-mobile-menu.open {
+    transform: translateX(0);
+  }
+
+  @media (min-width: 768px) {
+    .nav-mobile-menu {
+      inset: var(--header-height-md) 0 0 0;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .nav-mobile-menu {
+      display: none;
+    }
+  }
+}
+
+/* ============================================
+   BADGE RESPONSIVE UTILITIES
+   ============================================ */
+
+@layer utilities {
+  /* Badge Base */
+  .badge-responsive {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: var(--badge-height-md);
+    padding: 0 var(--space-2);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    border-radius: var(--radius-full);
+    white-space: nowrap;
+  }
+
+  /* Badge Sizes */
+  .badge-sm {
+    height: var(--badge-height-sm);
+    padding: 0 var(--space-1-5);
+    font-size: 0.625rem;
+  }
+
+  .badge-lg {
+    height: var(--badge-height-lg);
+    padding: 0 var(--space-3);
+    font-size: var(--font-size-sm);
+  }
+}
+
+/* ============================================
+   ICON RESPONSIVE UTILITIES
+   ============================================ */
+
+@layer utilities {
+  .icon-xs {
+    width: var(--icon-size-xs);
+    height: var(--icon-size-xs);
+  }
+
+  .icon-sm {
+    width: var(--icon-size-sm);
+    height: var(--icon-size-sm);
+  }
+
+  .icon-md {
+    width: var(--icon-size-md);
+    height: var(--icon-size-md);
+  }
+
+  .icon-lg {
+    width: var(--icon-size-lg);
+    height: var(--icon-size-lg);
+  }
+
+  .icon-xl {
+    width: var(--icon-size-xl);
+    height: var(--icon-size-xl);
+  }
+
+  .icon-2xl {
+    width: var(--icon-size-2xl);
+    height: var(--icon-size-2xl);
+  }
+
+  /* Responsive Icon - scales with viewport */
+  .icon-responsive {
+    width: clamp(var(--icon-size-md), 3vw, var(--icon-size-xl));
+    height: clamp(var(--icon-size-md), 3vw, var(--icon-size-xl));
+  }
+}

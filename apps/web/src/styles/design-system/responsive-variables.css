@@ -1,0 +1,587 @@
+/**
+ * FIXIA ENTERPRISE RESPONSIVE DESIGN SYSTEM
+ * Version: 2.0.0
+ *
+ * World-class responsive CSS custom properties system
+ * Built with mobile-first architecture and fluid scaling
+ *
+ * Table of Contents:
+ * 1. Typography System (Fluid Scaling)
+ * 2. Spacing System (8px Base)
+ * 3. Layout System
+ * 4. Safe Areas & Notch Support
+ * 5. Animation System
+ * 6. Component Tokens
+ * 7. Responsive Utilities
+ */
+
+/* ============================================
+   1. TYPOGRAPHY SYSTEM - FLUID SCALING
+   Using clamp() for pixel-perfect responsive typography
+   Scale Ratio: 1.125 (Major Second)
+   ============================================ */
+
+:root {
+  /* Base Font Size - 16px on mobile, scales to 18px on desktop */
+  --font-size-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+
+  /* Typography Scale - Modular Scale 1.125 */
+  /* XS: 12px -> 14px */
+  --font-size-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+
+  /* SM: 14px -> 15px */
+  --font-size-sm: clamp(0.875rem, 0.85rem + 0.125vw, 0.9375rem);
+
+  /* Base: 16px -> 18px */
+  --font-size-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+
+  /* MD: 18px -> 20px */
+  --font-size-md: clamp(1.125rem, 1.075rem + 0.25vw, 1.25rem);
+
+  /* LG: 20px -> 24px */
+  --font-size-lg: clamp(1.25rem, 1.15rem + 0.5vw, 1.5rem);
+
+  /* XL: 24px -> 30px */
+  --font-size-xl: clamp(1.5rem, 1.35rem + 0.75vw, 1.875rem);
+
+  /* 2XL: 30px -> 36px */
+  --font-size-2xl: clamp(1.875rem, 1.7rem + 0.875vw, 2.25rem);
+
+  /* 3XL: 36px -> 48px */
+  --font-size-3xl: clamp(2.25rem, 1.95rem + 1.5vw, 3rem);
+
+  /* 4XL: 48px -> 60px */
+  --font-size-4xl: clamp(3rem, 2.6rem + 2vw, 3.75rem);
+
+  /* 5XL: 60px -> 72px */
+  --font-size-5xl: clamp(3.75rem, 3.25rem + 2.5vw, 4.5rem);
+
+  /* Display: 72px -> 96px (Hero headlines) */
+  --font-size-display: clamp(4.5rem, 3.75rem + 3.75vw, 6rem);
+
+  /* Heading Hierarchy */
+  --heading-h1: var(--font-size-4xl);
+  --heading-h2: var(--font-size-3xl);
+  --heading-h3: var(--font-size-2xl);
+  --heading-h4: var(--font-size-xl);
+  --heading-h5: var(--font-size-lg);
+  --heading-h6: var(--font-size-md);
+
+  /* Body Text Variants */
+  --text-body-lg: var(--font-size-lg);
+  --text-body: var(--font-size-base);
+  --text-body-sm: var(--font-size-sm);
+
+  /* UI Text */
+  --text-caption: var(--font-size-xs);
+  --text-label: var(--font-size-sm);
+  --text-button: var(--font-size-sm);
+  --text-input: var(--font-size-base);
+
+  /* Line Heights - Optimized for readability */
+  --leading-none: 1;
+  --leading-tight: 1.15;
+  --leading-snug: 1.25;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.625;
+  --leading-loose: 1.75;
+
+  /* Heading Line Heights */
+  --leading-heading: 1.2;
+  --leading-heading-tight: 1.1;
+
+  /* Letter Spacing - Brand consistency */
+  --tracking-tighter: -0.05em;
+  --tracking-tight: -0.025em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.025em;
+  --tracking-wider: 0.05em;
+  --tracking-widest: 0.1em;
+
+  /* Font Weights */
+  --font-weight-thin: 100;
+  --font-weight-extralight: 200;
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+  --font-weight-black: 900;
+}
+
+/* ============================================
+   2. SPACING SYSTEM - 8px BASE
+   Consistent spacing scale for all layouts
+   ============================================ */
+
+:root {
+  /* Base Unit */
+  --spacing-unit: 8px;
+
+  /* Spacing Scale */
+  --space-0: 0;
+  --space-px: 1px;
+  --space-0-5: 0.125rem;  /* 2px */
+  --space-1: 0.25rem;     /* 4px - xs */
+  --space-1-5: 0.375rem;  /* 6px */
+  --space-2: 0.5rem;      /* 8px - sm */
+  --space-2-5: 0.625rem;  /* 10px */
+  --space-3: 0.75rem;     /* 12px */
+  --space-3-5: 0.875rem;  /* 14px */
+  --space-4: 1rem;        /* 16px - md */
+  --space-5: 1.25rem;     /* 20px */
+  --space-6: 1.5rem;      /* 24px - lg */
+  --space-7: 1.75rem;     /* 28px */
+  --space-8: 2rem;        /* 32px - xl */
+  --space-9: 2.25rem;     /* 36px */
+  --space-10: 2.5rem;     /* 40px */
+  --space-11: 2.75rem;    /* 44px */
+  --space-12: 3rem;       /* 48px - 2xl */
+  --space-14: 3.5rem;     /* 56px */
+  --space-16: 4rem;       /* 64px - 3xl */
+  --space-20: 5rem;       /* 80px */
+  --space-24: 6rem;       /* 96px */
+  --space-28: 7rem;       /* 112px */
+  --space-32: 8rem;       /* 128px */
+  --space-36: 9rem;       /* 144px */
+  --space-40: 10rem;      /* 160px */
+  --space-44: 11rem;      /* 176px */
+  --space-48: 12rem;      /* 192px */
+  --space-52: 13rem;      /* 208px */
+  --space-56: 14rem;      /* 224px */
+  --space-60: 15rem;      /* 240px */
+  --space-64: 16rem;      /* 256px */
+  --space-72: 18rem;      /* 288px */
+  --space-80: 20rem;      /* 320px */
+  --space-96: 24rem;      /* 384px */
+
+  /* Semantic Spacing */
+  --spacing-xs: var(--space-1);      /* 4px */
+  --spacing-sm: var(--space-2);      /* 8px */
+  --spacing-md: var(--space-4);      /* 16px */
+  --spacing-lg: var(--space-6);      /* 24px */
+  --spacing-xl: var(--space-8);      /* 32px */
+  --spacing-2xl: var(--space-12);    /* 48px */
+  --spacing-3xl: var(--space-16);    /* 64px */
+  --spacing-4xl: var(--space-24);    /* 96px */
+
+  /* Responsive Padding - Component-level */
+  --padding-component-x: clamp(var(--space-3), 2vw + var(--space-2), var(--space-6));
+  --padding-component-y: clamp(var(--space-3), 1.5vw + var(--space-2), var(--space-5));
+
+  /* Responsive Padding - Section-level */
+  --padding-section-x: clamp(var(--space-4), 4vw, var(--space-8));
+  --padding-section-y: clamp(var(--space-8), 6vw, var(--space-16));
+
+  /* Responsive Padding - Page-level */
+  --padding-page-x: clamp(var(--space-4), 5vw, var(--space-12));
+  --padding-page-y: clamp(var(--space-6), 4vw, var(--space-10));
+
+  /* Gap Tokens */
+  --gap-xs: var(--space-1);
+  --gap-sm: var(--space-2);
+  --gap-md: var(--space-4);
+  --gap-lg: var(--space-6);
+  --gap-xl: var(--space-8);
+  --gap-2xl: var(--space-12);
+}
+
+/* ============================================
+   3. LAYOUT SYSTEM
+   Container widths and responsive layouts
+   ============================================ */
+
+:root {
+  /* Container Max Widths */
+  --container-xs: 20rem;    /* 320px */
+  --container-sm: 24rem;    /* 384px */
+  --container-md: 28rem;    /* 448px */
+  --container-lg: 32rem;    /* 512px */
+  --container-xl: 36rem;    /* 576px */
+  --container-2xl: 42rem;   /* 672px */
+  --container-3xl: 48rem;   /* 768px */
+  --container-4xl: 56rem;   /* 896px */
+  --container-5xl: 64rem;   /* 1024px */
+  --container-6xl: 72rem;   /* 1152px */
+  --container-7xl: 80rem;   /* 1280px */
+  --container-full: 100%;
+
+  /* Content Widths */
+  --content-width-prose: 65ch;
+  --content-width-narrow: 40rem;
+  --content-width-default: 72rem;
+  --content-width-wide: 90rem;
+  --content-width-full: 100%;
+
+  /* Responsive Container */
+  --container-responsive: min(100% - var(--padding-page-x) * 2, var(--content-width-default));
+
+  /* Grid System */
+  --grid-columns: 12;
+  --grid-gap-x: var(--space-4);
+  --grid-gap-y: var(--space-4);
+
+  /* Responsive Grid Gaps */
+  --grid-gap-responsive: clamp(var(--space-3), 2vw, var(--space-6));
+
+  /* Aspect Ratios */
+  --aspect-square: 1 / 1;
+  --aspect-video: 16 / 9;
+  --aspect-photo: 4 / 3;
+  --aspect-portrait: 3 / 4;
+  --aspect-wide: 21 / 9;
+  --aspect-card: 5 / 3;
+
+  /* Z-Index Scale */
+  --z-base: 0;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-fixed: 300;
+  --z-modal-backdrop: 400;
+  --z-modal: 500;
+  --z-popover: 600;
+  --z-tooltip: 700;
+  --z-toast: 800;
+  --z-max: 9999;
+}
+
+/* ============================================
+   4. SAFE AREAS & NOTCH SUPPORT
+   iOS Dynamic Island, notch, and safe area handling
+   ============================================ */
+
+:root {
+  /* Safe Area Insets - fallback to 0 */
+  --safe-area-inset-top: env(safe-area-inset-top, 0px);
+  --safe-area-inset-right: env(safe-area-inset-right, 0px);
+  --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-inset-left: env(safe-area-inset-left, 0px);
+
+  /* Dynamic Island Awareness */
+  --dynamic-island-height: env(safe-area-inset-top, 0px);
+
+  /* Minimum Touch Targets */
+  --touch-target-min: 44px;
+  --touch-target-comfortable: 48px;
+
+  /* Bottom Navigation Safe Area */
+  --bottom-nav-height: calc(56px + var(--safe-area-inset-bottom));
+
+  /* Header Safe Area */
+  --header-height: calc(56px + var(--safe-area-inset-top));
+  --header-height-md: calc(64px + var(--safe-area-inset-top));
+
+  /* Keyboard Viewport */
+  --keyboard-inset-height: env(keyboard-inset-height, 0px);
+}
+
+/* ============================================
+   5. ANIMATION SYSTEM
+   Performance-optimized animations
+   ============================================ */
+
+:root {
+  /* Duration Scale */
+  --duration-instant: 0ms;
+  --duration-fast: 150ms;
+  --duration-normal: 200ms;
+  --duration-slow: 300ms;
+  --duration-slower: 400ms;
+  --duration-slowest: 500ms;
+
+  /* Mobile-optimized durations (faster for better UX) */
+  --duration-mobile: 200ms;
+  --duration-tablet: 250ms;
+  --duration-desktop: 300ms;
+
+  /* Easing Functions */
+  --ease-linear: linear;
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-smooth: cubic-bezier(0.25, 0.1, 0.25, 1);
+
+  /* Spring Easings */
+  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --ease-elastic: cubic-bezier(0.68, -0.6, 0.32, 1.6);
+
+  /* Motion Tokens */
+  --motion-enter: var(--duration-normal) var(--ease-out);
+  --motion-exit: var(--duration-fast) var(--ease-in);
+  --motion-standard: var(--duration-normal) var(--ease-in-out);
+  --motion-emphasis: var(--duration-slow) var(--ease-spring);
+
+  /* Transform Scale */
+  --scale-press: 0.95;
+  --scale-hover: 1.02;
+  --scale-hover-subtle: 1.01;
+
+  /* Translate Values */
+  --translate-subtle: 2px;
+  --translate-normal: 4px;
+  --translate-strong: 8px;
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-instant: 0ms;
+    --duration-fast: 0ms;
+    --duration-normal: 0ms;
+    --duration-slow: 0ms;
+    --duration-slower: 0ms;
+    --duration-slowest: 0ms;
+    --duration-mobile: 0ms;
+    --duration-tablet: 0ms;
+    --duration-desktop: 0ms;
+
+    --scale-press: 1;
+    --scale-hover: 1;
+    --scale-hover-subtle: 1;
+
+    --translate-subtle: 0;
+    --translate-normal: 0;
+    --translate-strong: 0;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================
+   6. COMPONENT TOKENS
+   Size and spacing tokens for common components
+   ============================================ */
+
+:root {
+  /* Button Sizes */
+  --button-height-xs: 1.75rem;   /* 28px */
+  --button-height-sm: 2rem;      /* 32px */
+  --button-height-md: 2.5rem;    /* 40px */
+  --button-height-default: 2.75rem; /* 44px - touch-friendly */
+  --button-height-lg: 3rem;      /* 48px */
+  --button-height-xl: 3.5rem;    /* 56px */
+
+  /* Button Padding */
+  --button-padding-x-sm: var(--space-3);
+  --button-padding-x-md: var(--space-4);
+  --button-padding-x-lg: var(--space-6);
+
+  /* Input Sizes */
+  --input-height-sm: 2rem;       /* 32px */
+  --input-height-md: 2.5rem;     /* 40px */
+  --input-height-default: 2.75rem; /* 44px */
+  --input-height-lg: 3rem;       /* 48px */
+
+  /* Input Padding */
+  --input-padding-x: var(--space-3);
+  --input-padding-y: var(--space-2);
+
+  /* Card Sizes */
+  --card-padding-sm: var(--space-3);
+  --card-padding-md: var(--space-4);
+  --card-padding-lg: var(--space-6);
+
+  /* Card Padding Responsive */
+  --card-padding-responsive: clamp(var(--space-3), 2vw + var(--space-2), var(--space-6));
+
+  /* Badge Sizes */
+  --badge-height-sm: 1.25rem;    /* 20px */
+  --badge-height-md: 1.5rem;     /* 24px */
+  --badge-height-lg: 1.75rem;    /* 28px */
+
+  /* Avatar Sizes */
+  --avatar-size-xs: 1.5rem;      /* 24px */
+  --avatar-size-sm: 2rem;        /* 32px */
+  --avatar-size-md: 2.5rem;      /* 40px */
+  --avatar-size-lg: 3rem;        /* 48px */
+  --avatar-size-xl: 4rem;        /* 64px */
+  --avatar-size-2xl: 6rem;       /* 96px */
+
+  /* Icon Sizes */
+  --icon-size-xs: 0.875rem;      /* 14px */
+  --icon-size-sm: 1rem;          /* 16px */
+  --icon-size-md: 1.25rem;       /* 20px */
+  --icon-size-lg: 1.5rem;        /* 24px */
+  --icon-size-xl: 2rem;          /* 32px */
+  --icon-size-2xl: 2.5rem;       /* 40px */
+
+  /* Modal Sizes */
+  --modal-width-sm: 24rem;       /* 384px */
+  --modal-width-md: 28rem;       /* 448px */
+  --modal-width-lg: 32rem;       /* 512px */
+  --modal-width-xl: 36rem;       /* 576px */
+  --modal-width-2xl: 42rem;      /* 672px */
+  --modal-width-full: calc(100vw - var(--space-8));
+
+  /* Modal Max Height */
+  --modal-max-height: calc(100vh - var(--space-8));
+  --modal-max-height-mobile: calc(100dvh - var(--safe-area-inset-top) - var(--safe-area-inset-bottom));
+
+  /* Border Radius Scale */
+  --radius-none: 0;
+  --radius-sm: 0.25rem;          /* 4px */
+  --radius-md: 0.375rem;         /* 6px */
+  --radius-lg: 0.5rem;           /* 8px */
+  --radius-xl: 0.75rem;          /* 12px */
+  --radius-2xl: 1rem;            /* 16px */
+  --radius-3xl: 1.5rem;          /* 24px */
+  --radius-full: 9999px;
+
+  /* Border Width */
+  --border-width-thin: 1px;
+  --border-width-default: 1px;
+  --border-width-thick: 2px;
+  --border-width-heavy: 4px;
+
+  /* Box Shadow Scale */
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+  --shadow-inner: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);
+}
+
+/* ============================================
+   7. RESPONSIVE UTILITIES
+   Viewport-specific adjustments
+   ============================================ */
+
+/* Extra Small Devices (320px - 479px) */
+@media screen and (max-width: 479px) {
+  :root {
+    --padding-component-x: var(--space-3);
+    --padding-component-y: var(--space-3);
+    --padding-section-x: var(--space-4);
+    --padding-section-y: var(--space-6);
+    --grid-gap-responsive: var(--space-3);
+    --card-padding-responsive: var(--space-3);
+  }
+}
+
+/* Small Devices (480px - 639px) */
+@media screen and (min-width: 480px) and (max-width: 639px) {
+  :root {
+    --padding-component-x: var(--space-4);
+    --padding-component-y: var(--space-3);
+    --padding-section-x: var(--space-5);
+    --padding-section-y: var(--space-8);
+    --grid-gap-responsive: var(--space-4);
+    --card-padding-responsive: var(--space-4);
+  }
+}
+
+/* Medium Devices - Tablets (640px - 767px) */
+@media screen and (min-width: 640px) and (max-width: 767px) {
+  :root {
+    --padding-component-x: var(--space-4);
+    --padding-component-y: var(--space-4);
+    --padding-section-x: var(--space-6);
+    --padding-section-y: var(--space-10);
+    --grid-gap-responsive: var(--space-4);
+    --card-padding-responsive: var(--space-4);
+  }
+}
+
+/* Large Tablets (768px - 1023px) */
+@media screen and (min-width: 768px) and (max-width: 1023px) {
+  :root {
+    --padding-component-x: var(--space-5);
+    --padding-component-y: var(--space-4);
+    --padding-section-x: var(--space-6);
+    --padding-section-y: var(--space-12);
+    --grid-gap-responsive: var(--space-5);
+    --card-padding-responsive: var(--space-5);
+  }
+}
+
+/* Small Laptops (1024px - 1279px) */
+@media screen and (min-width: 1024px) and (max-width: 1279px) {
+  :root {
+    --padding-component-x: var(--space-5);
+    --padding-component-y: var(--space-5);
+    --padding-section-x: var(--space-8);
+    --padding-section-y: var(--space-14);
+    --grid-gap-responsive: var(--space-5);
+    --card-padding-responsive: var(--space-5);
+  }
+}
+
+/* Desktops (1280px - 1535px) */
+@media screen and (min-width: 1280px) and (max-width: 1535px) {
+  :root {
+    --padding-component-x: var(--space-6);
+    --padding-component-y: var(--space-5);
+    --padding-section-x: var(--space-10);
+    --padding-section-y: var(--space-16);
+    --grid-gap-responsive: var(--space-6);
+    --card-padding-responsive: var(--space-6);
+  }
+}
+
+/* Ultra-Wide (1536px+) */
+@media screen and (min-width: 1536px) {
+  :root {
+    --padding-component-x: var(--space-6);
+    --padding-component-y: var(--space-6);
+    --padding-section-x: var(--space-12);
+    --padding-section-y: var(--space-20);
+    --grid-gap-responsive: var(--space-6);
+    --card-padding-responsive: var(--space-6);
+  }
+}
+
+/* Touch Device Detection */
+@media (hover: none) and (pointer: coarse) {
+  :root {
+    /* Increase touch targets on touch devices */
+    --button-height-default: 3rem;      /* 48px */
+    --input-height-default: 3rem;       /* 48px */
+    --touch-target-min: 48px;
+
+    /* Faster animations for touch */
+    --duration-normal: 150ms;
+    --duration-slow: 200ms;
+  }
+}
+
+/* High DPI / Retina Displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  :root {
+    /* Thinner borders on retina */
+    --border-width-thin: 0.5px;
+  }
+}
+
+/* Dark Mode Color Adjustments */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Slightly different shadows for dark mode */
+    --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.2);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.2);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.3), 0 4px 6px -4px rgb(0 0 0 / 0.2);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.3), 0 8px 10px -6px rgb(0 0 0 / 0.2);
+    --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.5);
+  }
+}
+
+/* Print Styles */
+@media print {
+  :root {
+    --font-size-base: 12pt;
+    --spacing-xs: 4pt;
+    --spacing-sm: 8pt;
+    --spacing-md: 12pt;
+    --spacing-lg: 16pt;
+  }
+}
