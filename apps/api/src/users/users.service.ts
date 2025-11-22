@@ -529,7 +529,6 @@ export class UsersService {
         professionalsMap.set(professionalId, {
           id: service.professional.id,
           name: service.professional.name,
-          lastName: service.professional.lastName,
           email: service.professional.email,
           avatar: service.professional.avatar,
           professional_profile: service.professional.professional_profile,
