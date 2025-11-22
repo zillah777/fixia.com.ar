@@ -1,5 +1,6 @@
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
+import { motion } from "motion/react"
 
 import { cn } from "./utils"
 import { useRipple } from "../../hooks/useRipple"
@@ -82,10 +83,26 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     }
 
     return (
-      <button
+      <motion.button
         className={classes}
         ref={ref}
         onClick={handleClick}
+        whileHover={{
+          boxShadow: variant === 'default'
+            ? '0 0 20px rgba(168, 85, 247, 0.6), 0 8px 32px rgba(168, 85, 247, 0.4)'
+            : variant === 'destructive'
+            ? '0 0 20px rgba(239, 68, 68, 0.6), 0 8px 32px rgba(239, 68, 68, 0.4)'
+            : undefined,
+        }}
+        whileTap={{
+          scale: 0.95,
+          boxShadow: 'none',
+        }}
+        transition={{
+          type: 'spring',
+          stiffness: 400,
+          damping: 17,
+        }}
         {...props}
       >
         {children}
@@ -102,7 +119,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             onAnimationEnd={() => clearRipple(ripple.id)}
           />
         ))}
-      </button>
+      </motion.button>
     )
   }
 )
