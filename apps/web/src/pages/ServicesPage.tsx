@@ -70,26 +70,27 @@ function SearchAndFilters({
     <div className="space-y-6">
       {/* Main Search */}
       <div className="relative">
-        <div className="flex glass rounded-2xl p-2 border-white/20">
-          <div className="flex-1 flex items-center">
-            <Search className="h-5 w-5 text-muted-foreground ml-4 mr-3" />
+        <div className="flex flex-col sm:flex-row glass rounded-lg sm:rounded-2xl p-2 border-white/20 gap-2 sm:gap-0">
+          <div className="flex-1 flex items-center min-w-0">
+            <Search className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground ml-2 sm:ml-4 mr-2 sm:mr-3 flex-shrink-0" />
             <Input
-              placeholder="¿Qué servicio necesitas? Ej: Diseño de logo, desarrollo web..."
+              placeholder="Que servicio necesitas?"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="border-0 bg-transparent text-lg placeholder:text-muted-foreground focus-visible:ring-0"
+              className="border-0 bg-transparent text-base sm:text-lg placeholder:text-muted-foreground focus-visible:ring-0 min-w-0"
             />
           </div>
-          <Button className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg px-8">
-            Buscar
+          <Button className="liquid-gradient hover:opacity-90 transition-all duration-300 shadow-lg px-4 sm:px-8 w-full sm:w-auto text-sm sm:text-base flex-shrink-0">
+            <span className="sm:hidden">Buscar</span>
+            <span className="hidden sm:inline">Buscar Servicios</span>
           </Button>
         </div>
       </div>
 
       {/* Quick Filters and Controls */}
-      <div className="flex flex-wrap items-center justify-between gap-4">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         {/* Categories */}
-        <div className="flex flex-wrap gap-2">
+        <div className="flex gap-2 overflow-x-auto pb-2 lg:pb-0 scrollbar-hide -mx-3 px-3 lg:mx-0 lg:px-0 lg:flex-wrap">
           {categories.slice(0, 6).map((category) => (
             <Button
               key={category}
@@ -179,9 +180,9 @@ function SearchAndFilters({
         </div>
 
         {/* Sort and View Controls */}
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center gap-2 sm:gap-3 w-full lg:w-auto justify-between lg:justify-start">
           <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="w-48 glass border-white/20">
+            <SelectTrigger className="w-full sm:w-40 lg:w-48 glass border-white/20 text-xs sm:text-sm">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -241,18 +242,18 @@ export default function ServicesPage() {
 
   return (
     <PublicPageLayout>
-      <main className="container mx-auto px-6 py-8">
+      <main className="container mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
         {/* Hero Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-12"
+          className="text-center mb-8 sm:mb-12 px-2"
         >
-          <h1 className="text-4xl lg:text-5xl font-bold mb-4 bg-gradient-to-r from-white via-white to-white/70 bg-clip-text text-transparent">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2 sm:mb-4 bg-gradient-to-r from-white via-white to-white/70 bg-clip-text text-transparent">
             Explora Servicios Profesionales
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+          <p className="text-sm sm:text-base md:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto px-2 sm:px-0">
             Descubre profesionales altamente calificados y servicios únicos.
             Tu próximo proyecto está a un clic de distancia.
           </p>
@@ -308,8 +309,8 @@ export default function ServicesPage() {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.4 }}
           className={viewMode === "grid"
-            ? "grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-            : "space-y-6"
+            ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6"
+            : "space-y-3 sm:space-y-4 lg:space-y-6"
           }
         >
           {services.map((service, index) => (
