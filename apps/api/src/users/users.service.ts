@@ -1,52 +1,20 @@
-import {
-  Injectable,
-  NotFoundException,
-  ConflictException,
-  BadRequestException,
-  ForbiddenException,
-  Logger,
-} from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
-import { UpdateUserDto } from './dto/update-user.dto';
+﻿import { Injectable, NotFoundException, ForbiddenException, BadRequestException, ConflictException, Logger } from '@nestjs/common';
+import { PrismaService } from '../common/prisma.service';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 import { UpgradeToProfessionalDto } from './dto/upgrade-to-professional.dto';
-
-export interface DashboardStats {
-  total_services: number;
-  active_projects: number;
-  total_earnings: number;
-  average_rating: number;
-  review_count: number;
-  profile_views: number;
-  messages_count: number;
-  pending_proposals: number;
-}
+import { DashboardStats } from '@fixia/types';
 
 @Injectable()
 export class UsersService {
   private readonly logger = new Logger(UsersService.name);
-
   constructor(private prisma: PrismaService) { }
 
-  async findAll() {
-    return this.prisma.user.findMany({
-      where: { deleted_at: null },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        lastName: true,
-        phone: true,
-        avatar: true,
-        user_type: true,
-        created_at: true,
-        updated_at: true,
-      },
-    });
-  }
-
-  async findOne(id: string) {
+  async getUserProfile(userId: string) {
     const user = await this.prisma.user.findUnique({
-      where: { id, deleted_at: null },
+      where: {
+        id: userId,
+        deleted_at: null
+      },
       include: {
         professional_profile: true,
       },
@@ -56,32 +24,79 @@ export class UsersService {
       throw new NotFoundException('User not found');
     }
 
-    return user;
+    // Remove sensitive data
+    const { password_hash, ...userProfile } = user;
+    return userProfile;
   }
 
   async getPublicProfile(userId: string) {
     const user = await this.prisma.user.findUnique({
-      where: { id: userId, deleted_at: null },
+      where: {
+        id: userId,
+        deleted_at: null
+      },
       select: {
         id: true,
         name: true,
-        lastName: true,
         avatar: true,
+        location: true,
+        verified: true,
         user_type: true,
+        created_at: true,
         professional_profile: {
           select: {
             bio: true,
             specialties: true,
-            years_experience: true,
-            level: true,
             rating: true,
             review_count: true,
+            level: true,
+            years_experience: true,
             availability_status: true,
             response_time_hours: true,
-            verified: true,
-            province: true,
-            city: true,
           },
+        },
+        services: {
+          where: { active: true },
+          select: {
+            id: true,
+            title: true,
+            description: true,
+            price: true,
+            main_image: true,
+            view_count: true,
+            created_at: true,
+            category: {
+              select: {
+                name: true,
+                slug: true,
+                icon: true,
+              },
+            },
+          },
+          orderBy: { created_at: 'desc' },
+          take: 6,
+        },
+        reviews_received: {
+          select: {
+            id: true,
+            rating: true,
+            comment: true,
+            created_at: true,
+            reviewer: {
+              select: {
+                name: true,
+                avatar: true,
+                verified: true,
+              },
+            },
+            service: {
+              select: {
+                title: true,
+              },
+            },
+          },
+          orderBy: { created_at: 'desc' },
+          take: 10,
         },
       },
     });
@@ -93,138 +108,93 @@ export class UsersService {
     return user;
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto) {
-    // Check if user exists
-    const user = await this.prisma.user.findUnique({
-      where: { id, deleted_at: null },
-    });
-
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-
-    // Update user
-    return this.prisma.user.update({
-      where: { id },
-      data: updateUserDto,
-    });
-  }
-
-  async updateProfile(userId: string, updateData: any) {
-    const user = await this.prisma.user.findUnique({
+  async updateProfile(userId: string, updateData: UpdateProfileDto) {
+    // First check user exists
+    const existingUser = await this.prisma.user.findUnique({
       where: { id: userId },
       include: { professional_profile: true },
     });
 
-    if (!user) {
+    if (!existingUser) {
       throw new NotFoundException('User not found');
     }
 
-    // Separate professional profile fields from user fields
-    const {
-      dni,
-      matricula,
-      cuitCuil,
-      serviceCategories,
-      availability,
-      province,
-      city,
-      isMonotributista,
-      ...userFields
-    } = updateData;
-
-    // Update user fields
-    const updatedUser = await this.prisma.user.update({
-      where: { id: userId },
-      data: userFields,
-      include: { professional_profile: true },
+    // Log update attempt
+    this.logger.debug(`[updateProfile] Updating profile for user: ${userId}`, {
+      fieldsToUpdate: Object.keys(updateData).filter(k => updateData[k] !== undefined)
     });
 
-    // If user is a professional and has professional fields to update
-    if (user.user_type === 'professional' || user.user_type === 'dual') {
-      if (user.professional_profile) {
-        // Update existing professional profile
-        const professionalData: any = {};
-        if (dni !== undefined) professionalData.dni = dni;
-        if (matricula !== undefined) professionalData.matricula = matricula;
-        if (cuitCuil !== undefined) professionalData.cuit_cuil = cuitCuil;
-        if (serviceCategories !== undefined)
-          professionalData.specialties = serviceCategories;
-        if (availability !== undefined)
-          professionalData.availability_status = availability;
-        if (province !== undefined) professionalData.province = province;
-        if (city !== undefined) professionalData.city = city;
-        if (isMonotributista !== undefined)
-          professionalData.is_monotributista = isMonotributista;
+    // Build complete user update data with all supported fields
+    const userUpdateData: any = {
+      // Basic fields
+      name: updateData.name,
+      avatar: updateData.avatar,
+      location: updateData.location,
+      bio: updateData.bio,
+      phone: updateData.phone,
+      whatsapp_number: updateData.whatsapp_number,
 
-        if (Object.keys(professionalData).length > 0) {
-          await this.prisma.professionalProfile.update({
+      // Social networks
+      social_linkedin: updateData.social_linkedin,
+      social_twitter: updateData.social_twitter,
+      social_facebook: updateData.social_facebook,
+      social_instagram: updateData.social_instagram,
+
+      // Notification preferences
+      notifications_messages: updateData.notifications_messages,
+      notifications_orders: updateData.notifications_orders,
+      notifications_projects: updateData.notifications_projects,
+      notifications_newsletter: updateData.notifications_newsletter,
+
+      // Settings
+      timezone: updateData.timezone,
+    };
+
+    // Remove undefined values to only update provided fields
+    Object.keys(userUpdateData).forEach(key =>
+      userUpdateData[key] === undefined && delete userUpdateData[key]
+    );
+
+    // ATOMIC TRANSACTION: Update user and professional profile together
+    // If either fails, both rollback. Prevents data inconsistency.
+    const result = await this.prisma.$transaction(async (tx) => {
+      // Update user record with all provided fields
+      const updatedUser = await tx.user.update({
+        where: { id: userId },
+        data: userUpdateData,
+        include: {
+          professional_profile: true,
+        },
+      });
+
+      // Update professional profile if user is professional/dual and specialties provided
+      if ((existingUser.user_type === 'professional' || existingUser.user_type === 'dual') && updateData.specialties !== undefined) {
+        const professionalUpdateData = {
+          specialties: updateData.specialties,
+        };
+
+        if (existingUser.professional_profile) {
+          await tx.professionalProfile.update({
             where: { user_id: userId },
-            data: professionalData,
+            data: professionalUpdateData,
+          });
+        } else {
+          await tx.professionalProfile.create({
+            data: {
+              user_id: userId,
+              ...professionalUpdateData,
+            },
           });
         }
       }
-    }
 
-    // Return updated user with professional profile
-    return this.prisma.user.findUnique({
-      where: { id: userId },
-      include: { professional_profile: true },
-    });
-  }
-
-  async getUserStats(userId: string) {
-    const user = await this.prisma.user.findUnique({
-      where: { id: userId },
-      include: {
-        professional_profile: true,
-      },
+      return updatedUser;
     });
 
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
+    console.log(`[updateProfile] Profile updated successfully for user: ${userId}`);
 
-    // Get service stats
-    const serviceStats = await this.prisma.service.aggregate({
-      where: { professional_id: userId },
-      _count: { id: true },
-      _avg: { price: true },
-    });
-
-    // Get review stats
-    const reviewStats = await this.prisma.review.aggregate({
-      where: { professional_id: userId },
-      _count: { id: true },
-      _avg: { rating: true },
-    });
-
-    return {
-      total_services: serviceStats._count.id,
-      average_price: serviceStats._avg.price || 0,
-      total_reviews: reviewStats._count.id,
-      average_rating: reviewStats._avg.rating || 0,
-      profile_completeness: this.calculateProfileCompleteness(user),
-    };
-  }
-
-  private calculateProfileCompleteness(user: any): number {
-    let score = 0;
-    const fields = [
-      user.name,
-      user.lastName,
-      user.phone,
-      user.avatar,
-      user.professional_profile?.bio,
-      user.professional_profile?.specialties?.length > 0,
-      user.professional_profile?.years_experience,
-    ];
-
-    fields.forEach((field) => {
-      if (field) score += 1;
-    });
-
-    return Math.round((score / fields.length) * 100);
+    const { password_hash, ...userProfile } = result;
+    return userProfile;
   }
 
   async getDashboard(userId: string): Promise<DashboardStats> {
@@ -463,14 +433,14 @@ export class UsersService {
 
     if (!hasProfessionalSubscription) {
       throw new ForbiddenException(
-        'Se requiere una suscripción premium activa para convertirse en profesional. ' +
+        'Se requiere una suscripci├│n premium activa para convertirse en profesional. ' +
         'Los profesionales necesitan un plan de pago para acceder a todas las herramientas y recibir propuestas.'
       );
     }
 
     // Validate required fields
     if (!upgradeDto.bio || upgradeDto.bio.trim().length === 0) {
-      throw new BadRequestException('La biografía es requerida');
+      throw new BadRequestException('La biograf├¡a es requerida');
     }
 
     if (!upgradeDto.specialties || upgradeDto.specialties.length === 0) {
@@ -512,7 +482,7 @@ export class UsersService {
     });
 
     return {
-      message: '¡Felicitaciones! Tu cuenta ha sido actualizada a Profesional DUAL',
+      message: '┬íFelicitaciones! Tu cuenta ha sido actualizada a Profesional DUAL',
       description: 'Ahora puedes publicar servicios y recibir propuestas, manteniendo tu capacidad de contratar servicios como cliente.',
       user: {
         id: upgradedUser.user.id,
