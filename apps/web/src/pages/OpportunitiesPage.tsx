@@ -211,7 +211,7 @@ function Navigation() {
       animate={{ y: 0 }}
       className="sticky top-0 z-50 w-full glass border-b border-white/10"
     >
-      <div className="container mx-auto flex h-16 items-center justify-between px-6">
+      <div className="container mx-auto flex h-16 items-center justify-between px-3 sm:px-6 lg:px-8">
         <Link to="/dashboard" className="flex items-center space-x-3">
           <div className="h-8 w-8 rounded-lg flex items-center justify-center overflow-hidden"><img src="/logo.png" alt="Fixia" className="h-full w-full object-contain" /></div>
           <span className="font-semibold">Fixia</span>
@@ -508,8 +508,8 @@ function OpportunityCard({ opportunity, viewMode }: { opportunity: any, viewMode
         transition={{ duration: 0.3 }}
       >
         <Card className="glass hover:glass-medium transition-all duration-300 border-white/10 overflow-hidden">
-          <CardContent className="p-6">
-            <div className="flex items-start space-x-6">
+          <CardContent className="p-3 sm:p-4 lg:p-6">
+            <div className="flex items-start gap-3 sm:gap-4 lg:gap-6">
               {/* Client Avatar */}
               <div className="flex-shrink-0">
                 <Avatar className="h-12 w-12">
@@ -946,7 +946,7 @@ export default function OpportunitiesPage() {
     <div className="min-h-screen bg-background">
       <Navigation />
 
-      <main className="container mx-auto px-6 py-8">
+      <main className="container mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
         {/* Hero Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -1036,8 +1036,8 @@ export default function OpportunitiesPage() {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.4 }}
           className={viewMode === "grid"
-            ? "grid md:grid-cols-2 lg:grid-cols-3 gap-6"
-            : "space-y-6"
+            ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6"
+            : "space-y-3 sm:space-y-4 lg:space-y-6"
           }
         >
           {opportunities.map((opportunity, index) => (
