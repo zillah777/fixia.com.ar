@@ -22,10 +22,10 @@ const buttonVariants = cva(
         fun: "gradient-shift text-primary-foreground shadow-lg hover:shadow-xl hover-lift",
       },
       size: {
-        default: "h-11 sm:h-9 px-4 py-2",
-        sm: "h-11 sm:h-8 rounded-lg px-3 text-xs sm:text-xs",
-        lg: "h-12 rounded-xl px-6 sm:px-8",
-        icon: "h-11 w-11 sm:h-9 sm:w-9",
+        default: "h-11 md:h-9 px-4 py-2",
+        sm: "h-10 md:h-8 rounded-lg px-3 text-xs md:text-xs",
+        lg: "h-12 md:h-11 rounded-xl px-6 md:px-8",
+        icon: "h-11 w-11 md:h-9 md:w-9",
       },
     },
     defaultVariants: {
